@@ -80,6 +80,25 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           _lastPeriodDate = null;
         }
       });
+    } else {
+      // If no tapped days, but we have a last period date, auto-generate period days
+      if (_lastPeriodDate != null) {
+        final periodLength =
+            5; // Default, or load from user/profile if available
+        final lastPeriod = DateTime.parse(_lastPeriodDate!);
+        final periodDays = List<DateTime>.generate(
+          periodLength,
+          (i) =>
+              DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
+        );
+        setState(() {
+          _selectedCalendarDays = periodDays.toSet();
+          _selectedCalendarDaysFormatted =
+              periodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).toSet();
+        });
+        await prefs.setStringList(
+            'tapped_days', _selectedCalendarDaysFormatted.toList());
+      }
     }
   }
 
@@ -269,6 +288,22 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         'tapped_days', _selectedCalendarDaysFormatted.toList());
+    // If user just set a new last period date, auto-generate period days
+    if (_lastPeriodDate != null && _selectedCalendarDays.length == 1) {
+      final periodLength = 5; // Default, or load from user/profile if available
+      final lastPeriod = DateTime.parse(_lastPeriodDate!);
+      final periodDays = List<DateTime>.generate(
+        periodLength,
+        (i) => DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
+      );
+      setState(() {
+        _selectedCalendarDays = periodDays.toSet();
+        _selectedCalendarDaysFormatted =
+            periodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).toSet();
+      });
+      await prefs.setStringList(
+          'tapped_days', _selectedCalendarDaysFormatted.toList());
+    }
 
     // Now perform the profile update (async, outside setState)
     if (_selectedCalendarDays.isNotEmpty) {

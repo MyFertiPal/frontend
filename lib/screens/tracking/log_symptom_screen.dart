@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../services/api_service.dart';
-import '../calendar_tab_screen.dart';
 
 class LogSymptomScreen extends StatefulWidget {
   const LogSymptomScreen({super.key});
@@ -182,7 +181,9 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                           'Log API response: ${response.statusCode} ${response.body}');
                       if (response.statusCode == 200 ||
                           response.statusCode == 201) {
-                        Navigator.of(context).pop(true);
+                        Navigator.of(context).pop({
+                          'symptoms': _selectedSymptoms,
+                        });
                       }
                     },
                     style: ElevatedButton.styleFrom(

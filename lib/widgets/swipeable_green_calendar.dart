@@ -292,29 +292,29 @@ class _MonthGrid extends StatelessWidget {
 
           // Priority order: Period > Next Period > Ovulation > Fertile Window
           if (isPeriod) {
-            // Tapped period days: pink/red faded background, red border, red text
-            bg = const Color(0xFFFFB3BA).withOpacity(0.4); // Light pink
-            txtColor = const Color(0xFFD32F2F); // Red text
+            // Period days: pink background, dark pink text, pink border
+            bg = const Color(0xFFFFB3BA); // Pink
+            txtColor = const Color(0xFFD32F2F); // Dark pink/red text
             border = Border.all(color: const Color(0xFFD32F2F), width: 1.5);
-            indicator = _buildDot(const Color(0xFFD32F2F)); // Red dot
+            indicator = _buildDot(const Color(0xFFD32F2F));
           } else if (isNextPeriodWindow || isNextPeriod) {
             // Next period prediction: red border and red text, transparent bg
             bg = Colors.transparent;
-            txtColor = const Color(0xFFD32F2F); // Red text
+            txtColor = const Color(0xFFD32F2F);
             border = Border.all(color: const Color(0xFFD32F2F), width: 2);
             indicator = _buildDot(const Color(0xFFD32F2F).withOpacity(0.6));
           } else if (isOvulation) {
-            // Ovulation day: blue background and darker blue text
-            bg = const Color(0xFF90CAF9).withOpacity(0.4); // Light blue
-            txtColor = const Color(0xFF1976D2); // Blue text
-            border = Border.all(color: const Color(0xFF1976D2), width: 1.5);
-            indicator = _buildDot(const Color(0xFF1976D2)); // Blue dot
+            // Ovulation day: green background, white text, green border
+            bg = const Color(0xFF2E683D); // Green
+            txtColor = Colors.white;
+            border = Border.all(color: const Color(0xFF2E683D), width: 1.5);
+            indicator = _buildDot(const Color(0xFF2E683D));
           } else if (isFertile) {
-            // Fertile window: light purple/lavender
-            bg = const Color(0xFFCE93D8).withOpacity(0.25); // Light purple
-            txtColor = const Color(0xFF8E24AA); // Purple text
-            indicator = _buildDot(
-                const Color(0xFF8E24AA).withOpacity(0.7)); // Purple dot
+            // Fertile window: white background, green text, green border
+            bg = Colors.white;
+            txtColor = const Color(0xFF2E683D);
+            border = Border.all(color: const Color(0xFF2E683D), width: 1.2);
+            indicator = _buildDot(const Color(0xFF2E683D).withOpacity(0.7));
           } else if (isSelected) {
             bg = _accent;
             txtColor = const Color(0xFF2E683D);

@@ -17,6 +17,7 @@ import 'gender_prediction_screen.dart';
 import 'user_guide_screen.dart';
 import 'specialists/specialist_search_screen.dart';
 import 'specialists/specialist_chat_screen.dart';
+import 'tracking/log_symptom_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -27,6 +28,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<void> _openLogSymptomScreen() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => LogSymptomScreen(),
+      ),
+    );
+    if (result != null && result is Map && result['symptoms'] is List<String>) {
+      setState(() {
+        _lastLoggedSymptoms = List<String>.from(result['symptoms']);
+      });
+      _sendInsightsPost();
+    }
+  }
+
   Map<String, dynamic>? _insightData;
   String? _insightText;
 
@@ -43,6 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _selectedIndex = 0;
   bool _showSideMenu = false;
+
+  // Store last logged symptoms
+  List<String> _lastLoggedSymptoms = [];
 
   @override
   void initState() {
@@ -96,7 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
         'cycle_length': cycleLength ?? 0,
         'last_period_date': lastPeriodDate ?? '',
         'period_length': periodLength ?? 0,
-        'symptoms': ['none'],
+        'symptoms':
+            _lastLoggedSymptoms.isNotEmpty ? _lastLoggedSymptoms : ['none'],
       };
 
       debugPrint('Sending POST to /insights/insights with body: $body');
@@ -706,11 +725,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 280,
                       height: buttonHeight,
                       child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedIndex = 2; // Navigate to Calendar tab
-                          });
-                        },
+                        onPressed: _openLogSymptomScreen,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFA8D497),
                           foregroundColor: const Color(0xFF2E683D),
