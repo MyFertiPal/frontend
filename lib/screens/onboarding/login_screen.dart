@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'forget_password_flow.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../providers/language_provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_error_helper.dart';
-import '../../services/health_check_service.dart';
 import '../../services/api_service.dart';
 import 'profile_setup_screen.dart';
 
@@ -44,9 +44,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 30),
 
                   // Login Title
-                  const Text(
-                    'Login',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.login,
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Email Field
                   _buildInputField(
-                    label: 'Email',
+                    label: AppLocalizations.of(context)!.email,
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Password Field
                   _buildInputField(
-                    label: 'Password',
+                    label: AppLocalizations.of(context)!.password,
                     controller: _passwordController,
                     isPassword: true,
                     showPassword: _showPassword,
@@ -81,11 +81,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Forget Password
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushReplacementNamed('/forgot-password');
+                      Navigator.of(context)
+                          .pushReplacementNamed('/forgot-password');
                     },
-                    child: const Text(
-                      'Forget Password.',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.forgetPassword,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
@@ -117,12 +118,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 24,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(
+                          : Text(
+                              AppLocalizations.of(context)!.login,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
                                 fontFamily: 'Poppins',
@@ -137,9 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Don\'t have an account? ',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.dontHaveAccount,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
@@ -148,11 +150,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushReplacementNamed('/register');
+                          Navigator.of(context)
+                              .pushReplacementNamed('/register');
                         },
-                        child: const Text(
-                          'Register',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.register,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Poppins',
@@ -201,9 +204,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Sign In with Google',
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!.signInWithGoogle,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',
@@ -253,9 +256,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Sign In with Facebook',
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!.signInWithFacebook,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',
@@ -356,9 +359,9 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       // Health check disabled - using fertipath-fastapi directly
       // await HealthCheckService.wakeUpBackend();
-      
+
       final authService = Provider.of<AuthService>(context, listen: false);
-      
+
       // Users enter their email address for login
       await authService.signIn(
         _emailController.text.trim(),
@@ -370,18 +373,32 @@ class _LoginScreenState extends State<LoginScreen> {
         try {
           final apiService = ApiService();
           final profileJson = await apiService.getProfile();
-          
+          // Sync local language preference to backend after successful login
+          final languageProvider =
+              Provider.of<LanguageProvider>(context, listen: false);
+          final currentLanguage = languageProvider.locale.languageCode;
+          try {
+            await apiService.updateLanguagePreference(currentLanguage);
+            debugPrint(
+                'Synced language preference to backend: $currentLanguage');
+          } catch (e) {
+            debugPrint('Failed to sync language preference: $e');
+            // Non-critical error, continue with login flow
+          }
+
           // Profile is complete if it has profile-specific fields
           final isProfileComplete = profileJson.containsKey('age') ||
-            profileJson.containsKey('cycle_length') ||
-            profileJson.containsKey('period_length') ||
-            profileJson.containsKey('audio_preference');
-          
-          debugPrint('Login - Profile complete: $isProfileComplete, keys: ${profileJson.keys}');
-          
+              profileJson.containsKey('cycle_length') ||
+              profileJson.containsKey('period_length') ||
+              profileJson.containsKey('audio_preference');
+
+          debugPrint(
+              'Login - Profile complete: $isProfileComplete, keys: ${profileJson.keys}');
+
           if (isProfileComplete) {
             // Profile is already set up, go to home
-            Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/home', (route) => false);
           } else {
             // Profile not set up, show profile setup screen
             Navigator.of(context).pushReplacement(
@@ -393,7 +410,8 @@ class _LoginScreenState extends State<LoginScreen> {
         } catch (e) {
           debugPrint('Error checking profile during login: $e');
           // If profile check fails, still go to home (user is logged in)
-          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/home', (route) => false);
         }
       }
     } catch (e) {

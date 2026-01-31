@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../generated/l10n/app_localizations.dart';
 import '../widgets/swipeable_green_calendar.dart';
 import '../widgets/reminder_panel.dart';
 import 'tracking/log_symptom_screen.dart';
@@ -70,12 +71,11 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     if (savedDays != null && savedDays.isNotEmpty) {
       setState(() {
         _selectedCalendarDaysFormatted = savedDays.toSet();
-        _selectedCalendarDays = savedDays
-            .map((s) => DateTime.parse(s))
-            .toSet();
+        _selectedCalendarDays = savedDays.map((s) => DateTime.parse(s)).toSet();
         // Update last period date
         if (_selectedCalendarDays.isNotEmpty) {
-          final latest = _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
+          final latest =
+              _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
           _lastPeriodDate = DateFormat('yyyy-MM-dd').format(latest);
         } else {
           _lastPeriodDate = null;
@@ -100,28 +100,33 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         if (data is List && data.isNotEmpty) {
           final latestCycle = data.last;
           debugPrint('Latest cycle: $latestCycle');
-          if (latestCycle['fertile_period_start'] != null && latestCycle['fertile_period_end'] != null) {
-            _setFertileWindow(latestCycle['fertile_period_start'], latestCycle['fertile_period_end']);
+          if (latestCycle['fertile_period_start'] != null &&
+              latestCycle['fertile_period_end'] != null) {
+            _setFertileWindow(latestCycle['fertile_period_start'],
+                latestCycle['fertile_period_end']);
           }
-          if (latestCycle['next_period'] != null && latestCycle['period_length'] != null) {
+          if (latestCycle['next_period'] != null &&
+              latestCycle['period_length'] != null) {
             final nextPeriodStart = DateTime.parse(latestCycle['next_period']);
             final periodLength = latestCycle['period_length'];
-            final nextPeriodDays = List<DateTime>.generate(periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
+            final nextPeriodDays = List<DateTime>.generate(
+                periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
             setState(() {
               _nextPeriodDays = nextPeriodDays.toSet();
               _selectedCalendarDays = {..._selectedCalendarDays};
               _selectedCalendarDaysFormatted = _selectedCalendarDays
-                .map((d) => DateFormat('yyyy-MM-dd').format(d))
-                .toSet();
+                  .map((d) => DateFormat('yyyy-MM-dd').format(d))
+                  .toSet();
             });
             final prefs = await SharedPreferences.getInstance();
-            await prefs.setStringList('tapped_days', _selectedCalendarDaysFormatted.toList());
+            await prefs.setStringList(
+                'tapped_days', _selectedCalendarDaysFormatted.toList());
           }
           if (latestCycle['symptoms'] != null) {
             debugPrint('Symptoms found: ${latestCycle['symptoms']}');
             setState(() {
               _loggedSymptoms = List<String>.from(latestCycle['symptoms']);
-                          _isSymptomsLoading = false;
+              _isSymptomsLoading = false;
             });
           } else {
             debugPrint('No symptoms found in latest cycle.');
@@ -131,28 +136,32 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           }
         } else if (data is Map) {
           debugPrint('Data is a Map: $data');
-          if (data['fertile_period_start'] != null && data['fertile_period_end'] != null) {
-            _setFertileWindow(data['fertile_period_start'], data['fertile_period_end']);
+          if (data['fertile_period_start'] != null &&
+              data['fertile_period_end'] != null) {
+            _setFertileWindow(
+                data['fertile_period_start'], data['fertile_period_end']);
           }
           if (data['next_period'] != null && data['period_length'] != null) {
             final nextPeriodStart = DateTime.parse(data['next_period']);
             final periodLength = data['period_length'];
-            final nextPeriodDays = List<DateTime>.generate(periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
+            final nextPeriodDays = List<DateTime>.generate(
+                periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
             setState(() {
               _nextPeriodDays = nextPeriodDays.toSet();
               _selectedCalendarDays = {..._selectedCalendarDays};
               _selectedCalendarDaysFormatted = _selectedCalendarDays
-                .map((d) => DateFormat('yyyy-MM-dd').format(d))
-                .toSet();
+                  .map((d) => DateFormat('yyyy-MM-dd').format(d))
+                  .toSet();
             });
             final prefs = await SharedPreferences.getInstance();
-            await prefs.setStringList('tapped_days', _selectedCalendarDaysFormatted.toList());
+            await prefs.setStringList(
+                'tapped_days', _selectedCalendarDaysFormatted.toList());
           }
           if (data['symptoms'] != null) {
             debugPrint('Symptoms found: ${data['symptoms']}');
             setState(() {
               _loggedSymptoms = List<String>.from(data['symptoms']);
-                          _isSymptomsLoading = false;
+              _isSymptomsLoading = false;
             });
           } else {
             debugPrint('No symptoms found in data map.');
@@ -167,12 +176,12 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         debugPrint('Non-200 response, setting _loggedSymptoms to empty.');
         setState(() {
           _loggedSymptoms = [];
-                  _isSymptomsLoading = false;
+          _isSymptomsLoading = false;
         });
       }
     } catch (e) {
       debugPrint('Exception in _fetchLoggedSymptoms: $e');
-        _isSymptomsLoading = false;
+      _isSymptomsLoading = false;
       setState(() {
         _loggedSymptoms = [];
       });
@@ -180,7 +189,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 
   // Calculate period days from last period date and period length
-  void _markPeriodDays({required String lastPeriodDate, required int periodLength}) {
+  void _markPeriodDays(
+      {required String lastPeriodDate, required int periodLength}) {
     try {
       final startDate = DateTime.parse(lastPeriodDate);
       final periodDays = List<DateTime>.generate(
@@ -189,9 +199,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       );
       setState(() {
         _selectedCalendarDays = periodDays.toSet();
-        _selectedCalendarDaysFormatted = periodDays
-          .map((d) => DateFormat('yyyy-MM-dd').format(d))
-          .toSet();
+        _selectedCalendarDaysFormatted =
+            periodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).toSet();
       });
     } catch (e) {
       // Handle parse error or invalid input
@@ -229,7 +238,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
 
   @override
   void dispose() {
-      widget.refreshNotifier?.removeListener(_handleRefreshRequest);
+    widget.refreshNotifier?.removeListener(_handleRefreshRequest);
     _calendarScrollController.removeListener(_onCalendarScroll);
     _calendarScrollController.dispose();
     super.dispose();
@@ -254,8 +263,9 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     final normalized = DateTime(date.year, date.month, date.day);
     setState(() {
       if (_selectedCalendarDays.any((d) => _isSameDay(d, normalized))) {
-        _selectedCalendarDays =
-            _selectedCalendarDays.where((d) => !_isSameDay(d, normalized)).toSet();
+        _selectedCalendarDays = _selectedCalendarDays
+            .where((d) => !_isSameDay(d, normalized))
+            .toSet();
       } else {
         _selectedCalendarDays = {..._selectedCalendarDays, normalized};
       }
@@ -267,7 +277,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       // regardless of order or grouping. This ensures that if the user taps
       // 2 Jan and 5 Jan, the last period date is 5 Jan.
       if (_selectedCalendarDays.isNotEmpty) {
-        final latest = _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
+        final latest =
+            _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
         _lastPeriodDate = DateFormat('yyyy-MM-dd').format(latest);
       } else {
         _lastPeriodDate = null;
@@ -275,48 +286,58 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     });
     // Save tapped days
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('tapped_days', _selectedCalendarDaysFormatted.toList());
+    await prefs.setStringList(
+        'tapped_days', _selectedCalendarDaysFormatted.toList());
 
-      // Now perform the profile update (async, outside setState)
-      if (_selectedCalendarDays.isNotEmpty) {
-        try {
-          final api = ApiService();
-          final profileJson = await api.getProfile();
-          final userData = profileJson['data'] ?? profileJson;
-          // Retain all required fields, update only lastPeriodDate
-          final int? cycleLength = userData['cycle_length'] ?? userData['cycleLength'];
-          final int? periodLength = userData['period_length'] ?? userData['periodLength'];
-          final int? age = userData['age'];
-          final String? ttcHistory = userData['ttc_history'] ?? userData['ttcHistory'];
-          final String? faithPreference = userData['faith_preference'] ?? userData['faithPreference'];
-          final bool? audioPreference = userData['audio_preference'];
-          
-          // Calculate next period days based on last period date and cycle length
-          if (_lastPeriodDate != null && cycleLength != null && periodLength != null) {
-            final lastPeriod = DateTime.parse(_lastPeriodDate!);
-            final nextPeriodStart = lastPeriod.add(Duration(days: cycleLength));
-            final nextPeriodDaysList = List<DateTime>.generate(
-              periodLength,
-              (i) => DateTime(nextPeriodStart.year, nextPeriodStart.month, nextPeriodStart.day + i),
-            );
-            setState(() {
-              _nextPeriodDays = nextPeriodDaysList.toSet();
-            });
-            debugPrint('Calculated next period: ${_nextPeriodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).join(', ')}');
-          }
-          
-          await api.updateProfile(
-            age: age,
-            cycleLength: cycleLength,
-            lastPeriodDate: _lastPeriodDate,
-            ttcHistory: ttcHistory,
-            faithPreference: faithPreference,
-            audioPreference: audioPreference,
+    // Now perform the profile update (async, outside setState)
+    if (_selectedCalendarDays.isNotEmpty) {
+      try {
+        final api = ApiService();
+        final profileJson = await api.getProfile();
+        final userData = profileJson['data'] ?? profileJson;
+        // Retain all required fields, update only lastPeriodDate
+        final int? cycleLength =
+            userData['cycle_length'] ?? userData['cycleLength'];
+        final int? periodLength =
+            userData['period_length'] ?? userData['periodLength'];
+        final int? age = userData['age'];
+        final String? ttcHistory =
+            userData['ttc_history'] ?? userData['ttcHistory'];
+        final String? faithPreference =
+            userData['faith_preference'] ?? userData['faithPreference'];
+        final bool? audioPreference = userData['audio_preference'];
+
+        // Calculate next period days based on last period date and cycle length
+        if (_lastPeriodDate != null &&
+            cycleLength != null &&
+            periodLength != null) {
+          final lastPeriod = DateTime.parse(_lastPeriodDate!);
+          final nextPeriodStart = lastPeriod.add(Duration(days: cycleLength));
+          final nextPeriodDaysList = List<DateTime>.generate(
+            periodLength,
+            (i) => DateTime(nextPeriodStart.year, nextPeriodStart.month,
+                nextPeriodStart.day + i),
           );
-        } catch (e) {
-          debugPrint('Failed to sync last period date to profile: ${e.toString()}');
+          setState(() {
+            _nextPeriodDays = nextPeriodDaysList.toSet();
+          });
+          debugPrint(
+              'Calculated next period: ${_nextPeriodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).join(', ')}');
         }
+
+        await api.updateProfile(
+          age: age,
+          cycleLength: cycleLength,
+          lastPeriodDate: _lastPeriodDate,
+          ttcHistory: ttcHistory,
+          faithPreference: faithPreference,
+          audioPreference: audioPreference,
+        );
+      } catch (e) {
+        debugPrint(
+            'Failed to sync last period date to profile: ${e.toString()}');
       }
+    }
   }
 
   bool _isSameDay(DateTime a, DateTime b) =>
@@ -333,7 +354,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
               top: 10,
               left: 10,
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                icon:
+                    const Icon(Icons.arrow_back, color: Colors.white, size: 28),
                 onPressed: () => Navigator.of(context).pop(),
                 tooltip: 'Back to Home',
               ),
@@ -348,7 +370,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                   child: SingleChildScrollView(
                     physics: const NeverScrollableScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
+                      padding: const EdgeInsets.only(
+                          left: 15, right: 15, top: 20, bottom: 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -366,11 +389,13 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                           ] else ...[
                             const SizedBox(height: 8),
                             GestureDetector(
-                              onTap: () => setState(() => _isCalendarCollapsed = false),
+                              onTap: () =>
+                                  setState(() => _isCalendarCollapsed = false),
                               child: Row(
                                 children: [
                                   Text(
-                                    DateFormat('MMMM yyyy').format(DateTime.now()),
+                                    DateFormat('MMMM yyyy')
+                                        .format(DateTime.now()),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -378,7 +403,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  const Icon(Icons.expand_more, color: Colors.white, size: 20),
+                                  const Icon(Icons.expand_more,
+                                      color: Colors.white, size: 20),
                                 ],
                               ),
                             ),
@@ -408,7 +434,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                       onRefresh: _fetchLoggedSymptoms,
                       child: SingleChildScrollView(
                         controller: _calendarScrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -417,9 +444,9 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                               ReminderPanel(reminderService: _reminderService),
                             Row(
                               children: [
-                                const Text(
-                                  'Logged Symptoms',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)!.loggedSymptoms,
+                                  style: const TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
@@ -429,10 +456,11 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                                 const Spacer(),
                                 TextButton.icon(
                                   onPressed: _clearCalendarDays,
-                                  icon: const Icon(Icons.delete_outline, color: Color(0xFF2E683D)),
-                                  label: const Text(
-                                    'Clear',
-                                    style: TextStyle(
+                                  icon: const Icon(Icons.delete_outline,
+                                      color: Color(0xFF2E683D)),
+                                  label: Text(
+                                    AppLocalizations.of(context)!.clear,
+                                    style: const TextStyle(
                                       color: Color(0xFF2E683D),
                                       fontWeight: FontWeight.w600,
                                       fontFamily: 'Poppins',
@@ -451,7 +479,10 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                               )
                             else ...[
                               if (_loggedSymptoms.isEmpty)
-                                const Text('No symptoms logged yet.', style: TextStyle(color: Colors.grey)),
+                                Text(
+                                    AppLocalizations.of(context)!
+                                        .noSymptomsLogged,
+                                    style: const TextStyle(color: Colors.grey)),
                               if (_loggedSymptoms.isNotEmpty)
                                 ..._loggedSymptoms.map(
                                   (symptom) => _buildLoggedSymptomItem(
@@ -502,7 +533,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     );
   }
 
-  Widget _buildLoggedSymptomItem(String symptom, IconData icon, Color iconColor) {
+  Widget _buildLoggedSymptomItem(
+      String symptom, IconData icon, Color iconColor) {
     String displaySymptom = symptom;
     String sendSymptom = symptom;
     if (symptom.contains(':')) {
@@ -564,8 +596,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Calendar and next period days cleared.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.calendarCleared),
             backgroundColor: Colors.green,
           ),
         );
@@ -575,7 +607,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to clear calendar days: $e'),
+            content: Text(
+                '${AppLocalizations.of(context)!.failedToClearCalendar}: $e'),
             backgroundColor: Colors.red,
           ),
         );

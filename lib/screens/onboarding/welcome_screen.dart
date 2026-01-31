@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexus_fertility_app/generated/l10n/app_localizations.dart';
 import 'language_selection_screen.dart';
 import 'login_screen.dart';
 
@@ -22,9 +23,9 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 32),
 
                 // Welcome Text
-                const Text(
-                  'Welcome to Your Journey',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.welcome,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF2E683D),
@@ -54,9 +55,9 @@ class WelcomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Create Your Account',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.createAccount,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
@@ -85,9 +86,9 @@ class WelcomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Log In',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.login,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
@@ -112,7 +113,7 @@ class _ProfileIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     const color = Color(0xFF2E683D);
     const headSize = 80.0;
-    
+
     return SizedBox(
       width: 200,
       height: headSize + 40,
@@ -163,7 +164,7 @@ class _ProfileIcon extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Head and body outline (positioned to the right)
           Positioned(
             right: 0,
@@ -199,25 +200,25 @@ class _ProfileIcon extends StatelessWidget {
 // Custom painter for body outline
 class _BodyPainter extends CustomPainter {
   final Color color;
-  
+
   _BodyPainter({required this.color});
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
-    
+
     final path = Path()
       ..moveTo(size.width * 0.2, 0)
       ..lineTo(0, size.height)
       ..lineTo(size.width, size.height)
       ..lineTo(size.width * 0.8, 0);
-    
+
     canvas.drawPath(path, paint);
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

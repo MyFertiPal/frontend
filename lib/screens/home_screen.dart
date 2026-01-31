@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
@@ -196,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildProfileCard(user),
                           const SizedBox(height: 20),
                           _buildMenuItem(
-                            label: 'Profile',
+                            label: AppLocalizations.of(context)!.profile,
                             icon: Icons.person_outline,
                             onTap: () async {
                               _toggleSideMenu();
@@ -212,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                           _buildMenuItem(
-                            label: 'Support',
+                            label: AppLocalizations.of(context)!.support,
                             icon: Icons.help_outline,
                             onTap: () {
                               _toggleSideMenu();
@@ -220,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                           _buildMenuItem(
-                            label: 'How to Use',
+                            label: AppLocalizations.of(context)!.help,
                             icon: Icons.menu_book_outlined,
                             onTap: () {
                               _toggleSideMenu();
@@ -233,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const Spacer(),
                           _buildMenuItem(
-                            label: 'Log out',
+                            label: AppLocalizations.of(context)!.logOut,
                             icon: Icons.logout,
                             iconColor: Colors.grey.shade600,
                             textColor: Colors.grey.shade700,
@@ -270,19 +271,26 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.home),
-            label: _selectedIndex == 0 ? 'Home' : '',
+            label:
+                _selectedIndex == 0 ? AppLocalizations.of(context)!.home : '',
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.school),
-            label: _selectedIndex == 1 ? 'Learn' : '',
+            label: _selectedIndex == 1
+                ? AppLocalizations.of(context)!.educational
+                : '',
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.timeline),
-            label: _selectedIndex == 2 ? 'Track' : '',
+            label: _selectedIndex == 2
+                ? AppLocalizations.of(context)!.trackCycle
+                : '',
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.support_agent),
-            label: _selectedIndex == 3 ? 'Support' : '',
+            label: _selectedIndex == 3
+                ? AppLocalizations.of(context)!.support
+                : '',
           ),
         ],
       ),
@@ -650,9 +658,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    "Today's Fertility Insight",
-                                    style: TextStyle(
+                                  Text(
+                                    AppLocalizations.of(context)!.fertileWindow,
+                                    style: const TextStyle(
                                       fontSize: 28,
                                       color: Color(0xFFA8D497),
                                       fontFamily: 'Poppins',
@@ -703,12 +711,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.water_drop, color: Color(0xFF2E683D)),
-                            SizedBox(width: 12),
+                          children: [
+                            const Icon(Icons.water_drop,
+                                color: Color(0xFF2E683D)),
+                            const SizedBox(width: 12),
                             Text(
-                              'Log symptoms',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.logSymptoms,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
@@ -739,9 +748,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Cycle Summary',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.cycleInfo,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF2E683D),
@@ -773,19 +782,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
+                                  children: [
                                     Text(
-                                      'Fertility Status',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!
+                                          .fertileWindow,
+                                      style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                         color: Colors.black54,
                                       ),
                                     ),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text(
-                                      '🌟 You\'re in your fertile window now!',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!
+                                          .inFertileWindow,
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                         color: Color(0xFF2E683D),
@@ -823,9 +834,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Fertility Countdown',
-                                      style: TextStyle(
+                                    Text(
+                                      AppLocalizations.of(context)!
+                                          .fertileWindow,
+                                      style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                         color: Colors.black54,
@@ -873,7 +885,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Fertility Countdown',
+                                      AppLocalizations.of(context)!
+                                          .fertilityCountdown,
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
@@ -882,7 +895,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Log your cycle to see countdown',
+                                      AppLocalizations.of(context)!.logCycleSee,
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -897,7 +910,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     _buildSummaryRow(
-                      'Fertile Window',
+                      AppLocalizations.of(context)!.fertileWindow,
                       _insightData!['fertile_period_start'] != null &&
                               _insightData!['fertile_period_end'] != null
                           ? '${_insightData!['fertile_period_start']} - ${_insightData!['fertile_period_end']}'
@@ -905,7 +918,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const Divider(),
                     _buildSummaryRow(
-                      'Ovulation Day',
+                      AppLocalizations.of(context)!.ovulationDay,
                       _insightData!['ovulation_day']?.toString() ?? 'N/A',
                     ),
                   ],
@@ -920,7 +933,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildFeatureCard(
                   icon: Icons.calendar_today,
-                  label: 'Calendar',
+                  label: AppLocalizations.of(context)!.calendar,
                   onTap: () {
                     setState(() {
                       _selectedIndex = 2;
@@ -930,7 +943,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildFeatureCard(
                   icon: Icons.child_care,
-                  label: 'Gender\nPredictions',
+                  label: AppLocalizations.of(context)!.genderPredictions,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -949,7 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildFeatureCard(
                   icon: Icons.medical_services_outlined,
-                  label: 'Find\nSpecialist',
+                  label: AppLocalizations.of(context)!.findSpecialist,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -960,7 +973,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildFeatureCard(
                   icon: Icons.chat_bubble_outline,
-                  label: 'Chat with\nSpecialist',
+                  label: AppLocalizations.of(context)!.chatWithSpecialist,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(

@@ -18,9 +18,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Initialize API service and load stored token
-    _initializeApp();
-
     _controller = AnimationController(
       duration: const Duration(milliseconds: 2500),
       vsync: this,
@@ -42,24 +39,54 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate to welcome screen after animation completes
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) {
-            // Navigate by route name '/welcome' as requested
-            Navigator.of(context).pushReplacementNamed('/welcome');
-          }
-        });
-      }
+    // Initialize and navigate
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeAndNavigate();
     });
   }
 
+  Future<void> _initializeAndNavigate() async {
+    try {
+      // Initialize API service
+      await _initializeApp();
+
+      // Wait for animation to complete
+      await Future.delayed(const Duration(milliseconds: 2800));
+
+      if (mounted) {
+        _navigateToWelcome();
+      }
+    } catch (e) {
+      debugPrint('Error during init: $e');
+      if (mounted) {
+        _navigateToWelcome();
+      }
+    }
+  }
+
+  void _navigateToWelcome() {
+    if (!mounted) return;
+    try {
+      Navigator.of(context).pushReplacementNamed('/welcome');
+    } catch (e) {
+      debugPrint('Route navigation failed: $e, using direct navigation');
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+        );
+      }
+    }
+  }
+
   Future<void> _initializeApp() async {
-    // Initialize API service - this loads the token from SharedPreferences
-    final apiService = ApiService();
-    final token = await apiService.getStoredToken();
-    debugPrint('App initialized. Token available: ${token != null}');
+    try {
+      // Initialize API service - this loads the token from SharedPreferences
+      final apiService = ApiService();
+      final token = await apiService.getStoredToken();
+      debugPrint('App initialized. Token available: ${token != null}');
+    } catch (e) {
+      debugPrint('Error initializing app: $e');
+    }
   }
 
   @override

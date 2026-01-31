@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../community/community_groups_screen.dart';
 import '../community/create_group_screen.dart';
@@ -15,8 +16,7 @@ class SupportScreen extends StatefulWidget {
 
 class _SupportScreenState extends State<SupportScreen> {
   int _selectedIndex = 3;
-  String _currentAffirmation =
-      "Every challenge is an opportunity to grow stronger and wiser.";
+  String _currentAffirmation = "";
   List<String> _affirmations = [];
   String _faith = 'neutral';
   bool _loadingAffirmations = true;
@@ -27,30 +27,33 @@ class _SupportScreenState extends State<SupportScreen> {
   Duration _audioDuration = Duration.zero;
   Duration _audioPosition = Duration.zero;
 
-  final Map<String, List<String>> _faithAffirmations = {
-    'christian': [
-      '"I can do all things through Christ who strengthens me."\n- Philippians 4:13',
-      '"For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future."\n- Jeremiah 29:11',
-      '"The Lord is my shepherd; I shall not want."\n- Psalm 23:1',
-    ],
-    'muslim': [
-      '"So verily, with the hardship, there is relief."\n- Quran 94:6',
-      '"And He found you lost and guided [you]."\n- Quran 93:7',
-      '"Indeed, Allah is with the patient."\n- Quran 2:153',
-    ],
-    'traditionalist': [
-      'Your ancestors walked through storms and found their way. You carry their strength within you.',
-      'The earth provides in its own time. Trust the natural rhythm of life and your body.',
-      'Community and family are your pillars. Draw strength from those who love you and walk beside you.',
-      'Like the baobab tree that bends but does not break, you are resilient through every season.',
-      'The river flows around obstacles, not through them. Allow yourself grace and patience on this journey.',
-    ],
-    'neutral': [
-      'You are resilient and capable of overcoming any challenge.',
-      'Every day is a new beginning. Embrace it with hope and courage.',
-      'You are enough, just as you are. Believe in your journey.',
-    ],
-  };
+  Map<String, List<String>> get _faithAffirmations {
+    final l10n = AppLocalizations.of(context);
+    return {
+      'christian': [
+        l10n.christianAffirmation1,
+        l10n.christianAffirmation2,
+        l10n.christianAffirmation3,
+      ],
+      'muslim': [
+        l10n.muslimAffirmation1,
+        l10n.muslimAffirmation2,
+        l10n.muslimAffirmation3,
+      ],
+      'traditionalist': [
+        l10n.traditionalistAffirmation1,
+        l10n.traditionalistAffirmation2,
+        l10n.traditionalistAffirmation3,
+        l10n.traditionalistAffirmation4,
+        l10n.traditionalistAffirmation5,
+      ],
+      'neutral': [
+        l10n.neutralAffirmation1,
+        l10n.neutralAffirmation2,
+        l10n.neutralAffirmation3,
+      ],
+    };
+  }
 
   @override
   void initState() {
@@ -127,6 +130,8 @@ class _SupportScreenState extends State<SupportScreen> {
     } else {
       // Load and play audio - using encouragement audio from assets
       try {
+        // Set streaming mode for responsive playback
+        await _audioPlayer.setPlayerMode(PlayerMode.mediaPlayer);
         await _audioPlayer.play(AssetSource('audio/encouragement.wav'));
       } catch (e) {
         debugPrint('Audio play failed: $e');
@@ -173,20 +178,20 @@ class _SupportScreenState extends State<SupportScreen> {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'Support hub',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.supportHub,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Mental health support and daily affirmations',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.supportHubSubtitle,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -226,15 +231,16 @@ class _SupportScreenState extends State<SupportScreen> {
                               // Top row: spark icon, text, refresh button
                               Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.flash_on,
-                                    color: const Color(0xFF2E683D),
+                                    color: Color(0xFF2E683D),
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
-                                  const Text(
-                                    'Daily affirmation',
-                                    style: TextStyle(
+                                  Text(
+                                    AppLocalizations.of(context)!
+                                        .dailyAffirmation,
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: Color(0xFF2E683D),
@@ -323,9 +329,9 @@ class _SupportScreenState extends State<SupportScreen> {
                               size: 20,
                             ),
                             const SizedBox(width: 8),
-                            const Text(
-                              'Audio encouragement',
-                              style: TextStyle(
+                            Text(
+                              AppLocalizations.of(context)!.audioEncouragement,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,
@@ -355,9 +361,9 @@ class _SupportScreenState extends State<SupportScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    'My Sister, Hold your Head High',
-                                    style: TextStyle(
+                                  Text(
+                                    AppLocalizations.of(context)!.audioTitle,
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.black,
@@ -421,9 +427,9 @@ class _SupportScreenState extends State<SupportScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Cultural Guidance',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.culturalGuidance,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -448,7 +454,8 @@ class _SupportScreenState extends State<SupportScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Coping with family pressure and finding peace in community support. Explore recommended readings and groups.',
+                              AppLocalizations.of(context)!
+                                  .culturalGuidanceDescription,
                               style: TextStyle(color: Colors.grey.shade700),
                             ),
                           ),
@@ -472,9 +479,9 @@ class _SupportScreenState extends State<SupportScreen> {
                         size: 24,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Community groups',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.communityGroups,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
@@ -506,9 +513,9 @@ class _SupportScreenState extends State<SupportScreen> {
                                 size: 16,
                               ),
                               const SizedBox(width: 4),
-                              const Text(
-                                'Create',
-                                style: TextStyle(
+                              Text(
+                                AppLocalizations.of(context)!.create,
+                                style: const TextStyle(
                                   color: Color(0xFF2E683D),
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -539,9 +546,9 @@ class _SupportScreenState extends State<SupportScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Group name
-                              const Text(
-                                'Fertility Circle',
-                                style: TextStyle(
+                              Text(
+                                AppLocalizations.of(context)!.fertilityCircle,
+                                style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black,
@@ -559,9 +566,10 @@ class _SupportScreenState extends State<SupportScreen> {
                                       color: const Color(0xFFA8D497),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: const Text(
-                                      'General Support',
-                                      style: TextStyle(
+                                    child: Text(
+                                      AppLocalizations.of(context)!
+                                          .generalSupport,
+                                      style: const TextStyle(
                                         color: Color(0xFF2E683D),
                                         fontWeight: FontWeight.w600,
                                         fontSize: 11,
@@ -571,7 +579,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    '24 members',
+                                    '24 ${AppLocalizations.of(context)!.members}',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w500,
@@ -584,7 +592,7 @@ class _SupportScreenState extends State<SupportScreen> {
                               const SizedBox(height: 8),
                               // Latest message
                               Text(
-                                'Sarah: Thank you all for the support!',
+                                AppLocalizations.of(context)!.latestMessage,
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
@@ -601,8 +609,9 @@ class _SupportScreenState extends State<SupportScreen> {
                         GestureDetector(
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Group chat coming soon')),
+                              SnackBar(
+                                  content: Text(AppLocalizations.of(context)!
+                                      .groupChatComingSoon)),
                             );
                           },
                           child: const Icon(
@@ -625,7 +634,8 @@ class _SupportScreenState extends State<SupportScreen> {
                           ),
                         );
                       },
-                      child: const Text('Explore Community Groups'),
+                      child: Text(
+                          AppLocalizations.of(context)!.exploreCommunityGroups),
                     ),
                   ),
                 ],

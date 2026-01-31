@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class PasswordUpdatedScreen extends StatelessWidget {
   const PasswordUpdatedScreen({super.key});
@@ -15,9 +15,9 @@ class PasswordUpdatedScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Password Updated',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.passwordUpdated,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',
@@ -32,9 +32,9 @@ class PasswordUpdatedScreen extends StatelessWidget {
                   color: Color(0xFF2E683D),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Your password has been successfully updated. You can now log in with your new credentials.',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.passwordSuccessfully,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontFamily: 'Poppins',
@@ -58,9 +58,9 @@ class PasswordUpdatedScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5),
                       ),
                     ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.login,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'Poppins',

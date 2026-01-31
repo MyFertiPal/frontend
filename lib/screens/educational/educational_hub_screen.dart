@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
+
+import '../../generated/l10n/app_localizations.dart';
 import '../../theme.dart';
 import 'article_reading_screen.dart';
 
@@ -12,13 +13,62 @@ class EducationalHubScreen extends StatefulWidget {
 }
 
 class _EducationalHubScreenState extends State<EducationalHubScreen> {
-  String selectedCategory = 'Fertility Basics';
+  String selectedCategory = '';
   late AudioPlayer _audioPlayer;
+
+  List<Map<String, String>> get allArticles {
+    final l10n = AppLocalizations.of(context);
+    return [
+      {
+        'category': l10n.fertilityBasics,
+        'title': l10n.article1Title,
+        'excerpt': l10n.article1Excerpt,
+        'image': 'assets/images/article_1.jpeg',
+        'audioUrl': 'audio/article_1.mp3',
+        'content': l10n.article1Content,
+      },
+      {
+        'category': l10n.fertilityBasics,
+        'title': l10n.article2Title,
+        'excerpt': l10n.article2Excerpt,
+        'image': 'assets/images/article_2.jpeg',
+        'audioUrl': 'audio/article_2.mp3',
+        'content': l10n.article2Content,
+      },
+      {
+        'category': l10n.mythsFacts,
+        'title': l10n.article3Title,
+        'excerpt': l10n.article3Excerpt,
+        'image': 'assets/images/article_3.jpeg',
+        'audioUrl': 'audio/article_3.mp3',
+        'content': l10n.article3Content,
+      },
+    ];
+  }
+
+  List<String> get categories {
+    final l10n = AppLocalizations.of(context);
+    return [
+      l10n.fertilityBasics,
+      l10n.mythsFacts,
+    ];
+  }
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final updatedCategories = categories;
+    if (updatedCategories.isNotEmpty &&
+        (selectedCategory.isEmpty ||
+            !updatedCategories.contains(selectedCategory))) {
+      selectedCategory = updatedCategories.first;
+    }
   }
 
   @override
@@ -43,83 +93,6 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
       _audioPlayer.stop();
     });
   }
-
-  final List<Map<String, String>> allArticles = [
-    {
-      'category': 'Fertility Basics',
-      'title': 'How Pregnancy Happens: A Simple Guide to Conception',
-      'excerpt':
-          'Conception happens when sperm fertilizes an egg and the embryo implants. Learn when the fertile window opens and how health, timing, and patience support TTC.',
-      'image': 'assets/images/article_1.jpeg',
-      'audioUrl': 'audio/article_1.mp3',
-      'content':
-          '''Getting pregnant happens when a sperm fertilizes an egg and the fertilized egg successfully implants in the uterus. Understanding this helps improve your chances.
-
-Understanding the fertile window
-You are most likely to conceive during the fertile window: the days leading up to and including ovulation (about 14 days before the next period in a regular cycle). Because sperm can live in the body for several days, pregnancy can happen if sperm is present during this time.
-
-Healthy body, better chances
-Good overall health supports conception. Eat balanced meals, stay hydrated, manage stress, sleep well, and avoid smoking and alcohol. Maintaining a healthy weight matters, since being underweight or overweight can affect ovulation.
-
-Tracking ovulation
-- Monitoring menstrual cycles (this is included in the Fertilpath app)
-- Watching for changes in cervical mucus
-- Using ovulation predictor kits
-
-These tools help you know your most fertile days.
-
-Medical checkups matter
-Before trying to conceive, see a healthcare provider. They can advise on prenatal vitamins like folic acid, review any health conditions, and guide you toward a healthy pregnancy.
-
-Patience is normal
-Even with perfect timing, it can take months to conceive. That is normal and does not always mean something is wrong. Consider seeing a doctor if you have tried for 12 months (or sooner if over 35).''',
-    },
-    {
-      'category': 'Fertility Basics',
-      'title': 'How Long Does Ovulation Last?',
-      'excerpt':
-          'Ovulation is brief (12-24 hours), but sperm can live up to five days. Knowing this window helps plan or prevent pregnancy.',
-      'image': 'assets/images/article_2.jpeg',
-      'audioUrl': 'audio/article_2.mp3',
-      'content':
-          '''Ovulation is when an ovary releases a mature egg. The egg lives about 12 to 24 hours, and can be fertilized only in that short time.
-
-The fertile window
-Even though ovulation is brief, sperm can survive in the reproductive tract for up to five days. Pregnancy can happen if sperm are present in the days before ovulation or on the ovulation day itself.
-
-When ovulation occurs
-In a regular cycle, ovulation is roughly 14 days before the next period, but timing varies by person and by cycle.
-
-Signs of ovulation
-Some people notice mild lower abdominal discomfort or changes in cervical mucus around ovulation. These clues can help identify fertile days, but they differ for everyone.
-
-Why it matters
-Knowing how long ovulation lasts and how long sperm survive can guide timing for conception, family planning, or simply understanding your body.''',
-    },
-    {
-      'category': 'Myths & Facts',
-      'title': 'Infertility Is Not a Curse',
-      'excerpt':
-          'In many Nigerian and African communities, pressure to conceive is heavy. Infertility is a medical challenge, not a curse or a failure.',
-      'image': 'assets/images/article_3.jpeg',
-      'audioUrl': 'audio/article_3.mp3',
-      'content':
-          '''If you are trying to conceive and it has not happened yet, remember this: infertility is not a curse or a punishment.
-
-In many Nigerian and African societies, motherhood is tightly linked to identity, and delays can bring painful pressure. Terms like "barren" or "waiting on God" can leave emotional wounds, but difficulty conceiving is a medical and biological challenge, not a spiritual verdict.
-
-Infertility has many possible causes: hormonal imbalances, infections, fibroids, blocked tubes, age, stress, or male-factor issues. Men and women are affected nearly equally, yet women often carry the blame alone.
-
-You deserve care, not shame. Seeking medical help does not mean you lack faith. Many women conceive after proper diagnosis, treatment, lifestyle changes, or assisted medical support. And even when the journey is long, your life has meaning and purpose beyond motherhood.
-
-Be kind to yourself. Protect your mental and emotional health. Surround yourself with people who support you, ask questions, seek credible medical advice, and give yourself permission to hope—without self-blame. Your body is not your enemy, and your story is not over.''',
-    },
-  ];
-
-  final List<String> categories = [
-    'Fertility Basics',
-    'Myths & Facts',
-  ];
 
   Widget _buildArticleCard(Map<String, String> article) {
     return Padding(
@@ -187,9 +160,9 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
                           ),
                         ),
                         const Spacer(),
-                        const Text(
-                          '5 mins read',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context).minsRead,
+                          style: const TextStyle(
                             color: Colors.black54,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -228,13 +201,13 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
                               color: Color(0xFF2E683D),
                             ),
                             child: Row(
-                              children: const [
-                                Icon(Icons.play_arrow,
+                              children: [
+                                const Icon(Icons.play_arrow,
                                     color: Colors.white, size: 18),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text(
-                                  'Listen',
-                                  style: TextStyle(
+                                  AppLocalizations.of(context).listen,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 14,
@@ -251,10 +224,10 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
                           decoration: const BoxDecoration(
                             color: Color(0xFFA8D497),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
-                              'English',
-                              style: TextStyle(
+                              AppLocalizations.of(context).english,
+                              style: const TextStyle(
                                 color: Color(0xFF2E683D),
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
@@ -276,16 +249,19 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
 
   @override
   Widget build(BuildContext context) {
+    final effectiveCategory = selectedCategory.isEmpty && categories.isNotEmpty
+        ? categories.first
+        : selectedCategory;
     final filteredArticles = allArticles
-        .where((article) => article['category'] == selectedCategory)
+        .where((article) => article['category'] == effectiveCategory)
         .toList();
 
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        title: const Text('Educational Hub',
-            style: TextStyle(color: Colors.white)),
+        title: Text(AppLocalizations.of(context).educationalHub,
+            style: const TextStyle(color: Colors.white)),
       ),
       body: Column(
         children: [
@@ -300,7 +276,7 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
                 borderRadius: BorderRadius.circular(8),
               ),
               child: DropdownButton<String>(
-                value: selectedCategory,
+                value: effectiveCategory.isEmpty ? null : effectiveCategory,
                 isExpanded: true,
                 underline: const SizedBox(),
                 items: categories.map((category) {
@@ -362,6 +338,8 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   double _playbackSpeed = 1.0;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -378,7 +356,12 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   void _setupAudioPlayer() {
     widget.audioPlayer.onPlayerStateChanged.listen((state) {
       if (mounted) {
-        setState(() => _isPlaying = state == PlayerState.playing);
+        setState(() {
+          _isPlaying = state == PlayerState.playing;
+          if (state == PlayerState.playing) {
+            _errorMessage = null;
+          }
+        });
       }
     });
 
@@ -396,13 +379,35 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   }
 
   Future<void> _loadAudio() async {
-    if (widget.article['audioUrl']!.isNotEmpty) {
-      try {
-        await widget.audioPlayer.setReleaseMode(ReleaseMode.stop);
-        await widget.audioPlayer.setSourceAsset(widget.article['audioUrl']!);
-        await widget.audioPlayer.setPlaybackRate(_playbackSpeed);
-      } catch (e) {
-        debugPrint('Error loading audio: $e');
+    if (widget.article['audioUrl']!.isEmpty) return;
+
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      // Use streaming mode for faster initial playback
+      await widget.audioPlayer.setReleaseMode(ReleaseMode.loop);
+      await widget.audioPlayer.setPlayerMode(PlayerMode.mediaPlayer);
+
+      // Load audio asynchronously without blocking UI
+      await widget.audioPlayer.setSourceAsset(
+        widget.article['audioUrl']!,
+      );
+
+      await widget.audioPlayer.setPlaybackRate(_playbackSpeed);
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      debugPrint('Error loading audio: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Failed to load audio. Please try again.';
+        });
       }
     }
   }
@@ -413,19 +418,34 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
         await widget.audioPlayer.pause();
       } else {
         // Load audio on first play if not loaded
-        if (_duration == Duration.zero) {
+        if (_duration == Duration.zero && !_isLoading) {
           await _loadAudio();
+        }
+        // Small delay to ensure audio is loaded
+        if (_duration == Duration.zero) {
+          await Future.delayed(const Duration(milliseconds: 500));
         }
         await widget.audioPlayer.resume();
       }
     } catch (e) {
       debugPrint('Error toggling play/pause: $e');
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Playback error. Please try again.';
+        });
+      }
     }
   }
 
   Future<void> _setSpeed(double speed) async {
-    await widget.audioPlayer.setPlaybackRate(speed);
-    setState(() => _playbackSpeed = speed);
+    try {
+      await widget.audioPlayer.setPlaybackRate(speed);
+      if (mounted) {
+        setState(() => _playbackSpeed = speed);
+      }
+    } catch (e) {
+      debugPrint('Error setting speed: $e');
+    }
   }
 
   String _formatDuration(Duration duration) {
@@ -537,14 +557,31 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                           shape: BoxShape.circle,
                           color: Color(0xFF2E683D),
                         ),
-                        child: IconButton(
-                          icon: Icon(
-                            _isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: Colors.white,
-                          ),
-                          iconSize: 32,
-                          onPressed: _togglePlayPause,
-                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                width: 56,
+                                height: 56,
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 30,
+                                    height: 30,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white.withOpacity(0.7),
+                                      ),
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : IconButton(
+                                icon: Icon(
+                                  _isPlaying ? Icons.pause : Icons.play_arrow,
+                                  color: Colors.white,
+                                ),
+                                iconSize: 32,
+                                onPressed: _togglePlayPause,
+                              ),
                       ),
                       const SizedBox(width: 16),
                       IconButton(
@@ -555,6 +592,29 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                       ),
                     ],
                   ),
+                  // Error message
+                  if (_errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          border: Border.all(color: Colors.red.shade300),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          _errorMessage!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.red.shade700,
+                          ),
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 24),
                   // Speed controls
                   Container(

@@ -2,6 +2,7 @@ import 'language_selection_screen.dart';
 import 'registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class OnboardingScreens extends StatefulWidget {
   const OnboardingScreens({super.key});
@@ -86,9 +87,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                   ),
                   GestureDetector(
                     onTap: _navigateToRegister,
-                    child: const Text(
-                      'Skip',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.skip,
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
@@ -135,18 +136,18 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
-                        'Next',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.next,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Icon(
+                      const SizedBox(width: 8),
+                      const Icon(
                         Icons.arrow_forward,
                         color: Colors.white,
                         size: 20,
@@ -207,9 +208,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             const SizedBox(height: 24),
 
             // Title
-            const Text(
-              'Track your Cycle',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.trackYourCycle,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
@@ -220,9 +221,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             const SizedBox(height: 16),
 
             // Paragraph
-            const Text(
-              'Monitor your cycle with ease and get personalised insight',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.trackYourCycleDesc,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Poppins',
@@ -272,9 +273,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             ),
             const SizedBox(height: 24),
 
-            const Text(
-              'Learn in your own language',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.learnInYourLanguage,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
@@ -284,9 +285,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             ),
             const SizedBox(height: 16),
 
-            const Text(
-              'Access fertility education and resources in the language you understand best',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.learnInYourLanguageDesc,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Poppins',
@@ -336,9 +337,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             ),
             const SizedBox(height: 24),
 
-            const Text(
-              'Feel supported',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.feelSupported,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
@@ -348,9 +349,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             ),
             const SizedBox(height: 16),
 
-            const Text(
-              'Join a caring community and get the support you need on your journey',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.feelSupportedDesc,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Poppins',

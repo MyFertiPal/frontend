@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../generated/l10n/app_localizations.dart';
+import '../../providers/language_provider.dart';
 import 'onboarding_screens.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
@@ -12,6 +14,7 @@ class LanguageSelectionScreen extends StatefulWidget {
 
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   String? _selectedCode;
+  bool _isSaving = false;
 
   List<Map<String, String>> _languages(BuildContext context) => [
         {'code': 'en', 'name': 'English'},
@@ -28,14 +31,44 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   Future<void> _handleNext(BuildContext context) async {
     if (_selectedCode == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a language')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context).pleaseSelectLanguage)),
       );
       return;
     }
-    // Language selection removed - using default
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const OnboardingScreens()),
-    );
+
+    setState(() => _isSaving = true);
+
+    try {
+      // Save language preference locally
+      final languageProvider =
+          Provider.of<LanguageProvider>(context, listen: false);
+      await languageProvider.setLanguage(_selectedCode!);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).languageSelected),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+
+        // Navigate to onboarding screens
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const OnboardingScreens()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save language: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -66,7 +99,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Select Preferred Language',
+                      AppLocalizations.of(context)!.selectPreferredLanguage,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w400,
@@ -98,7 +131,6 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              elevation: 0,
                             ),
                             child: Text(
                               lang['name']!,
@@ -121,7 +153,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                           width: 99,
                           height: 47,
                           child: ElevatedButton(
-                            onPressed: () => _handleNext(context),
+                            onPressed:
+                                _isSaving ? null : () => _handleNext(context),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFA8D497),
                               foregroundColor: const Color(0xFF224D2D),
@@ -129,15 +162,26 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              'Next',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Poppins',
-                                color: Color(0xFF224D2D),
-                              ),
-                            ),
+                            child: _isSaving
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF224D2D),
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    AppLocalizations.of(context).next,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: 'Poppins',
+                                      color: Color(0xFF224D2D),
+                                    ),
+                                  ),
                           ),
                         ),
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -9,11 +10,11 @@ class ResetPasswordScreen extends StatefulWidget {
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
   String? _error;
   String? _token;
@@ -36,18 +37,28 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Future<void> _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
     if (_token == null || _token!.isEmpty) {
-      setState(() { _error = 'Invalid or missing token.'; });
+      setState(() {
+        _error = AppLocalizations.of(context)!.invalidOrMissingToken;
+      });
       return;
     }
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      await ApiService().resetPassword(token: _token!, newPassword: _passwordController.text);
+      await ApiService()
+          .resetPassword(token: _token!, newPassword: _passwordController.text);
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/password-updated');
     } catch (e) {
-      setState(() { _error = 'Failed to reset password.'; });
+      setState(() {
+        _error = AppLocalizations.of(context)!.failedToResetPassword;
+      });
     } finally {
-      setState(() { _isLoading = false; });
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -59,7 +70,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF2E683D)),
-        title: const Text('Reset Password', style: TextStyle(color: Color(0xFF2E683D), fontWeight: FontWeight.w600)),
+        title: Text(AppLocalizations.of(context)!.resetPassword,
+            style: const TextStyle(
+                color: Color(0xFF2E683D), fontWeight: FontWeight.w600)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -76,21 +89,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 controller: _passwordController,
                 obscureText: !_passwordVisible,
                 decoration: InputDecoration(
-                  labelText: 'New Password',
+                  labelText: AppLocalizations.of(context)!.newPassword,
                   labelStyle: const TextStyle(color: Color(0xFF2E683D)),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Color(0xFF2E683D)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF2E683D), width: 2),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF2E683D), width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   fillColor: Colors.white,
                   filled: true,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      _passwordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                       color: const Color(0xFF2E683D),
                     ),
                     onPressed: () {
@@ -101,8 +117,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Enter new password';
-                  if (value.length < 6) return 'Password must be at least 6 characters';
+                  if (value == null || value.isEmpty)
+                    return AppLocalizations.of(context)!.enterNewPassword;
+                  if (value.length < 6)
+                    return AppLocalizations.of(context)!.passwordAtLeast6;
                   return null;
                 },
               ),
@@ -111,21 +129,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 controller: _confirmPasswordController,
                 obscureText: !_confirmPasswordVisible,
                 decoration: InputDecoration(
-                  labelText: 'Confirm Password',
+                  labelText: AppLocalizations.of(context)!.confirmPassword,
                   labelStyle: const TextStyle(color: Color(0xFF2E683D)),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Color(0xFF2E683D)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF2E683D), width: 2),
+                    borderSide:
+                        const BorderSide(color: Color(0xFF2E683D), width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   fillColor: Colors.white,
                   filled: true,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      _confirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                       color: const Color(0xFF2E683D),
                     ),
                     onPressed: () {
@@ -136,7 +157,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ),
                 validator: (value) {
-                  if (value != _passwordController.text) return 'Passwords do not match';
+                  if (value != _passwordController.text)
+                    return AppLocalizations.of(context)!.passwordsDoNotMatch;
                   return null;
                 },
               ),
@@ -155,7 +177,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         ),
                         onPressed: _resetPassword,
-                        child: const Text('Reset Password', style: TextStyle(fontWeight: FontWeight.w600)),
+                        child: Text(AppLocalizations.of(context)!.resetPassword,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w600)),
                       ),
                     ),
             ],

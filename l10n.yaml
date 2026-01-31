@@ -1,0 +1,14 @@
+arb-dir: lib/l10n
+template-arb-file: en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+output-dir: lib/generated/l10n
+preferred-supported-locales:
+  - en
+supported-locale-resolution-strategy: LookupByVariants
+
+# Enable nullable parameter handling
+nullable-getter: false
+
+# Enable named parameters in functions
+use-named-parameters-for-indexed-arb-parameters: true

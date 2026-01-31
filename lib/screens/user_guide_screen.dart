@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 
 class UserGuideScreen extends StatelessWidget {
   const UserGuideScreen({super.key});
@@ -11,9 +12,9 @@ class UserGuideScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF2E683D),
         foregroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'How to Use Fertipath',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.howToUseFertipath,
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
           ),
@@ -24,9 +25,9 @@ class UserGuideScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Welcome to Fertipath!',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.welcomeToFertipath,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 fontFamily: 'Poppins',
@@ -34,65 +35,64 @@ class UserGuideScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Follow these steps to get the best results from our fertility tracking features.',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.guideIntro,
+              style: const TextStyle(
                 fontSize: 14,
                 fontFamily: 'Poppins',
                 color: Colors.black87,
               ),
             ),
             const SizedBox(height: 24),
-            
             _buildGuideSection(
+              context: context,
               number: '1',
-              title: 'Complete Your Profile',
-              description: 'Go to Profile → Settings to enter your cycle length, period length, and faith preference. Accurate data helps us provide better predictions.',
+              title: AppLocalizations.of(context)!.step1Title,
+              description: AppLocalizations.of(context)!.step1Description,
               icon: Icons.person_outline,
             ),
-            
             _buildGuideSection(
+              context: context,
               number: '2',
-              title: 'Track Your Period',
-              description: 'Tap the Calendar tab and select the days you\'re on your period. This helps us predict your next cycle, fertile window, and ovulation day.',
+              title: AppLocalizations.of(context)!.step2Title,
+              description: AppLocalizations.of(context)!.step2Description,
               icon: Icons.calendar_today,
             ),
-            
             _buildGuideSection(
+              context: context,
               number: '3',
-              title: 'Log Daily Symptoms',
-              description: 'Use the "Log Symptoms" button to record mood, cervical mucus, basal body temperature, and other symptoms. This improves prediction accuracy.',
+              title: AppLocalizations.of(context)!.step3Title,
+              description: AppLocalizations.of(context)!.step3Description,
               icon: Icons.edit_note,
             ),
-            
             _buildGuideSection(
+              context: context,
               number: '4',
-              title: 'Check Your Insights',
-              description: 'Your home screen shows daily fertility insights based on your data. Review fertile days, ovulation predictions, and cycle summaries.',
+              title: AppLocalizations.of(context)!.step4Title,
+              description: AppLocalizations.of(context)!.step4Description,
               icon: Icons.insights,
             ),
-            
             _buildGuideSection(
+              context: context,
               number: '5',
-              title: 'Listen to Audio Content',
-              description: 'Explore the Educational Hub for articles and audio lessons. Use the speed controls (0.75x - 2x) to adjust playback to your preference.',
+              title: AppLocalizations.of(context)!.step5Title,
+              description: AppLocalizations.of(context)!.step5Description,
               icon: Icons.headphones,
             ),
-            
             _buildGuideSection(
+              context: context,
               number: '6',
-              title: 'Get Mental Health Support',
-              description: 'Visit the Support tab for faith-based affirmations and resources. Choose your faith preference in settings for personalized content.',
+              title: AppLocalizations.of(context)!.step6Title,
+              description: AppLocalizations.of(context)!.step6Description,
               icon: Icons.support_agent,
             ),
-            
             _buildGuideSection(
+              context: context,
               number: '7',
-              title: 'Review Predictions',
-              description: 'Your calendar marks predicted next period days with red outlined circles. Past periods appear as filled red circles.',
+              title: AppLocalizations.of(context)!.step7Title,
+              description: AppLocalizations.of(context)!.step7Description,
               icon: Icons.timeline,
             ),
-            
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(16),
@@ -106,8 +106,8 @@ class UserGuideScreen extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Row(
+                children: [
+                  const Row(
                     children: [
                       Icon(
                         Icons.lightbulb_outline,
@@ -115,9 +115,14 @@ class UserGuideScreen extends StatelessWidget {
                         size: 24,
                       ),
                       SizedBox(width: 8),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 32),
                       Text(
-                        'Pro Tips',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.proTips,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Poppins',
@@ -126,14 +131,10 @@ class UserGuideScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text(
-                    '• Log symptoms daily for 2-3 cycles to get the most accurate predictions\n\n'
-                    '• Update your period dates as soon as your cycle starts\n\n'
-                    '• Check your fertile window to plan or avoid conception\n\n'
-                    '• Use audio content at 1.25x or 1.5x speed to learn faster\n\n'
-                    '• Enable notifications to get reminders for symptom logging',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.proTipsContent,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
                       color: Colors.black87,
@@ -143,7 +144,6 @@ class UserGuideScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(16),
@@ -160,8 +160,8 @@ class UserGuideScreen extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Row(
+                children: [
+                  const Row(
                     children: [
                       Icon(
                         Icons.help_outline,
@@ -169,9 +169,14 @@ class UserGuideScreen extends StatelessWidget {
                         size: 24,
                       ),
                       SizedBox(width: 8),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 32),
                       Text(
-                        'Need Help?',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.needHelp,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Poppins',
@@ -180,10 +185,10 @@ class UserGuideScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text(
-                    'If you have questions or encounter issues, visit the Support tab or check the Educational Hub for detailed guides on fertility tracking.',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.needHelpContent,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
                       color: Colors.black87,
@@ -193,7 +198,6 @@ class UserGuideScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
             const SizedBox(height: 24),
           ],
         ),
@@ -202,6 +206,7 @@ class UserGuideScreen extends StatelessWidget {
   }
 
   Widget _buildGuideSection({
+    required BuildContext context,
     required String number,
     required String title,
     required String description,

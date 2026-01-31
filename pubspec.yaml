@@ -39,8 +39,15 @@ flutter_icons:
   adaptive_icon_background: "#2E7D32"  # Changed to green
   adaptive_icon_foreground: "assets/images/app_logo.png"
 
+flutter_gen_config:
+  output: lib/generated
+  line_length: 80
+  pubspec_config:
+    enabled: true
+
 flutter:
   uses-material-design: true
+  generate: true
   
   assets:
     - assets/audio/article_1.mp3

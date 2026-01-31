@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 import 'login_screen.dart';
-import 'reset_password_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -43,9 +43,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   color: Color(0xFF2E683D),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Send password reset link',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.sendPasswordResetLink,
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',
@@ -54,9 +54,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Enter your account email and we\'ll send you a link to reset your password.',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.enterYourAccountEmail,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontFamily: 'Poppins',
@@ -86,12 +86,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             height: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Send Link',
-                            style: TextStyle(
+                        : Text(
+                            AppLocalizations.of(context)!.sendLink,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               fontFamily: 'Poppins',
@@ -113,12 +114,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                     ),
                     child: Column(
-                      children: const [
-                        Icon(Icons.mark_email_read, color: Color(0xFF2E683D), size: 48),
-                        SizedBox(height: 12),
+                      children: [
+                        const Icon(Icons.mark_email_read,
+                            color: Color(0xFF2E683D), size: 48),
+                        const SizedBox(height: 12),
                         Text(
-                          'Check Your Email',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.checkYourEmail,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Poppins',
@@ -126,10 +128,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'We sent you a password reset link. Click the button in the email to reset your password.',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.resetLinkSent,
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w400,
                             fontFamily: 'Poppins',
@@ -137,10 +139,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          '📧 Don\'t forget to check your spam folder',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.checkSpamFolder,
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             fontFamily: 'Poppins',
@@ -160,9 +162,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         _linkSent = false;
                       });
                     },
-                    child: const Text(
-                      'Didn\'t receive the email? Resend',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.didntReceiveEmail,
+                      style: const TextStyle(
                         color: Color(0xFF2E683D),
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Poppins',
@@ -174,9 +176,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: const Text(
-                      'Back to Login',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)!.backToLogin,
+                      style: const TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'Poppins',
@@ -261,7 +263,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       // Use the backend domain for the reset link
       // Backend will send: https://fertipath.onrender.com/reset_password?token=ABC123
       final resetUrl = 'https://fertipath.onrender.com/reset_password';
-      
+
       await ApiService().forgotPassword(
         email: email,
         redirectUrl: resetUrl,
@@ -437,7 +439,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Text(
@@ -573,6 +576,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 }
+
 class PasswordUpdatedScreen extends StatelessWidget {
   const PasswordUpdatedScreen({super.key});
 

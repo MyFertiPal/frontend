@@ -3,7 +3,9 @@ import './_next_period_prediction_widget.dart';
 import './profile_setup_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
+import '../../providers/language_provider.dart';
 import '../../models/user.dart';
 import '../../services/api_service.dart';
 import '../home_screen.dart';
@@ -160,9 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text(
-          'Profile & Settings',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.profileSettings,
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
@@ -405,20 +407,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            _buildGoalRow(
-                'Faith Preference', _user?.faithPreference ?? 'Not set'),
+            _buildGoalRow(AppLocalizations.of(context)!.faithPreference,
+                _user?.faithPreference ?? AppLocalizations.of(context)!.notSet),
             const SizedBox(height: 12),
             _buildGoalRow(
-                'Cycle Length',
+                AppLocalizations.of(context)!.cycleLength,
                 _user?.cycleLength != null
-                    ? '${_user!.cycleLength} days'
-                    : 'Not set'),
+                    ? '${_user!.cycleLength} ${AppLocalizations.of(context)!.days}'
+                    : AppLocalizations.of(context)!.notSet),
             const SizedBox(height: 12),
             _buildGoalRow(
-                'Last Period Date',
+                AppLocalizations.of(context)!.lastPeriodDate,
                 _user?.lastPeriodDate != null
                     ? _user!.lastPeriodDate.toString().split(' ')[0]
-                    : 'Not set'),
+                    : AppLocalizations.of(context)!.notSet),
             const SizedBox(height: 16),
           ],
         ),
@@ -472,7 +474,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Preference',
+              AppLocalizations.of(context)!.preference,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -488,20 +490,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildLanguageRow() {
-    final languageOptions = <String, String>{
-      'en': 'English',
-      'ig': 'Igbo',
-      'ha': 'Hausa',
-      'yo': 'Yoruba',
-      'pg': 'Pidgin',
-    };
-    // Find the code for the current selectedLanguage
-    String selectedCode = languageOptions.entries
-        .firstWhere(
-          (e) => e.value == selectedLanguage,
-          orElse: () => const MapEntry('en', 'English'),
-        )
-        .key;
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final languageOptions = languageProvider.getAvailableLanguages();
+
+    String selectedCode = languageProvider.locale.languageCode;
+
     return Row(
       children: [
         Container(
@@ -514,10 +507,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               size: 22, color: Color(0xFF2D5A3A)), // dark green
         ),
         const SizedBox(width: 12),
-        const Expanded(
+        Expanded(
           child: Text(
-            'Language',
-            style: TextStyle(fontSize: 15),
+            AppLocalizations.of(context)!.language,
+            style: const TextStyle(fontSize: 15),
           ),
         ),
         DropdownButton<String>(
@@ -532,49 +525,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }).toList(),
           onChanged: (String? newCode) async {
             if (newCode == null) return;
-            setState(() {
-              selectedLanguage = languageOptions[newCode]!;
-            });
-            try {
-              // Save language preference to backend first
-              await apiService.updateLanguagePreference(newCode);
 
-              debugPrint('Language changed to: $newCode and saved to backend');
+            // Show loading indicator
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                          'Changing language to ${languageOptions[newCode]}...'),
+                    ],
+                  ),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
 
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Language preference updated'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
+            // Update language in provider (works immediately, even without login)
+            await languageProvider.setLanguage(newCode);
 
-                // Rebuild home page to reflect changes
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  if (mounted) {
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/home', (route) => false);
-                  }
-                });
+            // If user is logged in, also save to backend
+            bool backendSuccess = false;
+            if (_user != null) {
+              try {
+                await apiService.updateLanguagePreference(newCode);
+                backendSuccess = true;
+                debugPrint('Language saved to backend: $newCode');
+              } catch (e) {
+                debugPrint('Failed to save language to backend: $e');
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Language changed locally. Server update failed: $e'),
+                      backgroundColor: Colors.orange,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                }
               }
-            } catch (e) {
-              debugPrint('Failed to update language: $e');
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Failed to update language: $e'),
-                    backgroundColor: Colors.red,
+            }
+
+            // Show success message
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _user != null && backendSuccess
+                              ? 'Language changed to ${languageOptions[newCode]} and saved'
+                              : 'Language changed to ${languageOptions[newCode]}',
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              }
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Failed to change language: ${e.toString()}'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
+                  backgroundColor: const Color(0xFF2E683D),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
             }
           },
         ),
@@ -594,7 +616,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Privacy & Security',
+              AppLocalizations.of(context)!.privacySecurity,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -606,7 +628,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.shield_outlined,
                   color: Color(0xFF2D5A3A)), // dark green
-              title: const Text('Data Privacy Policy'),
+              title: Text(AppLocalizations.of(context)!.dataPrivacyPolicy),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
@@ -619,7 +641,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.shield_outlined,
                   color: Color(0xFF4CAF50)), // medium green
-              title: const Text('Manage Data & Permissions'),
+              title: Text(AppLocalizations.of(context)!.manageDataPermissions),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
@@ -632,7 +654,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.shield_outlined,
                   color: Color(0xFF81C784)), // light green
-              title: const Text('Explore my Data'),
+              title: Text(AppLocalizations.of(context)!.exploreMyData),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
@@ -659,7 +681,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Delete Account',
+              AppLocalizations.of(context)!.deleteAccount,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -668,7 +690,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Once you delete your account, there is no going back. This action is permanent and cannot be undone.',
+              AppLocalizations.of(context)!.deleteAccountWarning,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -687,8 +709,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           await ApiService().deleteUser();
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Account deleted successfully.'),
+                              SnackBar(
+                                content: Text(AppLocalizations.of(context)!
+                                    .accountDeletedSuccess),
                                 backgroundColor: Colors.green,
                               ),
                             );
