@@ -21,13 +21,12 @@ class CalendarTabScreen extends StatefulWidget {
 }
 
 class _CalendarTabScreenState extends State<CalendarTabScreen> {
-  String? _fertileStart;
-  String? _fertileEnd;
+  // Removed unused: String? _fertileStart, _fertileEnd;
   Set<DateTime> _ovulationDates = {};
   Set<DateTime> _fertileWindowDays = {};
   final ScrollController _calendarScrollController = ScrollController();
   bool _isCalendarCollapsed = false;
-  double _lastScrollOffset = 0;
+  // Removed unused: double _lastScrollOffset = 0;
   Set<DateTime> _selectedCalendarDays = {};
   Set<DateTime> _nextPeriodDays = {};
   // Store tapped days as yyyy-mm-dd strings
@@ -189,23 +188,6 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 
   // Calculate period days from last period date and period length
-  void _markPeriodDays(
-      {required String lastPeriodDate, required int periodLength}) {
-    try {
-      final startDate = DateTime.parse(lastPeriodDate);
-      final periodDays = List<DateTime>.generate(
-        periodLength,
-        (i) => DateTime(startDate.year, startDate.month, startDate.day + i),
-      );
-      setState(() {
-        _selectedCalendarDays = periodDays.toSet();
-        _selectedCalendarDaysFormatted =
-            periodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).toSet();
-      });
-    } catch (e) {
-      // Handle parse error or invalid input
-    }
-  }
 
   void _setFertileWindow(dynamic start, dynamic end) {
     try {
@@ -216,8 +198,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         days.add(DateTime(s.year, s.month, s.day + i));
       }
       setState(() {
-        _fertileStart = start.toString();
-        _fertileEnd = end.toString();
+        // Removed unused assignments to _fertileStart and _fertileEnd
         _fertileWindowDays = days;
       });
     } catch (e) {
@@ -256,7 +237,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _isCalendarCollapsed = false;
       });
     }
-    _lastScrollOffset = currentOffset;
+    // Removed unused assignment to _lastScrollOffset
   }
 
   void _toggleCalendarDate(DateTime date) async {
@@ -436,7 +417,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                             Row(
                               children: [
                                 Text(
-                                  AppLocalizations.of(context)!.loggedSymptoms,
+                                  AppLocalizations.of(context).loggedSymptoms,
                                   style: const TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.bold,
@@ -450,7 +431,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                                   icon: const Icon(Icons.delete_outline,
                                       color: Color(0xFF2E683D)),
                                   label: Text(
-                                    AppLocalizations.of(context)!.clear,
+                                    AppLocalizations.of(context).clear,
                                     style: const TextStyle(
                                       color: Color(0xFF2E683D),
                                       fontWeight: FontWeight.w600,
@@ -471,7 +452,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                             else ...[
                               if (_loggedSymptoms.isEmpty)
                                 Text(
-                                    AppLocalizations.of(context)!
+                                    AppLocalizations.of(context)
                                         .noSymptomsLogged,
                                     style: const TextStyle(color: Colors.grey)),
                               if (_loggedSymptoms.isNotEmpty)
@@ -588,7 +569,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.calendarCleared),
+            content: Text(AppLocalizations.of(context).calendarCleared),
             backgroundColor: Colors.green,
           ),
         );
@@ -599,7 +580,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${AppLocalizations.of(context)!.failedToClearCalendar}: $e'),
+                '${AppLocalizations.of(context).failedToClearCalendar}: $e'),
             backgroundColor: Colors.red,
           ),
         );

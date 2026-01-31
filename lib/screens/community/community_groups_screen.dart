@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme.dart';
+// import '../../theme.dart'; // Unused
 
 class CommunityGroupsScreen extends StatelessWidget {
   const CommunityGroupsScreen({super.key});
@@ -71,7 +71,8 @@ class CommunityGroupsScreen extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFA8D497),
                           borderRadius: BorderRadius.circular(8),
@@ -117,7 +118,8 @@ class CommunityGroupsScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Group chat coming soon')),
+                          const SnackBar(
+                              content: Text('Group chat coming soon')),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -188,10 +190,12 @@ class _CommunityGroupDetailScreen extends StatefulWidget {
   const _CommunityGroupDetailScreen();
 
   @override
-  State<_CommunityGroupDetailScreen> createState() => _CommunityGroupDetailScreenState();
+  State<_CommunityGroupDetailScreen> createState() =>
+      _CommunityGroupDetailScreenState();
 }
 
-class _CommunityGroupDetailScreenState extends State<_CommunityGroupDetailScreen> {
+class _CommunityGroupDetailScreenState
+    extends State<_CommunityGroupDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<Map<String, String>> _messages = [
     {
@@ -238,7 +242,8 @@ class _CommunityGroupDetailScreenState extends State<_CommunityGroupDetailScreen
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),

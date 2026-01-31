@@ -1096,30 +1096,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           setState(() => _isLoading = true);
 
                           try {
-                            // Send email via backend or email service
-                            final auth = Provider.of<AuthService>(context,
-                                listen: false);
-                            final user = auth.currentUser;
-                            final userEmail = user?.email ?? 'No email';
-
-                            // Using simple mailto approach with additional backend call
-                            final subject = 'Support Feedback from $userEmail';
-                            final body = '''
-Feedback from: $userEmail
+                            final apiService = ApiService();
+                            try {
+                              final supportEmail =
                                   await apiService.getSupportEmail();
                               await Clipboard.setData(
                                   ClipboardData(text: supportEmail));
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(
-                                        'Support email copied: $supportEmail'),
+                                    content: Text('Support email copied!'),
                                   ),
                                 );
                               }
                             } catch (apiError) {
-                              debugPrint(
-                                  'Error getting support email: $apiError');
+                              debugPrint('Error getting support email.');
                             }
 
                             if (mounted) {
@@ -1134,11 +1125,11 @@ Feedback from: $userEmail
                               );
                             }
                           } catch (e) {
-                            debugPrint('Error sending support message: $e');
+                            debugPrint('Error sending support message.');
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error sending feedback: $e'),
+                                const SnackBar(
+                                  content: Text('Error sending feedback.'),
                                   backgroundColor: Colors.red,
                                 ),
                               );

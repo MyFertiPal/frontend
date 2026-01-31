@@ -1,7 +1,7 @@
 import 'language_selection_screen.dart';
 import 'registration_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart'; // Unused
 import '../../generated/l10n/app_localizations.dart';
 
 class OnboardingScreens extends StatefulWidget {
@@ -88,7 +88,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                   GestureDetector(
                     onTap: _navigateToRegister,
                     child: Text(
-                      AppLocalizations.of(context)!.skip,
+                      AppLocalizations.of(context).skip,
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
@@ -138,7 +138,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.next,
+                        AppLocalizations.of(context).next,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -209,7 +209,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
 
             // Title
             Text(
-              AppLocalizations.of(context)!.trackYourCycle,
+              AppLocalizations.of(context).trackYourCycle,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -222,7 +222,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
 
             // Paragraph
             Text(
-              AppLocalizations.of(context)!.trackYourCycleDesc,
+              AppLocalizations.of(context).trackYourCycleDesc,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
@@ -274,7 +274,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             const SizedBox(height: 24),
 
             Text(
-              AppLocalizations.of(context)!.learnInYourLanguage,
+              AppLocalizations.of(context).learnInYourLanguage,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -286,7 +286,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             const SizedBox(height: 16),
 
             Text(
-              AppLocalizations.of(context)!.learnInYourLanguageDesc,
+              AppLocalizations.of(context).learnInYourLanguageDesc,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
@@ -338,7 +338,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             const SizedBox(height: 24),
 
             Text(
-              AppLocalizations.of(context)!.feelSupported,
+              AppLocalizations.of(context).feelSupported,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -350,7 +350,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             const SizedBox(height: 16),
 
             Text(
-              AppLocalizations.of(context)!.feelSupportedDesc,
+              AppLocalizations.of(context).feelSupportedDesc,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,

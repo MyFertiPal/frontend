@@ -57,7 +57,7 @@ class _EmailSignupScreenState extends State<EmailSignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final selectedLanguage = 'en';
+      // final selectedLanguage = 'en'; // Unused
 
       final nameParts = _fullNameController.text.trim().split(' ');
       final firstName = nameParts.first;

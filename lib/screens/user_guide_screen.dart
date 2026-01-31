@@ -13,7 +13,7 @@ class UserGuideScreen extends StatelessWidget {
         foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          AppLocalizations.of(context)!.howToUseFertipath,
+          AppLocalizations.of(context).howToUseFertipath,
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
@@ -26,7 +26,7 @@ class UserGuideScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.welcomeToFertipath,
+              AppLocalizations.of(context).welcomeToFertipath,
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -36,7 +36,7 @@ class UserGuideScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.guideIntro,
+              AppLocalizations.of(context).guideIntro,
               style: const TextStyle(
                 fontSize: 14,
                 fontFamily: 'Poppins',
@@ -47,50 +47,50 @@ class UserGuideScreen extends StatelessWidget {
             _buildGuideSection(
               context: context,
               number: '1',
-              title: AppLocalizations.of(context)!.step1Title,
-              description: AppLocalizations.of(context)!.step1Description,
+              title: AppLocalizations.of(context).step1Title,
+              description: AppLocalizations.of(context).step1Description,
               icon: Icons.person_outline,
             ),
             _buildGuideSection(
               context: context,
               number: '2',
-              title: AppLocalizations.of(context)!.step2Title,
-              description: AppLocalizations.of(context)!.step2Description,
+              title: AppLocalizations.of(context).step2Title,
+              description: AppLocalizations.of(context).step2Description,
               icon: Icons.calendar_today,
             ),
             _buildGuideSection(
               context: context,
               number: '3',
-              title: AppLocalizations.of(context)!.step3Title,
-              description: AppLocalizations.of(context)!.step3Description,
+              title: AppLocalizations.of(context).step3Title,
+              description: AppLocalizations.of(context).step3Description,
               icon: Icons.edit_note,
             ),
             _buildGuideSection(
               context: context,
               number: '4',
-              title: AppLocalizations.of(context)!.step4Title,
-              description: AppLocalizations.of(context)!.step4Description,
+              title: AppLocalizations.of(context).step4Title,
+              description: AppLocalizations.of(context).step4Description,
               icon: Icons.insights,
             ),
             _buildGuideSection(
               context: context,
               number: '5',
-              title: AppLocalizations.of(context)!.step5Title,
-              description: AppLocalizations.of(context)!.step5Description,
+              title: AppLocalizations.of(context).step5Title,
+              description: AppLocalizations.of(context).step5Description,
               icon: Icons.headphones,
             ),
             _buildGuideSection(
               context: context,
               number: '6',
-              title: AppLocalizations.of(context)!.step6Title,
-              description: AppLocalizations.of(context)!.step6Description,
+              title: AppLocalizations.of(context).step6Title,
+              description: AppLocalizations.of(context).step6Description,
               icon: Icons.support_agent,
             ),
             _buildGuideSection(
               context: context,
               number: '7',
-              title: AppLocalizations.of(context)!.step7Title,
-              description: AppLocalizations.of(context)!.step7Description,
+              title: AppLocalizations.of(context).step7Title,
+              description: AppLocalizations.of(context).step7Description,
               icon: Icons.timeline,
             ),
             const SizedBox(height: 24),
@@ -121,7 +121,7 @@ class UserGuideScreen extends StatelessWidget {
                     children: [
                       const SizedBox(width: 32),
                       Text(
-                        AppLocalizations.of(context)!.proTips,
+                        AppLocalizations.of(context).proTips,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -133,7 +133,7 @@ class UserGuideScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    AppLocalizations.of(context)!.proTipsContent,
+                    AppLocalizations.of(context).proTipsContent,
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
@@ -175,7 +175,7 @@ class UserGuideScreen extends StatelessWidget {
                     children: [
                       const SizedBox(width: 32),
                       Text(
-                        AppLocalizations.of(context)!.needHelp,
+                        AppLocalizations.of(context).needHelp,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -187,7 +187,7 @@ class UserGuideScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    AppLocalizations.of(context)!.needHelpContent,
+                    AppLocalizations.of(context).needHelpContent,
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',

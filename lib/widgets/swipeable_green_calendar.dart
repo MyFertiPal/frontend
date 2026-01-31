@@ -30,7 +30,7 @@ class SwipeableGreenCalendar extends StatefulWidget {
 
 class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
   static const int _initialPage = 1200;
-  static const Color _accent = Color(0xFFA8D497);
+  // static const Color _accent = Color(0xFFA8D497); // Unused
   late final PageController _pageController;
   late DateTime _baseMonth;
   late DateTime _visibleMonth;
@@ -73,7 +73,8 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
             children: [
               IconButton(
                 onPressed: () => _jumpBy(-1),
-                icon: const Icon(Icons.chevron_left, color: Colors.white, size: 26),
+                icon: const Icon(Icons.chevron_left,
+                    color: Colors.white, size: 26),
                 splashRadius: 20,
               ),
               Text(
@@ -87,7 +88,8 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
               ),
               IconButton(
                 onPressed: () => _jumpBy(1),
-                icon: const Icon(Icons.chevron_right, color: Colors.white, size: 26),
+                icon: const Icon(Icons.chevron_right,
+                    color: Colors.white, size: 26),
                 splashRadius: 20,
               ),
             ],
@@ -100,18 +102,19 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
           height: 280,
           child: PageView.builder(
             controller: _pageController,
-            onPageChanged: (page) => setState(() => _visibleMonth = _monthForPage(page)),
+            onPageChanged: (page) =>
+                setState(() => _visibleMonth = _monthForPage(page)),
             itemBuilder: (context, pageIndex) {
               final month = _monthForPage(pageIndex);
               return _MonthGrid(
-                 month: month,
-                 selectedDates: _localSelection,
-                 onToggle: _handleDateToggle,
-                 ovulationDates: widget.ovulationDates ?? {},
-                 periodDates: widget.periodDates ?? {},
-                 fertileWindowDates: widget.fertileWindowDates ?? {},
-                 nextPeriodDate: widget.nextPeriodDate,
-                 nextPeriodDays: widget.nextPeriodDays ?? {},
+                month: month,
+                selectedDates: _localSelection,
+                onToggle: _handleDateToggle,
+                ovulationDates: widget.ovulationDates ?? {},
+                periodDates: widget.periodDates ?? {},
+                fertileWindowDates: widget.fertileWindowDates ?? {},
+                nextPeriodDate: widget.nextPeriodDate,
+                nextPeriodDays: widget.nextPeriodDays ?? {},
               );
             },
           ),
@@ -130,10 +133,16 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
         runSpacing: 6,
         alignment: WrapAlignment.center,
         children: [
-          _LegendItem(color: const Color(0xFFD32F2F), label: 'Period', hasDot: true),
-          _LegendItem(color: const Color(0xFF1976D2), label: 'Ovulation', hasDot: true),
-          _LegendItem(color: const Color(0xFF8E24AA), label: 'Fertile', hasDot: true),
-          _LegendItem(color: const Color(0xFFD32F2F), label: 'Predicted', hasBorder: true),
+          _LegendItem(
+              color: const Color(0xFFD32F2F), label: 'Period', hasDot: true),
+          _LegendItem(
+              color: const Color(0xFF1976D2), label: 'Ovulation', hasDot: true),
+          _LegendItem(
+              color: const Color(0xFF8E24AA), label: 'Fertile', hasDot: true),
+          _LegendItem(
+              color: const Color(0xFFD32F2F),
+              label: 'Predicted',
+              hasBorder: true),
         ],
       ),
     );
@@ -182,7 +191,8 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
     final normalized = _dayOnly(date);
     setState(() {
       if (_localSelection.any((d) => _isSameDay(d, normalized))) {
-        _localSelection = _localSelection.where((d) => !_isSameDay(d, normalized)).toSet();
+        _localSelection =
+            _localSelection.where((d) => !_isSameDay(d, normalized)).toSet();
       } else {
         _localSelection = {..._localSelection, normalized};
       }
@@ -228,11 +238,12 @@ class _MonthGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firstWeekday = month.weekday % 7; // 0=Sunday ... 6=Saturday
-;
+    ;
     final daysInMonth = DateUtils.getDaysInMonth(month.year, month.month);
     final prevMonth = DateTime(month.year, month.month - 1, 1);
     final nextMonth = DateTime(month.year, month.month + 1, 1);
-    final daysInPrevMonth = DateUtils.getDaysInMonth(prevMonth.year, prevMonth.month);
+    final daysInPrevMonth =
+        DateUtils.getDaysInMonth(prevMonth.year, prevMonth.month);
 
     final totalCells = (firstWeekday + daysInMonth) <= 35 ? 35 : 42;
 
@@ -258,16 +269,24 @@ class _MonthGrid extends StatelessWidget {
             nextMonth: nextMonth,
           );
 
-          final isSelected = selectedDates.any((d) => _isSameDay(d, dayInfo.date));
+          final isSelected =
+              selectedDates.any((d) => _isSameDay(d, dayInfo.date));
 
-          final isPeriod = periodDates?.any((d) => _isSameDay(d, dayInfo.date)) ?? false;
-          final isOvulation = ovulationDates?.any((d) => _isSameDay(d, dayInfo.date)) ?? false;
-          final isNextPeriod = nextPeriodDate != null && _isSameDay(nextPeriodDate!, dayInfo.date);
-          final isNextPeriodWindow = nextPeriodDays?.any((d) => _isSameDay(d, dayInfo.date)) ?? false;
-          final isFertile = fertileWindowDates?.any((d) => _isSameDay(d, dayInfo.date)) ?? false;
+          final isPeriod =
+              periodDates?.any((d) => _isSameDay(d, dayInfo.date)) ?? false;
+          final isOvulation =
+              ovulationDates?.any((d) => _isSameDay(d, dayInfo.date)) ?? false;
+          final isNextPeriod = nextPeriodDate != null &&
+              _isSameDay(nextPeriodDate!, dayInfo.date);
+          final isNextPeriodWindow =
+              nextPeriodDays?.any((d) => _isSameDay(d, dayInfo.date)) ?? false;
+          final isFertile =
+              fertileWindowDates?.any((d) => _isSameDay(d, dayInfo.date)) ??
+                  false;
 
           Color bg = Colors.transparent;
-          Color txtColor = dayInfo.isOutside ? Colors.white.withOpacity(0.3) : Colors.white;
+          Color txtColor =
+              dayInfo.isOutside ? Colors.white.withOpacity(0.3) : Colors.white;
           Border? border;
           Widget? indicator;
 
@@ -294,7 +313,8 @@ class _MonthGrid extends StatelessWidget {
             // Fertile window: light purple/lavender
             bg = const Color(0xFFCE93D8).withOpacity(0.25); // Light purple
             txtColor = const Color(0xFF8E24AA); // Purple text
-            indicator = _buildDot(const Color(0xFF8E24AA).withOpacity(0.7)); // Purple dot
+            indicator = _buildDot(
+                const Color(0xFF8E24AA).withOpacity(0.7)); // Purple dot
           } else if (isSelected) {
             bg = _accent;
             txtColor = const Color(0xFF2E683D);
@@ -352,16 +372,20 @@ class _MonthGrid extends StatelessWidget {
   }) {
     if (index < firstWeekday) {
       final day = daysInPrevMonth - firstWeekday + index + 1;
-      return _DayDetail(date: DateTime(prevMonth.year, prevMonth.month, day), isOutside: true);
+      return _DayDetail(
+          date: DateTime(prevMonth.year, prevMonth.month, day),
+          isOutside: true);
     }
 
     if (index < firstWeekday + daysInMonth) {
       final day = index - firstWeekday + 1;
-      return _DayDetail(date: DateTime(month.year, month.month, day), isOutside: false);
+      return _DayDetail(
+          date: DateTime(month.year, month.month, day), isOutside: false);
     }
 
     final day = index - (firstWeekday + daysInMonth) + 1;
-    return _DayDetail(date: DateTime(nextMonth.year, nextMonth.month, day), isOutside: true);
+    return _DayDetail(
+        date: DateTime(nextMonth.year, nextMonth.month, day), isOutside: true);
   }
 
   bool _isSameDay(DateTime a, DateTime b) =>

@@ -1,6 +1,6 @@
 ﻿import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:flutter_localizations/flutter_localizations.dart";
+// import "package:flutter_localizations/flutter_localizations.dart";
 import "generated/l10n/app_localizations.dart";
 import "config/fallback_localizations_delegate.dart";
 import "providers/language_provider.dart";
