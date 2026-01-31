@@ -53,7 +53,8 @@ class SpecialistSearchScreen extends StatelessWidget {
                   hintText: 'Search specialists by name or specialty',
                   filled: true,
                   fillColor: Colors.grey.shade200,
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFF2E683D)),
+                  prefixIcon:
+                      const Icon(Icons.search, color: Color(0xFF2E683D)),
                   suffixIcon: const Icon(Icons.tune, color: Color(0xFF2E683D)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -75,11 +76,24 @@ class SpecialistSearchScreen extends StatelessWidget {
                   _CategoryChip(label: 'Gynecology'),
                   _CategoryChip(label: 'Mental Health'),
                   _CategoryChip(label: 'Nutrition'),
-                  _CategoryChip(label: 'Endocrinology'),
                 ],
               ),
               const SizedBox(height: 20),
-              ...specialists.map((sp) => _SpecialistCard(data: sp)).toList(),
+              if (specialists.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 48.0, bottom: 24.0),
+                  child: Text(
+                    'No specialists found. Please check back later.',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              else
+                ...specialists.map((sp) => _SpecialistCard(data: sp)).toList(),
             ],
           ),
           _LockedOverlay(onTap: () {
@@ -178,8 +192,10 @@ class _SpecialistCard extends StatelessWidget {
 
     String _initials(String input) {
       final parts = input.split(' ');
-      if (parts.length == 1) return parts.first.isNotEmpty ? parts.first[0].toUpperCase() : '?';
-      return (parts[0].isNotEmpty ? parts[0][0] : '') + (parts[1].isNotEmpty ? parts[1][0] : '');
+      if (parts.length == 1)
+        return parts.first.isNotEmpty ? parts.first[0].toUpperCase() : '?';
+      return (parts[0].isNotEmpty ? parts[0][0] : '') +
+          (parts[1].isNotEmpty ? parts[1][0] : '');
     }
 
     return Container(
@@ -240,7 +256,8 @@ class _SpecialistCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         location,
-                        style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                        style: TextStyle(
+                            color: Colors.grey.shade700, fontSize: 13),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -249,11 +266,13 @@ class _SpecialistCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.place_outlined, size: 16, color: Color(0xFF2E683D)),
+                    const Icon(Icons.place_outlined,
+                        size: 16, color: Color(0xFF2E683D)),
                     const SizedBox(width: 4),
                     Text(
                       distance,
-                      style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
+                      style:
+                          TextStyle(color: Colors.grey.shade700, fontSize: 13),
                     ),
                   ],
                 ),

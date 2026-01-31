@@ -53,7 +53,8 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
           // Green appbar
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(left: 30, right: 30, top: 40, bottom: 20),
+            padding:
+                const EdgeInsets.only(left: 30, right: 30, top: 40, bottom: 20),
             decoration: const BoxDecoration(
               color: Color(0xFF2E683D),
             ),
@@ -97,6 +98,19 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                   _buildSymptomContainer('Pain'),
                   const SizedBox(height: 16),
                   _buildSymptomContainer('Abdominal Cramps'),
+                  if (_selectedSymptoms.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 32.0),
+                      child: Text(
+                        'No symptoms selected yet. Tap a symptom to begin.',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -138,12 +152,16 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                       final profileJson = await api.getProfile();
                       // Defensive: handle both direct and nested user fields
                       final userData = profileJson['data'] ?? profileJson;
-                      lastPeriodDate = userData['last_period_date'] ?? userData['lastPeriodDate'];
-                      cycleLength = userData['cycle_length'] ?? userData['cycleLength'];
-                      periodLength = userData['period_length'] ?? userData['periodLength'];
+                      lastPeriodDate = userData['last_period_date'] ??
+                          userData['lastPeriodDate'];
+                      cycleLength =
+                          userData['cycle_length'] ?? userData['cycleLength'];
+                      periodLength =
+                          userData['period_length'] ?? userData['periodLength'];
                       // Fallback: if lastPeriodDate is null, set to today
                       if (lastPeriodDate == null) {
-                        lastPeriodDate = DateTime.now().toIso8601String().split('T')[0];
+                        lastPeriodDate =
+                            DateTime.now().toIso8601String().split('T')[0];
                       }
                       final payload = {
                         "last_period_date": lastPeriodDate,
@@ -153,14 +171,17 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                       };
                       debugPrint('Sending log payload: ' + jsonEncode(payload));
                       final headers = await api.getHeaders(includeAuth: true);
-                      final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
+                      final url =
+                          Uri.parse('${ApiService.baseUrl}/insights/insights');
                       final response = await http.post(
                         url,
                         headers: headers,
                         body: jsonEncode(payload),
                       );
-                      debugPrint('Log API response: ${response.statusCode} ${response.body}');
-                      if (response.statusCode == 200 || response.statusCode == 201) {
+                      debugPrint(
+                          'Log API response: ${response.statusCode} ${response.body}');
+                      if (response.statusCode == 200 ||
+                          response.statusCode == 201) {
                         Navigator.of(context).pop(true);
                       }
                     },
@@ -234,7 +255,9 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                   ),
                   const Spacer(),
                   Icon(
-                    isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    isExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     color: Colors.grey,
                   ),
                 ],
@@ -250,7 +273,9 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                 children: options.map((option) {
                   bool isSelected;
                   if (symptomName == 'Mood') {
-                    isSelected = _multiSelectedOptions['Mood']?.contains(option) ?? false;
+                    isSelected =
+                        _multiSelectedOptions['Mood']?.contains(option) ??
+                            false;
                   } else {
                     isSelected = _selectedOptions[symptomName] == option;
                   }
@@ -260,9 +285,11 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                         if (symptomName == 'Mood') {
                           final current = _multiSelectedOptions['Mood'] ?? [];
                           if (isSelected) {
-                            _multiSelectedOptions['Mood'] = List.from(current)..remove(option);
+                            _multiSelectedOptions['Mood'] = List.from(current)
+                              ..remove(option);
                           } else {
-                            _multiSelectedOptions['Mood'] = List.from(current)..add(option);
+                            _multiSelectedOptions['Mood'] = List.from(current)
+                              ..add(option);
                           }
                         } else {
                           _selectedOptions[symptomName] = option;
@@ -272,9 +299,12 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF2E683D) : const Color(0xFFA8D497),
+                        color: isSelected
+                            ? const Color(0xFF2E683D)
+                            : const Color(0xFFA8D497),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(

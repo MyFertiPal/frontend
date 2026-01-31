@@ -12,7 +12,6 @@ class GenderPredictionScreen extends StatefulWidget {
   State<GenderPredictionScreen> createState() => _GenderPredictionScreenState();
 }
 
-
 class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   String? _selectedGender;
   DateTime? _ovulationDay;
@@ -39,7 +38,8 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
         final data = response.body;
         final decoded = data.isNotEmpty
             ? (data.startsWith('[')
-                ? List<Map<String, dynamic>>.from(jsonDecode(data).map((e) => Map<String, dynamic>.from(e)))
+                ? List<Map<String, dynamic>>.from(
+                    jsonDecode(data).map((e) => Map<String, dynamic>.from(e)))
                 : Map<String, dynamic>.from(jsonDecode(data)))
             : null;
         Map<String, dynamic>? latestCycle;
@@ -52,8 +52,10 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
           if (latestCycle['ovulation_day'] != null) {
             _ovulationDay = DateTime.tryParse(latestCycle['ovulation_day']);
           }
-          if (latestCycle['fertile_period_start'] != null && latestCycle['fertile_period_end'] != null) {
-            _fertileStart = DateTime.tryParse(latestCycle['fertile_period_start']);
+          if (latestCycle['fertile_period_start'] != null &&
+              latestCycle['fertile_period_end'] != null) {
+            _fertileStart =
+                DateTime.tryParse(latestCycle['fertile_period_start']);
             _fertileEnd = DateTime.tryParse(latestCycle['fertile_period_end']);
           }
         }
@@ -71,9 +73,13 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
       final day = _ovulationDay!.add(Duration(days: i));
       String tip;
       if (_selectedGender == 'Male') {
-        tip = i == 0 ? 'Best chance for male conception.' : 'Lower chance for male.';
+        tip = i == 0
+            ? 'Best chance for male conception.'
+            : 'Lower chance for male.';
       } else if (_selectedGender == 'Female') {
-        tip = i < 0 ? 'Best chance for female conception.' : 'Lower chance for female.';
+        tip = i < 0
+            ? 'Best chance for female conception.'
+            : 'Lower chance for female.';
       } else {
         tip = 'General advice for conception.';
       }
@@ -142,14 +148,17 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                         Expanded(
                           child: Text(
                             'Disclaimer: This feature uses AI to provide gender prediction advice. These predictions may not be fully accurate and should not replace professional medical advice. Please consult a qualified doctor for health decisions.',
-                            style: TextStyle(fontSize: 15, color: Color(0xFFD32F2F)),
+                            style: TextStyle(
+                                fontSize: 15, color: Color(0xFFD32F2F)),
                           ),
                         ),
                       ],
                     ),
                   ),
                   _chatBubble(
-                    child: const Text('Select your gender expectation:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    child: const Text('Select your gender expectation:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
                     isBot: true,
                   ),
                   const SizedBox(height: 12),
@@ -163,9 +172,12 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                             setState(() => _selectedGender = option);
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 12),
                             decoration: BoxDecoration(
-                              color: isSelected ? const Color(0xFF2E683D) : const Color(0xFFA8D497),
+                              color: isSelected
+                                  ? const Color(0xFF2E683D)
+                                  : const Color(0xFFA8D497),
                               borderRadius: BorderRadius.circular(24),
                             ),
                             child: Text(
@@ -183,7 +195,9 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                     isBot: false,
                   ),
                   const SizedBox(height: 24),
-                  if (_selectedGender != null && (_ovulationDay != null || (_fertileStart != null && _fertileEnd != null)))
+                  if (_selectedGender != null &&
+                      (_ovulationDay != null ||
+                          (_fertileStart != null && _fertileEnd != null)))
                     _chatBubble(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,14 +205,24 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                           if (getFertileWindowText() != null)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Text('Fertile Window: ${getFertileWindowText()!}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                              child: Text(
+                                  'Fertile Window: ${getFertileWindowText()!}',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                             ),
                           if (getOvulationDayText() != null)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Text('Ovulation Day: ${getOvulationDayText()!}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                              child: Text(
+                                  'Ovulation Day: ${getOvulationDayText()!}',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                             ),
-                          Text('Advice for intercourse timing:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text('Advice for intercourse timing:',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 12),
                           ..._getAdvice().map((item) => Card(
                                 margin: const EdgeInsets.symmetric(vertical: 6),
@@ -210,6 +234,19 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                         ],
                       ),
                       isBot: true,
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.only(top: 32.0, bottom: 24.0),
+                      child: Text(
+                        'No gender prediction data available yet. Select a gender and ensure your cycle data is up to date.',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                 ],
               ),

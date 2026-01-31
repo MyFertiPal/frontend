@@ -350,16 +350,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: 10,
-              left: 10,
-              child: IconButton(
-                icon:
-                    const Icon(Icons.arrow_back, color: Colors.white, size: 28),
-                onPressed: () => Navigator.of(context).pop(),
-                tooltip: 'Back to Home',
-              ),
-            ),
+            // Back button removed
             Column(
               children: [
                 const SizedBox(height: 12),

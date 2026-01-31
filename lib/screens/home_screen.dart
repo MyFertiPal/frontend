@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import '../providers/language_provider.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
 import 'profile/profile_screen.dart';
@@ -29,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _insightData;
   String? _insightText;
 
+  Locale? _lastLocale;
+
   // Default fallback data
   static const Map<String, dynamic> _defaultCycleSummary = {
     'fertile_period_start': 'N/A',
@@ -45,6 +48,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _sendInsightsPost();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final currentLocale = languageProvider.locale;
+    if (_lastLocale == null || _lastLocale != currentLocale) {
+      _lastLocale = currentLocale;
+      _sendInsightsPost();
+    }
   }
 
   Future<void> _sendInsightsPost() async {
@@ -69,15 +83,13 @@ class _HomeScreenState extends State<HomeScreen> {
       int? periodLength;
       String? lastPeriodDate;
 
-      if (profile != null) {
-        cycleLength = profile['cycle_length'] is int
-            ? profile['cycle_length']
-            : int.tryParse(profile['cycle_length']?.toString() ?? '');
-        periodLength = profile['period_length'] is int
-            ? profile['period_length']
-            : int.tryParse(profile['period_length']?.toString() ?? '');
-        lastPeriodDate = profile['last_period_date']?.toString();
-      }
+      cycleLength = profile['cycle_length'] is int
+          ? profile['cycle_length']
+          : int.tryParse(profile['cycle_length']?.toString() ?? '');
+      periodLength = profile['period_length'] is int
+          ? profile['period_length']
+          : int.tryParse(profile['period_length']?.toString() ?? '');
+      lastPeriodDate = profile['last_period_date']?.toString();
 
       final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
       final body = {
@@ -197,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildProfileCard(user),
                           const SizedBox(height: 20),
                           _buildMenuItem(
-                            label: AppLocalizations.of(context)!.profile,
+                            label: AppLocalizations.of(context).profile,
                             icon: Icons.person_outline,
                             onTap: () async {
                               _toggleSideMenu();
@@ -213,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                           _buildMenuItem(
-                            label: AppLocalizations.of(context)!.support,
+                            label: AppLocalizations.of(context).support,
                             icon: Icons.help_outline,
                             onTap: () {
                               _toggleSideMenu();
@@ -221,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                           _buildMenuItem(
-                            label: AppLocalizations.of(context)!.help,
+                            label: AppLocalizations.of(context).help,
                             icon: Icons.menu_book_outlined,
                             onTap: () {
                               _toggleSideMenu();
@@ -234,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const Spacer(),
                           _buildMenuItem(
-                            label: AppLocalizations.of(context)!.logOut,
+                            label: AppLocalizations.of(context).logOut,
                             icon: Icons.logout,
                             iconColor: Colors.grey.shade600,
                             textColor: Colors.grey.shade700,
@@ -271,26 +283,24 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.home),
-            label:
-                _selectedIndex == 0 ? AppLocalizations.of(context)!.home : '',
+            label: _selectedIndex == 0 ? AppLocalizations.of(context).home : '',
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.school),
             label: _selectedIndex == 1
-                ? AppLocalizations.of(context)!.educational
+                ? AppLocalizations.of(context).educational
                 : '',
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.timeline),
             label: _selectedIndex == 2
-                ? AppLocalizations.of(context)!.trackCycle
+                ? AppLocalizations.of(context).trackCycle
                 : '',
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.support_agent),
-            label: _selectedIndex == 3
-                ? AppLocalizations.of(context)!.support
-                : '',
+            label:
+                _selectedIndex == 3 ? AppLocalizations.of(context).support : '',
           ),
         ],
       ),
@@ -305,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildProfileCard(User? user) {
     final fullName = [user?.firstName, user?.lastName]
-        .where((part) => part != null && part!.trim().isNotEmpty)
+        .where((part) => part != null && part.trim().isNotEmpty)
         .map((part) => part!.trim())
         .join(' ');
     final fallbackName =
@@ -393,7 +403,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAvatar(User? user, {double radius = 18}) {
     final fullName = [user?.firstName, user?.lastName]
-        .where((part) => part != null && part!.trim().isNotEmpty)
+        .where((part) => part != null && part.trim().isNotEmpty)
         .map((part) => part!.trim())
         .join(' ');
     final fallbackName =
@@ -659,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)!.fertileWindow,
+                                    AppLocalizations.of(context).fertileWindow,
                                     style: const TextStyle(
                                       fontSize: 28,
                                       color: Color(0xFFA8D497),
@@ -716,7 +726,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Color(0xFF2E683D)),
                             const SizedBox(width: 12),
                             Text(
-                              AppLocalizations.of(context)!.logSymptoms,
+                              AppLocalizations.of(context).logSymptoms,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -749,7 +759,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.cycleInfo,
+                      AppLocalizations.of(context).cycleInfo,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -784,7 +794,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      AppLocalizations.of(context)!
+                                      AppLocalizations.of(context)
                                           .fertileWindow,
                                       style: const TextStyle(
                                         fontSize: 12,
@@ -794,7 +804,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      AppLocalizations.of(context)!
+                                      AppLocalizations.of(context)
                                           .inFertileWindow,
                                       style: const TextStyle(
                                         fontSize: 16,
@@ -835,7 +845,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      AppLocalizations.of(context)!
+                                      AppLocalizations.of(context)
                                           .fertileWindow,
                                       style: const TextStyle(
                                         fontSize: 12,
@@ -885,7 +895,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      AppLocalizations.of(context)!
+                                      AppLocalizations.of(context)
                                           .fertilityCountdown,
                                       style: TextStyle(
                                         fontSize: 12,
@@ -895,7 +905,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      AppLocalizations.of(context)!.logCycleSee,
+                                      AppLocalizations.of(context).logCycleSee,
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -910,7 +920,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     _buildSummaryRow(
-                      AppLocalizations.of(context)!.fertileWindow,
+                      AppLocalizations.of(context).fertileWindow,
                       _insightData!['fertile_period_start'] != null &&
                               _insightData!['fertile_period_end'] != null
                           ? '${_insightData!['fertile_period_start']} - ${_insightData!['fertile_period_end']}'
@@ -918,7 +928,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const Divider(),
                     _buildSummaryRow(
-                      AppLocalizations.of(context)!.ovulationDay,
+                      AppLocalizations.of(context).ovulationDay,
                       _insightData!['ovulation_day']?.toString() ?? 'N/A',
                     ),
                   ],
@@ -933,7 +943,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildFeatureCard(
                   icon: Icons.calendar_today,
-                  label: AppLocalizations.of(context)!.calendar,
+                  label: AppLocalizations.of(context).calendar,
                   onTap: () {
                     setState(() {
                       _selectedIndex = 2;
@@ -943,7 +953,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildFeatureCard(
                   icon: Icons.child_care,
-                  label: AppLocalizations.of(context)!.genderPredictions,
+                  label: AppLocalizations.of(context).genderPredictions,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -962,7 +972,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildFeatureCard(
                   icon: Icons.medical_services_outlined,
-                  label: AppLocalizations.of(context)!.findSpecialist,
+                  label: AppLocalizations.of(context).findSpecialist,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -973,7 +983,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildFeatureCard(
                   icon: Icons.chat_bubble_outline,
-                  label: AppLocalizations.of(context)!.chatWithSpecialist,
+                  label: AppLocalizations.of(context).chatWithSpecialist,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -1096,15 +1106,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             final subject = 'Support Feedback from $userEmail';
                             final body = '''
 Feedback from: $userEmail
-
-Message:
-${_messageController.text}
-''';
-
-                            // Provide support email and copy it for the user
-                            try {
-                              final apiService = ApiService();
-                              final supportEmail =
                                   await apiService.getSupportEmail();
                               await Clipboard.setData(
                                   ClipboardData(text: supportEmail));

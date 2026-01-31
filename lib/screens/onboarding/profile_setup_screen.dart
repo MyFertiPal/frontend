@@ -121,6 +121,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 items: List.generate(73, (i) => i + 18),
                 onChanged: (value) => setState(() => _age = value),
               ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
+                child: Text(
+                  'Select your age',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade500,
+                      fontStyle: FontStyle.italic),
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Cycle Length
@@ -135,6 +145,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   value: _cycleLength,
                   isExpanded: true,
                   underline: const SizedBox(),
+                  hint: const Text('Select cycle length'),
                   items: List.generate(30, (i) => i + 1).map((days) {
                     return DropdownMenuItem(
                       value: days,
@@ -168,6 +179,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   value: _periodLength,
                   isExpanded: true,
                   underline: const SizedBox(),
+                  hint: const Text('Select period length'),
                   items: List.generate(14, (i) => i + 1).map((days) {
                     return DropdownMenuItem(
                       value: days,
@@ -210,13 +222,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       Expanded(
                         child: Text(
                           _lastPeriodDate == null
-                              ? 'Select date'
+                              ? 'Select the date your last period started'
                               : '${_lastPeriodDate!.day}, Dec ${_lastPeriodDate!.year}',
                           style: TextStyle(
                             fontSize: 16,
                             color: _lastPeriodDate == null
                                 ? Colors.grey.shade600
                                 : Colors.black,
+                            fontStyle: _lastPeriodDate == null
+                                ? FontStyle.italic
+                                : FontStyle.normal,
                           ),
                         ),
                       ),
@@ -240,6 +255,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 value: _ttcHistory,
                 items: _ttcHistories,
                 onChanged: (value) => setState(() => _ttcHistory = value),
+                placeholder: 'Select your TTC history',
               ),
               const SizedBox(height: 20),
 
@@ -249,36 +265,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 value: _faithPreference,
                 items: _faithPreferences,
                 onChanged: (value) => setState(() => _faithPreference = value),
+                placeholder: 'Select your faith preference',
               ),
               const SizedBox(height: 20),
 
-              // Language
-              _buildFieldLabel('Language'),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButton<String>(
-                  value: _language,
-                  isExpanded: true,
-                  underline: const SizedBox(),
-                  items: _languages.map((lang) {
-                    return DropdownMenuItem(
-                      value: lang,
-                      child: Text(lang),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => _language = value);
-                      // Language selection removed - using default
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
+              // ...existing code...
 
               // Audio Guidance
               _buildFieldLabel('Audio Guidance'),
@@ -421,6 +412,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     required String? value,
     required List<String> items,
     required Function(String?) onChanged,
+    String? placeholder,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -432,7 +424,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         value: value,
         isExpanded: true,
         underline: const SizedBox(),
-        hint: const Text('Select an option'),
+        hint: Text(placeholder ?? 'Select an option'),
         items: items.map((item) {
           return DropdownMenuItem(
             value: item,
