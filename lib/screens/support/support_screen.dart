@@ -1,7 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../../services/localization_provider.dart';
 import '../../services/api_service.dart';
 import '../community/community_groups_screen.dart';
 import '../community/create_group_screen.dart';
@@ -16,11 +15,12 @@ class SupportScreen extends StatefulWidget {
 
 class _SupportScreenState extends State<SupportScreen> {
   int _selectedIndex = 3;
-  String _currentAffirmation = "Every challenge is an opportunity to grow stronger and wiser.";
+  String _currentAffirmation =
+      "Every challenge is an opportunity to grow stronger and wiser.";
   List<String> _affirmations = [];
   String _faith = 'neutral';
   bool _loadingAffirmations = true;
-  
+
   // Audio player properties
   late AudioPlayer _audioPlayer;
   bool _isPlayingAudio = false;
@@ -94,12 +94,15 @@ class _SupportScreenState extends State<SupportScreen> {
       final api = ApiService();
       final profile = await api.getProfile();
       final userData = profile['data'] ?? profile;
-      final String? faithPref = userData['faith_preference'] ?? userData['faithPreference'];
+      final String? faithPref =
+          userData['faith_preference'] ?? userData['faithPreference'];
       String faith = 'neutral';
       if (faithPref != null) {
         final f = faithPref.toLowerCase();
-        if (f.contains('christian')) faith = 'christian';
-        else if (f.contains('muslim')) faith = 'muslim';
+        if (f.contains('christian'))
+          faith = 'christian';
+        else if (f.contains('muslim'))
+          faith = 'muslim';
         else if (f.contains('traditionalist')) faith = 'traditionalist';
       }
       setState(() {
@@ -154,7 +157,7 @@ class _SupportScreenState extends State<SupportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = Provider.of<LocalizationProvider>(context);
+    // Localization removed
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -163,7 +166,8 @@ class _SupportScreenState extends State<SupportScreen> {
           // Green appbar
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(left: 30, right: 30, top: 40, bottom: 20),
+            padding:
+                const EdgeInsets.only(left: 30, right: 30, top: 40, bottom: 20),
             decoration: const BoxDecoration(
               color: Color(0xFF2E683D),
             ),
@@ -242,9 +246,12 @@ class _SupportScreenState extends State<SupportScreen> {
                                     onTap: () {
                                       setState(() {
                                         // Cycle to next affirmation
-                                        final currentIdx = _affirmations.indexOf(_currentAffirmation);
-                                        final nextIdx = (currentIdx + 1) % _affirmations.length;
-                                        _currentAffirmation = _affirmations[nextIdx];
+                                        final currentIdx = _affirmations
+                                            .indexOf(_currentAffirmation);
+                                        final nextIdx = (currentIdx + 1) %
+                                            _affirmations.length;
+                                        _currentAffirmation =
+                                            _affirmations[nextIdx];
                                       });
                                     },
                                     child: Container(
@@ -334,7 +341,9 @@ class _SupportScreenState extends State<SupportScreen> {
                             // Play/Pause button
                             IconButton(
                               icon: Icon(
-                                _isPlayingAudio ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                                _isPlayingAudio
+                                    ? Icons.pause_circle_filled
+                                    : Icons.play_circle_filled,
                                 color: const Color(0xFFA8D497),
                                 size: 40,
                               ),
@@ -359,16 +368,22 @@ class _SupportScreenState extends State<SupportScreen> {
                                   // Progress bar with actual duration and position
                                   SliderTheme(
                                     data: SliderTheme.of(context).copyWith(
-                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
+                                      thumbShape: const RoundSliderThumbShape(
+                                          enabledThumbRadius: 5),
                                       trackHeight: 3,
                                     ),
                                     child: Slider(
-                                      value: _audioPosition.inSeconds.toDouble(),
-                                      max: _audioDuration.inSeconds.toDouble() > 0 ? _audioDuration.inSeconds.toDouble() : 1.0,
+                                      value:
+                                          _audioPosition.inSeconds.toDouble(),
+                                      max: _audioDuration.inSeconds.toDouble() >
+                                              0
+                                          ? _audioDuration.inSeconds.toDouble()
+                                          : 1.0,
                                       activeColor: const Color(0xFF2E683D),
                                       inactiveColor: Colors.grey.shade300,
                                       onChanged: (value) async {
-                                        final position = Duration(seconds: value.toInt());
+                                        final position =
+                                            Duration(seconds: value.toInt());
                                         await _audioPlayer.seek(position);
                                       },
                                     ),
@@ -476,7 +491,8 @@ class _SupportScreenState extends State<SupportScreen> {
                           );
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: const Color(0xFFA8D497),
                             borderRadius: BorderRadius.circular(8),
@@ -537,7 +553,8 @@ class _SupportScreenState extends State<SupportScreen> {
                               Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFA8D497),
                                       borderRadius: BorderRadius.circular(8),
@@ -584,7 +601,8 @@ class _SupportScreenState extends State<SupportScreen> {
                         GestureDetector(
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Group chat coming soon')),
+                              const SnackBar(
+                                  content: Text('Group chat coming soon')),
                             );
                           },
                           child: const Icon(

@@ -36,10 +36,11 @@ abstract class AuthServiceInterface {
 
 class AuthService extends ChangeNotifier implements AuthServiceInterface {
   User? _currentUser;
-  StreamController<User?> _authStateController = StreamController<User?>.broadcast();
-  
+  StreamController<User?> _authStateController =
+      StreamController<User?>.broadcast();
+
   final String _prefsKey = 'currentUser';
-  
+
   AuthService() {
     _loadUserFromPrefs();
   }
@@ -81,21 +82,22 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
     try {
       // Call the actual API login endpoint
       final apiService = ApiService();
-      final loginResponse = await apiService.login(email: email, password: password);
-      
+      final loginResponse =
+          await apiService.login(email: email, password: password);
+
       // Login response only contains access_token and token_type
       // Token is already saved by ApiService.login()
       // Now fetch the user data using the token
       final userJson = await apiService.getUser();
       final user = User.fromJson(userJson);
-      
+
       // Save user to preferences
       await _saveUserToPrefs(user);
-      
+
       _currentUser = user;
       _authStateController.add(_currentUser);
       notifyListeners();
-      
+
       return _currentUser;
     } catch (e) {
       if (kDebugMode) {
@@ -127,6 +129,11 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
     return _currentUser;
   }
 
+  // Store verification_id temporarily
+  String? _verificationId;
+
+  String? get verificationId => _verificationId;
+
   @override
   Future<User?> signUpWithPhone({
     required String phoneNumber,
@@ -137,23 +144,44 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
     String? password,
     String? preferredLanguage,
   }) async {
-    // Mock implementation
-    await Future.delayed(Duration(seconds: 1));
-    _currentUser = User(
-      id: '3',
-      email: email ?? '$phoneNumber@example.com',
-      firstName: firstName ?? 'Phone',
-      lastName: lastName ?? 'User',
-      phoneNumber: phoneNumber,
-    );
-    await _saveUserToPrefs(_currentUser);
-    _authStateController.add(_currentUser);
-    notifyListeners();
-    return _currentUser;
+    try {
+      final apiService = ApiService();
+
+      // Call sendOtp API endpoint
+      final response = await apiService.sendOtp(
+        email: email ?? '$phoneNumber@example.com',
+        username: username ?? phoneNumber,
+        firstName: firstName ?? 'User',
+        lastName: lastName ?? '',
+        password: password ?? '',
+        phoneNumber: phoneNumber,
+        languagePreference: preferredLanguage ?? 'en',
+      );
+
+      if (kDebugMode) {
+        print('OTP sent successfully: $response');
+      }
+
+      // Store verification_id for later use
+      if (response.containsKey('verification_id')) {
+        _verificationId = response['verification_id'];
+      } else if (response.containsKey('verificationId')) {
+        _verificationId = response['verificationId'];
+      }
+
+      // Don't set current user yet - wait for OTP verification
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error in signUpWithPhone: $e');
+      }
+      rethrow;
+    }
   }
 
   @override
-  Future<void> forgotPassword({required String email, String? redirectUrl}) async {
+  Future<void> forgotPassword(
+      {required String email, String? redirectUrl}) async {
     // Mock implementation
     await Future.delayed(Duration(seconds: 1));
     print('Password reset email sent to $email');
@@ -169,7 +197,7 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
         print('Error clearing API token on signOut: $e');
       }
     }
-    
+
     _currentUser = null;
     await _saveUserToPrefs(null);
     _authStateController.add(null);
@@ -207,8 +235,53 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
 
   @override
   Future<User?> verifyPhoneOTP(String phoneNumber, String otp) async {
-    await Future.delayed(Duration(seconds: 1));
-    return _currentUser;
+    try {
+      final apiService = ApiService();
+
+      // Use stored verification_id
+      final verificationId = _verificationId ?? '';
+
+      if (verificationId.isEmpty) {
+        throw Exception('No verification ID found. Please request OTP again.');
+      }
+
+      // Call verify OTP endpoint
+      final response = await apiService.verifyOtp(
+        email: phoneNumber,
+        otp: otp,
+        verificationId: verificationId,
+      );
+
+      if (kDebugMode) {
+        print('OTP verified successfully: $response');
+      }
+
+      // After successful verification, get user data
+      if (response.containsKey('access_token')) {
+        await apiService.saveToken(response['access_token']);
+
+        // Fetch user data
+        final userJson = await apiService.getUser();
+        final user = User.fromJson(userJson);
+
+        await _saveUserToPrefs(user);
+        _currentUser = user;
+        _authStateController.add(_currentUser);
+        notifyListeners();
+
+        // Clear verification_id after successful verification
+        _verificationId = null;
+
+        return user;
+      }
+
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error in verifyPhoneOTP: $e');
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -230,4 +303,3 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
     super.dispose();
   }
 }
-

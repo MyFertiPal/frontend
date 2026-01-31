@@ -14,6 +14,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   bool _loading = false;
 
   String? _validateEmail(String? value) {
@@ -47,7 +48,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (value == null || value.isEmpty) {
       return null; // Phone is optional
     }
-    final phoneRegex = RegExp(r'^[+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$');
+    final phoneRegex =
+        RegExp(r'^[+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$');
     if (!phoneRegex.hasMatch(value)) {
       return 'Please enter a valid phone number';
     }
@@ -56,14 +58,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthServiceImpl>(context, listen: false);
+    final auth = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/welcome', (route) => false),
+          onPressed: () => Navigator.of(context)
+              .pushNamedAndRemoveUntil('/welcome', (route) => false),
         ),
       ),
       body: Padding(
@@ -91,7 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Phone (optional)'),
+                decoration:
+                    const InputDecoration(labelText: 'Phone (optional)'),
                 keyboardType: TextInputType.phone,
                 validator: _validatePhone,
               ),
@@ -109,12 +113,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 final user = await auth.signUpWithEmail(
                                   email: _emailController.text.trim(),
                                   password: _passwordController.text,
+                                  firstName: _nameController.text.trim(),
+                                  lastName: '',
+                                  username: _emailController.text.trim(),
                                 );
                                 if (user != null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Registered — verify OTP')), 
+                                    const SnackBar(
+                                        content:
+                                            Text('Registered — verify OTP')),
                                   );
-                                  Navigator.pushReplacementNamed(context, '/login');
+                                  Navigator.pushReplacementNamed(
+                                      context, '/login');
                                 }
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -142,12 +152,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     final user = await auth.signUpWithPhone(phoneNumber: phone);
                     if (user != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Phone registered — verify OTP')),
+                        const SnackBar(
+                            content: Text('Phone registered — verify OTP')),
                       );
                       Navigator.pushReplacementNamed(context, '/login');
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Error: $e')));
                   } finally {
                     setState(() => _loading = false);
                   }

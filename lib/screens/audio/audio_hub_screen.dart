@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../../services/localization_provider.dart';
 
 class AudioHubScreen extends StatefulWidget {
   const AudioHubScreen({super.key});
@@ -15,6 +14,19 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   int? _playingIndex;
   double _playbackSpeed = 1.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _configureAudioPlayer();
+  }
+
+  Future<void> _configureAudioPlayer() async {
+    // Configure for web compatibility
+    if (kIsWeb) {
+      await _audioPlayer.setReleaseMode(ReleaseMode.stop);
+    }
+  }
 
   @override
   void dispose() {
@@ -46,7 +58,8 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
   final List<Map<String, String>> _lessons = const [
     {
       'title': 'Understanding Your Menstrual Cycle',
-      'content': 'Learn the phases of your cycle and how they affect fertility.',
+      'content':
+          'Learn the phases of your cycle and how they affect fertility.',
       'audioUrl': 'audio/article_1.mp3'
     },
     {
@@ -63,11 +76,9 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = Provider.of<LocalizationProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(loc.translate('audioLessons')),
+        title: const Text('Audio Lessons'),
       ),
       body: Column(
         children: [
@@ -78,7 +89,8 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
             child: Row(
               children: [
                 const Text('Speed:',
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
                 const SizedBox(width: 12),
                 ...[0.75, 1.0, 1.25, 1.5, 2.0].map((speed) {
                   return Padding(
@@ -88,13 +100,16 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
                         backgroundColor: _playbackSpeed == speed
                             ? const Color(0xFF2E683D)
                             : Colors.grey.shade300,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                       ),
                       onPressed: () => _setPlaybackSpeed(speed),
                       child: Text(
                         speed == 1.0 ? '1x' : '${speed}x',
                         style: TextStyle(
-                          color: _playbackSpeed == speed ? Colors.white : Colors.black,
+                          color: _playbackSpeed == speed
+                              ? Colors.white
+                              : Colors.black,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -118,8 +133,9 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
                 return StreamBuilder<PlayerState>(
                   stream: _audioPlayer.onPlayerStateChanged,
                   builder: (context, snapshot) {
-                    final isCurrentlyPlaying = isPlaying && (snapshot.data == PlayerState.playing);
-                    
+                    final isCurrentlyPlaying =
+                        isPlaying && (snapshot.data == PlayerState.playing);
+
                     return Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -135,17 +151,21 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
                               children: [
                                 Text(item['title']!,
                                     style: const TextStyle(
-                                        fontSize: 16, fontWeight: FontWeight.bold)),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
                                 const SizedBox(height: 8),
                                 Text(item['content']!,
-                                    style:
-                                        TextStyle(color: Colors.grey.shade600, height: 1.4)),
+                                    style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        height: 1.4)),
                               ],
                             ),
                           ),
                           const SizedBox(width: 12),
                           IconButton(
-                            icon: Icon(isCurrentlyPlaying ? Icons.pause : Icons.play_arrow),
+                            icon: Icon(isCurrentlyPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow),
                             onPressed: () async {
                               if (isCurrentlyPlaying) {
                                 await _audioPlayer.pause();
@@ -154,9 +174,20 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
                                   setState(() => _playingIndex = index);
                                 }
                                 try {
-                                  await _audioPlayer.play(
-                                    AssetSource(item['audioUrl']!),
-                                  );
+                                  // For web, use a different approach
+                                  if (kIsWeb) {
+                                    // On web, we need to use the full asset path
+                                    final path = 'assets/${item['audioUrl']!}';
+                                    debugPrint('Attempting to play: $path');
+                                    await _audioPlayer.play(
+                                      AssetSource(item['audioUrl']!),
+                                      mode: PlayerMode.mediaPlayer,
+                                    );
+                                  } else {
+                                    await _audioPlayer.play(
+                                      AssetSource(item['audioUrl']!),
+                                    );
+                                  }
                                 } catch (e) {
                                   debugPrint('Audio play failed: $e');
                                   if (mounted) {
@@ -164,9 +195,10 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
                                       SnackBar(
                                         content: Text(
                                           kIsWeb
-                                              ? 'Audio failed to play on web. Ensure assets are MP3 and paths have no spaces.'
-                                              : 'Audio failed to play.',
+                                              ? 'Web audio not supported. Try Chrome or download the mobile app.'
+                                              : 'Audio failed to play: ${e.toString()}',
                                         ),
+                                        duration: const Duration(seconds: 4),
                                       ),
                                     );
                                   }
@@ -186,3 +218,4 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
       ),
     );
   }
+}

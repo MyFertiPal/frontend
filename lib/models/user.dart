@@ -1,6 +1,4 @@
-﻿import 'dart:convert';
-
-// Alias for backward compatibility
+﻿// Alias for backward compatibility
 typedef User = AppUser;
 
 class AppUser {
@@ -17,7 +15,7 @@ class AppUser {
   final String? displayName;
   final String? photoUrl;
   final String? preferredLanguage;
-  
+
   AppUser({
     required this.id,
     required this.email,
@@ -33,13 +31,13 @@ class AppUser {
     this.photoUrl,
     this.preferredLanguage,
   }) : ttcHistory = ttcHistory ?? [];
-  
+
   factory AppUser.fromJson(Map<String, dynamic> json) {
     String? _string(dynamic v) => v?.toString();
-    int? _int(dynamic v) => v is int
-        ? v
-        : (v is String ? int.tryParse(v) : null);
-    DateTime? _date(dynamic v) => v != null ? DateTime.tryParse(v.toString()) : null;
+    int? _int(dynamic v) =>
+        v is int ? v : (v is String ? int.tryParse(v) : null);
+    DateTime? _date(dynamic v) =>
+        v != null ? DateTime.tryParse(v.toString()) : null;
 
     // Normalize keys from snake_case or camelCase
     final id = _string(json['id'] ?? json['user_id']) ?? '';
@@ -47,10 +45,13 @@ class AppUser {
     final lastName = _string(json['lastName'] ?? json['last_name']);
     final phone = _string(json['phoneNumber'] ?? json['phone_number']);
     final faith = _string(json['faithPreference'] ?? json['faith_preference']);
-    final lang = _string(json['preferredLanguage'] ?? json['language_preference']);
+    final lang =
+        _string(json['preferredLanguage'] ?? json['language_preference']);
     final cycle = _int(json['cycleLength'] ?? json['cycle_length']);
-    final period = _int(json['periodLength'] ?? json['period_length']); // kept for compatibility
-    final lastPeriod = _date(json['lastPeriodDate'] ?? json['last_period_date']);
+    final period = _int(json['periodLength'] ??
+        json['period_length']); // kept for compatibility
+    final lastPeriod =
+        _date(json['lastPeriodDate'] ?? json['last_period_date']);
 
     List<String>? ttc;
     if (json['ttcHistory'] != null) {
@@ -80,7 +81,7 @@ class AppUser {
       preferredLanguage: lang,
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -98,7 +99,7 @@ class AppUser {
       'preferredLanguage': preferredLanguage,
     };
   }
-  
+
   @override
   String toString() {
     return 'AppUser(id: $id, email: $email, name: $displayName)';

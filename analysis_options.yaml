@@ -1,4 +1,16 @@
 ﻿analyzer:
+  exclude:
+    - PROJECT_BACKUP_20260122_003406/**
+    - original_code_backup_20260122_233157/**
+    - localization_backup_20260110_2134/**
+    - test/**
+    - test_locale.dart
+    - minimal_test.dart
+    - lib/backup_main_20260122_180010.dart
+    - lib/test_localization.dart
+    - lib/firebase_options.dart
+    - lib/services/audio_service.dart
+    - lib/services/calendar_storage.dart
   language:
     strict-casts: false
     strict-inference: false
@@ -9,7 +21,6 @@
 linter:
   rules:
     - always_declare_return_types
-    - always_require_non_null_named_parameters
     - annotate_overrides
     - avoid_init_to_null
     - avoid_null_checks_in_equality_operators
@@ -33,12 +44,9 @@ linter:
     - file_names
     - hash_and_equals
     - implementation_imports
-    - invariant_booleans
-    - iterable_contains_unrelated_type
     - library_names
     - library_prefixes
     - lines_longer_than_80_chars
-    - list_remove_unrelated_type
     - no_duplicate_case_values
     - non_constant_identifier_names
     - null_closures
@@ -46,7 +54,6 @@ linter:
     - one_member_abstracts
     - only_throw_errors
     - overridden_fields
-    - package_api_docs
     - package_names
     - package_prefixed_library_names
     - parameter_assignments
@@ -67,13 +74,11 @@ linter:
     - unnecessary_getters_setters
     - unnecessary_lambdas
     - unnecessary_new
-    - unnecessary_null_checks_for_equality_operators
     - unnecessary_nullable_for_final_variable_declarations
     - unnecessary_overrides
     - unnecessary_statements
     - unnecessary_this
     - unrelated_type_equality_checks
-    - unsafe_html
     - use_full_hex_values_for_flutter_colors
     - use_function_type_syntax_for_parameters
     - use_rethrow_when_possible

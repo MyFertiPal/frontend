@@ -28,7 +28,7 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#2E7D32"  # Changed to green
-  image: "assets/splash/ferti_splash.png"
+  image: "assets/splash/logo.png"
   android: true
   ios: true
 
@@ -41,3 +41,16 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
+  
+  assets:
+    - assets/audio/article_1.mp3
+    - assets/audio/article_2.mp3
+    - assets/audio/article_3.mp3
+    - assets/audio/encouragement.wav
+    - assets/images/app_logo.png
+    - assets/images/article_1.jpeg
+    - assets/images/article_2.jpeg
+    - assets/images/article_3.jpeg
+    - assets/icon/
+    - assets/icons/
+    - assets/splash/

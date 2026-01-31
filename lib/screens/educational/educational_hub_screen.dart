@@ -38,7 +38,10 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
         audioPlayer: _audioPlayer,
         article: article,
       ),
-    );
+    ).then((_) {
+      // Stop audio when modal is dismissed
+      _audioPlayer.stop();
+    });
   }
 
   final List<Map<String, String>> allArticles = [
@@ -47,9 +50,10 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
       'title': 'How Pregnancy Happens: A Simple Guide to Conception',
       'excerpt':
           'Conception happens when sperm fertilizes an egg and the embryo implants. Learn when the fertile window opens and how health, timing, and patience support TTC.',
-      'image': 'lib/screens/educational/article 1.jpeg',
+      'image': 'assets/images/article_1.jpeg',
       'audioUrl': 'audio/article_1.mp3',
-      'content': '''Getting pregnant happens when a sperm fertilizes an egg and the fertilized egg successfully implants in the uterus. Understanding this helps improve your chances.
+      'content':
+          '''Getting pregnant happens when a sperm fertilizes an egg and the fertilized egg successfully implants in the uterus. Understanding this helps improve your chances.
 
 Understanding the fertile window
 You are most likely to conceive during the fertile window: the days leading up to and including ovulation (about 14 days before the next period in a regular cycle). Because sperm can live in the body for several days, pregnancy can happen if sperm is present during this time.
@@ -75,9 +79,10 @@ Even with perfect timing, it can take months to conceive. That is normal and doe
       'title': 'How Long Does Ovulation Last?',
       'excerpt':
           'Ovulation is brief (12-24 hours), but sperm can live up to five days. Knowing this window helps plan or prevent pregnancy.',
-      'image': 'lib/screens/educational/article 2.jpeg',
+      'image': 'assets/images/article_2.jpeg',
       'audioUrl': 'audio/article_2.mp3',
-      'content': '''Ovulation is when an ovary releases a mature egg. The egg lives about 12 to 24 hours, and can be fertilized only in that short time.
+      'content':
+          '''Ovulation is when an ovary releases a mature egg. The egg lives about 12 to 24 hours, and can be fertilized only in that short time.
 
 The fertile window
 Even though ovulation is brief, sperm can survive in the reproductive tract for up to five days. Pregnancy can happen if sperm are present in the days before ovulation or on the ovulation day itself.
@@ -96,9 +101,10 @@ Knowing how long ovulation lasts and how long sperm survive can guide timing for
       'title': 'Infertility Is Not a Curse',
       'excerpt':
           'In many Nigerian and African communities, pressure to conceive is heavy. Infertility is a medical challenge, not a curse or a failure.',
-      'image': 'lib/screens/educational/article 3.jpeg',
+      'image': 'assets/images/article_3.jpeg',
       'audioUrl': 'audio/article_3.mp3',
-      'content': '''If you are trying to conceive and it has not happened yet, remember this: infertility is not a curse or a punishment.
+      'content':
+          '''If you are trying to conceive and it has not happened yet, remember this: infertility is not a curse or a punishment.
 
 In many Nigerian and African societies, motherhood is tightly linked to identity, and delays can bring painful pressure. Terms like "barren" or "waiting on God" can leave emotional wounds, but difficulty conceiving is a medical and biological challenge, not a spiritual verdict.
 
@@ -141,7 +147,8 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(8)),
                 child: Image.asset(
                   article['image']!,
                   fit: BoxFit.cover,
@@ -164,7 +171,8 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             color: const Color(0xFFA8D497),
                             borderRadius: BorderRadius.circular(8),
@@ -221,7 +229,8 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
                             ),
                             child: Row(
                               children: const [
-                                Icon(Icons.play_arrow, color: Colors.white, size: 18),
+                                Icon(Icons.play_arrow,
+                                    color: Colors.white, size: 18),
                                 SizedBox(width: 4),
                                 Text(
                                   'Listen',
@@ -275,7 +284,8 @@ Be kind to yourself. Protect your mental and emotional health. Surround yourself
       backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        title: const Text('Educational Hub', style: TextStyle(color: Colors.white)),
+        title: const Text('Educational Hub',
+            style: TextStyle(color: Colors.white)),
       ),
       body: Column(
         children: [
@@ -357,7 +367,12 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   void initState() {
     super.initState();
     _setupAudioPlayer();
-    _loadAudio();
+  }
+
+  @override
+  void dispose() {
+    widget.audioPlayer.stop();
+    super.dispose();
   }
 
   void _setupAudioPlayer() {
@@ -382,16 +397,29 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
 
   Future<void> _loadAudio() async {
     if (widget.article['audioUrl']!.isNotEmpty) {
-      await widget.audioPlayer.setSourceAsset(widget.article['audioUrl']!);
-      await widget.audioPlayer.setPlaybackRate(_playbackSpeed);
+      try {
+        await widget.audioPlayer.setReleaseMode(ReleaseMode.stop);
+        await widget.audioPlayer.setSourceAsset(widget.article['audioUrl']!);
+        await widget.audioPlayer.setPlaybackRate(_playbackSpeed);
+      } catch (e) {
+        debugPrint('Error loading audio: $e');
+      }
     }
   }
 
   Future<void> _togglePlayPause() async {
-    if (_isPlaying) {
-      await widget.audioPlayer.pause();
-    } else {
-      await widget.audioPlayer.resume();
+    try {
+      if (_isPlaying) {
+        await widget.audioPlayer.pause();
+      } else {
+        // Load audio on first play if not loaded
+        if (_duration == Duration.zero) {
+          await _loadAudio();
+        }
+        await widget.audioPlayer.resume();
+      }
+    } catch (e) {
+      debugPrint('Error toggling play/pause: $e');
     }
   }
 
@@ -449,17 +477,22 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                       SliderTheme(
                         data: SliderThemeData(
                           trackHeight: 4,
-                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+                          thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 6),
+                          overlayShape:
+                              const RoundSliderOverlayShape(overlayRadius: 12),
                         ),
                         child: Slider(
                           activeColor: const Color(0xFF2E683D),
                           inactiveColor: Colors.grey.shade300,
                           min: 0,
                           max: _duration.inSeconds.toDouble(),
-                          value: _position.inSeconds.toDouble().clamp(0, _duration.inSeconds.toDouble()),
+                          value: _position.inSeconds
+                              .toDouble()
+                              .clamp(0, _duration.inSeconds.toDouble()),
                           onChanged: (value) async {
-                            await widget.audioPlayer.seek(Duration(seconds: value.toInt()));
+                            await widget.audioPlayer
+                                .seek(Duration(seconds: value.toInt()));
                           },
                         ),
                       ),
@@ -551,7 +584,8 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                                 backgroundColor: _playbackSpeed == speed
                                     ? const Color(0xFF2E683D)
                                     : Colors.grey.shade300,
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6),
                                 ),
@@ -560,7 +594,9 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                               child: Text(
                                 speed == 1.0 ? '1x' : '${speed}x',
                                 style: TextStyle(
-                                  color: _playbackSpeed == speed ? Colors.white : Colors.black87,
+                                  color: _playbackSpeed == speed
+                                      ? Colors.white
+                                      : Colors.black87,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),

@@ -8,7 +8,6 @@ import '../services/api_service.dart';
 import '../models/user.dart';
 import 'profile/profile_screen.dart';
 import 'support/support_screen.dart';
-import 'tracking/log_symptom_screen.dart';
 import 'onboarding/welcome_screen.dart';
 import 'educational/educational_hub_screen.dart';
 import 'calendar_tab_screen.dart';
@@ -28,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _insightData;
   String? _insightText;
-  
+
   // Default fallback data
   static const Map<String, dynamic> _defaultCycleSummary = {
     'fertile_period_start': 'N/A',
@@ -37,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   };
   static const String _defaultInsightText =
       'Track your cycle and get personalized insights here. Once you log your symptoms and cycle data, helpful tips and predictions will appear!';
-  
+
   int _selectedIndex = 0;
   bool _showSideMenu = false;
 
@@ -51,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final api = ApiService();
       final headers = await api.getHeaders(includeAuth: true);
-      
+
       // Fetch user profile to get period_length, cycle_length, last_period_date
       Map<String, dynamic>? profile;
       try {
@@ -64,21 +63,21 @@ class _HomeScreenState extends State<HomeScreen> {
         });
         return;
       }
-      
+
       int? cycleLength;
       int? periodLength;
       String? lastPeriodDate;
-      
+
       if (profile != null) {
-        cycleLength = profile['cycle_length'] is int 
-            ? profile['cycle_length'] 
+        cycleLength = profile['cycle_length'] is int
+            ? profile['cycle_length']
             : int.tryParse(profile['cycle_length']?.toString() ?? '');
-        periodLength = profile['period_length'] is int 
-            ? profile['period_length'] 
+        periodLength = profile['period_length'] is int
+            ? profile['period_length']
             : int.tryParse(profile['period_length']?.toString() ?? '');
         lastPeriodDate = profile['last_period_date']?.toString();
       }
-      
+
       final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
       final body = {
         'cycle_length': cycleLength ?? 0,
@@ -86,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'period_length': periodLength ?? 0,
         'symptoms': ['none'],
       };
-      
+
       debugPrint('Sending POST to /insights/insights with body: $body');
       final postResponse = await http.post(
         url,
@@ -94,33 +93,33 @@ class _HomeScreenState extends State<HomeScreen> {
         body: jsonEncode(body),
       );
       debugPrint('POST response status: ${postResponse.statusCode}');
-      
+
       // Now GET insights/insights
       final getResponse = await http.get(url, headers: headers);
       debugPrint('GET /insights/insights status: ${getResponse.statusCode}');
       debugPrint('GET /insights/insights response: ${getResponse.body}');
-      
+
       if (getResponse.statusCode == 200) {
         final List<dynamic> data = jsonDecode(getResponse.body);
         debugPrint('Parsed insights data: $data');
-        
+
         if (data.isNotEmpty && data[0] is Map<String, dynamic>) {
           final insights = data[0] as Map<String, dynamic>;
           debugPrint('First insight object keys: ${insights.keys.toList()}');
-          
+
           setState(() {
             _insightData = insights;
             // Try to get insight_text, or generate one from available data
-            _insightText = insights['insight_text']?.toString() ?? 
-                           insights['prediction']?.toString() ??
-                           insights['recommendation']?.toString() ??
-                           _defaultInsightText;
+            _insightText = insights['insight_text']?.toString() ??
+                insights['prediction']?.toString() ??
+                insights['recommendation']?.toString() ??
+                _defaultInsightText;
             debugPrint('Set _insightText to: $_insightText');
           });
           return;
         }
       }
-      
+
       // If no data or bad response, show fallback
       debugPrint('No valid insights data, using fallback');
       setState(() {
@@ -140,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context);
     final user = auth.currentUser;
-    
+
     return Scaffold(
       appBar: null,
       body: Stack(
@@ -148,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IndexedStack(
             index: _selectedIndex,
             children: [
-               _buildHomeTab(),
+              _buildHomeTab(),
               const EducationalHubScreen(),
               const CalendarTabScreen(),
               const SupportScreen(),
@@ -174,7 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 15, top: 30, right: 15),
+                      padding:
+                          const EdgeInsets.only(left: 15, top: 30, right: 15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -242,7 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               await auth.signOut();
                               if (mounted) {
                                 Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                                  MaterialPageRoute(
+                                      builder: (_) => const WelcomeScreen()),
                                   (route) => false,
                                 );
                               }
@@ -299,13 +300,16 @@ class _HomeScreenState extends State<HomeScreen> {
         .where((part) => part != null && part!.trim().isNotEmpty)
         .map((part) => part!.trim())
         .join(' ');
-    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty)
-        ? user.username!.trim()
-        : ((user?.email != null && user!.email.trim().isNotEmpty)
-            ? user.email.split('@').first
-            : 'User');
+    final fallbackName =
+        (user?.username != null && user!.username!.trim().isNotEmpty)
+            ? user.username!.trim()
+            : ((user?.email != null && user!.email.trim().isNotEmpty)
+                ? user.email.split('@').first
+                : 'User');
     final displayName = fullName.isNotEmpty ? fullName : fallbackName;
-    final email = (user?.email != null && user!.email.trim().isNotEmpty) ? user.email : 'No email';
+    final email = (user?.email != null && user!.email.trim().isNotEmpty)
+        ? user.email
+        : 'No email';
 
     return Container(
       width: double.infinity,
@@ -381,17 +385,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAvatar(User? user, {double radius = 18}) {
     final fullName = [user?.firstName, user?.lastName]
-      .where((part) => part != null && part!.trim().isNotEmpty)
-      .map((part) => part!.trim())
-      .join(' ');
-    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty)
-      ? user.username!.trim()
-      : ((user?.email != null && user!.email.trim().isNotEmpty)
-        ? user.email.split('@').first
-        : 'U');
+        .where((part) => part != null && part!.trim().isNotEmpty)
+        .map((part) => part!.trim())
+        .join(' ');
+    final fallbackName =
+        (user?.username != null && user!.username!.trim().isNotEmpty)
+            ? user.username!.trim()
+            : ((user?.email != null && user!.email.trim().isNotEmpty)
+                ? user.email.split('@').first
+                : 'U');
     final nameForInitial = fullName.isNotEmpty ? fullName : fallbackName;
-    final initial = nameForInitial.isNotEmpty ? nameForInitial[0].toUpperCase() : 'U';
-    final color = _colorFromString(nameForInitial.isNotEmpty ? nameForInitial : initial);
+    final initial =
+        nameForInitial.isNotEmpty ? nameForInitial[0].toUpperCase() : 'U';
+    final color =
+        _colorFromString(nameForInitial.isNotEmpty ? nameForInitial : initial);
 
     return CircleAvatar(
       radius: radius,
@@ -409,15 +416,83 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int? _calculateDaysUntilFertile() {
     if (_insightData == null || _insightData!['fertile_period_start'] == null) {
+      debugPrint(
+          'Fertile calculation: No insight data or fertile_period_start is null');
       return null;
     }
-    try {
-      final fertileStart = DateTime.parse(_insightData!['fertile_period_start'].toString());
-      final today = DateTime.now();
-      final difference = fertileStart.difference(today).inDays;
-      return difference >= 0 ? difference : null;
-    } catch (e) {
+
+    final fertileStartStr =
+        _insightData!['fertile_period_start'].toString().trim();
+    if (fertileStartStr.isEmpty ||
+        fertileStartStr == 'N/A' ||
+        fertileStartStr == 'null') {
+      debugPrint(
+          'Fertile calculation: Invalid fertile_period_start value: $fertileStartStr');
       return null;
+    }
+
+    try {
+      final fertileStart = DateTime.parse(fertileStartStr);
+      final today = DateTime.now();
+      // Reset time part to compare only dates
+      final fertileStartDate =
+          DateTime(fertileStart.year, fertileStart.month, fertileStart.day);
+      final todayDate = DateTime(today.year, today.month, today.day);
+      final difference = fertileStartDate.difference(todayDate).inDays;
+
+      debugPrint(
+          'Fertile calculation: Today=$todayDate, FertileStart=$fertileStartDate, Days=$difference');
+
+      return difference >= 0
+          ? difference
+          : null; // Return null if already passed
+    } catch (e) {
+      debugPrint('Fertile calculation: Error parsing date: $e');
+      return null;
+    }
+  }
+
+  bool _isInFertileWindow() {
+    if (_insightData == null ||
+        _insightData!['fertile_period_start'] == null ||
+        _insightData!['fertile_period_end'] == null) {
+      return false;
+    }
+
+    final fertileStartStr =
+        _insightData!['fertile_period_start'].toString().trim();
+    final fertileEndStr = _insightData!['fertile_period_end'].toString().trim();
+
+    if (fertileStartStr.isEmpty ||
+        fertileStartStr == 'N/A' ||
+        fertileStartStr == 'null' ||
+        fertileEndStr.isEmpty ||
+        fertileEndStr == 'N/A' ||
+        fertileEndStr == 'null') {
+      return false;
+    }
+
+    try {
+      final fertileStart = DateTime.parse(fertileStartStr);
+      final fertileEnd = DateTime.parse(fertileEndStr);
+      final today = DateTime.now();
+
+      // Reset time part to compare only dates
+      final fertileStartDate =
+          DateTime(fertileStart.year, fertileStart.month, fertileStart.day);
+      final fertileEndDate =
+          DateTime(fertileEnd.year, fertileEnd.month, fertileEnd.day);
+      final todayDate = DateTime(today.year, today.month, today.day);
+
+      final isInWindow = !todayDate.isBefore(fertileStartDate) &&
+          !todayDate.isAfter(fertileEndDate);
+      debugPrint(
+          'In fertile window check: $isInWindow (Start: $fertileStartDate, End: $fertileEndDate, Today: $todayDate)');
+
+      return isInWindow;
+    } catch (e) {
+      debugPrint('Error checking fertile window: $e');
+      return false;
     }
   }
 
@@ -505,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final size = MediaQuery.of(context).size;
     final heroHeight = size.height * 0.5;
     const buttonHeight = 64.0;
-    
+
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       child: Column(
@@ -570,7 +645,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             left: 0,
                             right: 0,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -657,7 +733,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF2E683D).withOpacity(0.2)),
+                  border: Border.all(
+                      color: const Color(0xFF2E683D).withOpacity(0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,109 +748,158 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                      // Fertility Countdown
-                      if (_calculateDaysUntilFertile() != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFA8D497).withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: const Color(0xFFA8D497),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.hourglass_bottom,
-                                  color: Color(0xFF2E683D),
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Fertility Countdown',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${_calculateDaysUntilFertile()} days until fertile window',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF2E683D),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                    // Fertility Countdown
+                    if (_isInFertileWindow())
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFA8D497).withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFFA8D497),
+                              width: 1.5,
                             ),
                           ),
-                        )
-                      else
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFA8D497).withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: const Color(0xFFA8D497),
-                                width: 1.5,
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.favorite,
+                                color: Color(0xFF2E683D),
+                                size: 20,
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.hourglass_bottom,
-                                  color: Color(0xFF2E683D),
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Fertility Countdown',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black54,
-                                        ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'Fertility Status',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black54,
                                       ),
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'In fertile window now',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF2E683D),
-                                        ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      '🌟 You\'re in your fertile window now!',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF2E683D),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
+                      )
+                    else if (_calculateDaysUntilFertile() != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFA8D497).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFFA8D497),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.hourglass_bottom,
+                                color: Color(0xFF2E683D),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Fertility Countdown',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${_calculateDaysUntilFertile()} ${_calculateDaysUntilFertile() == 1 ? "day" : "days"} until fertile window',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF2E683D),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: Colors.grey.shade600,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Fertility Countdown',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Log your cycle to see countdown',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     _buildSummaryRow(
                       'Fertile Window',
-                      _insightData!['fertile_period_start'] != null && 
-                          _insightData!['fertile_period_end'] != null
+                      _insightData!['fertile_period_start'] != null &&
+                              _insightData!['fertile_period_end'] != null
                           ? '${_insightData!['fertile_period_start']} - ${_insightData!['fertile_period_end']}'
                           : 'N/A',
                     ),
@@ -807,7 +933,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: 'Gender\nPredictions',
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const GenderPredictionScreen()),
+                      MaterialPageRoute(
+                          builder: (_) => const GenderPredictionScreen()),
                     );
                   },
                 ),
@@ -825,7 +952,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: 'Find\nSpecialist',
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const SpecialistSearchScreen()),
+                      MaterialPageRoute(
+                          builder: (_) => const SpecialistSearchScreen()),
                     );
                   },
                 ),
@@ -835,7 +963,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: 'Chat with\nSpecialist',
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const SpecialistChatScreen()),
+                      MaterialPageRoute(
+                          builder: (_) => const SpecialistChatScreen()),
                     );
                   },
                 ),
@@ -889,7 +1018,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: InputDecoration(
                         hintText: 'Describe your feedback...',
                         hintStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.5),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -942,7 +1074,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           try {
                             // Send email via backend or email service
-                            final auth = Provider.of<AuthService>(context, listen: false);
+                            final auth = Provider.of<AuthService>(context,
+                                listen: false);
                             final user = auth.currentUser;
                             final userEmail = user?.email ?? 'No email';
 
@@ -958,17 +1091,21 @@ ${_messageController.text}
                             // Provide support email and copy it for the user
                             try {
                               final apiService = ApiService();
-                              final supportEmail = await apiService.getSupportEmail();
-                              await Clipboard.setData(ClipboardData(text: supportEmail));
+                              final supportEmail =
+                                  await apiService.getSupportEmail();
+                              await Clipboard.setData(
+                                  ClipboardData(text: supportEmail));
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Support email copied: $supportEmail'),
+                                    content: Text(
+                                        'Support email copied: $supportEmail'),
                                   ),
                                 );
                               }
                             } catch (apiError) {
-                              debugPrint('Error getting support email: $apiError');
+                              debugPrint(
+                                  'Error getting support email: $apiError');
                             }
 
                             if (mounted) {
@@ -1008,7 +1145,8 @@ ${_messageController.text}
                           height: 16,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
                       : const Text(

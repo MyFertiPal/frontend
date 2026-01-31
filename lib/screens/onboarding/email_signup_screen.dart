@@ -2,7 +2,6 @@
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../services/auth_service.dart';
-import '../../services/localization_provider.dart' as loc_provider;
 import 'dart:ui';
 
 class EmailSignupScreen extends StatefulWidget {
@@ -58,12 +57,12 @@ class _EmailSignupScreenState extends State<EmailSignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final localizationProvider = context.read<loc_provider.LocalizationProvider>();
-      final selectedLanguage = (localizationProvider.selectedLanguageCode ?? 'en').toLowerCase();
+      final selectedLanguage = 'en';
 
       final nameParts = _fullNameController.text.trim().split(' ');
       final firstName = nameParts.first;
-      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : firstName;
+      final lastName =
+          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : firstName;
 
       final authService = context.read<AuthService>();
 
@@ -258,10 +257,13 @@ class _EmailSignupScreenState extends State<EmailSignupScreen> {
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _showConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                      _showConfirmPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
-                      setState(() => _showConfirmPassword = !_showConfirmPassword);
+                      setState(
+                          () => _showConfirmPassword = !_showConfirmPassword);
                     },
                   ),
                   border: OutlineInputBorder(
@@ -345,7 +347,8 @@ class _EmailSignupScreenState extends State<EmailSignupScreen> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : const Text(
@@ -387,5 +390,3 @@ class _EmailSignupScreenState extends State<EmailSignupScreen> {
     );
   }
 }
-
-

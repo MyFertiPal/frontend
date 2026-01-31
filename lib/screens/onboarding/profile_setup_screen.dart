@@ -2,7 +2,6 @@
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_error_helper.dart';
-import '../../services/localization_provider.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 
@@ -274,9 +273,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   onChanged: (value) {
                     if (value != null) {
                       setState(() => _language = value);
-                      final provider = Provider.of<LocalizationProvider>(context, listen: false);
-                      final languageCode = _getLanguageCode(value);
-                      provider.setLocaleByLanguageCode(languageCode);
+                      // Language selection removed - using default
                     }
                   },
                 ),
@@ -286,7 +283,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               // Audio Guidance
               _buildFieldLabel('Audio Guidance'),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
@@ -344,7 +342,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: (_isLoading || !_acceptTerms) ? null : _handleContinue,
+                  onPressed:
+                      (_isLoading || !_acceptTerms) ? null : _handleContinue,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2D5A3A),
                     disabledBackgroundColor: Colors.grey.shade300,
@@ -363,7 +362,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             ),
                           ),
                         )
-                        : const Text(
+                      : const Text(
                           'Continue',
                           style: TextStyle(
                             fontSize: 16,
@@ -533,7 +532,3 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     super.dispose();
   }
 }
-
-
-
-

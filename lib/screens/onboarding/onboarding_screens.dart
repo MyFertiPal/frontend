@@ -1,7 +1,6 @@
 import 'language_selection_screen.dart';
 import 'registration_screen.dart';
 import 'package:flutter/material.dart';
-import '../../services/localization_provider.dart' as loc_provider;
 import 'package:provider/provider.dart';
 
 class OnboardingScreens extends StatefulWidget {
@@ -39,8 +38,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
   }
 
   String _getSelectedLanguageName(BuildContext context) {
-    final provider = context.read<loc_provider.LocalizationProvider>();
-    final code = provider.locale.languageCode;
+    const code = 'en';
     switch (code) {
       case 'en':
         return 'English';

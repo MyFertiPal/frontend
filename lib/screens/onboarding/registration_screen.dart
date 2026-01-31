@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
-import '../../services/localization_provider.dart' as loc_provider;
 import 'profile_setup_screen.dart';
 import 'login_screen.dart';
 import 'onboarding_screens.dart';
@@ -50,15 +49,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       return;
     }
 
-    // Get the selected language from LocalizationProvider
-    final localizationProvider = context.read<loc_provider.LocalizationProvider>();
-    final selectedLanguage =
-        (localizationProvider.selectedLanguageCode ?? 'en').toLowerCase();
+    // Using default language
+    final selectedLanguage = 'en';
 
     // Parse full name into first and last name
     final nameParts = _fullNameController.text.trim().split(' ');
     final firstName = nameParts.first;
-    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : nameParts.first;
+    final lastName =
+        nameParts.length > 1 ? nameParts.sublist(1).join(' ') : nameParts.first;
 
     // Use provided username
     final username = _usernameController.text.trim();
@@ -66,7 +64,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     // Register and send OTP before showing modal
     try {
       final authService = context.read<AuthService>();
-      
+
       // Show loading indicator
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -124,7 +122,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         );
       }
     }
-
   }
 
   @override
@@ -140,7 +137,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 30),
-                  
+
                   // Register Title
                   const Text(
                     'Register',
@@ -269,7 +266,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const OnboardingScreens()),
+                        MaterialPageRoute(
+                            builder: (_) => const OnboardingScreens()),
                       );
                     },
                     child: const Text(
@@ -413,7 +411,7 @@ class _VerifyModalContent extends StatefulWidget {
 class _VerifyModalContentState extends State<_VerifyModalContent> {
   int secondsRemaining = 180;
   bool timerStarted = false;
-  
+
   // Focus nodes for OTP fields
   late FocusNode _focusNode1;
   late FocusNode _focusNode2;
@@ -428,7 +426,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
     _focusNode2 = FocusNode();
     _focusNode3 = FocusNode();
     _focusNode4 = FocusNode();
-    
+
     // Start timer when widget is initialized
     Future.delayed(const Duration(milliseconds: 100), () {
       _startTimer();
@@ -448,7 +446,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
   void _startTimer() {
     if (timerStarted) return;
     timerStarted = true;
-    
+
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted && secondsRemaining > 0) {
         setState(() {
@@ -479,7 +477,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
       );
 
       final authService = context.read<AuthService>();
-      
+
       // Resend OTP with user data
       await authService.signUpWithPhone(
         phoneNumber: widget.phoneNumber,
@@ -498,7 +496,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
         widget.otp2Controller.clear();
         widget.otp3Controller.clear();
         widget.otp4Controller.clear();
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Verification code resent successfully'),
@@ -549,144 +547,149 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                       size: 72,
                       color: Color(0xFF2E683D),
                     ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Verify Your Account',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'A verification code has been sent to your email. Please enter it to continue.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Poppins',
-                    color: Colors.black54,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                // OTP Input Fields - 4 digits
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildOTPField(widget.otp1Controller, _focusNode1, _focusNode2),
-                    const SizedBox(width: 8),
-                    _buildOTPField(widget.otp2Controller, _focusNode2, _focusNode3),
-                    const SizedBox(width: 8),
-                    _buildOTPField(widget.otp3Controller, _focusNode3, _focusNode4),
-                    const SizedBox(width: 8),
-                    _buildOTPField(widget.otp4Controller, _focusNode4, null),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // Resend and Timer
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: secondsRemaining == 0 ? _resendOTP : null,
-                      child: Text(
-                        'Resend',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Poppins',
-                          color: secondsRemaining == 0
-                              ? const Color(0xFF2E683D)
-                              : Colors.grey.shade400,
-                        ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Verify Your Account',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: Colors.black,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(width: 16),
-                    Text(
-                      _formatTime(secondsRemaining),
-                      style: const TextStyle(
+                    const SizedBox(height: 12),
+                    const Text(
+                      'A verification code has been sent to your email. Please enter it to continue.',
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
-                        color: Color(0xFF2E683D),
+                        color: Colors.black54,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: 315,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      // Get OTP from controllers
-                      final otp = widget.otp1Controller.text +
-                          widget.otp2Controller.text +
-                          widget.otp3Controller.text +
-                          widget.otp4Controller.text;
-
-                      if (otp.length == 4) {
-                        try {
-                          // Verify OTP (signup was already called when modal opened)
-                          final authService = context.read<AuthService>();
-                          
-                          await authService.verifyPhoneOTP(
-                            widget.phoneNumber,
-                            otp,
-                          );
-
-                          if (mounted) {
-                            Navigator.of(context).pop();
-                            // Navigate to login after successful registration
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (_) => const LoginScreen(),
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Verification failed: ${e.toString()}'),
-                                backgroundColor: Colors.red,
-                                duration: const Duration(seconds: 4),
-                              ),
-                            );
-                          }
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please enter complete OTP'),
-                            backgroundColor: Colors.red,
+                    const SizedBox(height: 20),
+                    // OTP Input Fields - 4 digits
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildOTPField(
+                            widget.otp1Controller, _focusNode1, _focusNode2),
+                        const SizedBox(width: 8),
+                        _buildOTPField(
+                            widget.otp2Controller, _focusNode2, _focusNode3),
+                        const SizedBox(width: 8),
+                        _buildOTPField(
+                            widget.otp3Controller, _focusNode3, _focusNode4),
+                        const SizedBox(width: 8),
+                        _buildOTPField(
+                            widget.otp4Controller, _focusNode4, null),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Resend and Timer
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: secondsRemaining == 0 ? _resendOTP : null,
+                          child: Text(
+                            'Resend',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Poppins',
+                              color: secondsRemaining == 0
+                                  ? const Color(0xFF2E683D)
+                                  : Colors.grey.shade400,
+                            ),
                           ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E683D),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          _formatTime(secondsRemaining),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Poppins',
+                            color: Color(0xFF2E683D),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: 315,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Get OTP from controllers
+                          final otp = widget.otp1Controller.text +
+                              widget.otp2Controller.text +
+                              widget.otp3Controller.text +
+                              widget.otp4Controller.text;
+
+                          if (otp.length == 4) {
+                            try {
+                              // Verify OTP (signup was already called when modal opened)
+                              final authService = context.read<AuthService>();
+
+                              await authService.verifyPhoneOTP(
+                                widget.phoneNumber,
+                                otp,
+                              );
+
+                              if (mounted) {
+                                Navigator.of(context).pop();
+                                // Navigate to login after successful registration
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (_) => const LoginScreen(),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Verification failed: ${e.toString()}'),
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 4),
+                                  ),
+                                );
+                              }
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please enter complete OTP'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2E683D),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        child: const Text(
+                          'Verify',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      'Verify',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'Poppins',
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),

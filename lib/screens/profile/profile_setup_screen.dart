@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_error_helper.dart';
-import '../../services/localization_provider.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 
@@ -253,7 +252,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               _buildDropdown(
                 value: _ttcHistory.isNotEmpty ? _ttcHistory.first : null,
                 items: _ttcHistories,
-                onChanged: (value) => setState(() => _ttcHistory = value != null ? [value] : []),
+                onChanged: (value) =>
+                    setState(() => _ttcHistory = value != null ? [value] : []),
               ),
               const SizedBox(height: 20),
 
@@ -287,9 +287,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   onChanged: (value) {
                     if (value != null) {
                       setState(() => _language = value);
-                      final provider = Provider.of<LocalizationProvider>(context, listen: false);
-                      final languageCode = _getLanguageCode(value);
-                      provider.setLocaleByLanguageCode(languageCode);
+                      // Language selection removed - using default
                     }
                   },
                 ),
@@ -299,7 +297,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               // Audio Guidance
               _buildFieldLabel('Audio Guidance'),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),

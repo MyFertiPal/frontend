@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../services/localization_provider.dart' as loc_provider;
 import 'onboarding_screens.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key});
 
   @override
-  State<LanguageSelectionScreen> createState() => _LanguageSelectionScreenState();
+  State<LanguageSelectionScreen> createState() =>
+      _LanguageSelectionScreenState();
 }
 
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
@@ -32,7 +32,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       );
       return;
     }
-    context.read<loc_provider.LocalizationProvider>().setLocaleByLanguageCode(_selectedCode!);
+    // Language selection removed - using default
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const OnboardingScreens()),
     );
@@ -59,7 +59,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,28 +118,28 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(right: 30),
                         child: SizedBox(
-                        width: 99,
-                        height: 47,
-                        child: ElevatedButton(
-                          onPressed: () => _handleNext(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFA8D497),
-                            foregroundColor: const Color(0xFF224D2D),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                          width: 99,
+                          height: 47,
+                          child: ElevatedButton(
+                            onPressed: () => _handleNext(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFA8D497),
+                              foregroundColor: const Color(0xFF224D2D),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Next',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Poppins',
-                              color: Color(0xFF224D2D),
+                            child: const Text(
+                              'Next',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Poppins',
+                                color: Color(0xFF224D2D),
+                              ),
                             ),
                           ),
                         ),
-                      ),
                       ),
                     ),
                   ],

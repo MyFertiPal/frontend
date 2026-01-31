@@ -50,6 +50,8 @@ flutter:
   generate: true
   assets:
     - assets/images/
+    - assets/splash/logo.png
+    
 
 
 

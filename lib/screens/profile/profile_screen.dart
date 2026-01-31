@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
 import '../../models/user.dart';
-import '../../services/localization_provider.dart';
 import '../../services/api_service.dart';
 import '../home_screen.dart';
 import '../onboarding/welcome_screen.dart';
@@ -39,35 +38,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadUserProfile() async {
     try {
       // Use member variable instead of creating local
-      
+
       // Fetch profile data (contains age, cycle_length, etc.)
       final profileJson = await apiService.getProfile();
       debugPrint('Profile JSON received: ' + profileJson.toString());
-      
+
       // Also fetch basic user info (contains email, name, etc.)
       final userJson = await apiService.getUser();
       debugPrint('User JSON received: ' + userJson.toString());
-      
+
       // Merge both responses - profile data takes priority, fill in missing basic user info
       final mergedJson = {...userJson, ...profileJson};
       debugPrint('Merged User Data: ' + mergedJson.toString());
-      
+
       final fetchedUser = User.fromJson(mergedJson);
-      debugPrint('Parsed User: id=' + (fetchedUser.id?.toString() ?? 'null') +
-          ', email=' + (fetchedUser.email) +
-          ', firstName=' + (fetchedUser.firstName?.toString() ?? 'null') +
-          ', lastName=' + (fetchedUser.lastName?.toString() ?? 'null') +
-          ', username=' + (fetchedUser.username?.toString() ?? 'null') +
-          ', phoneNumber=' + (fetchedUser.phoneNumber?.toString() ?? 'null') +
-          ', preferredLanguage=' + (fetchedUser.preferredLanguage?.toString() ?? 'null') +
-          ', ttcHistory=' + (fetchedUser.ttcHistory?.toString() ?? 'null') +
-          ', faithPreference=' + (fetchedUser.faithPreference?.toString() ?? 'null') +
-          ', cycleLength=' + (fetchedUser.cycleLength?.toString() ?? 'null') +
-          ', lastPeriodDate=' + (fetchedUser.lastPeriodDate?.toString() ?? 'null'));
+      debugPrint('Parsed User: id=' +
+          (fetchedUser.id?.toString() ?? 'null') +
+          ', email=' +
+          (fetchedUser.email) +
+          ', firstName=' +
+          (fetchedUser.firstName?.toString() ?? 'null') +
+          ', lastName=' +
+          (fetchedUser.lastName?.toString() ?? 'null') +
+          ', username=' +
+          (fetchedUser.username?.toString() ?? 'null') +
+          ', phoneNumber=' +
+          (fetchedUser.phoneNumber?.toString() ?? 'null') +
+          ', preferredLanguage=' +
+          (fetchedUser.preferredLanguage?.toString() ?? 'null') +
+          ', ttcHistory=' +
+          (fetchedUser.ttcHistory?.toString() ?? 'null') +
+          ', faithPreference=' +
+          (fetchedUser.faithPreference?.toString() ?? 'null') +
+          ', cycleLength=' +
+          (fetchedUser.cycleLength?.toString() ?? 'null') +
+          ', lastPeriodDate=' +
+          (fetchedUser.lastPeriodDate?.toString() ?? 'null'));
       setState(() {
         _user = fetchedUser;
         if (_user != null) {
-          selectedLanguage = _getLanguageDisplayName(_user!.preferredLanguage ?? 'en');
+          selectedLanguage =
+              _getLanguageDisplayName(_user!.preferredLanguage ?? 'en');
         }
         _isLoading = false;
       });
@@ -95,12 +106,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _getLanguageDisplayName(String code) {
     switch (code.toLowerCase()) {
-      case 'en': return 'English';
-      case 'ig': return 'Igbo';
-      case 'ha': return 'Hausa';
-      case 'yo': return 'Yoruba';
-      case 'pcm': return 'Pidgin';
-      default: return 'English';
+      case 'en':
+        return 'English';
+      case 'ig':
+        return 'Igbo';
+      case 'ha':
+        return 'Hausa';
+      case 'yo':
+        return 'Yoruba';
+      case 'pcm':
+        return 'Pidgin';
+      default:
+        return 'English';
     }
   }
 
@@ -114,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context);
-    final loc = Provider.of<LocalizationProvider>(context);
+    // Localization removed
     final user = _user ?? auth.currentUser;
     final userCard = _userCard ?? auth.currentUser;
 
@@ -215,14 +232,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         (() {
                           final fullName = [user?.firstName, user?.lastName]
-                              .where((part) => part != null && part!.trim().isNotEmpty)
+                              .where((part) =>
+                                  part != null && part!.trim().isNotEmpty)
                               .map((part) => part!.trim())
                               .join(' ');
                           if (fullName.isNotEmpty) return fullName;
-                          if (user?.username != null && user!.username!.trim().isNotEmpty) {
+                          if (user?.username != null &&
+                              user!.username!.trim().isNotEmpty) {
                             return user.username!.trim();
                           }
-                          if (user?.email != null && user!.email.trim().isNotEmpty) {
+                          if (user?.email != null &&
+                              user!.email.trim().isNotEmpty) {
                             return user.email.split('@').first;
                           }
                           return 'User';
@@ -256,7 +276,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          const Icon(Icons.language, size: 16, color: Color(0xFF2E683D)),
+                          const Icon(Icons.language,
+                              size: 16, color: Color(0xFF2E683D)),
                           const SizedBox(width: 6),
                           Text(
                             'Language: ',
@@ -267,7 +288,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Text(
-                            _getLanguageDisplayName(user?.preferredLanguage ?? 'en'),
+                            _getLanguageDisplayName(
+                                user?.preferredLanguage ?? 'en'),
                             style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF2E683D),
@@ -306,7 +328,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Icon(Icons.person_outline, size: 20),
                   SizedBox(width: 8),
-                  Text('Set and update profile', style: TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Set and update profile',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
                   Spacer(),
                   Icon(Icons.chevron_right, size: 20),
                 ],
@@ -320,17 +343,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInitialAvatar(User? user) {
     final fullName = [user?.firstName, user?.lastName]
-      .where((part) => part != null && part!.trim().isNotEmpty)
-      .map((part) => part!.trim())
-      .join(' ');
-    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty)
-      ? user.username!.trim()
-      : ((user?.email != null && user!.email.trim().isNotEmpty)
-        ? user.email.split('@').first
-        : 'U');
+        .where((part) => part != null && part!.trim().isNotEmpty)
+        .map((part) => part!.trim())
+        .join(' ');
+    final fallbackName =
+        (user?.username != null && user!.username!.trim().isNotEmpty)
+            ? user.username!.trim()
+            : ((user?.email != null && user!.email.trim().isNotEmpty)
+                ? user.email.split('@').first
+                : 'U');
     final displayName = fullName.isNotEmpty ? fullName : fallbackName;
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
-    final bgColor = _colorFromString(displayName.isNotEmpty ? displayName : initial);
+    final bgColor =
+        _colorFromString(displayName.isNotEmpty ? displayName : initial);
 
     return CircleAvatar(
       radius: 35,
@@ -380,13 +405,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            _buildGoalRow('Faith Preference', _user?.faithPreference ?? 'Not set'),
+            _buildGoalRow(
+                'Faith Preference', _user?.faithPreference ?? 'Not set'),
             const SizedBox(height: 12),
-            _buildGoalRow('Cycle Length',
-              _user?.cycleLength != null ? '${_user!.cycleLength} days' : 'Not set'),
+            _buildGoalRow(
+                'Cycle Length',
+                _user?.cycleLength != null
+                    ? '${_user!.cycleLength} days'
+                    : 'Not set'),
             const SizedBox(height: 12),
-            _buildGoalRow('Last Period Date',
-              _user?.lastPeriodDate != null ? _user!.lastPeriodDate.toString().split(' ')[0] : 'Not set'),
+            _buildGoalRow(
+                'Last Period Date',
+                _user?.lastPeriodDate != null
+                    ? _user!.lastPeriodDate.toString().split(' ')[0]
+                    : 'Not set'),
             const SizedBox(height: 16),
           ],
         ),
@@ -407,7 +439,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         if (label == 'Faith Preference')
           Text(
-            (_user?.faithPreference ?? 'Not set')[0].toUpperCase() + (_user?.faithPreference ?? 'Not set').substring(1),
+            (_user?.faithPreference ?? 'Not set')[0].toUpperCase() +
+                (_user?.faithPreference ?? 'Not set').substring(1),
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -463,10 +496,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'pg': 'Pidgin',
     };
     // Find the code for the current selectedLanguage
-    String selectedCode = languageOptions.entries.firstWhere(
-      (e) => e.value == selectedLanguage,
-      orElse: () => const MapEntry('en', 'English'),
-    ).key;
+    String selectedCode = languageOptions.entries
+        .firstWhere(
+          (e) => e.value == selectedLanguage,
+          orElse: () => const MapEntry('en', 'English'),
+        )
+        .key;
     return Row(
       children: [
         Container(
@@ -475,7 +510,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             shape: BoxShape.circle,
           ),
           padding: const EdgeInsets.all(8),
-          child: const Icon(Icons.language, size: 22, color: Color(0xFF2D5A3A)), // dark green
+          child: const Icon(Icons.language,
+              size: 22, color: Color(0xFF2D5A3A)), // dark green
         ),
         const SizedBox(width: 12),
         const Expanded(
@@ -502,9 +538,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             try {
               // Save language preference to backend first
               await apiService.updateLanguagePreference(newCode);
-              
+
               debugPrint('Language changed to: $newCode and saved to backend');
-              
+
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -512,11 +548,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     duration: Duration(seconds: 2),
                   ),
                 );
-                
+
                 // Rebuild home page to reflect changes
                 Future.delayed(const Duration(milliseconds: 500), () {
                   if (mounted) {
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/home', (route) => false);
                   }
                 });
               }
@@ -545,8 +582,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
-
   Widget _buildPrivacySection() {
     return Card(
       elevation: 2,
@@ -569,34 +604,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 8),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined, color: Color(0xFF2D5A3A)), // dark green
+              leading: const Icon(Icons.shield_outlined,
+                  color: Color(0xFF2D5A3A)), // dark green
               title: const Text('Data Privacy Policy'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const PrivacyAndSecurityScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const PrivacyAndSecurityScreen()),
                 );
               },
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined, color: Color(0xFF4CAF50)), // medium green
+              leading: const Icon(Icons.shield_outlined,
+                  color: Color(0xFF4CAF50)), // medium green
               title: const Text('Manage Data & Permissions'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const PrivacyAndSecurityScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const PrivacyAndSecurityScreen()),
                 );
               },
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined, color: Color(0xFF81C784)), // light green
+              leading: const Icon(Icons.shield_outlined,
+                  color: Color(0xFF81C784)), // light green
               title: const Text('Explore my Data'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const PrivacyAndSecurityScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const PrivacyAndSecurityScreen()),
                 );
               },
             ),
@@ -653,7 +694,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             );
                             // Navigate to WelcomeScreen
                             Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                              MaterialPageRoute(
+                                  builder: (_) => const WelcomeScreen()),
                               (route) => false,
                             );
                           }
@@ -685,7 +727,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : const Text(
