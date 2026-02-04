@@ -152,6 +152,7 @@
   "exploreMyData": "Explore my Data",
   "deleteAccount": "Delete Account",
   "deleteAccountWarning": "Once you delete your account, there is no going back. This action is permanent and cannot be undone.",
+  "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
   "accountDeletedSuccess": "Account deleted successfully.",
   "deleteAccountFailed": "Failed to delete account",
   

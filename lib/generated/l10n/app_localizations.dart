@@ -836,6 +836,12 @@ abstract class AppLocalizations {
   /// **'Once you delete your account, there is no going back. This action is permanent and cannot be undone.'**
   String get deleteAccountWarning;
 
+  /// No description provided for @deleteAccountConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? This action cannot be undone.'**
+  String get deleteAccountConfirmation;
+
   /// No description provided for @accountDeletedSuccess.
   ///
   /// In en, this message translates to:

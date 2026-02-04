@@ -386,6 +386,10 @@ class AppLocalizationsYo extends AppLocalizations {
       'Once you delete your account, there is no going back. This action is permanent and cannot be undone.';
 
   @override
+  String get deleteAccountConfirmation =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
   String get accountDeletedSuccess => 'Account deleted successfully.';
 
   @override

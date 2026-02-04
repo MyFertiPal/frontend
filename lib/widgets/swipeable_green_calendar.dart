@@ -304,14 +304,14 @@ class _MonthGrid extends StatelessWidget {
             border = Border.all(color: const Color(0xFFD32F2F), width: 2);
             indicator = _buildDot(const Color(0xFFD32F2F).withOpacity(0.6));
           } else if (isOvulation) {
-            // Ovulation day: green background, white text, green border
-            bg = const Color(0xFF2E683D); // Green
+            // Ovulation day: darker green background, white text, dark green border
+            bg = const Color(0xFF1B4D2D); // Darker green
             txtColor = Colors.white;
-            border = Border.all(color: const Color(0xFF2E683D), width: 1.5);
-            indicator = _buildDot(const Color(0xFF2E683D));
+            border = Border.all(color: const Color(0xFF1B4D2D), width: 2);
+            indicator = _buildDot(const Color(0xFF1B4D2D));
           } else if (isFertile) {
-            // Fertile window: white background, green text, green border
-            bg = Colors.white;
+            // Fertile window: light green background, dark green text, green border
+            bg = const Color(0xFFC8E6C9); // Light green
             txtColor = const Color(0xFF2E683D);
             border = Border.all(color: const Color(0xFF2E683D), width: 1.2);
             indicator = _buildDot(const Color(0xFF2E683D).withOpacity(0.7));

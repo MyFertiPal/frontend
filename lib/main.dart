@@ -14,6 +14,7 @@ import "screens/onboarding/forget_password_flow.dart"
     show ForgotPasswordScreen, ResetPasswordScreen, PasswordUpdatedScreen;
 import "screens/home_screen.dart";
 import "services/auth_service.dart";
+import "services/audio_service.dart";
 import "theme/app_theme.dart";
 
 void main() {
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        Provider(create: (_) => AudioService()),
       ],
       child: Consumer<LanguageProvider>(
         builder: (context, languageProvider, _) {

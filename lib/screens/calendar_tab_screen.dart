@@ -305,17 +305,17 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           'tapped_days', _selectedCalendarDaysFormatted.toList());
     }
 
+    // Calculate updated period and cycle length from tapped days
+    final calculatedPeriodLength = _calculatePeriodLength();
+    final calculatedCycleLength = _calculateCycleLength();
+
     // Now perform the profile update (async, outside setState)
     if (_selectedCalendarDays.isNotEmpty) {
       try {
         final api = ApiService();
         final profileJson = await api.getProfile();
         final userData = profileJson['data'] ?? profileJson;
-        // Retain all required fields, update only lastPeriodDate
-        final int? cycleLength =
-            userData['cycle_length'] ?? userData['cycleLength'];
-        final int? periodLength =
-            userData['period_length'] ?? userData['periodLength'];
+        // Retain all required fields, update lastPeriodDate, periodLength, and cycleLength
         final int? age = userData['age'];
         final String? ttcHistory =
             userData['ttc_history'] ?? userData['ttcHistory'];
@@ -323,14 +323,19 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
             userData['faith_preference'] ?? userData['faithPreference'];
         final bool? audioPreference = userData['audio_preference'];
 
+        // Use calculated values or fallback to existing profile values
+        final finalPeriodLength =
+            calculatedPeriodLength ?? userData['period_length'] ?? 5;
+        final finalCycleLength =
+            calculatedCycleLength ?? userData['cycle_length'] ?? 28;
+
         // Calculate next period days based on last period date and cycle length
-        if (_lastPeriodDate != null &&
-            cycleLength != null &&
-            periodLength != null) {
+        if (_lastPeriodDate != null) {
           final lastPeriod = DateTime.parse(_lastPeriodDate!);
-          final nextPeriodStart = lastPeriod.add(Duration(days: cycleLength));
+          final nextPeriodStart =
+              lastPeriod.add(Duration(days: finalCycleLength));
           final nextPeriodDaysList = List<DateTime>.generate(
-            periodLength,
+            finalPeriodLength,
             (i) => DateTime(nextPeriodStart.year, nextPeriodStart.month,
                 nextPeriodStart.day + i),
           );
@@ -343,12 +348,16 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
 
         await api.updateProfile(
           age: age,
-          cycleLength: cycleLength,
+          cycleLength: finalCycleLength,
+          periodLength: finalPeriodLength,
           lastPeriodDate: _lastPeriodDate,
           ttcHistory: ttcHistory,
           faithPreference: faithPreference,
           audioPreference: audioPreference,
         );
+
+        debugPrint(
+            'Profile updated with cycleLength: $finalCycleLength, periodLength: $finalPeriodLength');
       } catch (e) {
         debugPrint(
             'Failed to sync last period date to profile: ${e.toString()}');
@@ -358,6 +367,84 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+
+  /// Calculate period length from consecutive tapped days
+  /// Returns the count of consecutive days from the earliest date
+  int? _calculatePeriodLength() {
+    if (_selectedCalendarDays.isEmpty) return null;
+
+    // Sort the selected days
+    final sortedDays = _selectedCalendarDays.toList()
+      ..sort((a, b) => a.compareTo(b));
+
+    // Count consecutive days starting from the earliest
+    int consecutiveCount = 1;
+    for (int i = 1; i < sortedDays.length; i++) {
+      final prevDay = sortedDays[i - 1];
+      final currentDay = sortedDays[i];
+      final dayDifference = currentDay.difference(prevDay).inDays;
+
+      if (dayDifference == 1) {
+        consecutiveCount++;
+      } else {
+        // Break in consecutive days found
+        break;
+      }
+    }
+
+    debugPrint('Calculated period length: $consecutiveCount days');
+    return consecutiveCount;
+  }
+
+  /// Calculate cycle length from multiple period markings
+  /// If user has marked multiple periods, calculate average cycle length
+  int? _calculateCycleLength() {
+    if (_selectedCalendarDays.length < 2) return null;
+
+    // Sort the selected days
+    final sortedDays = _selectedCalendarDays.toList()
+      ..sort((a, b) => a.compareTo(b));
+
+    // Find gaps between groups of days (assuming each group is a period)
+    // Get the first day of each potential period group
+    final periodStarts = <DateTime>[];
+    DateTime currentPeriodStart = sortedDays.first;
+    periodStarts.add(currentPeriodStart);
+
+    for (int i = 1; i < sortedDays.length; i++) {
+      final prevDay = sortedDays[i - 1];
+      final currentDay = sortedDays[i];
+      final dayDifference = currentDay.difference(prevDay).inDays;
+
+      // If gap is more than 1, it's a new period
+      if (dayDifference > 1) {
+        currentPeriodStart = currentDay;
+        periodStarts.add(currentPeriodStart);
+      }
+    }
+
+    // If we have at least 2 period starts, calculate average cycle length
+    if (periodStarts.length >= 2) {
+      final cycleLengths = <int>[];
+      for (int i = 1; i < periodStarts.length; i++) {
+        final gap = periodStarts[i].difference(periodStarts[i - 1]).inDays;
+        if (gap > 0) {
+          cycleLengths.add(gap);
+        }
+      }
+
+      if (cycleLengths.isNotEmpty) {
+        final averageCycleLength =
+            (cycleLengths.reduce((a, b) => a + b) / cycleLengths.length)
+                .round();
+        debugPrint(
+            'Calculated cycle length: $averageCycleLength days (from ${cycleLengths.length} cycle(s))');
+        return averageCycleLength;
+      }
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {

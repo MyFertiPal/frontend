@@ -7,6 +7,7 @@ import '../generated/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../providers/language_provider.dart';
 import '../services/api_service.dart';
+import '../services/audio_service.dart';
 import '../models/user.dart';
 import 'profile/profile_screen.dart';
 import 'support/support_screen.dart';
@@ -18,6 +19,7 @@ import 'user_guide_screen.dart';
 import 'specialists/specialist_search_screen.dart';
 import 'specialists/specialist_chat_screen.dart';
 import 'tracking/log_symptom_screen.dart';
+import 'data_statistics_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -44,6 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Map<String, dynamic>? _insightData;
   String? _insightText;
+  String? _insightAudioUrl;
+  bool _audioEnabled = true;
+  late AudioService _audioService;
 
   Locale? _lastLocale;
 
@@ -65,7 +70,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _audioService = AudioService();
+    _loadAudioPreference();
     _sendInsightsPost();
+  }
+
+  Future<void> _loadAudioPreference() async {
+    try {
+      final api = ApiService();
+      final profile = await api.getProfile();
+      final audioPreference = profile['audio_preference'] ?? true;
+      setState(() {
+        _audioEnabled = audioPreference;
+      });
+    } catch (e) {
+      debugPrint('Error loading audio preference: $e');
+    }
   }
 
   @override
@@ -146,7 +166,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 insights['prediction']?.toString() ??
                 insights['recommendation']?.toString() ??
                 _defaultInsightText;
+            // Get audio URL if available
+            _insightAudioUrl = insights['audio_url']?.toString();
             debugPrint('Set _insightText to: $_insightText');
+            debugPrint('Audio URL: $_insightAudioUrl');
           });
           return;
         }
@@ -167,6 +190,39 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _playInsightAudio() async {
+    if (_insightAudioUrl == null || _insightAudioUrl!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Audio not available for this insight'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    try {
+      await _audioService.playArticle(
+        'insight_${DateTime.now().millisecondsSinceEpoch}',
+        _insightAudioUrl!,
+      );
+    } catch (e) {
+      debugPrint('Error playing insight audio: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to play audio: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _stopInsightAudio() async {
+    await _audioService.pause();
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context);
@@ -182,6 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHomeTab(),
               const EducationalHubScreen(),
               const CalendarTabScreen(),
+              const DataStatisticsScreen(),
               const SupportScreen(),
             ],
           ),
@@ -317,9 +374,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 : '',
           ),
           BottomNavigationBarItem(
+            icon: const Icon(Icons.assessment),
+            label: _selectedIndex == 3 ? 'Data' : '',
+          ),
+          BottomNavigationBarItem(
             icon: const Icon(Icons.support_agent),
             label:
-                _selectedIndex == 3 ? AppLocalizations.of(context).support : '',
+                _selectedIndex == 4 ? AppLocalizations.of(context).support : '',
           ),
         ],
       ),
@@ -708,6 +769,57 @@ class _HomeScreenState extends State<HomeScreen> {
                                     maxLines: 4,
                                     overflow: TextOverflow.ellipsis,
                                   ),
+                                  if (_audioEnabled && _insightAudioUrl != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 12),
+                                      child: Consumer<AudioService>(
+                                        builder: (context, audioService, _) {
+                                          return GestureDetector(
+                                            onTap: audioService.isPlaying
+                                                ? _stopInsightAudio
+                                                : _playInsightAudio,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white
+                                                    .withOpacity(0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    audioService.isPlaying
+                                                        ? Icons.pause_circle
+                                                        : Icons.play_circle,
+                                                    color:
+                                                        const Color(0xFFA8D497),
+                                                    size: 20,
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Text(
+                                                    audioService.isPlaying
+                                                        ? 'Pause'
+                                                        : 'Listen',
+                                                    style: const TextStyle(
+                                                      color: Color(0xFFA8D497),
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontFamily: 'Poppins',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),

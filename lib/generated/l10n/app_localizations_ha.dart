@@ -111,7 +111,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get fertileWindow => 'Lokacin haihuwa';
 
   @override
-  String get ovulationDay => 'Ovulation Day';
+  String get ovulationDay => 'Ranar Haifuwa';
 
   @override
   String get fertilityCountdown => 'Fertility Countdown';
@@ -139,13 +139,13 @@ class AppLocalizationsHa extends AppLocalizations {
   String get home => 'Gida';
 
   @override
-  String get calendar => 'Calendar';
+  String get calendar => 'Kalanda';
 
   @override
   String get educational => 'Karatu';
 
   @override
-  String get support => 'Support';
+  String get support => 'Taimako';
 
   @override
   String get profile => 'Bayani';
@@ -157,7 +157,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get logOut => 'Log out';
 
   @override
-  String get logSymptoms => 'Log symptoms';
+  String get logSymptoms => 'Rubuta Alamomi';
 
   @override
   String get trackCycle => 'Track Cycle';
@@ -383,6 +383,10 @@ class AppLocalizationsHa extends AppLocalizations {
   @override
   String get deleteAccountWarning =>
       'Once you delete your account, there is no going back. This action is permanent and cannot be undone.';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
 
   @override
   String get accountDeletedSuccess => 'Account deleted successfully.';

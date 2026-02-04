@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_error_helper.dart';
 import '../../services/api_service.dart';
@@ -522,6 +524,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         audioPreference: _audioGuidance,
       );
 
+      // Generate and save period days to calendar if last period date is set
+      if (_lastPeriodDate != null) {
+        await _generateAndSavePeriodDays();
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -546,6 +553,37 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _generateAndSavePeriodDays() async {
+    if (_lastPeriodDate == null) return;
+
+    try {
+      // Generate period days based on last period date and period length
+      final periodDays = List<DateTime>.generate(
+        _periodLength,
+        (i) => DateTime(
+          _lastPeriodDate!.year,
+          _lastPeriodDate!.month,
+          _lastPeriodDate!.day + i,
+        ),
+      );
+
+      // Convert to formatted strings
+      final periodDaysFormatted = periodDays
+          .map((d) => DateFormat('yyyy-MM-dd').format(d))
+          .toSet()
+          .toList();
+
+      // Save to SharedPreferences for calendar to load
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList('tapped_days', periodDaysFormatted);
+
+      debugPrint(
+          'Generated and saved ${periodDays.length} period days starting from ${DateFormat('yyyy-MM-dd').format(_lastPeriodDate!)}');
+    } catch (e) {
+      debugPrint('Error generating period days: $e');
     }
   }
 

@@ -15,6 +15,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
   Map<String, String?> _selectedOptions = {};
   // Change Mood to allow multiple selections
   Map<String, List<String>> _multiSelectedOptions = {'Mood': []};
+  bool _isSaving = false;
 
   List<String> get _selectedSymptoms {
     // For multi-select symptoms, add all selected values with container name
@@ -42,6 +43,100 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
     'Pain': ['Mild', 'Moderate', 'Severe'],
     'Abdominal Cramps': ['Mild', 'Moderate', 'Severe'],
   };
+
+  Future<void> _saveSymptoms() async {
+    if (_selectedSymptoms.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one symptom'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final api = ApiService();
+
+      // Fetch user profile for cycleLength and periodLength
+      final profileJson = await api.getProfile();
+
+      // Defensive: handle both direct and nested user fields
+      final userData = profileJson['data'] ?? profileJson;
+      String? lastPeriodDate =
+          userData['last_period_date'] ?? userData['lastPeriodDate'];
+      int? cycleLength = userData['cycle_length'] ?? userData['cycleLength'];
+      int? periodLength = userData['period_length'] ?? userData['periodLength'];
+
+      // Fallback: if lastPeriodDate is null, set to today
+      if (lastPeriodDate == null) {
+        lastPeriodDate = DateTime.now().toIso8601String().split('T')[0];
+      }
+
+      final payload = {
+        "last_period_date": lastPeriodDate,
+        "cycle_length": cycleLength,
+        "period_length": periodLength,
+        "symptoms": _selectedSymptoms,
+      };
+
+      debugPrint('Sending log payload: ${jsonEncode(payload)}');
+
+      final headers = await api.getHeaders(includeAuth: true);
+      final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(payload),
+      );
+
+      debugPrint('Log API response: ${response.statusCode} ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Symptoms logged successfully!'),
+              backgroundColor: Color(0xFF2E683D),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          Navigator.of(context).pop({
+            'symptoms': _selectedSymptoms,
+          });
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to save symptoms: ${response.statusCode}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error saving symptoms: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,65 +237,33 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () async {
-                      // Fetch user profile for cycleLength and periodLength
-                      String? lastPeriodDate;
-                      int? cycleLength;
-                      int? periodLength;
-                      final api = ApiService();
-                      final profileJson = await api.getProfile();
-                      // Defensive: handle both direct and nested user fields
-                      final userData = profileJson['data'] ?? profileJson;
-                      lastPeriodDate = userData['last_period_date'] ??
-                          userData['lastPeriodDate'];
-                      cycleLength =
-                          userData['cycle_length'] ?? userData['cycleLength'];
-                      periodLength =
-                          userData['period_length'] ?? userData['periodLength'];
-                      // Fallback: if lastPeriodDate is null, set to today
-                      if (lastPeriodDate == null) {
-                        lastPeriodDate =
-                            DateTime.now().toIso8601String().split('T')[0];
-                      }
-                      final payload = {
-                        "last_period_date": lastPeriodDate,
-                        "cycle_length": cycleLength,
-                        "period_length": periodLength,
-                        "symptoms": _selectedSymptoms,
-                      };
-                      debugPrint('Sending log payload: ' + jsonEncode(payload));
-                      final headers = await api.getHeaders(includeAuth: true);
-                      final url =
-                          Uri.parse('${ApiService.baseUrl}/insights/insights');
-                      final response = await http.post(
-                        url,
-                        headers: headers,
-                        body: jsonEncode(payload),
-                      );
-                      debugPrint(
-                          'Log API response: ${response.statusCode} ${response.body}');
-                      if (response.statusCode == 200 ||
-                          response.statusCode == 201) {
-                        Navigator.of(context).pop({
-                          'symptoms': _selectedSymptoms,
-                        });
-                      }
-                    },
+                    onPressed: _isSaving ? null : _saveSymptoms,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: const Color(0xFF2E683D),
+                      disabledBackgroundColor: Colors.grey,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Save log',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: _isSaving
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            'Save log',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
               ],

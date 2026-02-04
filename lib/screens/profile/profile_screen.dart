@@ -11,6 +11,7 @@ import '../../services/api_service.dart';
 import '../home_screen.dart';
 import '../onboarding/welcome_screen.dart';
 import '../privacy_and_security/privacy_and_security_screen.dart';
+import '../notification_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -663,6 +664,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.notifications_outlined,
+                  color: Color(0xFF2E683D)),
+              title: const Text('Notifications & Settings'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (_) => const NotificationSettingsScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -703,37 +717,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ElevatedButton(
                 onPressed: _isDeleting
                     ? null
-                    : () async {
-                        setState(() => _isDeleting = true);
-                        try {
-                          await ApiService().deleteUser();
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(AppLocalizations.of(context)!
-                                    .accountDeletedSuccess),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            // Navigate to WelcomeScreen
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (_) => const WelcomeScreen()),
-                              (route) => false,
-                            );
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to delete account: $e'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        } finally {
-                          if (mounted) setState(() => _isDeleting = false);
-                        }
+                    : () {
+                        _showDeleteConfirmation(context);
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -764,5 +749,102 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context)!.deleteAccount),
+          content: Text(
+            AppLocalizations.of(context)!.deleteAccountConfirmation,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _performAccountDeletion();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+              ),
+              child: Text(AppLocalizations.of(context)!.delete),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _performAccountDeletion() async {
+    if (!mounted) return;
+
+    setState(() => _isDeleting = true);
+
+    try {
+      // Attempt backend deletion
+      try {
+        await apiService.deleteUser();
+      } catch (e) {
+        // If token expired or user already gone, continue to local cleanup
+        final isAuthError = e.toString().contains('401') ||
+            e.toString().contains('403') ||
+            e.toString().contains('404');
+
+        if (!isAuthError) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text(AppLocalizations.of(context)!.deleteAccountFailed),
+                backgroundColor: Colors.red,
+              ),
+            );
+            setState(() => _isDeleting = false);
+          }
+          return;
+        }
+        // If it's an auth error, continue with local cleanup
+        debugPrint(
+            'Auth error during deletion, proceeding with local cleanup: $e');
+      }
+
+      // Always clear local auth state
+      final auth = Provider.of<AuthService>(context, listen: false);
+      await auth.signOut();
+
+      // Navigate back to welcome screen after deletion/cleanup
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.accountDeletedSuccess),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error during account deletion: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                '${AppLocalizations.of(context)!.deleteAccountFailed}: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => _isDeleting = false);
+      }
+    }
   }
 }
