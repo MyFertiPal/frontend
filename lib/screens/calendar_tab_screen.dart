@@ -602,7 +602,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                 backgroundColor: const Color(0xFF2E683D),
                 elevation: 6,
                 onPressed: () async {
-                  final result = await Navigator.of(context).push<bool>(
+                  final result = await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => const LogSymptomScreen(),
                       settings: RouteSettings(
@@ -614,7 +614,14 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                       ),
                     ),
                   );
-                  if (result == true) {
+                  // Handle result from LogSymptomScreen
+                  if (result != null) {
+                    // Result can be either a Map with symptoms or just true
+                    if (result is Map && result['symptoms'] != null) {
+                      debugPrint(
+                          'Received logged symptoms: ${result['symptoms']}');
+                    }
+                    // Refresh symptoms display
                     _fetchLoggedSymptoms();
                   }
                 },

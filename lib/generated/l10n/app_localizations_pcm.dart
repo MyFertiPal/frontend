@@ -315,6 +315,10 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get contactSupport => 'Contact Support';
 
   @override
+  String get contactSupportMessage =>
+      'You need help or you get question? Send us email and we go reply you sharp sharp.';
+
+  @override
   String get faqTitle => 'Frequently Asked Questions';
 
   @override

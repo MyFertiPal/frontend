@@ -12,6 +12,7 @@ import '../home_screen.dart';
 import '../onboarding/welcome_screen.dart';
 import '../privacy_and_security/privacy_and_security_screen.dart';
 import '../notification_settings_screen.dart';
+import '../data_statistics_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -77,19 +78,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           (fetchedUser.cycleLength?.toString() ?? 'null') +
           ', lastPeriodDate=' +
           (fetchedUser.lastPeriodDate?.toString() ?? 'null'));
-      setState(() {
-        _user = fetchedUser;
-        if (_user != null) {
-          selectedLanguage =
-              _getLanguageDisplayName(_user!.preferredLanguage ?? 'en');
-        }
-        _isLoading = false;
-      });
+
+      if (mounted) {
+        setState(() {
+          _user = fetchedUser;
+          if (_user != null) {
+            selectedLanguage =
+                _getLanguageDisplayName(_user!.preferredLanguage ?? 'en');
+          }
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       debugPrint('Error loading profile: $e');
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      // Show error message to user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load profile: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
@@ -99,9 +115,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final userJson = await apiService.getUser();
       debugPrint('getUser JSON received: ' + userJson.toString());
       final fetchedUser = User.fromJson(userJson);
-      setState(() {
-        _userCard = fetchedUser;
-      });
+      if (mounted) {
+        setState(() {
+          _userCard = fetchedUser;
+        });
+      }
     } catch (e) {
       debugPrint('Error loading getUser for card: $e');
     }
@@ -183,33 +201,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2D5A3A)),
               ),
             )
-          : RefreshIndicator(
-              onRefresh: _loadUserProfile,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // User Profile Card (always use get_user)
-                    _buildProfileCard(userCard, context),
-                    const SizedBox(height: 16),
-                    // Removed nextPeriodDates display. Use backend-driven widgets only.
-                    // Goals Section
-                    _buildGoalsSection(),
-                    const SizedBox(height: 16),
-                    // Preferences Section
-                    _buildPreferencesSection(),
-                    const SizedBox(height: 16),
-                    // Privacy & Security Section
-                    _buildPrivacySection(),
-                    const SizedBox(height: 16),
-                    // Delete Account Section
-                    _buildDeleteAccountSection(context),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
+          : Builder(
+              builder: (context) {
+                // Wrap in error boundary
+                try {
+                  return RefreshIndicator(
+                    onRefresh: _loadUserProfile,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // User Profile Card (always use get_user)
+                          _buildProfileCard(userCard, context),
+                          const SizedBox(height: 16),
+                          // Removed nextPeriodDates display. Use backend-driven widgets only.
+                          // Goals Section
+                          _buildGoalsSection(),
+                          const SizedBox(height: 16),
+                          // Preferences Section
+                          _buildPreferencesSection(),
+                          const SizedBox(height: 16),
+                          // Privacy & Security Section
+                          _buildPrivacySection(),
+                          const SizedBox(height: 16),
+                          // Delete Account Section
+                          _buildDeleteAccountSection(context),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  debugPrint('Error building profile screen: $e');
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Error loading profile',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            e.toString(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              _loadUserProfile();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2D5A3A),
+                            ),
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
     );
   }
@@ -398,11 +468,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Icon(Icons.favorite_border, size: 20, color: Colors.grey[700]),
                 const SizedBox(width: 8),
-                Text(
-                  (_user?.ttcHistory?.join(', ') ?? 'Not set'),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Text(
+                    () {
+                      if (_user?.ttcHistory == null ||
+                          _user!.ttcHistory.isEmpty) {
+                        return 'Not set';
+                      }
+                      return _user!.ttcHistory.join(', ');
+                    }(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -442,8 +520,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         if (label == 'Faith Preference')
           Text(
-            (_user?.faithPreference ?? 'Not set')[0].toUpperCase() +
-                (_user?.faithPreference ?? 'Not set').substring(1),
+            () {
+              final faith = _user?.faithPreference ?? 'Not set';
+              if (faith.isEmpty) return 'Not set';
+              return faith[0].toUpperCase() + faith.substring(1);
+            }(),
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -452,7 +533,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           )
         else
           Text(
-            value,
+            value.isEmpty ? 'Not set' : value,
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -660,7 +741,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (_) => const PrivacyAndSecurityScreen()),
+                      builder: (_) => const DataStatisticsScreen()),
                 );
               },
             ),
@@ -787,22 +868,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isDeleting = true);
 
     try {
+      debugPrint('Starting account deletion process...');
+
       // Attempt backend deletion
+      bool backendDeleted = false;
+
       try {
         await apiService.deleteUser();
+        backendDeleted = true;
+        debugPrint('Backend deletion successful');
       } catch (e) {
+        debugPrint('Backend deletion error: $e');
+
         // If token expired or user already gone, continue to local cleanup
         final isAuthError = e.toString().contains('401') ||
             e.toString().contains('403') ||
-            e.toString().contains('404');
+            e.toString().contains('404') ||
+            e.toString().contains('token') ||
+            e.toString().contains('unauthorized');
 
         if (!isAuthError) {
+          // Show detailed error for non-auth errors
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content:
-                    Text(AppLocalizations.of(context)!.deleteAccountFailed),
+                content: Text(
+                  'Failed to delete account from server: ${e.toString()}',
+                ),
                 backgroundColor: Colors.red,
+                duration: const Duration(seconds: 5),
+                action: SnackBarAction(
+                  label: 'Retry',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    _performAccountDeletion();
+                  },
+                ),
               ),
             );
             setState(() => _isDeleting = false);
@@ -815,16 +916,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       // Always clear local auth state
+      debugPrint('Clearing local authentication state...');
       final auth = Provider.of<AuthService>(context, listen: false);
       await auth.signOut();
+      debugPrint('Local auth state cleared');
 
       // Navigate back to welcome screen after deletion/cleanup
       if (mounted) {
+        final message = backendDeleted
+            ? 'Account deleted successfully'
+            : 'Logged out locally (server unreachable)';
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.accountDeletedSuccess),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
+            content: Text(message),
+            backgroundColor: backendDeleted ? Colors.green : Colors.orange,
+            duration: const Duration(seconds: 3),
           ),
         );
 
@@ -834,13 +941,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
     } catch (e) {
-      debugPrint('Error during account deletion: $e');
+      debugPrint('Critical error during account deletion: $e');
+      debugPrint('Stack trace: ${StackTrace.current}');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${AppLocalizations.of(context)!.deleteAccountFailed}: $e'),
+              'Error: ${e.toString()}',
+            ),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: () {
+                _performAccountDeletion();
+              },
+            ),
           ),
         );
         setState(() => _isDeleting = false);

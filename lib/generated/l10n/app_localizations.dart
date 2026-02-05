@@ -698,6 +698,12 @@ abstract class AppLocalizations {
   /// **'Contact Support'**
   String get contactSupport;
 
+  /// No description provided for @contactSupportMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Need help or have questions? Send us an email and we\'ll get back to you as soon as possible.'**
+  String get contactSupportMessage;
+
   /// No description provided for @faqTitle.
   ///
   /// In en, this message translates to:

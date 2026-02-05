@@ -1,15 +1,12 @@
-
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 class ApiService {
   static const String baseUrl = 'https://fertipath-fastapi.onrender.com';
-  
+
   // Singleton pattern
   static final ApiService _instance = ApiService._internal();
   factory ApiService() => _instance;
@@ -27,7 +24,8 @@ class ApiService {
       final prefs = await SharedPreferences.getInstance();
       _accessToken = prefs.getString('access_token');
       _tokenInitialized = true;
-      debugPrint('Token initialized: ${_accessToken != null ? 'Token loaded' : 'No token found'}');
+      debugPrint(
+          'Token initialized: ${_accessToken != null ? 'Token loaded' : 'No token found'}');
     } catch (e) {
       debugPrint('Error initializing token: $e');
       _tokenInitialized = true;
@@ -82,17 +80,19 @@ class ApiService {
       'Content-Type': 'application/json; charset=utf-8',
       'Accept': 'application/json',
     };
-    
+
     if (includeAuth) {
       final token = await getStoredToken();
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
-        debugPrint('Adding auth token to request: Bearer ${token.substring(0, 20)}...');
+        debugPrint(
+            'Adding auth token to request: Bearer ${token.substring(0, 20)}...');
       } else {
-        debugPrint('Warning: No auth token available for authenticated request');
+        debugPrint(
+            'Warning: No auth token available for authenticated request');
       }
     }
-    
+
     return headers;
   }
 
@@ -111,26 +111,28 @@ class ApiService {
     try {
       final headers = await getHeaders();
       final url = Uri.parse('$baseUrl/auth/send-otp');
-      
-        final requestBody = {
-          'email': email,
-          'username': username,
-          'first_name': firstName,
-          'last_name': lastName,
-          'password': password,
-          'phone_number': phoneNumber,
-          'language_preference': (languagePreference ?? 'en').toLowerCase(),
-          'role': 'user',
-        };
-      
+
+      final requestBody = {
+        'email': email,
+        'username': username,
+        'first_name': firstName,
+        'last_name': lastName,
+        'password': password,
+        'phone_number': phoneNumber,
+        'language_preference': (languagePreference ?? 'en').toLowerCase(),
+        'role': 'user',
+      };
+
       debugPrint('Sending OTP request to: $url (attempt ${retryCount + 1})');
-        debugPrint('Request body: ${jsonEncode(requestBody)}');
-      
-      final response = await http.post(
+      debugPrint('Request body: ${jsonEncode(requestBody)}');
+
+      final response = await http
+          .post(
         url,
         headers: headers,
         body: jsonEncode(requestBody),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 60),
         onTimeout: () {
           throw TimeoutException('OTP request timed out after 60 seconds');
@@ -198,22 +200,25 @@ class ApiService {
       final headers = await getHeaders();
       final url = Uri.parse('$baseUrl/auth/verify-otp');
       debugPrint('Verifying OTP request to: $url (attempt ${retryCount + 1})');
-      
+
       final requestBody = {
         'verification_id': verificationId,
         'otp_code': otp,
       };
-      
+
       debugPrint('Verify OTP request body: ${jsonEncode(requestBody)}');
-      
-      final response = await http.post(
+
+      final response = await http
+          .post(
         url,
         headers: headers,
         body: jsonEncode(requestBody),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 45),
         onTimeout: () {
-          throw TimeoutException('OTP verification request timed out after 45 seconds');
+          throw TimeoutException(
+              'OTP verification request timed out after 45 seconds');
         },
       );
 
@@ -263,26 +268,28 @@ class ApiService {
   }) async {
     try {
       debugPrint('Login attempt for user: $email');
-      
+
       final headers = await getHeaders();
       final body = {
         'email': email,
         'password': password,
       };
-      
+
       debugPrint('Login headers: $headers');
       debugPrint('Login request body: ${jsonEncode(body)}');
-      
+
       final url = Uri.parse('$baseUrl/auth/token');
       debugPrint('Login URL: $url');
-      
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(body),
-      ).timeout(
-        const Duration(seconds: 45),
-      );
+
+      final response = await http
+          .post(
+            url,
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(
+            const Duration(seconds: 45),
+          );
 
       debugPrint('Login Response: ${response.statusCode}');
       debugPrint('Login Body: ${response.body}');
@@ -309,7 +316,7 @@ class ApiService {
   Future<void> logout() async {
     try {
       final headers = await getHeaders(includeAuth: true);
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/auth/logout'),
         headers: headers,
@@ -369,7 +376,9 @@ class ApiService {
     required String newPassword,
   }) async {
     if (newPassword.length < 8) {
-      throw ApiException(statusCode: 400, message: 'Password must be at least 8 characters long');
+      throw ApiException(
+          statusCode: 400,
+          message: 'Password must be at least 8 characters long');
     }
 
     try {
@@ -398,7 +407,7 @@ class ApiService {
   Future<Map<String, dynamic>> getUser() async {
     try {
       final headers = await getHeaders(includeAuth: true);
-      
+
       final response = await http.get(
         Uri.parse('$baseUrl/user/get_user'),
         headers: headers,
@@ -426,7 +435,7 @@ class ApiService {
   Future<Map<String, dynamic>> getProfile() async {
     try {
       final headers = await getHeaders(includeAuth: true);
-      
+
       final response = await http.get(
         Uri.parse('$baseUrl/user/profile'),
         headers: headers,
@@ -466,9 +475,15 @@ class ApiService {
       if (age != null) body['age'] = age;
       if (cycleLength != null) body['cycle_length'] = cycleLength;
       if (periodLength != null) body['period_length'] = periodLength;
-      if (lastPeriodDate != null) body['last_period_date'] = lastPeriodDate;
-      if (ttcHistory != null) body['ttc_history'] = ttcHistory;
-      if (faithPreference != null) body['faith_preference'] = faithPreference;
+      if (lastPeriodDate != null && lastPeriodDate.isNotEmpty) {
+        body['last_period_date'] = lastPeriodDate;
+      }
+      if (ttcHistory != null && ttcHistory.isNotEmpty) {
+        body['ttc_history'] = ttcHistory;
+      }
+      if (faithPreference != null && faithPreference.isNotEmpty) {
+        body['faith_preference'] = faithPreference;
+      }
       if (audioPreference != null) body['audio_preference'] = audioPreference;
 
       debugPrint('Updating Profile with body: $body');
@@ -487,7 +502,8 @@ class ApiService {
         debugPrint('Update Profile Success: $responseData');
         return responseData;
       } else {
-        debugPrint('Update Profile Failed with status ${response.statusCode}: ${response.body}');
+        debugPrint(
+            'Update Profile Failed with status ${response.statusCode}: ${response.body}');
         throw ApiException(
           statusCode: response.statusCode,
           message: _extractErrorMessage(response),
@@ -503,24 +519,38 @@ class ApiService {
   Future<void> deleteUser() async {
     try {
       final headers = await getHeaders(includeAuth: true);
-      
+      final url = Uri.parse('$baseUrl/user/delete_user');
+
+      debugPrint('Attempting to delete user at: $url');
+      debugPrint('Request headers: ${headers.keys.join(", ")}');
+
       final response = await http.delete(
-        Uri.parse('$baseUrl/user/delete_user'),
+        url,
         headers: headers,
       );
 
-      debugPrint('Delete User Response: ${response.statusCode}');
+      debugPrint('Delete User Response Status: ${response.statusCode}');
+      debugPrint('Delete User Response Body: ${response.body}');
 
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw ApiException(
-          statusCode: response.statusCode,
-          message: _extractErrorMessage(response),
-        );
+      // Accept 200, 204, or even 404 (user already deleted) as success
+      if (response.statusCode == 200 ||
+          response.statusCode == 204 ||
+          response.statusCode == 404) {
+        debugPrint('Account deletion successful or user already deleted');
+        await clearToken();
+        return;
       }
 
-      await clearToken();
+      // For other error codes, throw with detailed message
+      final errorMessage = _extractErrorMessage(response);
+      debugPrint('Delete User Failed: $errorMessage');
+      throw ApiException(
+        statusCode: response.statusCode,
+        message: errorMessage,
+      );
     } catch (e) {
       debugPrint('Delete User error: $e');
+      debugPrint('Error type: ${e.runtimeType}');
       rethrow;
     }
   }
@@ -538,7 +568,7 @@ class ApiService {
     } catch (e) {
       // Ignore parsing errors
     }
-    
+
     // Handle specific status codes
     switch (response.statusCode) {
       case 404:
@@ -558,7 +588,8 @@ class ApiService {
   }
 
   // Update Language Preference
-  Future<Map<String, dynamic>> updateLanguagePreference(String languageCode) async {
+  Future<Map<String, dynamic>> updateLanguagePreference(
+      String languageCode) async {
     try {
       final headers = await getHeaders(includeAuth: true);
       final body = {'language_preference': languageCode};
@@ -579,7 +610,8 @@ class ApiService {
         debugPrint('Update Language Success: $responseData');
         return responseData;
       } else {
-        debugPrint('Update Language Failed with status ${response.statusCode}: ${response.body}');
+        debugPrint(
+            'Update Language Failed with status ${response.statusCode}: ${response.body}');
         throw ApiException(
           statusCode: response.statusCode,
           message: _extractErrorMessage(response),
@@ -590,7 +622,6 @@ class ApiService {
       rethrow;
     }
   }
-
 }
 
 // Custom API Exception

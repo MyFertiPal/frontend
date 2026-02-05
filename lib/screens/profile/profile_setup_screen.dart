@@ -519,8 +519,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         lastPeriodDate: _lastPeriodDate != null
             ? _lastPeriodDate!.toIso8601String().split('T')[0]
             : null,
-        ttcHistory: _ttcHistory.isNotEmpty ? _ttcHistory.first : '',
-        faithPreference: _faithPreference ?? '',
+        ttcHistory: _ttcHistory.isNotEmpty ? _ttcHistory.first : null,
+        faithPreference:
+            (_faithPreference != null && _faithPreference!.isNotEmpty)
+                ? _faithPreference
+                : null,
         audioPreference: _audioGuidance,
       );
 

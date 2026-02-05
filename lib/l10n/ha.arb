@@ -167,6 +167,7 @@
   "sendFeedback": "Aika fahimta",
   "reportIssue": "Baje matsala",
   "contactSupport": "Tunada da taimako",
+  "contactSupportMessage": "Kuna buƙatar taimako ko kuna da tambayoyi? Aika mana da imel kuma za mu mayar da ku da wuri.",
   "ticketNumber": "Lambar tikiti",
   "status": "Yanayin",
   "pending": "Ana jira",

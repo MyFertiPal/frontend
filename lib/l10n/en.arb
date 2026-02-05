@@ -125,6 +125,7 @@
   "sendFeedback": "Send Feedback",
   "reportIssue": "Report Issue",
   "contactSupport": "Contact Support",
+  "contactSupportMessage": "Need help or have questions? Send us an email and we'll get back to you as soon as possible.",
   "faqTitle": "Frequently Asked Questions",
   
   "@@section_calendar": "Calendar",

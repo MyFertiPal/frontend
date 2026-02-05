@@ -126,11 +126,16 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
   }
 
   Widget _buildLegend() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Wrap(
-        spacing: 12,
-        runSpacing: 6,
+        spacing: 16,
+        runSpacing: 8,
         alignment: WrapAlignment.center,
         children: [
           _LegendItem(
@@ -429,34 +434,44 @@ class _LegendItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 16,
-          height: 16,
+          width: 18,
+          height: 18,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: hasBorder ? Colors.transparent : color.withOpacity(0.3),
-            border: hasBorder ? Border.all(color: color, width: 1.5) : null,
+            color: hasBorder
+                ? Colors.white.withOpacity(0.2)
+                : color.withOpacity(0.4),
+            border:
+                hasBorder ? Border.all(color: Colors.white, width: 2) : null,
           ),
           child: hasDot
               ? Center(
                   child: Container(
-                    width: 4,
-                    height: 4,
+                    width: 6,
+                    height: 6,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: color,
+                      color: Colors.white,
                     ),
                   ),
                 )
               : null,
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 6),
         Text(
           label,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
+            shadows: [
+              Shadow(
+                offset: Offset(0, 1),
+                blurRadius: 2,
+                color: Colors.black26,
+              ),
+            ],
           ),
         ),
       ],

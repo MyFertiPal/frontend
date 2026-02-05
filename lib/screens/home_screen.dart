@@ -19,7 +19,6 @@ import 'user_guide_screen.dart';
 import 'specialists/specialist_search_screen.dart';
 import 'specialists/specialist_chat_screen.dart';
 import 'tracking/log_symptom_screen.dart';
-import 'data_statistics_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -238,7 +237,6 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHomeTab(),
               const EducationalHubScreen(),
               const CalendarTabScreen(),
-              const DataStatisticsScreen(),
               const SupportScreen(),
             ],
           ),
@@ -374,13 +372,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 : '',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.assessment),
-            label: _selectedIndex == 3 ? 'Data' : '',
-          ),
-          BottomNavigationBarItem(
             icon: const Icon(Icons.support_agent),
             label:
-                _selectedIndex == 4 ? AppLocalizations.of(context).support : '',
+                _selectedIndex == 3 ? AppLocalizations.of(context).support : '',
           ),
         ],
       ),
@@ -1099,22 +1093,28 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildFeatureCard(
                   icon: Icons.medical_services_outlined,
-                  label: AppLocalizations.of(context).findSpecialist,
+                  label:
+                      '${AppLocalizations.of(context).findSpecialist} (Coming Soon)',
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => const SpecialistSearchScreen()),
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Specialist directory coming soon!'),
+                        backgroundColor: Color(0xFF66BB6A),
+                      ),
                     );
                   },
                 ),
                 const SizedBox(width: 12),
                 _buildFeatureCard(
                   icon: Icons.chat_bubble_outline,
-                  label: AppLocalizations.of(context).chatWithSpecialist,
+                  label:
+                      '${AppLocalizations.of(context).chatWithSpecialist} (Coming Soon)',
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => const SpecialistChatScreen()),
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Specialist chat coming soon!'),
+                        backgroundColor: Color(0xFF66BB6A),
+                      ),
                     );
                   },
                 ),

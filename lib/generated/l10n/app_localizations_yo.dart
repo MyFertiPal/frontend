@@ -316,6 +316,10 @@ class AppLocalizationsYo extends AppLocalizations {
   String get contactSupport => 'Kan ún Ìranlọ́wọ́';
 
   @override
+  String get contactSupportMessage =>
+      'Ṣe o nilo iranlọwọ tabi o ni ibeere? Fi imeeli ranwa, a o dahun ọ laipẹ.';
+
+  @override
   String get faqTitle => 'Àwọn Ìbéèrè Tó Nìgbógùn';
 
   @override

@@ -1,6 +1,6 @@
-﻿import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:audioplayers/audioplayers.dart';
+﻿import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
+
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../community/community_groups_screen.dart';
@@ -15,10 +15,8 @@ class SupportScreen extends StatefulWidget {
 }
 
 class _SupportScreenState extends State<SupportScreen> {
-  int _selectedIndex = 3;
   String _currentAffirmation = "";
   List<String> _affirmations = [];
-  String _faith = 'neutral';
   bool _loadingAffirmations = true;
 
   // Audio player properties
@@ -109,14 +107,12 @@ class _SupportScreenState extends State<SupportScreen> {
         else if (f.contains('traditionalist')) faith = 'traditionalist';
       }
       setState(() {
-        _faith = faith;
         _affirmations = _faithAffirmations[faith]!;
         _currentAffirmation = _affirmations[0];
         _loadingAffirmations = false;
       });
     } catch (e) {
       setState(() {
-        _faith = 'neutral';
         _affirmations = _faithAffirmations['neutral']!;
         _currentAffirmation = _affirmations[0];
         _loadingAffirmations = false;
@@ -130,16 +126,17 @@ class _SupportScreenState extends State<SupportScreen> {
     } else {
       // Load and play audio - using encouragement audio from assets
       try {
-        // Set streaming mode for responsive playback
-        await _audioPlayer.setPlayerMode(PlayerMode.mediaPlayer);
-        await _audioPlayer.play(AssetSource('audio/encouragement.wav'));
+        // Set the audio source and play
+        await _audioPlayer.setSource(AssetSource('audio/encouragement.wav'));
+        await _audioPlayer.resume();
       } catch (e) {
         debugPrint('Audio play failed: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to play audio: $e'),
-              backgroundColor: Colors.red,
+              content: Text('Failed to play audio. Please try again.'),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -180,7 +177,7 @@ class _SupportScreenState extends State<SupportScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.supportHub,
+                  AppLocalizations.of(context).supportHub,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -190,7 +187,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  AppLocalizations.of(context)!.supportHubSubtitle,
+                  AppLocalizations.of(context).supportHubSubtitle,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -238,7 +235,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    AppLocalizations.of(context)!
+                                    AppLocalizations.of(context)
                                         .dailyAffirmation,
                                     style: const TextStyle(
                                       fontSize: 14,
@@ -330,7 +327,7 @@ class _SupportScreenState extends State<SupportScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              AppLocalizations.of(context)!.audioEncouragement,
+                              AppLocalizations.of(context).audioEncouragement,
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -362,7 +359,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)!.audioTitle,
+                                    AppLocalizations.of(context).audioTitle,
                                     style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -428,7 +425,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    AppLocalizations.of(context)!.culturalGuidance,
+                    AppLocalizations.of(context).culturalGuidance,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -454,7 +451,7 @@ class _SupportScreenState extends State<SupportScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              AppLocalizations.of(context)!
+                              AppLocalizations.of(context)
                                   .culturalGuidanceDescription,
                               style: TextStyle(color: Colors.grey.shade700),
                             ),
@@ -480,7 +477,7 @@ class _SupportScreenState extends State<SupportScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        AppLocalizations.of(context)!.communityGroups,
+                        AppLocalizations.of(context).communityGroups,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -514,7 +511,7 @@ class _SupportScreenState extends State<SupportScreen> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                AppLocalizations.of(context)!.create,
+                                AppLocalizations.of(context).create,
                                 style: const TextStyle(
                                   color: Color(0xFF2E683D),
                                   fontWeight: FontWeight.w600,
@@ -547,7 +544,7 @@ class _SupportScreenState extends State<SupportScreen> {
                             children: [
                               // Group name
                               Text(
-                                AppLocalizations.of(context)!.fertilityCircle,
+                                AppLocalizations.of(context).fertilityCircle,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -567,7 +564,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
-                                      AppLocalizations.of(context)!
+                                      AppLocalizations.of(context)
                                           .generalSupport,
                                       style: const TextStyle(
                                         color: Color(0xFF2E683D),
@@ -579,7 +576,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    '24 ${AppLocalizations.of(context)!.members}',
+                                    '24 ${AppLocalizations.of(context).members}',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w500,
@@ -592,7 +589,7 @@ class _SupportScreenState extends State<SupportScreen> {
                               const SizedBox(height: 8),
                               // Latest message
                               Text(
-                                AppLocalizations.of(context)!.latestMessage,
+                                AppLocalizations.of(context).latestMessage,
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
@@ -610,7 +607,7 @@ class _SupportScreenState extends State<SupportScreen> {
                           onTap: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                  content: Text(AppLocalizations.of(context)!
+                                  content: Text(AppLocalizations.of(context)
                                       .groupChatComingSoon)),
                             );
                           },
@@ -635,7 +632,91 @@ class _SupportScreenState extends State<SupportScreen> {
                         );
                       },
                       child: Text(
-                          AppLocalizations.of(context)!.exploreCommunityGroups),
+                          AppLocalizations.of(context).exploreCommunityGroups),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Contact Support section
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFA8D497).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFF2E683D).withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.email_outlined,
+                              color: Color(0xFF2E683D),
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              AppLocalizations.of(context).contactSupport,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2E683D),
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          AppLocalizations.of(context).contactSupportMessage,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey.shade700,
+                            fontFamily: 'Poppins',
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFF2E683D),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.mail,
+                                color: Color(0xFF2E683D),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'support@fertipath.com',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF2E683D),
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

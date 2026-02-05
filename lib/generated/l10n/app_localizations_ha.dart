@@ -315,6 +315,10 @@ class AppLocalizationsHa extends AppLocalizations {
   String get contactSupport => 'Tunada da taimako';
 
   @override
+  String get contactSupportMessage =>
+      'Kuna buƙatar taimako ko kuna da tambayoyi? Aika mana da imel kuma za mu mayar da ku da wuri.';
+
+  @override
   String get faqTitle => 'Frequently Asked Questions';
 
   @override

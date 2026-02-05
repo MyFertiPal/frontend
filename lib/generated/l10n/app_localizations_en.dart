@@ -315,6 +315,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactSupport => 'Contact Support';
 
   @override
+  String get contactSupportMessage =>
+      'Need help or have questions? Send us an email and we\'ll get back to you as soon as possible.';
+
+  @override
   String get faqTitle => 'Frequently Asked Questions';
 
   @override

@@ -314,6 +314,10 @@ class AppLocalizationsIg extends AppLocalizations {
   String get contactSupport => 'Kpe Enyemaka';
 
   @override
+  String get contactSupportMessage =>
+      'Ị chọrọ enyemaka ma ọ bụ nwere ajụjụ? Zigara anyị email, anyị ga-azaghachi gị ozugbo.';
+
+  @override
   String get faqTitle => 'Ajụjụ A Ajụjụ Nabu Ugboro Ugboro';
 
   @override
