@@ -261,8 +261,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       // Use the public web reset page for deep links.
-      // Backend will send: https://teamnexuss.netlify.app/reset-password?token=ABC123
-      final resetUrl = 'https://teamnexuss.netlify.app/reset-password';
+      // Backend will send: https://teamnexuss.netlify.app/#/reset_password?token=ABC123
+      final resetUrl = 'https://teamnexuss.netlify.app/#/reset_password';
 
       await ApiService().forgotPassword(
         email: email,
@@ -383,19 +383,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
-                // Only show token field if token is not pre-filled from email link
-                if (_tokenController.text.isEmpty)
-                  Column(
-                    children: [
-                      _buildInputField(
-                        label: 'Token from email',
-                        controller: _tokenController,
-                        keyboardType: TextInputType.text,
-                        isPassword: false,
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                  ),
                 _buildInputField(
                   label: 'New password',
                   controller: _newPasswordController,

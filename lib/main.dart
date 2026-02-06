@@ -82,15 +82,27 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleIncomingUri(Uri uri) {
-    if (uri.path == '/reset-password' || uri.path == '/reset_password') {
-      final token = uri.queryParameters['token'];
+    final resolvedUri = _resolveDeepLinkUri(uri);
+    if (resolvedUri.path == '/reset_password' ||
+        resolvedUri.path == '/reset-password') {
+      final token = resolvedUri.queryParameters['token'];
       _navigatorKey.currentState?.push(
         MaterialPageRoute(
           builder: (_) => ResetPasswordScreen(prefilledToken: token),
-          settings: const RouteSettings(name: '/reset-password'),
+          settings: const RouteSettings(name: '/reset_password'),
         ),
       );
     }
+  }
+
+  Uri _resolveDeepLinkUri(Uri uri) {
+    if (uri.fragment.isEmpty) {
+      return uri;
+    }
+
+    final fragment = uri.fragment;
+    final normalized = fragment.startsWith('/') ? fragment : '/$fragment';
+    return Uri.parse(normalized);
   }
 
   @override
@@ -112,6 +124,21 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             title: "Fertipath",
             navigatorKey: _navigatorKey,
+            onGenerateRoute: (settings) {
+              final name = settings.name ?? '';
+              final uri = Uri.tryParse(name);
+              final path = uri?.path ?? name;
+
+              if (path == '/reset_password' || path == '/reset-password') {
+                final token = uri?.queryParameters['token'];
+                return MaterialPageRoute(
+                  builder: (_) => ResetPasswordScreen(prefilledToken: token),
+                  settings: const RouteSettings(name: '/reset_password'),
+                );
+              }
+
+              return null;
+            },
             localizationsDelegates: const [
               AppLocalizations.delegate,
               FallbackMaterialLocalizationsDelegate(),
@@ -160,7 +187,7 @@ class _MyAppState extends State<MyApp> {
               '/signup-email': (context) => const EmailSignupScreen(),
               '/profile-setup': (context) => const ProfileSetupScreen(),
               '/forgot-password': (context) => const ForgotPasswordScreen(),
-              '/reset-password': (context) => const ResetPasswordScreen(),
+              '/reset_password': (context) => const ResetPasswordScreen(),
               '/password-updated': (context) => const PasswordUpdatedScreen(),
               '/home': (context) => const HomeScreen(),
             },
