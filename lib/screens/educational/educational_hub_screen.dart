@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
@@ -347,9 +348,31 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   @override
   void initState() {
     super.initState();
-    final apiKey =
-        ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
-    _ttsService = YarnGptTtsService(apiKey: apiKey);
+    try {
+      final testKey = ApiKeyConfig.getTestApiKey();
+      String? apiKey;
+
+      if (testKey != null) {
+        apiKey = testKey;
+      } else {
+        try {
+          apiKey = ApiKeyConfig.getYarnGptApiKey();
+        } catch (e) {
+          debugPrint('YarnGPT API key not configured: $e');
+          apiKey = null;
+        }
+      }
+
+      if (apiKey != null && apiKey.isNotEmpty) {
+        _ttsService = YarnGptTtsService(apiKey: apiKey);
+      } else {
+        debugPrint('Audio features disabled - API key not configured');
+        _ttsService = YarnGptTtsService(apiKey: 'disabled');
+      }
+    } catch (e) {
+      debugPrint('Failed to initialize TTS service: $e');
+      _ttsService = YarnGptTtsService(apiKey: 'disabled');
+    }
     _setupAudioPlayer();
   }
 
@@ -373,9 +396,30 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   }
 
   void _initializeTtsService() {
-    final apiKey =
-        ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
-    _ttsService = YarnGptTtsService(apiKey: apiKey);
+    try {
+      final testKey = ApiKeyConfig.getTestApiKey();
+      String? apiKey;
+
+      if (testKey != null) {
+        apiKey = testKey;
+      } else {
+        try {
+          apiKey = ApiKeyConfig.getYarnGptApiKey();
+        } catch (e) {
+          debugPrint('YarnGPT API key not configured: $e');
+          apiKey = null;
+        }
+      }
+
+      if (apiKey != null && apiKey.isNotEmpty) {
+        _ttsService = YarnGptTtsService(apiKey: apiKey);
+      } else {
+        _ttsService = YarnGptTtsService(apiKey: 'disabled');
+      }
+    } catch (e) {
+      debugPrint('Failed to reinitialize TTS service: $e');
+      _ttsService = YarnGptTtsService(apiKey: 'disabled');
+    }
   }
 
   Future<void> _togglePlayPause() async {

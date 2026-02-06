@@ -68,5 +68,10 @@ flutter_*.log
 .env.local
 .env.*.local
 
+# Local configuration files (secrets, API keys)
+lib/services/api_key_config.local.dart
+*.local.dart
+lib/config/*.local.dart
+
 # User-specific
 login.json

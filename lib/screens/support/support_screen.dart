@@ -1,4 +1,5 @@
 ﻿import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
@@ -64,8 +65,31 @@ class _SupportScreenState extends State<SupportScreen> {
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    final apiKey = ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
-    _affirmationTtsService = YarnGptTtsService(apiKey: apiKey);
+    try {
+      final testKey = ApiKeyConfig.getTestApiKey();
+      String? apiKey;
+      
+      if (testKey != null) {
+        apiKey = testKey;
+      } else {
+        try {
+          apiKey = ApiKeyConfig.getYarnGptApiKey();
+        } catch (e) {
+          debugPrint('YarnGPT API key not configured: $e');
+          apiKey = null;
+        }
+      }
+      
+      if (apiKey != null && apiKey.isNotEmpty) {
+        _affirmationTtsService = YarnGptTtsService(apiKey: apiKey);
+      } else {
+        debugPrint('Audio features disabled - API key not configured');
+        _affirmationTtsService = YarnGptTtsService(apiKey: 'disabled');
+      }
+    } catch (e) {
+      debugPrint('Failed to initialize affirmation TTS service: $e');
+      _affirmationTtsService = YarnGptTtsService(apiKey: 'disabled');
+    }
     _initializeAudioPlayer();
     _initializeAffirmationTts();
     _fetchFaithPreference();

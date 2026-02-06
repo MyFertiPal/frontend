@@ -5,29 +5,41 @@
 ///
 /// Usage:
 /// final apiKey = ApiKeyConfig.getYarnGptApiKey();
+///
+/// For local development, set the YARNGPT_API_KEY environment variable:
+/// export YARNGPT_API_KEY='your-api-key-here'
+///
+/// For production, set via:
+/// - Flutter build: flutter build web --dart-define=YARNGPT_API_KEY='your-key'
+/// - Environment variables on the deployment platform
+/// - Secret management services (Firebase Secrets, AWS Secrets Manager, etc.)
 class ApiKeyConfig {
-  /// Get YarnGPT API Key from environment
-  ///
-  /// In production, this should be set via:
-  /// - Environment variables
-  /// - Secret management services (Firebase Secrets, AWS Secrets Manager, etc.)
-  /// - Secure configuration files (not committed to version control)
+  /// Get YarnGPT API Key from multiple sources (in order of priority):
+  /// 1. Environment variable (YARNGPT_API_KEY)
+  /// 2. Test/Development key (if set dynamically)
   ///
   /// For development, set the YARNGPT_API_KEY environment variable
   static String getYarnGptApiKey() {
-    final apiKey = const String.fromEnvironment(
+    // Check environment variable first
+    final envApiKey = const String.fromEnvironment(
       'YARNGPT_API_KEY',
-      defaultValue: '', // Default to empty - will throw error if not set
+      defaultValue: '',
     );
 
-    if (apiKey.isEmpty) {
-      throw StateError(
-        'YarnGPT API Key not configured. '
-        'Set YARNGPT_API_KEY environment variable or update ApiKeyConfig.',
-      );
+    if (envApiKey.isNotEmpty) {
+      return envApiKey;
     }
 
-    return apiKey;
+    // Check if test/development key is set
+    if (_testApiKey != null && _testApiKey!.isNotEmpty) {
+      return _testApiKey!;
+    }
+
+    throw StateError(
+      'YarnGPT API Key not configured. '
+      'Set YARNGPT_API_KEY environment variable or dart-define. '
+      'For local dev: export YARNGPT_API_KEY="your-key"',
+    );
   }
 
   /// For development/testing: Set API key directly

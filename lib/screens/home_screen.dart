@@ -75,9 +75,38 @@ class _HomeScreenState extends State<HomeScreen> {
     _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
     _insightText = _defaultInsightText;
 
-    final apiKey =
-        ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
-    _yarngptService = YarnGptTtsService(apiKey: apiKey);
+    // Initialize TTS service - gracefully handle if API key is not configured
+    try {
+      final testKey = ApiKeyConfig.getTestApiKey();
+      String? apiKey;
+
+      if (testKey != null) {
+        apiKey = testKey;
+      } else {
+        try {
+          apiKey = ApiKeyConfig.getYarnGptApiKey();
+        } catch (e) {
+          debugPrint('YarnGPT API key not configured: $e');
+          apiKey = null;
+        }
+      }
+
+      if (apiKey != null && apiKey.isNotEmpty) {
+        _yarngptService = YarnGptTtsService(apiKey: apiKey);
+      } else {
+        // Disable audio functionality if API key is not available
+        _audioEnabled = false;
+        debugPrint('Audio features disabled - API key not configured');
+        // Create a dummy service with a placeholder key to avoid crashes
+        _yarngptService = YarnGptTtsService(apiKey: 'disabled');
+      }
+    } catch (e) {
+      debugPrint('Failed to initialize YarnGPT TTS service: $e');
+      _audioEnabled = false;
+      // Create a dummy service as fallback
+      _yarngptService = YarnGptTtsService(apiKey: 'disabled');
+    }
+
     _loadAudioPreference();
     _sendInsightsPost();
   }
