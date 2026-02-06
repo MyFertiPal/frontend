@@ -260,9 +260,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     });
 
     try {
-      // Use the backend domain for the reset link
-      // Backend will send: https://fertipath.onrender.com/reset_password?token=ABC123
-      final resetUrl = 'https://fertipath.onrender.com/reset_password';
+      // Use the public web reset page for deep links.
+      // Backend will send: https://teamnexuss.netlify.app/reset-password?token=ABC123
+      final resetUrl = 'https://teamnexuss.netlify.app/reset-password';
 
       await ApiService().forgotPassword(
         email: email,

@@ -1,4 +1,9 @@
-﻿import "package:flutter/material.dart";
+﻿import "dart:async";
+
+import "package:app_links/app_links.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:flutter_web_plugins/flutter_web_plugins.dart";
 import "package:provider/provider.dart";
 // import "package:flutter_localizations/flutter_localizations.dart";
 import "generated/l10n/app_localizations.dart";
@@ -21,6 +26,10 @@ import "theme/app_theme.dart";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  if (kIsWeb) {
+    setPathUrlStrategy();
+  }
+
   // Initialize notification system
   try {
     final notificationManager = NotificationManager();
@@ -32,8 +41,63 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  AppLinks? _appLinks;
+  StreamSubscription<Uri>? _linkSub;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!kIsWeb) {
+      _initDeepLinks();
+    }
+  }
+
+  Future<void> _initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    try {
+      final initialUri = await _appLinks!.getInitialAppLink();
+      if (initialUri != null) {
+        _handleIncomingUri(initialUri);
+      }
+    } catch (e) {
+      debugPrint('Deep link init error: $e');
+    }
+
+    _linkSub = _appLinks!.uriLinkStream.listen(
+      _handleIncomingUri,
+      onError: (Object err) {
+        debugPrint('Deep link stream error: $err');
+      },
+    );
+  }
+
+  void _handleIncomingUri(Uri uri) {
+    if (uri.path == '/reset-password' || uri.path == '/reset_password') {
+      final token = uri.queryParameters['token'];
+      _navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => ResetPasswordScreen(prefilledToken: token),
+          settings: const RouteSettings(name: '/reset-password'),
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +111,7 @@ class MyApp extends StatelessWidget {
         builder: (context, languageProvider, _) {
           return MaterialApp(
             title: "Fertipath",
+            navigatorKey: _navigatorKey,
             localizationsDelegates: const [
               AppLocalizations.delegate,
               FallbackMaterialLocalizationsDelegate(),
