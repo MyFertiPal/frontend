@@ -82,8 +82,7 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
     try {
       // Call the actual API login endpoint
       final apiService = ApiService();
-      final loginResponse =
-          await apiService.login(email: email, password: password);
+      await apiService.login(email: email, password: password);
 
       // Login response only contains access_token and token_type
       // Token is already saved by ApiService.login()

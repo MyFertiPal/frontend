@@ -1,9 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../services/auth_service.dart';
 import '../../services/auth_error_helper.dart';
 import '../../services/api_service.dart';
-import '../../theme.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -22,7 +19,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   String? _ttcHistory;
   String? _faithPreference;
 
-  String _language = 'English';
   bool _audioGuidance = false;
   bool _isLoading = false;
   bool _acceptTerms = false;
@@ -43,14 +39,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     'Muslim',
     'Traditionalist',
     'Neutral'
-  ];
-
-  final List<String> _languages = [
-    'English',
-    'Yoruba',
-    'Igbo',
-    'Hausa',
-    'Pidgin',
   ];
 
   @override
@@ -448,21 +436,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       setState(() {
         _lastPeriodDate = date;
       });
-    }
-  }
-
-  String _getLanguageCode(String language) {
-    switch (language) {
-      case 'English':
-        return 'en';
-      case 'Yoruba':
-        return 'yo';
-      case 'Igbo':
-        return 'ig';
-      case 'Hausa':
-        return 'ha';
-      default:
-        return 'en';
     }
   }
 

@@ -395,33 +395,6 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
     });
   }
 
-  void _initializeTtsService() {
-    try {
-      final testKey = ApiKeyConfig.getTestApiKey();
-      String? apiKey;
-
-      if (testKey != null) {
-        apiKey = testKey;
-      } else {
-        try {
-          apiKey = ApiKeyConfig.getYarnGptApiKey();
-        } catch (e) {
-          debugPrint('YarnGPT API key not configured: $e');
-          apiKey = null;
-        }
-      }
-
-      if (apiKey != null && apiKey.isNotEmpty) {
-        _ttsService = YarnGptTtsService(apiKey: apiKey);
-      } else {
-        _ttsService = YarnGptTtsService(apiKey: 'disabled');
-      }
-    } catch (e) {
-      debugPrint('Failed to reinitialize TTS service: $e');
-      _ttsService = YarnGptTtsService(apiKey: 'disabled');
-    }
-  }
-
   Future<void> _togglePlayPause() async {
     try {
       if (_isPlaying) {

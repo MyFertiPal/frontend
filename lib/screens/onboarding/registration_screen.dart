@@ -45,7 +45,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch)),
+            content: Text(AppLocalizations.of(context).passwordsDoNotMatch)),
       );
       return;
     }
@@ -71,7 +71,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content:
-                Text(AppLocalizations.of(context)!.sendingVerificationCode),
+                Text(AppLocalizations.of(context).sendingVerificationCode),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -118,7 +118,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${AppLocalizations.of(context)!.failedToSendVerificationCode}: ${e.toString()}'),
+                '${AppLocalizations.of(context).failedToSendVerificationCode}: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -143,7 +143,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Register Title
                   Text(
-                    AppLocalizations.of(context)!.registerTitle,
+                    AppLocalizations.of(context).registerTitle,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
@@ -156,7 +156,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Full Name Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.fullName,
+                    label: AppLocalizations.of(context).fullName,
                     controller: _fullNameController,
                     keyboardType: TextInputType.name,
                   ),
@@ -164,7 +164,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Email Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.email,
+                    label: AppLocalizations.of(context).email,
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -172,7 +172,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Username Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.username,
+                    label: AppLocalizations.of(context).username,
                     controller: _usernameController,
                     keyboardType: TextInputType.text,
                   ),
@@ -180,7 +180,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Phone Number Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.phoneNumber,
+                    label: AppLocalizations.of(context).phoneNumber,
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
                   ),
@@ -188,7 +188,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Password Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.password,
+                    label: AppLocalizations.of(context).password,
                     controller: _passwordController,
                     isPassword: true,
                     showPassword: _showPassword,
@@ -202,7 +202,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Confirm Password Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.confirmPassword,
+                    label: AppLocalizations.of(context).confirmPassword,
                     controller: _confirmPasswordController,
                     isPassword: true,
                     showPassword: _showConfirmPassword,

@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Login Title
                   Text(
-                    AppLocalizations.of(context)!.login,
+                    AppLocalizations.of(context).login,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Email Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.email,
+                    label: AppLocalizations.of(context).email,
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Password Field
                   _buildInputField(
-                    label: AppLocalizations.of(context)!.password,
+                    label: AppLocalizations.of(context).password,
                     controller: _passwordController,
                     isPassword: true,
                     showPassword: _showPassword,
@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           .pushReplacementNamed('/forgot-password');
                     },
                     child: Text(
-                      AppLocalizations.of(context)!.forgetPassword,
+                      AppLocalizations.of(context).forgetPassword,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : Text(
-                              AppLocalizations.of(context)!.login,
+                              AppLocalizations.of(context).login,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.dontHaveAccount,
+                        AppLocalizations.of(context).dontHaveAccount,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -154,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               .pushReplacementNamed('/register');
                         },
                         child: Text(
-                          AppLocalizations.of(context)!.register,
+                          AppLocalizations.of(context).register,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            AppLocalizations.of(context)!.signInWithGoogle,
+                            AppLocalizations.of(context).signInWithGoogle,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -257,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            AppLocalizations.of(context)!.signInWithFacebook,
+                            AppLocalizations.of(context).signInWithFacebook,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,

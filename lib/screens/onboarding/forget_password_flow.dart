@@ -44,7 +44,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  AppLocalizations.of(context)!.sendPasswordResetLink,
+                  AppLocalizations.of(context).sendPasswordResetLink,
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
@@ -55,7 +55,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  AppLocalizations.of(context)!.enterYourAccountEmail,
+                  AppLocalizations.of(context).enterYourAccountEmail,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -91,7 +91,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                           )
                         : Text(
-                            AppLocalizations.of(context)!.sendLink,
+                            AppLocalizations.of(context).sendLink,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -119,7 +119,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             color: Color(0xFF2E683D), size: 48),
                         const SizedBox(height: 12),
                         Text(
-                          AppLocalizations.of(context)!.checkYourEmail,
+                          AppLocalizations.of(context).checkYourEmail,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -130,7 +130,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          AppLocalizations.of(context)!.resetLinkSent,
+                          AppLocalizations.of(context).resetLinkSent,
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w400,
@@ -141,7 +141,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          AppLocalizations.of(context)!.checkSpamFolder,
+                          AppLocalizations.of(context).checkSpamFolder,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -163,7 +163,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       });
                     },
                     child: Text(
-                      AppLocalizations.of(context)!.didntReceiveEmail,
+                      AppLocalizations.of(context).didntReceiveEmail,
                       style: const TextStyle(
                         color: Color(0xFF2E683D),
                         fontWeight: FontWeight.w600,
@@ -177,7 +177,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       Navigator.of(context).pop();
                     },
                     child: Text(
-                      AppLocalizations.of(context)!.backToLogin,
+                      AppLocalizations.of(context).backToLogin,
                       style: const TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,

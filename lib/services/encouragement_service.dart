@@ -30,7 +30,6 @@ class EncouragementService {
       case FaithMode.muslim:
         return _muslimQuotes[_random.nextInt(_muslimQuotes.length)];
       case FaithMode.neutral:
-      default:
         return _neutralMessages[_random.nextInt(_neutralMessages.length)];
     }
   }
@@ -42,7 +41,6 @@ class EncouragementService {
       case FaithMode.muslim:
         return _muslimQuotes;
       case FaithMode.neutral:
-      default:
         return _neutralMessages;
     }
   }

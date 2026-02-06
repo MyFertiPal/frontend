@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nexus_fertility_app/generated/l10n/app_localizations.dart';
 import 'language_selection_screen.dart';
-import 'login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -24,7 +23,7 @@ class WelcomeScreen extends StatelessWidget {
 
                 // Welcome Text
                 Text(
-                  AppLocalizations.of(context)!.welcome,
+                  AppLocalizations.of(context).welcome,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
@@ -56,7 +55,7 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.createAccount,
+                      AppLocalizations.of(context).createAccount,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -87,7 +86,7 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.login,
+                      AppLocalizations.of(context).login,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,

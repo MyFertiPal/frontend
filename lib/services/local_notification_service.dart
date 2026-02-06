@@ -36,7 +36,7 @@ class LocalNotificationService {
     );
 
     await _notificationsPlugin.initialize(
-      settings,
+      settings: settings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
 
@@ -75,10 +75,10 @@ class LocalNotificationService {
     );
 
     await _notificationsPlugin.show(
-      id,
-      title,
-      body,
-      details,
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
       payload: payload,
     );
   }
@@ -116,21 +116,19 @@ class LocalNotificationService {
     );
 
     await _notificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      _toTZDateTime(scheduledTime),
-      details,
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: _toTZDateTime(scheduledTime),
+      notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
       payload: payload,
     );
   }
 
   /// Cancel a scheduled notification
   Future<void> cancelNotification(int id) async {
-    await _notificationsPlugin.cancel(id);
+    await _notificationsPlugin.cancel(id: id);
   }
 
   /// Cancel all notifications

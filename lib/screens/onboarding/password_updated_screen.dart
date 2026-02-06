@@ -16,7 +16,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.passwordUpdated,
+                  AppLocalizations.of(context).passwordUpdated,
                   style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
@@ -33,7 +33,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  AppLocalizations.of(context)!.passwordSuccessfully,
+                  AppLocalizations.of(context).passwordSuccessfully,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -59,7 +59,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.login,
+                      AppLocalizations.of(context).login,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,

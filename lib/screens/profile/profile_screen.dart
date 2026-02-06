@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import './_next_period_prediction_widget.dart';
 import './profile_setup_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +7,6 @@ import '../../services/auth_service.dart';
 import '../../providers/language_provider.dart';
 import '../../models/user.dart';
 import '../../services/api_service.dart';
-import '../home_screen.dart';
 import '../onboarding/welcome_screen.dart';
 import '../privacy_and_security/privacy_and_security_screen.dart';
 import '../notification_settings_screen.dart';
@@ -58,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       final fetchedUser = User.fromJson(mergedJson);
       debugPrint('Parsed User: id=' +
-          (fetchedUser.id?.toString() ?? 'null') +
+          fetchedUser.id.toString() +
           ', email=' +
           (fetchedUser.email) +
           ', firstName=' +
@@ -72,7 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ', preferredLanguage=' +
           (fetchedUser.preferredLanguage?.toString() ?? 'null') +
           ', ttcHistory=' +
-          (fetchedUser.ttcHistory?.toString() ?? 'null') +
+          fetchedUser.ttcHistory.toString() +
           ', faithPreference=' +
           (fetchedUser.faithPreference?.toString() ?? 'null') +
           ', cycleLength=' +
@@ -154,7 +152,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context);
     // Localization removed
-    final user = _user ?? auth.currentUser;
     final userCard = _userCard ?? auth.currentUser;
 
     // Get calendar days from CalendarTabScreen (for demo, use SharedPreferences directly)
@@ -188,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
           ),
           title: Text(
-            AppLocalizations.of(context)!.profileSettings,
+            AppLocalizations.of(context).profileSettings,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -426,9 +423,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInitialAvatar(User? user) {
     final fullName = [user?.firstName, user?.lastName]
-        .where((part) => part != null && part!.trim().isNotEmpty)
-        .map((part) => part!.trim())
-        .join(' ');
+      .whereType<String>()
+      .map((part) => part.trim())
+      .where((part) => part.isNotEmpty)
+      .join(' ');
     final fallbackName =
         (user?.username != null && user!.username!.trim().isNotEmpty)
             ? user.username!.trim()
@@ -496,20 +494,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            _buildGoalRow(AppLocalizations.of(context)!.faithPreference,
-                _user?.faithPreference ?? AppLocalizations.of(context)!.notSet),
+            _buildGoalRow(AppLocalizations.of(context).faithPreference,
+                _user?.faithPreference ?? AppLocalizations.of(context).notSet),
             const SizedBox(height: 12),
             _buildGoalRow(
-                AppLocalizations.of(context)!.cycleLength,
+                AppLocalizations.of(context).cycleLength,
                 _user?.cycleLength != null
-                    ? '${_user!.cycleLength} ${AppLocalizations.of(context)!.days}'
-                    : AppLocalizations.of(context)!.notSet),
+                    ? '${_user!.cycleLength} ${AppLocalizations.of(context).days}'
+                    : AppLocalizations.of(context).notSet),
             const SizedBox(height: 12),
             _buildGoalRow(
-                AppLocalizations.of(context)!.lastPeriodDate,
+                AppLocalizations.of(context).lastPeriodDate,
                 _user?.lastPeriodDate != null
                     ? _user!.lastPeriodDate.toString().split(' ')[0]
-                    : AppLocalizations.of(context)!.notSet),
+                    : AppLocalizations.of(context).notSet),
             const SizedBox(height: 16),
           ],
         ),
@@ -566,7 +564,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.preference,
+              AppLocalizations.of(context).preference,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -601,7 +599,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            AppLocalizations.of(context)!.language,
+            AppLocalizations.of(context).language,
             style: const TextStyle(fontSize: 15),
           ),
         ),
@@ -708,7 +706,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.privacySecurity,
+              AppLocalizations.of(context).privacySecurity,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -720,7 +718,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.shield_outlined,
                   color: Color(0xFF2D5A3A)), // dark green
-              title: Text(AppLocalizations.of(context)!.dataPrivacyPolicy),
+              title: Text(AppLocalizations.of(context).dataPrivacyPolicy),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
@@ -733,7 +731,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.shield_outlined,
                   color: Color(0xFF4CAF50)), // medium green
-              title: Text(AppLocalizations.of(context)!.manageDataPermissions),
+              title: Text(AppLocalizations.of(context).manageDataPermissions),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
@@ -746,7 +744,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.shield_outlined,
                   color: Color(0xFF81C784)), // light green
-              title: Text(AppLocalizations.of(context)!.exploreMyData),
+              title: Text(AppLocalizations.of(context).exploreMyData),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
@@ -786,7 +784,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context)!.deleteAccount,
+              AppLocalizations.of(context).deleteAccount,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -795,7 +793,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              AppLocalizations.of(context)!.deleteAccountWarning,
+              AppLocalizations.of(context).deleteAccountWarning,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -847,14 +845,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.deleteAccount),
+          title: Text(AppLocalizations.of(context).deleteAccount),
           content: Text(
-            AppLocalizations.of(context)!.deleteAccountConfirmation,
+            AppLocalizations.of(context).deleteAccountConfirmation,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             TextButton(
               onPressed: () async {
@@ -864,7 +862,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextButton.styleFrom(
                 foregroundColor: Colors.red,
               ),
-              child: Text(AppLocalizations.of(context)!.delete),
+              child: Text(AppLocalizations.of(context).delete),
             ),
           ],
         );

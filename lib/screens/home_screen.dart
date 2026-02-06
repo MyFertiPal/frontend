@@ -51,7 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late YarnGptTtsService _yarngptService;
 
   Locale? _lastLocale;
-  bool _isLoading = true; // Track loading state
 
   // Default fallback data
   static const Map<String, dynamic> _defaultCycleSummary = {
@@ -136,10 +135,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _sendInsightsPost() async {
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
       final api = ApiService();
       final headers = await api.getHeaders(includeAuth: true);
@@ -153,7 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
           _insightText = _defaultInsightText;
-          _isLoading = false;
         });
         return;
       }
@@ -209,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 _defaultInsightText;
             // Get audio URL if available
             _insightAudioUrl = insights['audio_url']?.toString();
-            _isLoading = false;
             debugPrint('Set _insightText to: $_insightText');
             debugPrint('Audio URL: $_insightAudioUrl');
           });
@@ -228,14 +221,12 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
         _insightText = _defaultInsightText;
-        _isLoading = false;
       });
     } catch (e) {
       debugPrint('Failed to send/get insights: $e');
       setState(() {
         _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
         _insightText = _defaultInsightText;
-        _isLoading = false;
       });
     }
   }

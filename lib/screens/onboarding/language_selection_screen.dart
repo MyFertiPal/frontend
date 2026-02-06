@@ -99,7 +99,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.selectPreferredLanguage,
+                      AppLocalizations.of(context).selectPreferredLanguage,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w400,

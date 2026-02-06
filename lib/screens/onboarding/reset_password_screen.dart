@@ -38,7 +38,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_token == null || _token!.isEmpty) {
       setState(() {
-        _error = AppLocalizations.of(context)!.invalidOrMissingToken;
+        _error = AppLocalizations.of(context).invalidOrMissingToken;
       });
       return;
     }
@@ -53,7 +53,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       Navigator.of(context).pushReplacementNamed('/password-updated');
     } catch (e) {
       setState(() {
-        _error = AppLocalizations.of(context)!.failedToResetPassword;
+        _error = AppLocalizations.of(context).failedToResetPassword;
       });
     } finally {
       setState(() {
@@ -70,7 +70,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF2E683D)),
-        title: Text(AppLocalizations.of(context)!.resetPassword,
+        title: Text(AppLocalizations.of(context).resetPassword,
             style: const TextStyle(
                 color: Color(0xFF2E683D), fontWeight: FontWeight.w600)),
       ),
@@ -89,7 +89,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 controller: _passwordController,
                 obscureText: !_passwordVisible,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.newPassword,
+                  labelText: AppLocalizations.of(context).newPassword,
                   labelStyle: const TextStyle(color: Color(0xFF2E683D)),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Color(0xFF2E683D)),
@@ -118,9 +118,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty)
-                    return AppLocalizations.of(context)!.enterNewPassword;
+                    return AppLocalizations.of(context).enterNewPassword;
                   if (value.length < 6)
-                    return AppLocalizations.of(context)!.passwordAtLeast6;
+                    return AppLocalizations.of(context).passwordAtLeast6;
                   return null;
                 },
               ),
@@ -129,7 +129,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 controller: _confirmPasswordController,
                 obscureText: !_confirmPasswordVisible,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)!.confirmPassword,
+                  labelText: AppLocalizations.of(context).confirmPassword,
                   labelStyle: const TextStyle(color: Color(0xFF2E683D)),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Color(0xFF2E683D)),
@@ -158,7 +158,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 validator: (value) {
                   if (value != _passwordController.text)
-                    return AppLocalizations.of(context)!.passwordsDoNotMatch;
+                    return AppLocalizations.of(context).passwordsDoNotMatch;
                   return null;
                 },
               ),
@@ -177,7 +177,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         ),
                         onPressed: _resetPassword,
-                        child: Text(AppLocalizations.of(context)!.resetPassword,
+                        child: Text(AppLocalizations.of(context).resetPassword,
                             style:
                                 const TextStyle(fontWeight: FontWeight.w600)),
                       ),

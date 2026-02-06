@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
-import '../../services/auth_error_helper.dart';
 import '../../services/api_service.dart';
 import '../../theme.dart';
 
@@ -27,7 +26,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   String _language = 'English';
   bool _audioGuidance = false;
   bool _isLoading = false;
-  bool _acceptTerms = false;
 
   final List<String> _ttcHistories = [
     'Trying to Conceive',
@@ -448,21 +446,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       setState(() {
         _lastPeriodDate = date;
       });
-    }
-  }
-
-  String _getLanguageCode(String language) {
-    switch (language) {
-      case 'English':
-        return 'en';
-      case 'Yoruba':
-        return 'yo';
-      case 'Igbo':
-        return 'ig';
-      case 'Hausa':
-        return 'ha';
-      default:
-        return 'en';
     }
   }
 
