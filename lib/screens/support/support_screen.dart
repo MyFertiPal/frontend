@@ -70,7 +70,7 @@ class _SupportScreenState extends State<SupportScreen> {
     try {
       final testKey = ApiKeyConfig.getTestApiKey();
       String? apiKey;
-      
+
       if (testKey != null) {
         apiKey = testKey;
       } else {
@@ -81,7 +81,7 @@ class _SupportScreenState extends State<SupportScreen> {
           apiKey = null;
         }
       }
-      
+
       if (apiKey != null && apiKey.isNotEmpty) {
         _affirmationTtsService = YarnGptTtsService(apiKey: apiKey);
       } else {
@@ -181,11 +181,16 @@ class _SupportScreenState extends State<SupportScreen> {
         _affirmationTtsLoading = true;
       });
 
-      // Use "Aria" voice which is a mature, soothing female voice for affirmations
-      await _affirmationTtsService.speakText(
-        _currentAffirmation,
-        voice: 'Aria',
-      );
+      try {
+        // Attempt a specific voice first for a calmer tone.
+        await _affirmationTtsService.speakText(
+          _currentAffirmation,
+          voice: 'Aria',
+        );
+      } catch (e) {
+        debugPrint('Affirmation TTS voice failed, retrying default: $e');
+        await _affirmationTtsService.speakText(_currentAffirmation);
+      }
     } catch (e) {
       debugPrint('Error playing affirmation TTS: $e');
       if (mounted) {
@@ -444,8 +449,9 @@ class _SupportScreenState extends State<SupportScreen> {
                                               size: 24,
                                             ),
                                             onPressed: _playAffirmationTts,
-                                            tooltip: AppLocalizations.of(context)
-                                                .readAffirmationAloud,
+                                            tooltip:
+                                                AppLocalizations.of(context)
+                                                    .readAffirmationAloud,
                                           ),
                                   ],
                                 ),
