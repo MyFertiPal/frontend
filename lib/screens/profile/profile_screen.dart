@@ -879,21 +879,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
         debugPrint('Backend deletion successful');
       } catch (e) {
         debugPrint('Backend deletion error: $e');
+        final errorStr = e.toString().toLowerCase();
+
+        // Check for network/connectivity errors
+        final isNetworkError = errorStr.contains('failed to fetch') ||
+            errorStr.contains('network') ||
+            errorStr.contains('timeout') ||
+            errorStr.contains('client');
 
         // If token expired or user already gone, continue to local cleanup
-        final isAuthError = e.toString().contains('401') ||
-            e.toString().contains('403') ||
-            e.toString().contains('404') ||
-            e.toString().contains('token') ||
-            e.toString().contains('unauthorized');
+        final isAuthError = errorStr.contains('401') ||
+            errorStr.contains('403') ||
+            errorStr.contains('404') ||
+            errorStr.contains('token') ||
+            errorStr.contains('unauthorized');
 
-        if (!isAuthError) {
-          // Show detailed error for non-auth errors
+        if (!isAuthError && !isNetworkError) {
+          // Show detailed error for non-auth/non-network errors
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Failed to delete account from server: ${e.toString()}',
+                  'Failed to delete account: ${e.toString()}',
                 ),
                 backgroundColor: Colors.red,
                 duration: const Duration(seconds: 5),
@@ -910,9 +917,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
           return;
         }
-        // If it's an auth error, continue with local cleanup
-        debugPrint(
-            'Auth error during deletion, proceeding with local cleanup: $e');
+
+        // For network errors, inform user but proceed with local cleanup
+        if (isNetworkError) {
+          debugPrint(
+              'Network error during deletion, proceeding with local cleanup: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Backend temporarily unavailable. Proceeding with local account cleanup...',
+                ),
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        } else {
+          // Auth error - continue with local cleanup
+          debugPrint(
+              'Auth error during deletion, proceeding with local cleanup: $e');
+        }
       }
 
       // Always clear local auth state

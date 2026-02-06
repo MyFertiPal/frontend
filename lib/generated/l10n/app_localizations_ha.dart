@@ -535,6 +535,96 @@ class AppLocalizationsHa extends AppLocalizations {
   String get failedToClearCalendar => 'An kasa goge kwanakin kalanda';
 
   @override
+  String get mood => 'Kamar yadda kake';
+
+  @override
+  String get bleeding => 'Jiya lokaci';
+
+  @override
+  String get cervicalMucus => 'Mucus Jiya';
+
+  @override
+  String get sexualActivity => 'Lokaci Na Jima';
+
+  @override
+  String get pain => 'Zafi';
+
+  @override
+  String get abdominalCramps => 'Zafi Cikin Jiya';
+
+  @override
+  String get fatigue => 'Gajiya';
+
+  @override
+  String get anxiety => 'Fahimta';
+
+  @override
+  String get moodSwings => 'Canji Kamar Yadda Kake';
+
+  @override
+  String get sadness => 'Bakin Ciki';
+
+  @override
+  String get light => 'Kadan';
+
+  @override
+  String get medium => 'Tsaka-tsaki';
+
+  @override
+  String get heavy => 'Yawa';
+
+  @override
+  String get spotting => 'Kadan Kadan';
+
+  @override
+  String get dry => 'Bushewa';
+
+  @override
+  String get sticky => 'Damshi';
+
+  @override
+  String get creamy => 'Krimu';
+
+  @override
+  String get watery => 'Ruwa';
+
+  @override
+  String get eggWhite => 'Farin Kwai';
+
+  @override
+  String get protected => 'Tare da Kariya';
+
+  @override
+  String get unprotected => 'Ba tare da Kariya ba';
+
+  @override
+  String get none => 'Babu';
+
+  @override
+  String get mild => 'Kadan';
+
+  @override
+  String get moderate => 'Tsaka-tsaki';
+
+  @override
+  String get severe => 'Sosai';
+
+  @override
+  String get selectSymptom => 'Zabar Alamomi';
+
+  @override
+  String get selectAtLeastOneSymptom => 'Biko zabar aƙalla ɗaya';
+
+  @override
+  String get symptomsLoggedSuccessfully => 'Alamomi an rubuta su fa!';
+
+  @override
+  String get failedToSaveSymptoms => 'Alamomi ba a rubutu su ba';
+
+  @override
+  String get noSymptomsSelected => 'Babu alamomi da aka zabar a yanzu.';
+
+  @override
   String get selectPreferredLanguage => 'Zaɓi Harshen Da Kuke So';
 
   @override
@@ -725,4 +815,61 @@ class AppLocalizationsHa extends AppLocalizations {
   @override
   String get neutralAffirmation3 =>
       'Kai isashe ne, kamar yadda kake. Ka yi imani da tafiyarka.';
+
+  @override
+  String get genderPredictionTitle => 'Hasashen Jinsi';
+
+  @override
+  String get genderPredictionDisclaimer =>
+      'Ìkéde: Wannan sifa ta yi amfani da AI don ba da shawarar hasashen jinsi. Wa\'annan bashashewaye ba su tabbace tsaye kuma ba sa kamata su maye gurbin shawara ta likita. Jiya gida ga likita mai gida don tunanin kula da lafiya.';
+
+  @override
+  String get selectGenderExpectation => 'Zabar jinsi wanda kake bukatan:';
+
+  @override
+  String get male => 'Namiji';
+
+  @override
+  String get female => 'Mace';
+
+  @override
+  String get noPreference => 'Babu za\'a';
+
+  @override
+  String get fertileWindowLabel => 'Lokacin saura';
+
+  @override
+  String get ovulationDayLabel => 'Ranar tsunduma kwai';
+
+  @override
+  String get adviceForTiming => 'Shawarar lokacin jima\'i:';
+
+  @override
+  String get bestChanceForMale => 'Mafi kyau saurar namiji.';
+
+  @override
+  String get lowerChanceForMale => 'Watarain saurar namiji.';
+
+  @override
+  String get bestChanceForFemale => 'Mafi kyau saurar mace.';
+
+  @override
+  String get lowerChanceForFemale => 'Watarain saurar mace.';
+
+  @override
+  String get generalAdviceForConception =>
+      'Shawarar gaba\'aya don saurar jiya.';
+
+  @override
+  String get noPredictionDataAvailable =>
+      'Babu bashashewa na saura a yanzu. Zabar jinsi kuma tabbatar da cewa bayananin agogo nka daidai.';
+
+  @override
+  String get readAffirmationAloud => 'Karanta imani a jarir';
+
+  @override
+  String get failedPlayAffirmation => 'An kasa bugawa imani. Jiya yi sau.';
+
+  @override
+  String get failedPlayAudio => 'An kasa bugawa sauti. Jiya yi sau.';
 }

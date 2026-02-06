@@ -533,6 +533,96 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get failedToClearCalendar => 'E no work to clear calendar days';
 
   @override
+  String get mood => 'How you dey feel';
+
+  @override
+  String get bleeding => 'Bleedy Time';
+
+  @override
+  String get cervicalMucus => 'Neck Mucus';
+
+  @override
+  String get sexualActivity => 'Sex Time';
+
+  @override
+  String get pain => 'Pain';
+
+  @override
+  String get abdominalCramps => 'Belly Pain';
+
+  @override
+  String get fatigue => 'Tiredness';
+
+  @override
+  String get anxiety => 'Worry Worry';
+
+  @override
+  String get moodSwings => 'Mood Changes';
+
+  @override
+  String get sadness => 'Sadness';
+
+  @override
+  String get light => 'Small Small';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get heavy => 'Heavy';
+
+  @override
+  String get spotting => 'Small Spots';
+
+  @override
+  String get dry => 'Dry';
+
+  @override
+  String get sticky => 'Sticky';
+
+  @override
+  String get creamy => 'Creamy';
+
+  @override
+  String get watery => 'Watery';
+
+  @override
+  String get eggWhite => 'Egg White';
+
+  @override
+  String get protected => 'With Protection';
+
+  @override
+  String get unprotected => 'Without Protection';
+
+  @override
+  String get none => 'Nothing';
+
+  @override
+  String get mild => 'Small';
+
+  @override
+  String get moderate => 'Medium';
+
+  @override
+  String get severe => 'Serious';
+
+  @override
+  String get selectSymptom => 'Pick symptom';
+
+  @override
+  String get selectAtLeastOneSymptom => 'Please pick at least one thing';
+
+  @override
+  String get symptomsLoggedSuccessfully => 'Symptoms don save!';
+
+  @override
+  String get failedToSaveSymptoms => 'Symptoms no save well well';
+
+  @override
+  String get noSymptomsSelected => 'No symptoms pick yet. Tap one to start.';
+
+  @override
   String get selectPreferredLanguage => 'Select Language Wey You Like';
 
   @override
@@ -724,4 +814,61 @@ class AppLocalizationsPcm extends AppLocalizations {
   @override
   String get neutralAffirmation3 =>
       'You enough, just as you be. Believe for your journey.';
+
+  @override
+  String get genderPredictionTitle => 'Gender Prediction';
+
+  @override
+  String get genderPredictionDisclaimer =>
+      'Disclaimer: This feature use AI to give prediction for boy or girl. These predictions no sure pass and should not replace proper medical advice. Please visit proper doctor to ask.';
+
+  @override
+  String get selectGenderExpectation => 'Pick boy or girl wey you want:';
+
+  @override
+  String get male => 'Boy';
+
+  @override
+  String get female => 'Girl';
+
+  @override
+  String get noPreference => 'No preference';
+
+  @override
+  String get fertileWindowLabel => 'Fertile Time';
+
+  @override
+  String get ovulationDayLabel => 'Egg Release Day';
+
+  @override
+  String get adviceForTiming => 'Advice for sex timing:';
+
+  @override
+  String get bestChanceForMale => 'Best chance for boy baby.';
+
+  @override
+  String get lowerChanceForMale => 'Lower chance for boy baby.';
+
+  @override
+  String get bestChanceForFemale => 'Best chance for girl baby.';
+
+  @override
+  String get lowerChanceForFemale => 'Lower chance for girl baby.';
+
+  @override
+  String get generalAdviceForConception => 'General advice for making baby.';
+
+  @override
+  String get noPredictionDataAvailable =>
+      'No baby prediction yet oo. Pick boy or girl and make sure your cycle information correct.';
+
+  @override
+  String get readAffirmationAloud => 'Read affirmation aloud';
+
+  @override
+  String get failedPlayAffirmation =>
+      'Failed to play affirmation. Please try again.';
+
+  @override
+  String get failedPlayAudio => 'Failed to play audio. Please try again.';
 }

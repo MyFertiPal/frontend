@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import '../services/api_service.dart';
+import '../generated/l10n/app_localizations.dart';
 import 'home_screen.dart';
 
 class GenderPredictionScreen extends StatefulWidget {
@@ -19,7 +20,10 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   DateTime? _fertileEnd;
   bool _loading = true;
 
-  final List<String> _genderOptions = ['Male', 'Female', 'No Preference'];
+  List<String> get _genderOptions {
+    final l10n = AppLocalizations.of(context);
+    return [l10n.male, l10n.female, l10n.noPreference];
+  }
 
   @override
   void initState() {
@@ -67,21 +71,20 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   }
 
   List<Map<String, String>> _getAdvice() {
+    final l10n = AppLocalizations.of(context);
     if (_ovulationDay == null || _selectedGender == null) return [];
     final List<Map<String, String>> advice = [];
+    final maleLabel = l10n.male;
+    final femaleLabel = l10n.female;
     for (int i = -3; i <= 1; i++) {
       final day = _ovulationDay!.add(Duration(days: i));
       String tip;
-      if (_selectedGender == 'Male') {
-        tip = i == 0
-            ? 'Best chance for male conception.'
-            : 'Lower chance for male.';
-      } else if (_selectedGender == 'Female') {
-        tip = i < 0
-            ? 'Best chance for female conception.'
-            : 'Lower chance for female.';
+      if (_selectedGender == maleLabel) {
+        tip = i == 0 ? l10n.bestChanceForMale : l10n.lowerChanceForMale;
+      } else if (_selectedGender == femaleLabel) {
+        tip = i < 0 ? l10n.bestChanceForFemale : l10n.lowerChanceForFemale;
       } else {
-        tip = 'General advice for conception.';
+        tip = l10n.generalAdviceForConception;
       }
       advice.add({
         'date': DateFormat('d MMM').format(day),
@@ -109,9 +112,10 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   // Update GenderPredictionScreen to look like a chat box
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gender Prediction'),
+        title: Text(l10n.genderPredictionTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -142,13 +146,14 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Icon(Icons.info_outline, color: Color(0xFFD32F2F)),
-                        SizedBox(width: 10),
+                      children: [
+                        const Icon(Icons.info_outline,
+                            color: Color(0xFFD32F2F)),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'Disclaimer: This feature uses AI to provide gender prediction advice. These predictions may not be fully accurate and should not replace professional medical advice. Please consult a qualified doctor for health decisions.',
-                            style: TextStyle(
+                            l10n.genderPredictionDisclaimer,
+                            style: const TextStyle(
                                 fontSize: 15, color: Color(0xFFD32F2F)),
                           ),
                         ),
@@ -156,8 +161,8 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                     ),
                   ),
                   _chatBubble(
-                    child: const Text('Select your gender expectation:',
-                        style: TextStyle(
+                    child: Text(l10n.selectGenderExpectation,
+                        style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)),
                     isBot: true,
                   ),
@@ -206,8 +211,8 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: Text(
-                                  'Fertile Window: ${getFertileWindowText()!}',
-                                  style: TextStyle(
+                                  '${l10n.fertileWindowLabel}: ${getFertileWindowText()!}',
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             ),
@@ -215,13 +220,13 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: Text(
-                                  'Ovulation Day: ${getOvulationDayText()!}',
-                                  style: TextStyle(
+                                  '${l10n.ovulationDayLabel}: ${getOvulationDayText()!}',
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             ),
-                          Text('Advice for intercourse timing:',
-                              style: TextStyle(
+                          Text(l10n.adviceForTiming,
+                              style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 12),
                           ..._getAdvice().map((item) => Card(
@@ -239,8 +244,8 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 32.0, bottom: 24.0),
                       child: Text(
-                        'No gender prediction data available yet. Select a gender and ensure your cycle data is up to date.',
-                        style: TextStyle(
+                        l10n.noPredictionDataAvailable,
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 16,
                           fontStyle: FontStyle.italic,

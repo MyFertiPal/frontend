@@ -515,39 +515,86 @@ class ApiService {
     }
   }
 
-  // Delete User
-  Future<void> deleteUser() async {
+  /// Delete user account with built-in retry logic and timeout.
+  ///
+  /// Features:
+  /// - 30-second timeout to prevent hanging requests
+  /// - Automatic retry on server errors (5xx) and timeouts
+  /// - Exponential backoff: 3s, then 6s between retries
+  /// - Max 3 attempts (1 initial + 2 retries)
+  /// - Clears local token on success or auth errors
+  ///
+  /// The timeout was added to fix: "ClientException: Failed to fetch" errors
+  /// that occurred when the backend was slow or temporarily unavailable.
+  ///
+  /// Parameters:
+  /// - retryCount: Internal parameter for tracking retry attempts (default: 0)
+  /// - maxRetries: Maximum number of retries (default: 2, total attempts: 3)
+  ///
+  /// Example:
+  /// ```dart
+  /// await apiService.deleteUser();  // Basic usage - 3 total attempts
+  /// await apiService.deleteUser(maxRetries: 1);  // 2 total attempts
+  /// ```
+  Future<void> deleteUser({int retryCount = 0, int maxRetries = 2}) async {
     try {
       final headers = await getHeaders(includeAuth: true);
       final url = Uri.parse('$baseUrl/user/delete_user');
 
-      debugPrint('Attempting to delete user at: $url');
+      debugPrint(
+          'Attempting to delete user at: $url (attempt ${retryCount + 1}/${maxRetries + 1})');
       debugPrint('Request headers: ${headers.keys.join(", ")}');
 
-      final response = await http.delete(
-        url,
-        headers: headers,
-      );
+      try {
+        final response = await http
+            .delete(
+          url,
+          headers: headers,
+        )
+            .timeout(
+          const Duration(seconds: 30),
+          onTimeout: () {
+            throw TimeoutException('Delete request timed out after 30 seconds');
+          },
+        );
 
-      debugPrint('Delete User Response Status: ${response.statusCode}');
-      debugPrint('Delete User Response Body: ${response.body}');
+        debugPrint('Delete User Response Status: ${response.statusCode}');
+        debugPrint('Delete User Response Body: ${response.body}');
 
-      // Accept 200, 204, or even 404 (user already deleted) as success
-      if (response.statusCode == 200 ||
-          response.statusCode == 204 ||
-          response.statusCode == 404) {
-        debugPrint('Account deletion successful or user already deleted');
-        await clearToken();
-        return;
+        // Accept 200, 204, or even 404 (user already deleted) as success
+        if (response.statusCode == 200 ||
+            response.statusCode == 204 ||
+            response.statusCode == 404) {
+          debugPrint('Account deletion successful or user already deleted');
+          await clearToken();
+          return;
+        }
+
+        // For 5xx errors with retries available, attempt retry
+        if (response.statusCode >= 500 && retryCount < maxRetries) {
+          debugPrint(
+              'Server error (${response.statusCode}), retrying in ${(retryCount + 1) * 3} seconds...');
+          await Future.delayed(Duration(seconds: (retryCount + 1) * 3));
+          return deleteUser(retryCount: retryCount + 1, maxRetries: maxRetries);
+        }
+
+        // For other error codes, throw with detailed message
+        final errorMessage = _extractErrorMessage(response);
+        debugPrint('Delete User Failed: $errorMessage');
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: errorMessage,
+        );
+      } on TimeoutException catch (e) {
+        debugPrint('Delete User timeout: $e');
+        if (retryCount < maxRetries) {
+          debugPrint(
+              'Timeout - retrying in ${(retryCount + 1) * 3} seconds...');
+          await Future.delayed(Duration(seconds: (retryCount + 1) * 3));
+          return deleteUser(retryCount: retryCount + 1, maxRetries: maxRetries);
+        }
+        rethrow;
       }
-
-      // For other error codes, throw with detailed message
-      final errorMessage = _extractErrorMessage(response);
-      debugPrint('Delete User Failed: $errorMessage');
-      throw ApiException(
-        statusCode: response.statusCode,
-        message: errorMessage,
-      );
     } catch (e) {
       debugPrint('Delete User error: $e');
       debugPrint('Error type: ${e.runtimeType}');

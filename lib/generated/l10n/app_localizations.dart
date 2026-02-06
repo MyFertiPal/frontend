@@ -1106,6 +1106,186 @@ abstract class AppLocalizations {
   /// **'Failed to clear calendar days'**
   String get failedToClearCalendar;
 
+  /// No description provided for @mood.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get mood;
+
+  /// No description provided for @bleeding.
+  ///
+  /// In en, this message translates to:
+  /// **'Bleeding'**
+  String get bleeding;
+
+  /// No description provided for @cervicalMucus.
+  ///
+  /// In en, this message translates to:
+  /// **'Cervical Mucus'**
+  String get cervicalMucus;
+
+  /// No description provided for @sexualActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Sexual Activity'**
+  String get sexualActivity;
+
+  /// No description provided for @pain.
+  ///
+  /// In en, this message translates to:
+  /// **'Pain'**
+  String get pain;
+
+  /// No description provided for @abdominalCramps.
+  ///
+  /// In en, this message translates to:
+  /// **'Abdominal Cramps'**
+  String get abdominalCramps;
+
+  /// No description provided for @fatigue.
+  ///
+  /// In en, this message translates to:
+  /// **'Fatigue'**
+  String get fatigue;
+
+  /// No description provided for @anxiety.
+  ///
+  /// In en, this message translates to:
+  /// **'Anxiety'**
+  String get anxiety;
+
+  /// No description provided for @moodSwings.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood swings'**
+  String get moodSwings;
+
+  /// No description provided for @sadness.
+  ///
+  /// In en, this message translates to:
+  /// **'Sadness'**
+  String get sadness;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @heavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get heavy;
+
+  /// No description provided for @spotting.
+  ///
+  /// In en, this message translates to:
+  /// **'Spotting'**
+  String get spotting;
+
+  /// No description provided for @dry.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry'**
+  String get dry;
+
+  /// No description provided for @sticky.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticky'**
+  String get sticky;
+
+  /// No description provided for @creamy.
+  ///
+  /// In en, this message translates to:
+  /// **'Creamy'**
+  String get creamy;
+
+  /// No description provided for @watery.
+  ///
+  /// In en, this message translates to:
+  /// **'Watery'**
+  String get watery;
+
+  /// No description provided for @eggWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'Egg white'**
+  String get eggWhite;
+
+  /// No description provided for @protected.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected'**
+  String get protected;
+
+  /// No description provided for @unprotected.
+  ///
+  /// In en, this message translates to:
+  /// **'Unprotected'**
+  String get unprotected;
+
+  /// No description provided for @none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get none;
+
+  /// No description provided for @mild.
+  ///
+  /// In en, this message translates to:
+  /// **'Mild'**
+  String get mild;
+
+  /// No description provided for @moderate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get moderate;
+
+  /// No description provided for @severe.
+  ///
+  /// In en, this message translates to:
+  /// **'Severe'**
+  String get severe;
+
+  /// No description provided for @selectSymptom.
+  ///
+  /// In en, this message translates to:
+  /// **'Select symptom'**
+  String get selectSymptom;
+
+  /// No description provided for @selectAtLeastOneSymptom.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one symptom'**
+  String get selectAtLeastOneSymptom;
+
+  /// No description provided for @symptomsLoggedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms logged successfully!'**
+  String get symptomsLoggedSuccessfully;
+
+  /// No description provided for @failedToSaveSymptoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save symptoms'**
+  String get failedToSaveSymptoms;
+
+  /// No description provided for @noSymptomsSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No symptoms selected yet. Tap a symptom to begin.'**
+  String get noSymptomsSelected;
+
   /// No description provided for @selectPreferredLanguage.
   ///
   /// In en, this message translates to:
@@ -1435,6 +1615,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You are enough, just as you are. Believe in your journey.'**
   String get neutralAffirmation3;
+
+  /// No description provided for @genderPredictionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender Prediction'**
+  String get genderPredictionTitle;
+
+  /// No description provided for @genderPredictionDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Disclaimer: This feature uses AI to provide gender prediction advice. These predictions may not be fully accurate and should not replace professional medical advice. Please consult a qualified doctor for health decisions.'**
+  String get genderPredictionDisclaimer;
+
+  /// No description provided for @selectGenderExpectation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your gender expectation:'**
+  String get selectGenderExpectation;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @noPreference.
+  ///
+  /// In en, this message translates to:
+  /// **'No Preference'**
+  String get noPreference;
+
+  /// No description provided for @fertileWindowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fertile Window'**
+  String get fertileWindowLabel;
+
+  /// No description provided for @ovulationDayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation Day'**
+  String get ovulationDayLabel;
+
+  /// No description provided for @adviceForTiming.
+  ///
+  /// In en, this message translates to:
+  /// **'Advice for intercourse timing:'**
+  String get adviceForTiming;
+
+  /// No description provided for @bestChanceForMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Best chance for male conception.'**
+  String get bestChanceForMale;
+
+  /// No description provided for @lowerChanceForMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower chance for male.'**
+  String get lowerChanceForMale;
+
+  /// No description provided for @bestChanceForFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Best chance for female conception.'**
+  String get bestChanceForFemale;
+
+  /// No description provided for @lowerChanceForFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower chance for female.'**
+  String get lowerChanceForFemale;
+
+  /// No description provided for @generalAdviceForConception.
+  ///
+  /// In en, this message translates to:
+  /// **'General advice for conception.'**
+  String get generalAdviceForConception;
+
+  /// No description provided for @noPredictionDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No gender prediction data available yet. Select a gender and ensure your cycle data is up to date.'**
+  String get noPredictionDataAvailable;
+
+  /// No description provided for @readAffirmationAloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Read affirmation aloud'**
+  String get readAffirmationAloud;
+
+  /// No description provided for @failedPlayAffirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to play affirmation. Please try again.'**
+  String get failedPlayAffirmation;
+
+  /// No description provided for @failedPlayAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to play audio. Please try again.'**
+  String get failedPlayAudio;
 }
 
 class _AppLocalizationsDelegate

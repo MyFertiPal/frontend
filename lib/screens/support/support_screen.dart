@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
+import '../../services/api_key_config.dart';
+import '../../services/yarngpt_tts_service.dart';
 import '../community/community_groups_screen.dart';
 import '../community/create_group_screen.dart';
 import 'cultural_guidance_screen.dart';
@@ -18,12 +20,17 @@ class _SupportScreenState extends State<SupportScreen> {
   String _currentAffirmation = "";
   List<String> _affirmations = [];
   bool _loadingAffirmations = true;
+  String _currentFaith = 'neutral'; // Track current faith preference
 
   // Audio player properties
   late AudioPlayer _audioPlayer;
   bool _isPlayingAudio = false;
   Duration _audioDuration = Duration.zero;
   Duration _audioPosition = Duration.zero;
+
+  // TTS service for affirmations
+  late YarnGptTtsService _affirmationTtsService;
+  bool _affirmationTtsLoading = false;
 
   Map<String, List<String>> get _faithAffirmations {
     final l10n = AppLocalizations.of(context);
@@ -57,8 +64,35 @@ class _SupportScreenState extends State<SupportScreen> {
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
+    final apiKey = ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
+    _affirmationTtsService = YarnGptTtsService(apiKey: apiKey);
     _initializeAudioPlayer();
+    _initializeAffirmationTts();
     _fetchFaithPreference();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh affirmations when locale changes to ensure translations are updated
+    _refreshAffirmations();
+  }
+
+  void _refreshAffirmations() {
+    if (_affirmations.isNotEmpty && mounted) {
+      // Reload affirmations from the new language using stored faith preference
+      setState(() {
+        _affirmations = _faithAffirmations[_currentFaith]!;
+        // Keep the current affirmation index if possible, otherwise reset to first
+        final currentIndex = _currentAffirmation.isEmpty
+            ? 0
+            : _affirmations.indexWhere((a) => a == _currentAffirmation);
+        _currentAffirmation =
+            currentIndex >= 0 && currentIndex < _affirmations.length
+                ? _affirmations[currentIndex]
+                : _affirmations[0];
+      });
+    }
   }
 
   void _initializeAudioPlayer() {
@@ -87,6 +121,43 @@ class _SupportScreenState extends State<SupportScreen> {
     });
   }
 
+  void _initializeAffirmationTts() {
+    _affirmationTtsService.addListener(() {
+      if (mounted) {
+        setState(() {
+          _affirmationTtsLoading = _affirmationTtsService.isLoading;
+        });
+      }
+    });
+  }
+
+  Future<void> _playAffirmationTts() async {
+    if (_currentAffirmation.isEmpty) return;
+
+    try {
+      setState(() {
+        _affirmationTtsLoading = true;
+      });
+
+      // Use "Aria" voice which is a mature, soothing female voice for affirmations
+      await _affirmationTtsService.speakText(
+        _currentAffirmation,
+        voice: 'Aria',
+      );
+    } catch (e) {
+      debugPrint('Error playing affirmation TTS: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).failedPlayAffirmation),
+            backgroundColor: Colors.red.shade400,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _fetchFaithPreference() async {
     setState(() {
       _loadingAffirmations = true;
@@ -107,12 +178,14 @@ class _SupportScreenState extends State<SupportScreen> {
         else if (f.contains('traditionalist')) faith = 'traditionalist';
       }
       setState(() {
+        _currentFaith = faith; // Store the current faith preference
         _affirmations = _faithAffirmations[faith]!;
         _currentAffirmation = _affirmations[0];
         _loadingAffirmations = false;
       });
     } catch (e) {
       setState(() {
+        _currentFaith = 'neutral'; // Store the current faith preference
         _affirmations = _faithAffirmations['neutral']!;
         _currentAffirmation = _affirmations[0];
         _loadingAffirmations = false;
@@ -134,7 +207,7 @@ class _SupportScreenState extends State<SupportScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to play audio. Please try again.'),
+              content: Text(AppLocalizations.of(context).failedPlayAudio),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 2),
             ),
@@ -154,6 +227,7 @@ class _SupportScreenState extends State<SupportScreen> {
   @override
   void dispose() {
     _audioPlayer.dispose();
+    _affirmationTtsService.dispose();
     super.dispose();
   }
 
@@ -290,6 +364,36 @@ class _SupportScreenState extends State<SupportScreen> {
                                     ),
                                   ),
                                 ),
+                              ),
+                              const SizedBox(height: 12),
+                              // Play button for affirmation TTS
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _affirmationTtsLoading
+                                      ? SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                              const Color(0xFF2E683D)
+                                                  .withOpacity(0.6),
+                                            ),
+                                          ),
+                                        )
+                                      : IconButton(
+                                          icon: const Icon(
+                                            Icons.volume_up_rounded,
+                                            color: Color(0xFF2E683D),
+                                            size: 24,
+                                          ),
+                                          onPressed: _playAffirmationTts,
+                                          tooltip: AppLocalizations.of(context)
+                                              .readAffirmationAloud,
+                                        ),
+                                ],
                               ),
                             ],
                           ),

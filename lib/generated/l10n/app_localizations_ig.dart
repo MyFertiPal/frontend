@@ -535,6 +535,96 @@ class AppLocalizationsIg extends AppLocalizations {
   String get failedToClearCalendar => 'Enweghị ike ihichapụ ụbọchị kọlanndị';
 
   @override
+  String get mood => 'Ihe Omuma';
+
+  @override
+  String get bleeding => 'Isa';
+
+  @override
+  String get cervicalMucus => 'Mucus Akwa';
+
+  @override
+  String get sexualActivity => 'Ihe Ibadandun';
+
+  @override
+  String get pain => 'Nje';
+
+  @override
+  String get abdominalCramps => 'Nje Ihu';
+
+  @override
+  String get fatigue => 'Ire';
+
+  @override
+  String get anxiety => 'Ije';
+
+  @override
+  String get moodSwings => 'Iyiyipari';
+
+  @override
+  String get sadness => 'Ibanuje';
+
+  @override
+  String get light => 'Kekee';
+
+  @override
+  String get medium => 'Etiti';
+
+  @override
+  String get heavy => 'Kaya';
+
+  @override
+  String get spotting => 'Spec Spec';
+
+  @override
+  String get dry => 'Akpo';
+
+  @override
+  String get sticky => 'Sticky';
+
+  @override
+  String get creamy => 'Oyin';
+
+  @override
+  String get watery => 'Mmiri';
+
+  @override
+  String get eggWhite => 'Oj akọ';
+
+  @override
+  String get protected => 'Ichebe';
+
+  @override
+  String get unprotected => 'Enweghị ichebe';
+
+  @override
+  String get none => 'Ọ dịghị';
+
+  @override
+  String get mild => 'Kekee';
+
+  @override
+  String get moderate => 'Etiti';
+
+  @override
+  String get severe => 'Ike';
+
+  @override
+  String get selectSymptom => 'Họrọ alamọ';
+
+  @override
+  String get selectAtLeastOneSymptom => 'Biko họrọ mma';
+
+  @override
+  String get symptomsLoggedSuccessfully => 'Alamọ webilikọtara nke ọma!';
+
+  @override
+  String get failedToSaveSymptoms => 'Alamọ kwesịghị iwebi nke ọma';
+
+  @override
+  String get noSymptomsSelected => 'Enweghị alamọ a họpụtaara ugbu a.';
+
+  @override
   String get selectPreferredLanguage => 'Họrọ Asụsụ Ị Chọrọ';
 
   @override
@@ -723,4 +813,61 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get neutralAffirmation3 => 'Ị zuru oke, dị ka ị dị. Kwere n\'ije gị.';
+
+  @override
+  String get genderPredictionTitle => 'Gender Prediction';
+
+  @override
+  String get genderPredictionDisclaimer =>
+      'Ọ dị: Ihe a na-eji AI gbasaa ihe gbasara amụma nke nwa nworo maọ nwa nwanyị. Amụma ndị a agaghị adị ihe ezie mgbe niile ma onweghị ike ịgbanwe ihe ndị ọrụ ọgụ na-asị. Biko gaa hụ dibịa mma maka ike rụrụ ụbọchị.';
+
+  @override
+  String get selectGenderExpectation => 'Họrọ nwa nworo maọ nwa nwanyị:';
+
+  @override
+  String get male => 'Nwa Nworo';
+
+  @override
+  String get female => 'Nwa Nwanyị';
+
+  @override
+  String get noPreference => 'Enweghị nnabata';
+
+  @override
+  String get fertileWindowLabel => 'Oge Ịmụ';
+
+  @override
+  String get ovulationDayLabel => 'Ụbọchị Ịmụ';
+
+  @override
+  String get adviceForTiming => 'Ndụmọdụ maka ogenka:';
+
+  @override
+  String get bestChanceForMale => 'Ị nwere ike ịmụ nwa nworo kachasị mma.';
+
+  @override
+  String get lowerChanceForMale => 'Ị nwere ike ịmụ nwa nworo kpamkpam.';
+
+  @override
+  String get bestChanceForFemale => 'Ị nwere ike ịmụ nwa nwanyị kachasị mma.';
+
+  @override
+  String get lowerChanceForFemale => 'Ị nwere ike ịmụ nwa nwanyị kpamkpam.';
+
+  @override
+  String get generalAdviceForConception => 'Ndụmọdụ mma maka ịmụ.';
+
+  @override
+  String get noPredictionDataAvailable =>
+      'Enweghị amụma nke nwa ugbu a. Họrọ nwa nworo maọ nwa nwanyị ma ṣigide na data ụkpụ rị ziri ezi.';
+
+  @override
+  String get readAffirmationAloud => 'Gụọ mkpapụ ike ka ọ nọ';
+
+  @override
+  String get failedPlayAffirmation =>
+      'Ọ kpugasịịkwu ịkwụ okwu ike. Biko mee ọzọ.';
+
+  @override
+  String get failedPlayAudio => 'Ọ kpugasịịkwu ịkwụ okwu. Biko mee ọzọ.';
 }

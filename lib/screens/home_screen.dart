@@ -7,7 +7,8 @@ import '../generated/l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../providers/language_provider.dart';
 import '../services/api_service.dart';
-import '../services/audio_service.dart';
+import '../services/api_key_config.dart';
+import '../services/yarngpt_tts_service.dart';
 import '../models/user.dart';
 import 'profile/profile_screen.dart';
 import 'support/support_screen.dart';
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _insightText;
   String? _insightAudioUrl;
   bool _audioEnabled = true;
-  late AudioService _audioService;
+  late YarnGptTtsService _yarngptService;
 
   Locale? _lastLocale;
 
@@ -69,7 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _audioService = AudioService();
+    final apiKey =
+        ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
+    _yarngptService = YarnGptTtsService(apiKey: apiKey);
     _loadAudioPreference();
     _sendInsightsPost();
   }
@@ -170,6 +173,12 @@ class _HomeScreenState extends State<HomeScreen> {
             debugPrint('Set _insightText to: $_insightText');
             debugPrint('Audio URL: $_insightAudioUrl');
           });
+          // Auto-play insights with YarnGPT TTS
+          if (_audioEnabled &&
+              _insightText != null &&
+              _insightText!.isNotEmpty) {
+            _playInsightAudioWithTTS();
+          }
           return;
         }
       }
@@ -189,11 +198,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _playInsightAudio() async {
-    if (_insightAudioUrl == null || _insightAudioUrl!.isEmpty) {
+  Future<void> _playInsightAudioWithTTS() async {
+    if (_insightText == null || _insightText!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Audio not available for this insight'),
+          content: Text('No insight text to read'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -201,12 +210,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      await _audioService.playArticle(
-        'insight_${DateTime.now().millisecondsSinceEpoch}',
-        _insightAudioUrl!,
-      );
+      // Use YarnGPT to convert text to speech and play
+      await _yarngptService.speakText(_insightText!);
     } catch (e) {
-      debugPrint('Error playing insight audio: $e');
+      debugPrint('Error playing insight audio with YarnGPT: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -219,7 +226,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _stopInsightAudio() async {
-    await _audioService.pause();
+    await _yarngptService.pause();
+  }
+
+  void _toggleInsightAudio() async {
+    if (_yarngptService.isPlaying) {
+      _stopInsightAudio();
+    } else {
+      await _playInsightAudioWithTTS();
+    }
   }
 
   @override
@@ -763,15 +778,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     maxLines: 4,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  if (_audioEnabled && _insightAudioUrl != null)
+                                  if (_audioEnabled && _insightText != null)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 12),
-                                      child: Consumer<AudioService>(
-                                        builder: (context, audioService, _) {
+                                      child: ListenableBuilder(
+                                        listenable: _yarngptService,
+                                        builder: (context, _) {
                                           return GestureDetector(
-                                            onTap: audioService.isPlaying
-                                                ? _stopInsightAudio
-                                                : _playInsightAudio,
+                                            onTap: _toggleInsightAudio,
                                             child: Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -786,19 +800,37 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  Icon(
-                                                    audioService.isPlaying
-                                                        ? Icons.pause_circle
-                                                        : Icons.play_circle,
-                                                    color:
-                                                        const Color(0xFFA8D497),
-                                                    size: 20,
-                                                  ),
+                                                  if (_yarngptService.isLoading)
+                                                    const SizedBox(
+                                                      width: 16,
+                                                      height: 16,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                                Color>(
+                                                          Color(0xFFA8D497),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  else
+                                                    Icon(
+                                                      _yarngptService.isPlaying
+                                                          ? Icons.pause_circle
+                                                          : Icons.play_circle,
+                                                      color: const Color(
+                                                          0xFFA8D497),
+                                                      size: 20,
+                                                    ),
                                                   const SizedBox(width: 6),
                                                   Text(
-                                                    audioService.isPlaying
-                                                        ? 'Pause'
-                                                        : 'Listen',
+                                                    _yarngptService.isLoading
+                                                        ? 'Loading...'
+                                                        : _yarngptService
+                                                                .isPlaying
+                                                            ? 'Pause'
+                                                            : 'Listen',
                                                     style: const TextStyle(
                                                       color: Color(0xFFA8D497),
                                                       fontSize: 12,
@@ -1093,13 +1125,11 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildFeatureCard(
                   icon: Icons.medical_services_outlined,
-                  label:
-                      '${AppLocalizations.of(context).findSpecialist} (Coming Soon)',
+                  label: AppLocalizations.of(context).findSpecialist,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Specialist directory coming soon!'),
-                        backgroundColor: Color(0xFF66BB6A),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const SpecialistSearchScreen(),
                       ),
                     );
                   },
@@ -1107,13 +1137,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 12),
                 _buildFeatureCard(
                   icon: Icons.chat_bubble_outline,
-                  label:
-                      '${AppLocalizations.of(context).chatWithSpecialist} (Coming Soon)',
+                  label: AppLocalizations.of(context).chatWithSpecialist,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Specialist chat coming soon!'),
-                        backgroundColor: Color(0xFF66BB6A),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const SpecialistChatScreen(),
                       ),
                     );
                   },
@@ -1292,5 +1320,11 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _yarngptService.dispose();
+    super.dispose();
   }
 }

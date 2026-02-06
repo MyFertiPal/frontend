@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../services/api_service.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class LogSymptomScreen extends StatefulWidget {
   const LogSymptomScreen({super.key});
@@ -33,22 +34,41 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
     return symptoms;
   }
 
-  // Remove default values; will receive real data from parent
+  Map<String, List<String>> get _symptomOptions {
+    final l10n = AppLocalizations.of(context);
+    return {
+      l10n.mood: [l10n.fatigue, l10n.anxiety, l10n.moodSwings, l10n.sadness],
+      l10n.bleeding: [l10n.light, l10n.medium, l10n.heavy, l10n.spotting],
+      l10n.cervicalMucus: [
+        l10n.dry,
+        l10n.sticky,
+        l10n.creamy,
+        l10n.watery,
+        l10n.eggWhite
+      ],
+      l10n.sexualActivity: [l10n.protected, l10n.unprotected, l10n.none],
+      l10n.pain: [l10n.mild, l10n.moderate, l10n.severe],
+      l10n.abdominalCramps: [l10n.mild, l10n.moderate, l10n.severe],
+    };
+  }
 
-  final Map<String, List<String>> _symptomOptions = {
-    'Mood': ['Fatigue', 'Anxiety', 'Mood swings', 'Sadness'],
-    'Bleeding': ['Light', 'Medium', 'Heavy', 'Spotting'],
-    'Cervical Mucus': ['Dry', 'Sticky', 'Creamy', 'Watery', 'Egg white'],
-    'Sexual Activity': ['Protected', 'Unprotected', 'None'],
-    'Pain': ['Mild', 'Moderate', 'Severe'],
-    'Abdominal Cramps': ['Mild', 'Moderate', 'Severe'],
-  };
+  List<String> get _symptomCategories {
+    final l10n = AppLocalizations.of(context);
+    return [
+      l10n.mood,
+      l10n.bleeding,
+      l10n.cervicalMucus,
+      l10n.sexualActivity,
+      l10n.pain,
+      l10n.abdominalCramps,
+    ];
+  }
 
   Future<void> _saveSymptoms() async {
     if (_selectedSymptoms.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select at least one symptom'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).selectAtLeastOneSymptom),
           backgroundColor: Colors.orange,
         ),
       );
@@ -99,8 +119,9 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Symptoms logged successfully!'),
+            SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).symptomsLoggedSuccessfully),
               backgroundColor: Color(0xFF2E683D),
               duration: Duration(seconds: 2),
             ),
@@ -113,7 +134,8 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to save symptoms: ${response.statusCode}'),
+              content: Text(
+                  '${AppLocalizations.of(context).failedToSaveSymptoms}: ${response.statusCode}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -140,6 +162,8 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -163,9 +187,9 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Text(
-                  'Log symptoms',
-                  style: TextStyle(
+                Text(
+                  l10n.logSymptoms,
+                  style: const TextStyle(
                     color: Color(0xFFA8D497),
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
@@ -181,22 +205,19 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Column(
                 children: [
-                  _buildSymptomContainer('Mood'),
-                  const SizedBox(height: 16),
-                  _buildSymptomContainer('Bleeding'),
-                  const SizedBox(height: 16),
-                  _buildSymptomContainer('Cervical Mucus'),
-                  const SizedBox(height: 16),
-                  _buildSymptomContainer('Sexual Activity'),
-                  const SizedBox(height: 16),
-                  _buildSymptomContainer('Pain'),
-                  const SizedBox(height: 16),
-                  _buildSymptomContainer('Abdominal Cramps'),
+                  ..._symptomCategories.map((symptom) {
+                    return Column(
+                      children: [
+                        _buildSymptomContainer(symptom),
+                        const SizedBox(height: 16),
+                      ],
+                    );
+                  }),
                   if (_selectedSymptoms.isEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 32.0),
                       child: Text(
-                        'No symptoms selected yet. Tap a symptom to begin.',
+                        l10n.noSymptomsSelected,
                         style: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 16,
@@ -224,9 +245,9 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.cancel,
+                      style: const TextStyle(
                         color: Color(0xFF2E683D),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -256,9 +277,9 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Save log',
-                            style: TextStyle(
+                        : Text(
+                            l10n.save,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -275,6 +296,8 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
   }
 
   Widget _buildSymptomContainer(String symptomName) {
+    final l10n = AppLocalizations.of(context);
+    final moodKey = l10n.mood;
     final options = _symptomOptions[symptomName] ?? [];
     final isExpanded = _expandedSymptom == symptomName;
     return Container(
@@ -336,7 +359,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                 runSpacing: 8,
                 children: options.map((option) {
                   bool isSelected;
-                  if (symptomName == 'Mood') {
+                  if (symptomName == moodKey) {
                     isSelected =
                         _multiSelectedOptions['Mood']?.contains(option) ??
                             false;
@@ -346,7 +369,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        if (symptomName == 'Mood') {
+                        if (symptomName == moodKey) {
                           final current = _multiSelectedOptions['Mood'] ?? [];
                           if (isSelected) {
                             _multiSelectedOptions['Mood'] = List.from(current)

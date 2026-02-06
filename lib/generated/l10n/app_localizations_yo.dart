@@ -535,6 +535,96 @@ class AppLocalizationsYo extends AppLocalizations {
   String get failedToClearCalendar => 'Kò ṣe é ṣe láti kọ àwọn ọjọ́ kálẹ́ndà';
 
   @override
+  String get mood => 'Ìmọ̀ Ara';
+
+  @override
+  String get bleeding => 'İsa';
+
+  @override
+  String get cervicalMucus => 'İta á Ẹ̀kọ̀';
+
+  @override
+  String get sexualActivity => 'Iṣẹ̀ Ìbádandun';
+
+  @override
+  String get pain => 'Ìjìn';
+
+  @override
+  String get abdominalCramps => 'Ìparun Inu';
+
+  @override
+  String get fatigue => 'Ìrè';
+
+  @override
+  String get anxiety => 'Ìbẹ̀rù';
+
+  @override
+  String get moodSwings => 'Iyipari ìmọ̀';
+
+  @override
+  String get sadness => 'Ìbànújẹ́';
+
+  @override
+  String get light => 'Òkè';
+
+  @override
+  String get medium => 'Àrin';
+
+  @override
+  String get heavy => 'Ewu';
+
+  @override
+  String get spotting => 'Ìyọ̀kúta';
+
+  @override
+  String get dry => 'Gbẹẹ';
+
+  @override
+  String get sticky => 'Dídì';
+
+  @override
+  String get creamy => 'Oyin';
+
+  @override
+  String get watery => 'Omi';
+
+  @override
+  String get eggWhite => 'Funfun àkọ';
+
+  @override
+  String get protected => 'Ìdènà';
+
+  @override
+  String get unprotected => 'Láìní ìdènà';
+
+  @override
+  String get none => 'Kò sí';
+
+  @override
+  String get mild => 'Kéékéé';
+
+  @override
+  String get moderate => 'Àrin';
+
+  @override
+  String get severe => 'Iná';
+
+  @override
+  String get selectSymptom => 'Yan alamọ';
+
+  @override
+  String get selectAtLeastOneSymptom => 'Jọ̀wọ́ yan àkólẹ̀ kan';
+
+  @override
+  String get symptomsLoggedSuccessfully => 'Alamọ ti jẹ́ ìforúkọ̀sí!';
+
+  @override
+  String get failedToSaveSymptoms => 'Àkunnu ìforúkọ̀sí alamọ';
+
+  @override
+  String get noSymptomsSelected => 'Kò sí alamọ ti a yàn nísinsin yìí.';
+
+  @override
   String get selectPreferredLanguage => 'Yan Èdè Tó Wù Ẹ́';
 
   @override
@@ -726,4 +816,62 @@ class AppLocalizationsYo extends AppLocalizations {
   @override
   String get neutralAffirmation3 =>
       'O tó, gẹ́gẹ́ bí o ti rí. Gbàgbọ́ nínú ìrìnàjò rẹ.';
+
+  @override
+  String get genderPredictionTitle => 'Asọtẹlẹ Akọ tabi Abo';
+
+  @override
+  String get genderPredictionDisclaimer =>
+      'Ìkéde: Irinṣẹ́ yìí nlo AI láti pèsè ìmọ̀ràn asọtẹlẹ akọ tabi abo. Àwọn asọtẹlẹ wọ̀nyí le ma fẹ́ dọ̀gba lóòtọ̀ gbogbogbo àti ko ye ki a lo si dehin aṣọ ẹjọ́ ara ọjọ̀. Jọ̀wọ́ bá oníṣègùn onílé pa láti gba àṣìṣe nípa àfẹ́yin.';
+
+  @override
+  String get selectGenderExpectation => 'Yan ìwòye akọ tabi abo tí o fẹ́:';
+
+  @override
+  String get male => 'Akọ';
+
+  @override
+  String get female => 'Abo';
+
+  @override
+  String get noPreference => 'Kò sí ìyàlẹ́nu';
+
+  @override
+  String get fertileWindowLabel => 'Àkókò Ìmòlúculúcù';
+
+  @override
+  String get ovulationDayLabel => 'Ọjọ́ Ìmòlúculúcù';
+
+  @override
+  String get adviceForTiming => 'Ìmọ̀ràn fún àkókò ibádandun';
+
+  @override
+  String get bestChanceForMale => 'Ìgbàkúrú akọ tó dára jù.';
+
+  @override
+  String get lowerChanceForMale => 'Ìgbàkúrú akọ ti kéé dára.';
+
+  @override
+  String get bestChanceForFemale => 'Ìgbàkúrú abo tó dára jù.';
+
+  @override
+  String get lowerChanceForFemale => 'Ìgbàkúrú abo ti kéé dára.';
+
+  @override
+  String get generalAdviceForConception => 'Ìmọ̀ràn gbogbo àkọ fún ìgbàkúrú.';
+
+  @override
+  String get noPredictionDataAvailable =>
+      'Kò sí ìmọ̀ràn asọtẹlẹ akọ tabi abo ti a ṣe ìkéde fún ó. Yan akọ tabi abo kí o ṣe àkójọ́ íṣẹ̀ àkózini rẹ.';
+
+  @override
+  String get readAffirmationAloud => 'Kà ìwọ̀ nígbà';
+
+  @override
+  String get failedPlayAffirmation =>
+      'Kò ṣe é ṣe láti ṣe ohùn ìwọ̀. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan síi.';
+
+  @override
+  String get failedPlayAudio =>
+      'Kò ṣe é ṣe láti ṣe ohùn. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan síi.';
 }

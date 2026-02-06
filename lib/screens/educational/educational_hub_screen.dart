@@ -2,6 +2,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
+import '../../services/api_key_config.dart';
+import '../../services/yarngpt_tts_service.dart';
 import '../../theme.dart';
 import 'article_reading_screen.dart';
 
@@ -334,6 +336,7 @@ class AudioPlayerModal extends StatefulWidget {
 }
 
 class _AudioPlayerModalState extends State<AudioPlayerModal> {
+  late YarnGptTtsService _ttsService;
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
@@ -344,88 +347,56 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   @override
   void initState() {
     super.initState();
+    final apiKey =
+        ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
+    _ttsService = YarnGptTtsService(apiKey: apiKey);
     _setupAudioPlayer();
   }
 
   @override
   void dispose() {
-    widget.audioPlayer.stop();
+    _ttsService.dispose();
     super.dispose();
   }
 
   void _setupAudioPlayer() {
-    widget.audioPlayer.onPlayerStateChanged.listen((state) {
+    _ttsService.addListener(() {
       if (mounted) {
         setState(() {
-          _isPlaying = state == PlayerState.playing;
-          if (state == PlayerState.playing) {
-            _errorMessage = null;
-          }
+          _isPlaying = _ttsService.isPlaying;
+          _duration = _ttsService.duration;
+          _position = _ttsService.position;
+          _isLoading = _ttsService.isLoading;
         });
-      }
-    });
-
-    widget.audioPlayer.onDurationChanged.listen((duration) {
-      if (mounted) {
-        setState(() => _duration = duration);
-      }
-    });
-
-    widget.audioPlayer.onPositionChanged.listen((position) {
-      if (mounted) {
-        setState(() => _position = position);
       }
     });
   }
 
-  Future<void> _loadAudio() async {
-    if (widget.article['audioUrl']!.isEmpty) return;
-
-    try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-      // Use streaming mode for faster initial playback
-      await widget.audioPlayer.setReleaseMode(ReleaseMode.loop);
-      await widget.audioPlayer.setPlayerMode(PlayerMode.mediaPlayer);
-
-      // Load audio asynchronously without blocking UI
-      await widget.audioPlayer.setSourceAsset(
-        widget.article['audioUrl']!,
-      );
-
-      await widget.audioPlayer.setPlaybackRate(_playbackSpeed);
-
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    } catch (e) {
-      debugPrint('Error loading audio: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = 'Failed to load audio. Please try again.';
-        });
-      }
-    }
+  void _initializeTtsService() {
+    final apiKey =
+        ApiKeyConfig.getTestApiKey() ?? ApiKeyConfig.getYarnGptApiKey();
+    _ttsService = YarnGptTtsService(apiKey: apiKey);
   }
 
   Future<void> _togglePlayPause() async {
     try {
       if (_isPlaying) {
-        await widget.audioPlayer.pause();
+        // Pause functionality not yet supported in YarnGptTtsService
+        setState(() {
+          _errorMessage = 'Pause feature coming soon. Please reload to stop.';
+        });
       } else {
-        // Load audio on first play if not loaded
-        if (_duration == Duration.zero && !_isLoading) {
-          await _loadAudio();
+        // Get the article content and speak it using YarnGPT TTS
+        final articleContent = widget.article['content'] ?? '';
+        if (articleContent.isEmpty) {
+          setState(() {
+            _errorMessage = 'No article content available.';
+          });
+          return;
         }
-        // Small delay to ensure audio is loaded
-        if (_duration == Duration.zero) {
-          await Future.delayed(const Duration(milliseconds: 500));
-        }
-        await widget.audioPlayer.resume();
+
+        // Speak the article text using YarnGPT TTS
+        await _ttsService.speakText(articleContent);
       }
     } catch (e) {
       debugPrint('Error toggling play/pause: $e');
@@ -438,13 +409,10 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   }
 
   Future<void> _setSpeed(double speed) async {
-    try {
-      await widget.audioPlayer.setPlaybackRate(speed);
-      if (mounted) {
-        setState(() => _playbackSpeed = speed);
-      }
-    } catch (e) {
-      debugPrint('Error setting speed: $e');
+    // Note: YarnGPT TTS API doesn't support playback speed control
+    // This is just a UI representation for now
+    if (mounted) {
+      setState(() => _playbackSpeed = speed);
     }
   }
 
@@ -510,9 +478,9 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                           value: _position.inSeconds
                               .toDouble()
                               .clamp(0, _duration.inSeconds.toDouble()),
-                          onChanged: (value) async {
-                            await widget.audioPlayer
-                                .seek(Duration(seconds: value.toInt()));
+                          onChanged: (value) {
+                            // Seeking not supported with YarnGPT TTS
+                            // This is a visual-only slider for now
                           },
                         ),
                       ),
@@ -547,9 +515,8 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.skip_previous),
-                        onPressed: () async {
-                          await widget.audioPlayer.seek(Duration.zero);
-                        },
+                        onPressed:
+                            null, // Disabled: seeking not supported with YarnGPT TTS
                       ),
                       const SizedBox(width: 16),
                       Container(
@@ -586,9 +553,8 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                       const SizedBox(width: 16),
                       IconButton(
                         icon: const Icon(Icons.skip_next),
-                        onPressed: () async {
-                          await widget.audioPlayer.seek(_duration);
-                        },
+                        onPressed:
+                            null, // Disabled: seeking not supported with YarnGPT TTS
                       ),
                     ],
                   ),
