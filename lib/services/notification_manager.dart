@@ -23,15 +23,23 @@ class NotificationManager {
   bool _isInitialized = false;
 
   /// Initialize the notification system
+  /// On web platform, skips native notifications and uses stubs
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      // Initialize local notifications
+      if (kIsWeb) {
+        debugPrint(
+            'Running on web platform - skipping native notification services');
+        _isInitialized = true;
+        return;
+      }
+
+      // Initialize local notifications (mobile/desktop only)
       await _localNotificationService.initialize();
       debugPrint('Local notifications initialized');
 
-      // Initialize Firebase messaging (uses stub on web platform)
+      // Initialize Firebase messaging
       await _fcmService.initialize();
       debugPrint('Firebase messaging initialized');
 
@@ -42,7 +50,7 @@ class NotificationManager {
       _isInitialized = true;
     } catch (e) {
       debugPrint('Error initializing notification manager: $e');
-      rethrow;
+      // Don't rethrow - let the app continue even if notifications fail
     }
   }
 
