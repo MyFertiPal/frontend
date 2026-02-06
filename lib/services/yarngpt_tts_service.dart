@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// YarnGPT Text-to-Speech Service
 /// Converts text to speech using the YarnGPT API
@@ -90,16 +88,8 @@ class YarnGptTtsService extends ChangeNotifier {
         final audioBytes = response.bodyBytes;
         debugPrint(
             'YarnGPT TTS: Received ${audioBytes.length} bytes of audio data');
-
-        // Save to temporary file
-        final tempDir = await getTemporaryDirectory();
-        final tempFile = File('${tempDir.path}/insights.mp3');
-        await tempFile.writeAsBytes(audioBytes);
-
-        debugPrint('YarnGPT TTS: Saved audio to ${tempFile.path}');
-
-        // Play the audio from the temporary file
-        await _audioPlayer.play(DeviceFileSource(tempFile.path));
+        // Play audio from memory so it works on web and mobile.
+        await _audioPlayer.play(BytesSource(audioBytes));
       } else if (response.statusCode == 401) {
         throw Exception(
             'YarnGPT Authentication Failed (401): Invalid or expired API key. '
