@@ -15,9 +15,20 @@ import "screens/onboarding/forget_password_flow.dart"
 import "screens/home_screen.dart";
 import "services/auth_service.dart";
 import "services/audio_service.dart";
+import "services/notification_manager.dart";
 import "theme/app_theme.dart";
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize notification system
+  try {
+    final notificationManager = NotificationManager();
+    await notificationManager.initialize();
+  } catch (e) {
+    debugPrint('Failed to initialize notifications: $e');
+  }
+
   runApp(const MyApp());
 }
 
