@@ -114,23 +114,23 @@ class AppLocalizationsHa extends AppLocalizations {
   String get ovulationDay => 'Ranar Haifuwa';
 
   @override
-  String get fertilityCountdown => 'Fertility Countdown';
+  String get fertilityCountdown => 'Lanƙwan Haihuwa';
 
   @override
   String daysUntilFertile(Object days) {
-    return '$days days until fertile window';
+    return '$days kwanaki har zuwa lokacin haihuwa';
   }
 
   @override
   String dayUntilFertile(Object day) {
-    return '$day day until fertile window';
+    return '$day kwana har zuwa lokacin haihuwa';
   }
 
   @override
-  String get inFertileWindow => '🌟 You\'re in your fertile window now!';
+  String get inFertileWindow => '🌟 Kin iko a lokacin haihuwa yanzu!';
 
   @override
-  String get logCycleSee => 'Log your cycle to see countdown';
+  String get logCycleSee => 'Bi da agogo don ganin lanƙwa';
 
   @override
   String get fertilityStatus => 'Fertility Status';
@@ -160,7 +160,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get logSymptoms => 'Rubuta Alamomi';
 
   @override
-  String get trackCycle => 'Track Cycle';
+  String get trackCycle => 'Bi da Lokaci';
 
   @override
   String get viewInsights => 'View Insights';

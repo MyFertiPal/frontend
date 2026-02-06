@@ -49,14 +49,21 @@ flutter run -d web-server --dart-define=YARNGPT_API_KEY='your-api-key-here'
 flutter build web --dart-define=YARNGPT_API_KEY='your-production-key'
 ```
 
-### Option 2: Environment Variables on Deployment
+### Option 2: Android APK Build
+
+```bash
+flutter build apk --release --dart-define=YARNGPT_API_KEY='your-production-key'
+```
+
+### Option 3: Environment Variables on Deployment
 
 Set environment variables on your deployment platform:
 - Netlify: Site settings → Build & deploy → Environment
 - Vercel: Project settings → Environment Variables
-- GitHub Pages: Use GitHub Secrets
+- GitHub Actions: Settings → Secrets and variables → Actions
+- Google Cloud Build: Cloud Build configuration
 
-### Option 3: Secret Management Services
+### Option 4: Secret Management Services
 
 For enterprise deployments:
 - Firebase Secrets (Google Cloud Secret Manager)
@@ -87,6 +94,51 @@ Example in code:
 final apiKey = ApiKeyConfig.getYarnGptApiKey();
 ```
 
+## Troubleshooting YarnGPT API Errors
+
+### 403 Forbidden Error
+
+If you're getting a **403 Forbidden** error from YarnGPT API:
+
+1. **Verify API Key Format**
+   - Ensure the key is exactly: `sk_live_YOUR_KEY_HERE`
+   - No extra spaces or quotes
+   - Full key is passed (not truncated)
+
+2. **Check API Key Validity**
+   - Log in to YarnGPT dashboard: https://yarngpt.ai
+   - Go to API Keys section
+   - Verify the key is active and not revoked
+   - Check if the key has expired
+
+3. **Verify Permissions**
+   - Ensure the API key has permission for TTS (Text-to-Speech)
+   - Some keys may have restricted scopes
+   - Contact YarnGPT support if permissions are limited
+
+4. **Check Endpoint**
+   - Current endpoint: `https://yarngpt.ai/api/v1/tts`
+   - Verify this is the correct endpoint for your API key tier
+   - Some API keys may have different endpoints
+
+5. **Review Request Format**
+   - The app sends: `Authorization: Bearer {YARNGPT_API_KEY}`
+   - Headers: `Content-Type: application/json`
+   - Body format: `{text, voice, response_format}`
+
+6. **Debug Output**
+   - Check Flutter console logs for detailed error response
+   - The app will show the full API error in debug logs
+   - Example: `YarnGPT API error: 403 - {error details}`
+
+### 401 Unauthorized Error
+
+If you're getting a **401 Unauthorized** error:
+
+1. API key is invalid or expired
+2. Try regenerating a new key in YarnGPT dashboard
+3. Make sure you're passing the complete key without modifications
+
 ## If You Accidentally Committed a Secret
 
 If a secret was committed to git:
@@ -108,3 +160,10 @@ Or use GitHub's secret scanning to automatically detect and alert on leaked keys
 ✅ `.gitignore` configured to ignore local config files  
 ✅ Environment variable approach set up  
 ✅ Ready for secure CI/CD deployment  
+
+## Support
+
+For YarnGPT API issues:
+- Visit: https://yarngpt.ai
+- Contact: support@yarngpt.ai
+- Check API documentation: https://docs.yarngpt.ai

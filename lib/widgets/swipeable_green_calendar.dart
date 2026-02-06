@@ -139,11 +139,14 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
         alignment: WrapAlignment.center,
         children: [
           _LegendItem(
-              color: const Color(0xFFD32F2F), label: 'Period', hasDot: true),
+              color: const Color(0xFFD32F2F),
+              label: 'Period',
+              hasDot: true,
+              isPink: true),
           _LegendItem(
               color: const Color(0xFF1976D2), label: 'Ovulation', hasDot: true),
           _LegendItem(
-              color: const Color(0xFF8E24AA), label: 'Fertile', hasDot: true),
+              color: const Color(0xFF4CAF50), label: 'Fertile', hasDot: true),
           _LegendItem(
               color: const Color(0xFFD32F2F),
               label: 'Predicted',
@@ -420,12 +423,14 @@ class _LegendItem extends StatelessWidget {
   final String label;
   final bool hasDot;
   final bool hasBorder;
+  final bool isPink;
 
   const _LegendItem({
     required this.color,
     required this.label,
     this.hasDot = false,
     this.hasBorder = false,
+    this.isPink = false,
   });
 
   @override
@@ -440,9 +445,12 @@ class _LegendItem extends StatelessWidget {
             shape: BoxShape.circle,
             color: hasBorder
                 ? Colors.white.withOpacity(0.2)
-                : color.withOpacity(0.4),
-            border:
-                hasBorder ? Border.all(color: Colors.white, width: 2) : null,
+                : isPink
+                    ? const Color(0xFFFFC0CB).withOpacity(0.6)
+                    : color.withOpacity(0.4),
+            border: (hasBorder || isPink)
+                ? Border.all(color: isPink ? color : Colors.white, width: 2)
+                : null,
           ),
           child: hasDot
               ? Center(
@@ -460,19 +468,33 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-            shadows: [
-              Shadow(
-                offset: Offset(0, 1),
-                blurRadius: 2,
-                color: Colors.black26,
-              ),
-            ],
-          ),
+          style: hasBorder
+              ? const TextStyle(
+                  color: Color(0xFFD32F2F),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 1),
+                      blurRadius: 2,
+                      color: Colors.black26,
+                    ),
+                  ],
+                )
+              : const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 1),
+                      blurRadius: 2,
+                      color: Colors.black26,
+                    ),
+                  ],
+                ),
         ),
       ],
     );

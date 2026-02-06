@@ -27,6 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   User? _userCard;
   bool _isDeleting = false;
   late final ApiService apiService; // Add as member variable
+  bool _profileWasUpdated = false; // Track if profile was updated
 
   // Add missing fields for preferences
   String selectedLanguage = 'English';
@@ -170,118 +171,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
     // Removed local prediction. Use backend-provided next period dates only.
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F0),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF2D5A3A),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Text(
-          AppLocalizations.of(context)!.profileSettings,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop(_profileWasUpdated);
+        return false; // We handle the pop ourselves
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F5F0),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF2D5A3A),
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).pop(_profileWasUpdated);
+            },
           ),
-        ),
-        centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
-        ),
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2D5A3A)),
-              ),
-            )
-          : Builder(
-              builder: (context) {
-                // Wrap in error boundary
-                try {
-                  return RefreshIndicator(
-                    onRefresh: _loadUserProfile,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // User Profile Card (always use get_user)
-                          _buildProfileCard(userCard, context),
-                          const SizedBox(height: 16),
-                          // Removed nextPeriodDates display. Use backend-driven widgets only.
-                          // Goals Section
-                          _buildGoalsSection(),
-                          const SizedBox(height: 16),
-                          // Preferences Section
-                          _buildPreferencesSection(),
-                          const SizedBox(height: 16),
-                          // Privacy & Security Section
-                          _buildPrivacySection(),
-                          const SizedBox(height: 16),
-                          // Delete Account Section
-                          _buildDeleteAccountSection(context),
-                          const SizedBox(height: 24),
-                        ],
-                      ),
-                    ),
-                  );
-                } catch (e) {
-                  debugPrint('Error building profile screen: $e');
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            size: 48,
-                            color: Colors.red,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Error loading profile',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            e.toString(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              _loadUserProfile();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2D5A3A),
-                            ),
-                            child: const Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-              },
+          title: Text(
+            AppLocalizations.of(context)!.profileSettings,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
             ),
-    );
+          ),
+          centerTitle: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+          ),
+        ),
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2D5A3A)),
+                ),
+              )
+            : Builder(
+                builder: (context) {
+                  // Wrap in error boundary
+                  try {
+                    return RefreshIndicator(
+                      onRefresh: _loadUserProfile,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // User Profile Card (always use get_user)
+                            _buildProfileCard(userCard, context),
+                            const SizedBox(height: 16),
+                            // Removed nextPeriodDates display. Use backend-driven widgets only.
+                            // Goals Section
+                            _buildGoalsSection(),
+                            const SizedBox(height: 16),
+                            // Preferences Section
+                            _buildPreferencesSection(),
+                            const SizedBox(height: 16),
+                            // Privacy & Security Section
+                            _buildPrivacySection(),
+                            const SizedBox(height: 16),
+                            // Delete Account Section
+                            _buildDeleteAccountSection(context),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    debugPrint('Error building profile screen: $e');
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              size: 48,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Error loading profile',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              e.toString(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                _loadUserProfile();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2D5A3A),
+                              ),
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+      ), // Scaffold
+    ); // WillPopScope
   }
 
   Widget _buildProfileCard(user, BuildContext context) {
@@ -379,13 +386,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
-                await Navigator.of(context).push(
+                final result = await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => const ProfileSetupScreen(),
                   ),
                 );
                 // After returning from profile setup, reload profile to fetch new goal values
-                await _loadUserProfile();
+                if (result == true) {
+                  _profileWasUpdated = true;
+                  await _loadUserProfile();
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFD4E9D7),

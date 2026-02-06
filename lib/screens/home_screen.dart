@@ -1050,7 +1050,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${_calculateDaysUntilFertile()} ${_calculateDaysUntilFertile() == 1 ? "day" : "days"} until fertile window',
+                                      _calculateDaysUntilFertile() == 1
+                                          ? AppLocalizations.of(context)
+                                              .dayUntilFertile(
+                                              _calculateDaysUntilFertile()
+                                                  .toString(),
+                                            )
+                                          : AppLocalizations.of(context)
+                                              .daysUntilFertile(
+                                              _calculateDaysUntilFertile()
+                                                  .toString(),
+                                            ),
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
@@ -1198,167 +1208,113 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showSupportDialog() {
-    final TextEditingController _messageController = TextEditingController();
-    bool _isLoading = false;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              title: Text(
-                'Send us your feedback',
+        return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Row(
+            children: [
+              Icon(
+                Icons.support_agent,
+                color: const Color(0xFF2E683D),
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Contact Support',
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
+                  color: const Color(0xFF2E683D),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Need help or have feedback?',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 16),
+              Text(
+                'Please reach out to us at:',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFA8D497).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF2E683D),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
                   children: [
-                    Text(
-                      'Let us know about any concerns, bugs, or suggestions:',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    Icon(
+                      Icons.email,
+                      color: const Color(0xFF2E683D),
+                      size: 20,
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _messageController,
-                      maxLines: 5,
-                      minLines: 4,
-                      decoration: InputDecoration(
-                        hintText: 'Describe your feedback...',
-                        hintStyle: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.5),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
-                          ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'teamnexus@techlaunchpadi.com',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF2E683D),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
+              const SizedBox(height: 16),
+              Text(
+                'We\'ll get back to you as soon as possible!',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                ElevatedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () async {
-                          if (_messageController.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please enter your feedback'),
-                              ),
-                            );
-                            return;
-                          }
-
-                          setState(() => _isLoading = true);
-
-                          try {
-                            final apiService = ApiService();
-                            try {
-                              final supportEmail =
-                                  await apiService.getSupportEmail();
-                              await Clipboard.setData(
-                                  ClipboardData(text: supportEmail));
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Support email copied!'),
-                                  ),
-                                );
-                              }
-                            } catch (apiError) {
-                              debugPrint('Error getting support email.');
-                            }
-
-                            if (mounted) {
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Please send your feedback to teamnexus@techlaunchpadi',
-                                  ),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            debugPrint('Error sending support message.');
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Error sending feedback.'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          } finally {
-                            if (mounted) {
-                              setState(() => _isLoading = false);
-                            }
-                          }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E683D),
-                    foregroundColor: Colors.white,
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : const Text(
-                          'Send',
-                          style: TextStyle(fontFamily: 'Poppins'),
-                        ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF2E683D),
+              ),
+              child: const Text(
+                'Close',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
         );
       },
     );

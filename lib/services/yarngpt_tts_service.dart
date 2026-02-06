@@ -60,11 +60,14 @@ class YarnGptTtsService extends ChangeNotifier {
 
     try {
       // Prepare request body
-      final body = {
+      final Map<String, dynamic> body = {
         'text': text,
-        'voice': voice ?? 'Idera',
-        'response_format': 'mp3',
       };
+
+      // Only add voice if explicitly provided
+      if (voice != null && voice.isNotEmpty) {
+        body['voice'] = voice;
+      }
 
       debugPrint('YarnGPT TTS: Sending request to $apiUrl');
       debugPrint('YarnGPT TTS: Request body: $body');
@@ -80,6 +83,7 @@ class YarnGptTtsService extends ChangeNotifier {
       );
 
       debugPrint('YarnGPT TTS: Response status: ${response.statusCode}');
+      debugPrint('YarnGPT TTS: Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         // Response is binary MP3 data
@@ -96,6 +100,14 @@ class YarnGptTtsService extends ChangeNotifier {
 
         // Play the audio from the temporary file
         await _audioPlayer.play(DeviceFileSource(tempFile.path));
+      } else if (response.statusCode == 401) {
+        throw Exception(
+            'YarnGPT Authentication Failed (401): Invalid or expired API key. '
+            'Response: ${response.body}');
+      } else if (response.statusCode == 403) {
+        throw Exception(
+            'YarnGPT Access Denied (403): API key does not have required permissions. '
+            'Response: ${response.body}');
       } else {
         throw Exception(
             'YarnGPT API error: ${response.statusCode} - ${response.body}');

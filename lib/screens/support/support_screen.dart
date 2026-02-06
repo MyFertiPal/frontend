@@ -22,10 +22,12 @@ class _SupportScreenState extends State<SupportScreen> {
   List<String> _affirmations = [];
   bool _loadingAffirmations = true;
   String _currentFaith = 'neutral'; // Track current faith preference
+  bool _audioEnabled = true; // Track if audio guidance is enabled
 
   // Audio player properties
   late AudioPlayer _audioPlayer;
   bool _isPlayingAudio = false;
+  bool _isAudioLoading = false;
   Duration _audioDuration = Duration.zero;
   Duration _audioPosition = Duration.zero;
 
@@ -93,6 +95,22 @@ class _SupportScreenState extends State<SupportScreen> {
     _initializeAudioPlayer();
     _initializeAffirmationTts();
     _fetchFaithPreference();
+    _loadAudioPreference();
+  }
+
+  Future<void> _loadAudioPreference() async {
+    try {
+      final api = ApiService();
+      final profile = await api.getProfile();
+      final audioPreference = profile['audio_preference'] ?? true;
+      if (mounted) {
+        setState(() {
+          _audioEnabled = audioPreference;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading audio preference: $e');
+    }
   }
 
   @override
@@ -223,12 +241,23 @@ class _SupportScreenState extends State<SupportScreen> {
     } else {
       // Load and play audio - using encouragement audio from assets
       try {
+        setState(() {
+          _isAudioLoading = true;
+        });
         // Set the audio source and play
         await _audioPlayer.setSource(AssetSource('audio/encouragement.wav'));
         await _audioPlayer.resume();
+        if (mounted) {
+          setState(() {
+            _isAudioLoading = false;
+          });
+        }
       } catch (e) {
         debugPrint('Audio play failed: $e');
         if (mounted) {
+          setState(() {
+            _isAudioLoading = false;
+          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).failedPlayAudio),
@@ -390,35 +419,36 @@ class _SupportScreenState extends State<SupportScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              // Play button for affirmation TTS
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  _affirmationTtsLoading
-                                      ? SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              const Color(0xFF2E683D)
-                                                  .withOpacity(0.6),
+                              // Play button for affirmation TTS (only show if audio enabled)
+                              if (_audioEnabled)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _affirmationTtsLoading
+                                        ? SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                const Color(0xFF2E683D)
+                                                    .withOpacity(0.6),
+                                              ),
                                             ),
+                                          )
+                                        : IconButton(
+                                            icon: const Icon(
+                                              Icons.volume_up_rounded,
+                                              color: Color(0xFF2E683D),
+                                              size: 24,
+                                            ),
+                                            onPressed: _playAffirmationTts,
+                                            tooltip: AppLocalizations.of(context)
+                                                .readAffirmationAloud,
                                           ),
-                                        )
-                                      : IconButton(
-                                          icon: const Icon(
-                                            Icons.volume_up_rounded,
-                                            color: Color(0xFF2E683D),
-                                            size: 24,
-                                          ),
-                                          onPressed: _playAffirmationTts,
-                                          tooltip: AppLocalizations.of(context)
-                                              .readAffirmationAloud,
-                                        ),
-                                ],
-                              ),
+                                  ],
+                                ),
                             ],
                           ),
                   ),
@@ -469,17 +499,32 @@ class _SupportScreenState extends State<SupportScreen> {
                         // Play/Pause button, Title and Progress bar, Duration
                         Row(
                           children: [
-                            // Play/Pause button
-                            IconButton(
-                              icon: Icon(
-                                _isPlayingAudio
-                                    ? Icons.pause_circle_filled
-                                    : Icons.play_circle_filled,
-                                color: const Color(0xFFA8D497),
-                                size: 40,
-                              ),
-                              onPressed: _togglePlayPause,
-                            ),
+                            // Play/Pause button with loading state
+                            _isAudioLoading
+                                ? Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          const Color(0xFFA8D497),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : IconButton(
+                                    icon: Icon(
+                                      _isPlayingAudio
+                                          ? Icons.pause_circle_filled
+                                          : Icons.play_circle_filled,
+                                      color: const Color(0xFFA8D497),
+                                      size: 40,
+                                    ),
+                                    onPressed: _togglePlayPause,
+                                  ),
                             const SizedBox(width: 12),
                             // Title and Progress bar
                             Expanded(
@@ -833,7 +878,7 @@ class _SupportScreenState extends State<SupportScreen> {
                               ),
                               const SizedBox(width: 8),
                               const Text(
-                                'support@fertipath.com',
+                                'teamnexus@techlaunchpadi.com',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
