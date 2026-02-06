@@ -3,7 +3,6 @@
 import "package:app_links/app_links.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:flutter_web_plugins/flutter_web_plugins.dart";
 import "package:provider/provider.dart";
 // import "package:flutter_localizations/flutter_localizations.dart";
 import "generated/l10n/app_localizations.dart";
@@ -22,12 +21,13 @@ import "services/auth_service.dart";
 import "services/audio_service.dart";
 import "services/notification_manager.dart";
 import "theme/app_theme.dart";
+import "utils/url_strategy.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (kIsWeb) {
-    setPathUrlStrategy();
+    setAppUrlStrategy();
   }
 
   // Initialize notification system
@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
     _appLinks = AppLinks();
 
     try {
-      final initialUri = await _appLinks!.getInitialAppLink();
+      final initialUri = await _appLinks!.getInitialLink();
       if (initialUri != null) {
         _handleIncomingUri(initialUri);
       }
