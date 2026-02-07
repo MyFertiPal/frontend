@@ -88,10 +88,6 @@ class MainActivity : FlutterFragmentActivity() {
 									// No-op: wait for final success/error callback.
 								}
 
-								override fun showLoading(isProcessing: Boolean) {
-									// No-op: loading handled on Flutter side.
-								}
-
 								override fun onError(error: Throwable, transaction: co.paystack.android.Transaction?) {
 									val message = error.message ?: "Payment failed"
 									respond(
