@@ -14,6 +14,7 @@ jobs:
           API_URL: https://fertipath-backend.onrender.com
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
           YARNGPT_API_KEY: ${{ secrets.YARNGPT_API_KEY }}
+          PAYSTACK_PUBLIC_KEY: ${{ secrets.PAYSTACK_PUBLIC_KEY }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
@@ -51,14 +52,14 @@ jobs:
               run: echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
 
             - name: Build APK
-              run: flutter build apk --release --dart-define=API_URL=$API_URL --dart-define=YARNGPT_API_KEY=$YARNGPT_API_KEY
+              run: flutter build apk --release --dart-define=API_URL=$API_URL --dart-define=YARNGPT_API_KEY=$YARNGPT_API_KEY --dart-define=PAYSTACK_PUBLIC_KEY=$PAYSTACK_PUBLIC_KEY
             - name: Upload APK artifact
               uses: actions/upload-artifact@v4
               with:
                 name: app-release-apk
                 path: build/app/outputs/flutter-apk/app-release.apk
             - name: Build App Bundle
-              run: flutter build appbundle --release --dart-define=API_URL=$API_URL --dart-define=YARNGPT_API_KEY=$YARNGPT_API_KEY
+              run: flutter build appbundle --release --dart-define=API_URL=$API_URL --dart-define=YARNGPT_API_KEY=$YARNGPT_API_KEY --dart-define=PAYSTACK_PUBLIC_KEY=$PAYSTACK_PUBLIC_KEY
             - name: Upload App Bundle artifact
               uses: actions/upload-artifact@v4
               with:

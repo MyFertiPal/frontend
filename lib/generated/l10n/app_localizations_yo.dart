@@ -737,7 +737,7 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get article1Content =>
-      'Ìgbàkúrú wáyé nígbà tí sperm bá da àkọ lọ́wọ́ àti àmúniláti tí ó ò dé inu àkó ti wà níbi àti o ò tún ṣètò. Òye nípa èyí ò fẹ́ìídìí lati já ìmúrá rẹ lọ́wọ́.';
+      'Oyun waye nigbati sperm kan ba ṣe agbekalẹ ẹyin kan ati pe ẹyin ti o ni ilọsiwaju ṣaṣeyọri ninu ile-iwe. Mọ eyi le ṣe iranlọwọ lati mu awọn anfani rẹ pọ si.\n\nLoye window olora\nO ṣee ṣe ki o loyun lakoko window olora: awọn ọjọ ti o yori si ati pẹlu ovulation (ni ayika awọn ọjọ 14 ṣaaju akoko atẹle rẹ ni iyipo deede). Niwọn igba ti sperm le gbe ninu ara fun awọn ọjọ pupọ, oyun le ṣẹlẹ ti sperm ba wa ni akoko yii.\n\nAra ti o ni ilera, awọn aye ti o dara julọ\nNi apapọ ilera to dara ṣe atilẹyin oyun. Jẹ ounjẹ ti o ni iwontunwonsi, duro hydrated, ṣakoso wahala, sun oorun to, ati yago fun siga ati ọti-lile. Mimu iwuwo ti o ni ilera jẹ pataki, nitori jijẹ iwuwo tabi apọju le ni ipa lori ovulation.\n\nTitele ovulation\n- Mimojuto awọn iyipo oṣupa (ti o wa ninu ohun elo Fertilpath)\n- Wiwo awọn ayipada ninu mucus cervical\n- Lilo awọn ohun elo asọtẹlẹ ovulation\n\nAwọn ọna wọnyi ṣe iranlọwọ fun ọ lati ṣe idanimọ awọn ọjọ olora rẹ julọ.\n\nAwọn ayẹwo iṣoogun jẹ pataki.\nṢaaju ki o to loyun, kan si olupese ilera kan. Wọn le ṣeduro awọn vitamin prenatal bi folic acid, ṣe ayẹwo eyikeyi awọn ọran ilera, ati ṣe iranlọwọ fun ọ lati mura silẹ fun oyun ti o ni ilera.\n\nSũru jẹ deede.\nPaapaa pẹlu akoko ti o dara julọ, o le gba awọn oṣu diẹ lati loyun. Eyi jẹ deede ati pe ko ṣe afihan iṣoro kan. Ro lati kan si dokita kan ti o ba ti n gbiyanju fun awọn oṣu 12 (tabi laipẹ ti o ba ju 35 lọ).';
 
   @override
   String get article2Title => 'Báwo ni Ìdáwọ̀ Ní Iwọ̀?';
@@ -748,7 +748,7 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get article2Content =>
-      'Ìdáwọ̀ nígbà tí ovary kan bá mu àkọ tí ó pẹ̀ wá. Àkọ wà níbi fún 12 sí 24 ìwọ̀ àti o le ní ìfúnni nìyén fún àkòkò nẹ́ẹ̀kan.';
+      'Ovulation jẹ nigbati ovary ba tu ẹyin ti o dagba silẹ. Ẹyin naa n gbe fun bii wakati 12 si 24 ati pe o le wa ni fertilized nikan ni akoko kukuru yii.\n\nWindow ti o dara julọ\nBiotilẹjẹpe ovulation jẹ kukuru, sperm le gbe ninu eto ibisi fun ọjọ marun. Oyun le waye ti sperm ba wa ni awọn ọjọ ti o yori si ovulation tabi ni ọjọ ti ovulation funrararẹ.\n\nNigbati ovulation ba ṣẹlẹ\nNinu iyipo deede, ovulation maa n waye nipa awọn ọjọ 14 ṣaaju ibẹrẹ ti akoko atẹle, ṣugbọn akoko le yatọ lati eniyan si eniyan ati lati iyipo si iyipo.\n\nAwọn aami aisan ti ovulation\nDiẹ ninu awọn eniyan ni iriri awọn ikun kekere kekere tabi ṣe akiyesi awọn ayipada ninu mucus cervical ni ayika ovulation. Awọn aami aisan wọnyi le ṣe iranlọwọ lati ṣe idanimọ awọn ọjọ oloro, botilẹjẹpe wọn yatọ fun ẹni kọọkan.\n\nKini idi ti o fi ṣe pataki\nLoye bi o ṣe pẹ to ati bi o ṣe pẹ to sperm le ye le ṣe iranlọwọ pẹlu siseto fun oyun, eto ẹbi, tabi nìkan ni oye si ara rẹ.';
 
   @override
   String get article3Title => 'Àìbímọ Kì í ṣe Ègún';
@@ -759,7 +759,7 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get article3Content =>
-      'Tó bá wà pé o n ìrépô ìgbàkúrú kì o ní àbáwọ̀ lánfáani, rántí èyí: àìbímọ kì í ṣe ègún tàbí ìyà ìkáyọ̀.';
+      'Ti o ba n gbiyanju lati loyun ati pe ko ti ṣẹlẹ sibẹsibẹ, ranti eyi: infertility kii ṣe egún tabi ijiya.\n\nNi ọpọlọpọ awọn aṣa Naijiria ati Afirika, iya ni asopọ pẹkipẹki si idanimọ, ati awọn idaduro le fa titẹ irora. Awọn ọrọ bii \"àgàn\" tabi \"nduro lori Ọlọrun\" le jẹ ipalara ti ẹdun, ṣugbọn iṣoro lati loyun jẹ ọrọ iṣoogun ati ti ẹda, kii ṣe idajọ ti ẹmi.\n\nInfertility le ni ọpọlọpọ awọn okunfa: awọn aiṣedeede homonu, awọn akoran, awọn fibroids, awọn tubes ti a dinamọ, ọjọ-ori, wahala, tabi awọn ọran ifosiwewe ọkunrin. Mejeeji awọn ọkunrin ati awọn obinrin ni o ni ipa kanna, ṣugbọn awọn obinrin nigbagbogbo ni ẹbi nikan.\n\nO yẹ fun itọju, kii ṣe itiju. Wiwa iranlọwọ iṣoogun ko tumọ si pe o ko ni igbagbọ. Ọpọlọpọ awọn obinrin loyun lẹhin iwadii to dara, itọju, awọn ayipada igbesi aye, tabi atilẹyin iṣoogun iranlọwọ. Ati paapaa ti irin-ajo naa ba gun, igbesi aye rẹ ni itumọ ati idi kọja iya.\n\nṢe ore-ọfẹ si ara rẹ. Ṣe abojuto ilera ti ọpọlọ ati ti ẹdun rẹ. Duro nitosi awọn eniyan ti o ṣe atilẹyin fun ọ, beere awọn ibeere, wa imọran iṣoogun ti o gbẹkẹle, ki o gba ara rẹ laaye lati nireti laisi ẹbi ara rẹ. Ara rẹ kii ṣe ọta rẹ, ati itan rẹ ko pari.';
 
   @override
   String get christianAffirmation1 =>

@@ -735,7 +735,7 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get article1Content =>
-      'Ịmụ ụmụ na-eme mgbe sperm na-ejikọ ohu na embryo dị na alụ. Ịghọta nke a na-enyere gị aka mụta ihe ijikọ ma o wee dị mma.';
+      'Otu Ime Ime Si Eme: Nkọwa Dị Mfe Banyere Ibu Afọ\n\nIbu afọ na-eme mgbe sperm (mmịkọ nwoke) zutere ma kpochapụ egg (akụkụ nwaanyị), ma egg ahụ e kpochapụrụ wee rapara nke ọma n’ime akpa nwa (uterus). Ọ bụ ezie na ime nwere ike ime n’onwe ya, ịghọta otú ọ si arụ ọrụ nwere ike inyere aka ịbawanye ohere.\n\nỊmata Ụbọchị Ime (Fertile Window)\nNwanyị na-enwekarị ohere kacha elu ịtụrụ ime n’ụbọchị ole na ole tupu ovulation na ụbọchị ovulation n’onwe ya (mgbe egg si n’akụkụ nwaanyị pụta). Ovulation na-emekarị ihe dị ka ụbọchị 14 tupu oge nsọ ọzọ amalite ma ọ bụrụ na nsọ ya na-abịa n’oge. N’ihi na sperm nwere ike ibi ụbọchị ole na ole n’ahụ, ime nwere ike ime ma ọ bụrụ na sperm nọ n’ime ahụ n’oge a.\n\nAhụ Ike Dị Mma, Ohere Ka Mma\nỊnọ n’ahụ ike dị mma na-enyere aka n’ịtụrụ ime. Iri nri ziri ezi, ịṅụ mmiri nke ọma, izere oke nchekasị, ihi ụra zuru oke, na izere siga ma ọ bụ mmanya na-enyere aka mee ka ahụ dị njikere. Ichekwa ibu ahụ n’ogo kwesịrị ekwesị dịkwa mkpa, n’ihi na ibu dị oke ala ma ọ bụ oke elu nwere ike imetụta ovulation.\n\nỊgbaso Ovulation\nỤfọdụ ụzọ e si eso ovulation gụnyere:\n• Ịgbaso kalenda nsọ (dị ka ọ dị na ngwa FertilPath)\n• Ileba anya na mgbanwe n’ime mmiri cervix\n• Iji ngwa nyocha ovulation (ovulation predictor kits)\n\nỤzọ ndị a na-enyere aka ịmata ụbọchị kacha mma maka ime.\n\nNyocha Dọkịta Dị Mkpa\nTupu ịmalite ịchọ ime, ọ dị mma ileta dọkịta. Ha nwere ike inye ndụmọdụ gbasara vitamin tupu ime (dịka folic acid), nyochaa ọnọdụ ahụ ike, ma nye nduzi ga-enyere aka mee ka ime dị mma.\n\nNdidi Dị Mkpa\nỌbụna ma e mee ihe niile nke ọma, ime nwere ike ghara ime ozugbo. Maka ọtụtụ di na nwunye nwere ahụ ike, ọ nwere ike were ọnwa ole na ole tupu ime mee. Nke a bụ ihe nkịtị ma ọ pụtaghị na nsogbu dị. Ma ọ bụrụ na ime emebeghị mgbe ọnwa 12 gachara nke inwe mmekọahụ na-enweghị nchebe mgbe niile, a na-adụ ọdụ ịhụ dọkịta. Maka nwanyị karịrị afọ 35, ọ ka mma ịchọ enyemaka ngwa ngwa.';
 
   @override
   String get article2Title => 'Olee oge Nke Ịdọ Mkpụrụ Ndụ?';
@@ -746,7 +746,7 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get article2Content =>
-      'Ịdọ mkpụrụ ndụ bụ mgbe ovary na-ewepụ mkpụrụ ndụ. Mkpụrụ ndụ na-adị ihe 12 ruo 24 awa ma ọ bụrụ na ọ dị mma ruo oge ahụ.';
+      'Ovulation bụ mgbe akpụkpọ anụ na-ewepụkwa akwa nwaanyị toro eto. Akwa ahụ na-adị ndụ ihe dịka awa 12 ruo 24, ma enwere ike ịmụ nwa naanị n’oge obere ahụ.\n\nOge ịmụ nwa\nN\'agbanyeghị na ovulation dị mkpụmkpụ, mkpụrụ ndụ nwoke nwere ike ibi na usoro ịmụ nwa ruo ụbọchị ise. Enwere ike ime ime ma ọ bụrụ na mkpụrụ ndụ nwoke dị na ụbọchị tupu ovulation ma ọ bụ na ụbọchị ovulation n’onwe ya.\n\nMgbe ovulation na-eme\nNa usoro kwesịrị ekwesị, ovulation na-eme ihe dịka ụbọchị 14 tupu oge ife nke na-esote, mana oge a na-adịgasị iche site n’ọtụtụ mmadụ na site n’usoro ahụ.\n\nỤfọdụ ihe na-egosi ovulation\nỤfọdụ ndị na-ahụ ntakịrị ọgbụgba ala nke ime afọ ma ọ bụ mgbanwe n’ime mucus nke akpụkpọ nwaanyị mgbe ovulation dị. Ihe a nwere ike inyere ịchọpụta ụbọchị ịmụ nwa, mana ọ dị iche maka onye ọ bụla.\n\nIhe kpatara ya ji dị mkpa\nỊmata otú ovulation si dị ogologo na otú mkpụrụ ndụ nwoke si dị ndụ nwere ike ịduzi oge maka ịmụ nwa, atụmatụ ezinụlọ, ma ọ bụ naanị ịghọta ahụ gị.';
 
   @override
   String get article3Title => 'Adịghị Ụmụ Abụọ Bụ Ihe Ọjọọ';
@@ -757,7 +757,7 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get article3Content =>
-      'Ọ bụrụ na ị na-agba mbọ ịmụ ụmụ ma ọ dịbeghị mma, cheta nke a: adịghị ụmụ abụọ abụghị ihe ọjọọ tụtụ ma ọ bụ ụta.';
+      'Ọ bụrụ na ị na-agbalị ịmụ nwa ma ihe ahụ ka na-emeghị, cheta nke a: enweghị ike ịmụ nwa abụghị amụma ma ọ bụ ntaramahụhụ.\n\nN\'ime ọtụtụ ọha mmadụ Naịjirịa na Afrịka, ịmụ nwa nke nwa nwanyị ejikọtara nke ọma na njirimara, na ịkwụsị nwere ike ịkpata nrụgide na-adịghị mma. Okwu dịka \"onye na-enweghị nwa\" ma ọ bụ \"na-eche Chineke\" nwere ike ịhapụ mmerụ ahụ n’obi, mana nsogbu ịmụ nwa bụ ihe gbasara ọgwụ na ihe metụtara ahụ, ọ bụghị ikpe ime mmụọ.\n\nEnweghị ike ịmụ nwa nwere ọtụtụ ihe kpatara ya: mgbanwe hormone, ọrịa, fibroid, igbe nke emerụrụ emerụ, afọ, nrụgide, ma ọ bụ nsogbu nwoke. Ndị nwoke na ndị nwanyị na-enweta ya nso, ọ bụ ezie na ụmụ nwanyị na-ejikarị n\'aka naanị.\n\nỊ kwesịrị nlekọta, ọ bụghị ịtụ egwu. Ịchọ enyemaka ọgwụ abụghị ihe pụtara na ị nweghị okwukwe. Ọtụtụ ụmụ nwanyị na-amụ nwa mgbe nyocha kwesịrị ekwesị, ọgwụgwọ, mgbanwe ndụ, ma ọ bụ nkwado ọgwụ enyemaka. Ma ọbụna mgbe njem ahụ dị ogologo, ndụ gị nwere ihe ọ pụtara na ebumnobi karịa ịmụ nwa.\n\nJiri obiọma na-eme onwe gị. Chebe ahụike uche na mmetụta gị. Gụnye onwe gị n’etiti ndị na-akwado gị, jụọ ajụjụ, chọọ ndụmọdụ ahụike nwere ntụkwasị obi, ma nye onwe gị ikike ị nwere olileanya—na-enweghị ịkọ onwe gị ikpe. Ahụ gị abụghị onye iro gị, na akụkọ gị ejedebeghị.';
 
   @override
   String get christianAffirmation1 =>
@@ -822,10 +822,10 @@ class AppLocalizationsIg extends AppLocalizations {
       'Ọ dị: Ihe a na-eji AI gbasaa ihe gbasara amụma nke nwa nworo maọ nwa nwanyị. Amụma ndị a agaghị adị ihe ezie mgbe niile ma onweghị ike ịgbanwe ihe ndị ọrụ ọgụ na-asị. Biko gaa hụ dibịa mma maka ike rụrụ ụbọchị.';
 
   @override
-  String get selectGenderExpectation => 'Họrọ nwa nworo maọ nwa nwanyị:';
+  String get selectGenderExpectation => 'Họrọ nwa nwoke maọbu nwa nwanyị:';
 
   @override
-  String get male => 'Nwa Nworo';
+  String get male => 'Nwa Nwoke';
 
   @override
   String get female => 'Nwa Nwanyị';

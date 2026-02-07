@@ -35,6 +35,12 @@ YARNGPT_API_KEY='your-api-key-here' flutter run -d web-server
 flutter run --dart-define=YARNGPT_API_KEY='your-api-key-here'
 ```
 
+For Paystack (public key only):
+
+```bash
+flutter run --dart-define=PAYSTACK_PUBLIC_KEY='pk_test_your_key_here'
+```
+
 Or for web:
 
 ```bash
@@ -49,10 +55,22 @@ flutter run -d web-server --dart-define=YARNGPT_API_KEY='your-api-key-here'
 flutter build web --dart-define=YARNGPT_API_KEY='your-production-key'
 ```
 
+For Paystack (public key only):
+
+```bash
+flutter build web --dart-define=PAYSTACK_PUBLIC_KEY='pk_live_or_test_key_here'
+```
+
 ### Option 2: Android APK Build
 
 ```bash
 flutter build apk --release --dart-define=YARNGPT_API_KEY='your-production-key'
+```
+
+For Paystack (public key only):
+
+```bash
+flutter build apk --release --dart-define=PAYSTACK_PUBLIC_KEY='pk_live_or_test_key_here'
 ```
 
 ### Option 3: Environment Variables on Deployment
@@ -160,6 +178,23 @@ Or use GitHub's secret scanning to automatically detect and alert on leaked keys
 ✅ `.gitignore` configured to ignore local config files  
 ✅ Environment variable approach set up  
 ✅ Ready for secure CI/CD deployment  
+
+## Netlify Build Notes
+
+If you build on Netlify, set these environment variables in your site settings:
+
+- `YARNGPT_API_KEY`
+- `PAYSTACK_PUBLIC_KEY`
+
+Then ensure your build command includes both values:
+
+```bash
+flutter build web \
+   --dart-define=YARNGPT_API_KEY=$YARNGPT_API_KEY \
+   --dart-define=PAYSTACK_PUBLIC_KEY=$PAYSTACK_PUBLIC_KEY
+```
+
+**Never add the Paystack secret key to the app or Netlify build.** Keep the secret key on a backend only.
 
 ## Support
 

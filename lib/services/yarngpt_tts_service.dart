@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// YarnGPT Text-to-Speech Service
 /// Converts text to speech using the YarnGPT API
@@ -57,6 +61,14 @@ class YarnGptTtsService extends ChangeNotifier {
     notifyListeners();
 
     try {
+      if (!kIsWeb) {
+        final cachedBytes = await _tryLoadCachedAudio(text, voice: voice);
+        if (cachedBytes != null && cachedBytes.isNotEmpty) {
+          await _audioPlayer.play(BytesSource(cachedBytes));
+          return;
+        }
+      }
+
       // Prepare request body
       final Map<String, dynamic> body = {
         'text': text,
@@ -88,6 +100,9 @@ class YarnGptTtsService extends ChangeNotifier {
         final audioBytes = response.bodyBytes;
         debugPrint(
             'YarnGPT TTS: Received ${audioBytes.length} bytes of audio data');
+        if (!kIsWeb) {
+          await _cacheAudioBytes(text, audioBytes, voice: voice);
+        }
         // Play audio from memory so it works on web and mobile.
         await _audioPlayer.play(BytesSource(audioBytes));
       } else if (response.statusCode == 401) {
@@ -109,6 +124,46 @@ class YarnGptTtsService extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<Uint8List?> _tryLoadCachedAudio(String text, {String? voice}) async {
+    try {
+      final file = await _getCacheFile(text, voice: voice);
+      if (await file.exists()) {
+        final bytes = await file.readAsBytes();
+        if (bytes.isNotEmpty) {
+          return bytes;
+        }
+      }
+    } catch (e) {
+      debugPrint('YarnGPT TTS: Cache read failed: $e');
+    }
+
+    return null;
+  }
+
+  Future<void> _cacheAudioBytes(
+    String text,
+    Uint8List bytes, {
+    String? voice,
+  }) async {
+    try {
+      final file = await _getCacheFile(text, voice: voice);
+      await file.writeAsBytes(bytes, flush: true);
+    } catch (e) {
+      debugPrint('YarnGPT TTS: Cache write failed: $e');
+    }
+  }
+
+  Future<File> _getCacheFile(String text, {String? voice}) async {
+    final hash = _buildCacheKey(text, voice: voice);
+    final directory = await getTemporaryDirectory();
+    return File('${directory.path}/yarngpt_$hash.mp3');
+  }
+
+  String _buildCacheKey(String text, {String? voice}) {
+    final payload = '${voice ?? ''}::$text';
+    return sha1.convert(utf8.encode(payload)).toString();
   }
 
   /// Pause audio playback

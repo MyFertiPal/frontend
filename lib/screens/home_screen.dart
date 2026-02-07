@@ -20,6 +20,7 @@ import 'user_guide_screen.dart';
 import 'specialists/specialist_search_screen.dart';
 import 'specialists/specialist_chat_screen.dart';
 import 'tracking/log_symptom_screen.dart';
+import 'payment/payment_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -362,6 +363,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => const UserGuideScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          _buildMenuItem(
+                            label: 'Payment',
+                            icon: Icons.payments_outlined,
+                            onTap: () {
+                              _toggleSideMenu();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const PaymentScreen(),
                                 ),
                               );
                             },

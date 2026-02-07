@@ -1,5 +1,7 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import 'forget_password_flow.dart' show ResetPasswordScreen;
 import 'welcome_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -50,6 +52,14 @@ class _SplashScreenState extends State<SplashScreen>
       // Initialize API service
       await _initializeApp();
 
+      if (_isResetPasswordLink()) {
+        await Future.delayed(const Duration(milliseconds: 2800));
+        if (mounted) {
+          _navigateToResetPassword();
+        }
+        return;
+      }
+
       // Wait for animation to complete
       await Future.delayed(const Duration(milliseconds: 2800));
 
@@ -59,7 +69,11 @@ class _SplashScreenState extends State<SplashScreen>
     } catch (e) {
       debugPrint('Error during init: $e');
       if (mounted) {
-        _navigateToWelcome();
+        if (_isResetPasswordLink()) {
+          _navigateToResetPassword();
+        } else {
+          _navigateToWelcome();
+        }
       }
     }
   }
@@ -76,6 +90,41 @@ class _SplashScreenState extends State<SplashScreen>
         );
       }
     }
+  }
+
+  bool _isResetPasswordLink() {
+    if (!kIsWeb) {
+      return false;
+    }
+
+    final uri = Uri.base;
+    final resolved = _resolveWebUri(uri);
+    return resolved.path == '/reset_password' ||
+        resolved.path == '/reset-password';
+  }
+
+  void _navigateToResetPassword() {
+    if (!mounted) return;
+
+    final resolved = _resolveWebUri(Uri.base);
+    final token = resolved.queryParameters['token'];
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => ResetPasswordScreen(prefilledToken: token),
+        settings: const RouteSettings(name: '/reset_password'),
+      ),
+    );
+  }
+
+  Uri _resolveWebUri(Uri uri) {
+    if (uri.fragment.isEmpty) {
+      return uri;
+    }
+
+    final fragment = uri.fragment;
+    final normalized = fragment.startsWith('/') ? fragment : '/$fragment';
+    return Uri.parse(normalized);
   }
 
   Future<void> _initializeApp() async {

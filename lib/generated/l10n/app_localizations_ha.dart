@@ -736,7 +736,7 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get article1Content =>
-      'Saura ta faru lokacin da sperm ya tsunduma kwai kuma embryo ya shiga inuwa da sasaukar. Fahimtar haka yana taimaka maka sami saura.';
+      'Ciki na faruwa ne lokacin da maniyyi ya hadu da ƙwai kuma ƙwan da aka haifa ya sami nasarar sake shiga mahaifa. Fahimtar wannan na taimakawa wajen ƙara yiwuwar samun ciki.\n\nFahimtar lokacin samun ciki\nMafi yawan yiwuwar samun ciki yana faruwa a lokacin da jikin mace ke da heɗin haihuwa: ranakun da suka kai ga ovulation har ciki ɗaya (kimanin kwanaki 14 kafin lokacin haila na gaba a wani tsarin yau da kullum). Domin maniyyi na iya rayuwa a jikin mace na kwanaki da dama, ciki na iya faruwa idan maniyyi ya kasance a wannan lokacin.\n\nLafiyayyen jiki, ƙarin yiwuwar samun ciki\nLafiya gaba ɗaya tana tallafawa samun ciki. Ci abinci mai daidaito, shan ruwa isasshe, sarrafa damuwa, yin barci mai kyau, da kuma gujewa shan taba da giya. Riƙe nauyi mai kyau yana da muhimmanci, domin kasancewa da ƙasa ko sama da nauyi zai iya shafar ovulation.\n\nBi diddigin ovulation\n- Kulawa da zagayowar haila (ana haɗa wannan a cikin manhajar Fertilpath)\n- Kula da canje-canjen danshin mahaifa\n- Amfani da kayan hasashen ovulation\n\nWadannan kayan aikin na taimakawa wajen sanin ranakun da aka fi samun haihuwa.\n\nDuba lafiyar likita yana da muhimmanci\nKafin kokarin daukar ciki, je wurin ganin likita. Zasu iya ba da shawara kan sinadaran bitamin na ciki kamar folic acid, duba kowanne yanayin lafiya, kuma su jagorance ka zuwa cikin uwa mai lafiya.\n\nHakuri abu ne na al\'ada\nKo da lokacin yayi daidai, zai iya ɗaukar watanni kafin ciki ya samu. Wannan al\'ada ne kuma ba koyaushe yana nufin wani abu ba ne. Yi la\'akari da ganin likita idan kun yi ƙoƙari na watanni 12 (ko kuma kafin idan kuna da shekaru sama da 35).';
 
   @override
   String get article2Title => 'Yaya Tsunduma Kwai Ya Zama?';
@@ -747,7 +747,7 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get article2Content =>
-      'Tsunduma kwai shine lokacin da ovary ta fito da kwai. Kwai yana nan kamar awar 12 zuwa 24 kuma zai iya zama jiya ga duk lokacin.';
+      'Ovulsiyon shine lokacin da ovarin ya saki ƙwai da ya girma. Ƙwai yana rayuwa kimanin awanni 12 zuwa 24, kuma ana iya shafewa ne kawai a cikin wannan ɗan gajeren lokaci.\n\nTagar haihuwa\nKo da yake ovulsiyon tana ɗan gajere, maniyyi na iya rayuwa a cikin hanyoyin haihuwa na har zuwa kwana biyar. Ciki na iya faruwa idan maniyyi yana nan a kwanakin kafin ovulsiyon ko a ranar ovulsiyon kanta.\n\nLokacin da ovulsiyon ke faruwa\nA cikin zagaye na yau da kullum, ovulsiyon yana kusan kwanaki 14 kafin al\'ada ta gaba, amma lokaci yana bambanta bisa ga mutum da kuma zagayen.\n\nAlamun ovulsiyon\nWasu mutane suna lura da ɗan ciwo a ƙasa na ciki ko canje-canje a cikin ruwan farji kusa da lokacin ovulsiyon. Wadannan alamun na iya taimakawa gano ranakun da ake da haihuwa, amma suna bambanta ga kowa.\n\nDalilin da yake da mahimmanci\nSanin tsawon lokacin ovulsiyon da tsawon lokacin da maniyyi ke rayuwa na iya jagorantar lokacin don samun juna biyu, shirye-shiryen iyali, ko kawai fahimtar jikinka.';
 
   @override
   String get article3Title => 'Rashin Saura Ba Sata Ba Ne';
@@ -758,7 +758,7 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get article3Content =>
-      'In ka yi kokarin saura mun kowa kuma bai faru ba, tuna haka: rashin saura ba sata ba ne ko aziyya.';
+      'KIdan kana ƙoƙarin yin ciki kuma hakan bai faru ba tukuna, ka tuna wannan: rashin iya haihuwa ba la\'ana ce ko hukunci ba.\n\nA cikin al\'ummomin Najeriya da na Afirka da dama, mahaifiyanci yana da alaƙa sosai da asali, kuma jinkiri na iya haifar da matsin lamba mai nauyi. Kalmar kamar \"ba haihuwa\" ko \"yana jiran Allah\" na iya haifar da raunukan zuciya, amma wahalar yin ciki matsala ce ta likita da ta halitta, ba hukuncin ruhaniya ba.\n\nRashin haihuwa na da dalilai da dama: rashin daidaiton kwayoyin halitta, kamuwa da cuta, ciwace-ciwace, toshewar bututu, shekaru, damuwa, ko matsalolin namiji. Maza da mata suna fuskantar matsalar kusan daidai, duk da haka galibi mata ne kawai suke ɗaukar laifi.\n\nKina da hakkin kulawa, ba kunya ba. Neman taimakon likita ba yana nufin ba ki da imani ba. Mata da yawa suna samun ciki bayan cikakken ganewar lafiya, magani, canje-canjen salon rayuwa, ko taimakon likita. Kuma ko da tafiyar na da tsawo, rayuwarki tana da ma\'ana da manufa fiye da mahaifiyancia kasance mai tausayi ga kanka.\n\nKare lafiyar kwakwalwa da ta motsin rai. Ka kewaye kanka da mutanen da ke goyon bayanka, ka yi tambayoyi, ka nemi shawarar likita mai inganci, kuma ka ba kanka izinin yin fata—ba tare da zargin kanka ba. Jikinka ba abokin gaba bane, kuma labarinka bai ƙare ba.';
 
   @override
   String get christianAffirmation1 =>

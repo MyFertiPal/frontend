@@ -8,7 +8,9 @@ import '../../services/api_service.dart';
 import 'profile_setup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.forceProfileSetup = false});
+
+  final bool forceProfileSetup;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -369,22 +371,22 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (mounted) {
+        final apiService = ApiService();
+
+        if (widget.forceProfileSetup) {
+          await _syncLanguagePreference(apiService);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => const ProfileSetupScreen(),
+            ),
+          );
+          return;
+        }
+
         // Check if user profile is complete by fetching profile data
         try {
-          final apiService = ApiService();
           final profileJson = await apiService.getProfile();
-          // Sync local language preference to backend after successful login
-          final languageProvider =
-              Provider.of<LanguageProvider>(context, listen: false);
-          final currentLanguage = languageProvider.locale.languageCode;
-          try {
-            await apiService.updateLanguagePreference(currentLanguage);
-            debugPrint(
-                'Synced language preference to backend: $currentLanguage');
-          } catch (e) {
-            debugPrint('Failed to sync language preference: $e');
-            // Non-critical error, continue with login flow
-          }
+          await _syncLanguagePreference(apiService);
 
           // Profile is complete if it has profile-specific fields
           final isProfileComplete = profileJson.containsKey('age') ||
@@ -430,6 +432,19 @@ class _LoginScreenState extends State<LoginScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _syncLanguagePreference(ApiService apiService) async {
+    final languageProvider =
+        Provider.of<LanguageProvider>(context, listen: false);
+    final currentLanguage = languageProvider.locale.languageCode;
+    try {
+      await apiService.updateLanguagePreference(currentLanguage);
+      debugPrint('Synced language preference to backend: $currentLanguage');
+    } catch (e) {
+      debugPrint('Failed to sync language preference: $e');
+      // Non-critical error, continue with login flow
     }
   }
 }

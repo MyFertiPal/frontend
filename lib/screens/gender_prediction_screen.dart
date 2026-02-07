@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import '../services/api_service.dart';
 import '../generated/l10n/app_localizations.dart';
+import '../services/api_key_config.dart';
+import '../services/yarngpt_tts_service.dart';
 import 'home_screen.dart';
 
 class GenderPredictionScreen extends StatefulWidget {
@@ -19,6 +21,9 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   DateTime? _fertileStart;
   DateTime? _fertileEnd;
   bool _loading = true;
+  YarnGptTtsService? _ttsService;
+  bool _hasSpoken = false;
+  bool _ttsUnavailable = false;
 
   List<String> get _genderOptions {
     final l10n = AppLocalizations.of(context);
@@ -29,6 +34,46 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   void initState() {
     super.initState();
     _fetchOvulationDay();
+    _initTtsService();
+  }
+
+  void _initTtsService() {
+    try {
+      final apiKey = ApiKeyConfig.getYarnGptApiKey();
+      _ttsService = YarnGptTtsService(apiKey: apiKey);
+    } catch (e) {
+      _ttsUnavailable = true;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasSpoken && !_ttsUnavailable) {
+      _hasSpoken = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _speakInstructions();
+      });
+    }
+  }
+
+  Future<void> _speakInstructions() async {
+    if (_ttsService == null) {
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context);
+    final text =
+        '${l10n.genderPredictionDisclaimer} ${l10n.selectGenderExpectation}';
+    try {
+      await _ttsService!.speakText(text);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedPlayAudio)),
+        );
+      }
+    }
   }
 
   Future<void> _fetchOvulationDay() async {
@@ -127,6 +172,13 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
         backgroundColor: const Color(0xFF2E683D),
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.volume_up),
+            onPressed: _ttsUnavailable ? null : _speakInstructions,
+            tooltip: l10n.readAffirmationAloud,
+          ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -272,5 +324,11 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
         child: child,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _ttsService?.dispose();
+    super.dispose();
   }
 }

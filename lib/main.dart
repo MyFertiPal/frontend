@@ -183,6 +183,9 @@ class _MyAppState extends State<MyApp> {
             routes: {
               '/welcome': (context) => const WelcomeScreen(),
               '/login': (context) => const LoginScreen(),
+              '/login-new': (context) => const LoginScreen(
+                    forceProfileSetup: true,
+                  ),
               '/register': (context) => const RegistrationScreen(),
               '/signup-email': (context) => const EmailSignupScreen(),
               '/profile-setup': (context) => const ProfileSetupScreen(),

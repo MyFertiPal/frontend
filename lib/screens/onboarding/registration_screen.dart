@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
-import 'login_screen.dart';
 import 'onboarding_screens.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -70,8 +69,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(AppLocalizations.of(context).sendingVerificationCode),
+            content: Text(AppLocalizations.of(context).sendingVerificationCode),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -673,11 +671,8 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                               if (mounted) {
                                 Navigator.of(context).pop();
                                 // Navigate to login after successful registration
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (_) => const LoginScreen(),
-                                  ),
-                                );
+                                Navigator.of(context)
+                                    .pushReplacementNamed('/login-new');
                               }
                             } catch (e) {
                               if (mounted) {
