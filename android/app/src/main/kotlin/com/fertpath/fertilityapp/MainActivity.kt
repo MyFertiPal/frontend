@@ -1,7 +1,7 @@
 ﻿package com.fertpath.fertilityapp
 
+import co.paystack.android.Paystack
 import co.paystack.android.PaystackSdk
-import co.paystack.android.TransactionCallback
 import co.paystack.android.model.Card
 import co.paystack.android.model.Charge
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -74,7 +74,7 @@ class MainActivity : FlutterFragmentActivity() {
 						PaystackSdk.chargeCard(
 							this,
 							charge,
-							object : TransactionCallback {
+							object : Paystack.TransactionCallback {
 								override fun onSuccess(transaction: co.paystack.android.Transaction) {
 									respond(
 										mapOf(
@@ -86,6 +86,10 @@ class MainActivity : FlutterFragmentActivity() {
 
 								override fun beforeValidate(transaction: co.paystack.android.Transaction) {
 									// No-op: wait for final success/error callback.
+								}
+
+								override fun showLoading(isProcessing: Boolean) {
+									// No-op: loading handled on Flutter side.
 								}
 
 								override fun onError(error: Throwable, transaction: co.paystack.android.Transaction?) {
