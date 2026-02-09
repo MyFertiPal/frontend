@@ -69,7 +69,6 @@ flutter:
     - assets/audio/pcm.mp3
     - assets/audio/yo.mp3
     - assets/audio/ig.mp3
-    - assets/audio/encouragement.wav
     - assets/images/app_logo.png
     - assets/images/article_1.jpeg
     - assets/images/article_2.jpeg
