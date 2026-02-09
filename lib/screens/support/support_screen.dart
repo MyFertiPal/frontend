@@ -249,8 +249,10 @@ class _SupportScreenState extends State<SupportScreen> {
         setState(() {
           _isAudioLoading = true;
         });
-        // Set the audio source and play
-        await _audioPlayer.setSource(AssetSource('audio/encouragement.wav'));
+        // Set the audio source and play based on the current language
+        final locale = Localizations.localeOf(context);
+        final assetPath = _audioAssetForLocale(locale);
+        await _audioPlayer.setSource(AssetSource(assetPath));
         await _audioPlayer.resume();
         if (mounted) {
           setState(() {
@@ -280,6 +282,22 @@ class _SupportScreenState extends State<SupportScreen> {
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds.remainder(60);
     return '$minutes:${twoDigits(seconds)}';
+  }
+
+  String _audioAssetForLocale(Locale locale) {
+    switch (locale.languageCode) {
+      case 'ha':
+        return 'audio/ha.mp3';
+      case 'pcm':
+        return 'audio/pcm.mp3';
+      case 'yo':
+        return 'audio/yo.mp3';
+      case 'ig':
+        return 'audio/ig.mp3';
+      case 'en':
+      default:
+        return 'audio/en.mp3';
+    }
   }
 
   @override
