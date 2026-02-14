@@ -36,7 +36,7 @@ class AppLocalizationsYo extends AppLocalizations {
   String get signIn => 'Wọ́ lé';
 
   @override
-  String get forgotPassword => 'Èwo Ọ̀rọ̀ Ìkọ̀kọ̀?';
+  String get forgotPassword => 'Forgot Password?';
 
   @override
   String get resetPassword => 'Tún ṣètò Ọ̀rọ̀ Ìfihàn';
@@ -653,9 +653,6 @@ class AppLocalizationsYo extends AppLocalizations {
   @override
   String get feelSupportedDesc =>
       'Darapọ̀ mọ́ àwùjọ tó ń tọ́jú ara wọn kí o sì gba ìrànlọ́wọ́ tí o nílò ní ìrìn àjò rẹ';
-
-  @override
-  String get forgetPassword => 'Gbàgbe Ọ̀rọ̀ Ìfihàn.';
 
   @override
   String get signInWithGoogle => 'Wọ́ Pẹ̀lú Google';

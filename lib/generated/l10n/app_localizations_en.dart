@@ -655,9 +655,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Join a caring community and get the support you need on your journey';
 
   @override
-  String get forgetPassword => 'Forget Password.';
-
-  @override
   String get signInWithGoogle => 'Sign In with Google';
 
   @override

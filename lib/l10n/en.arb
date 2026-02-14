@@ -254,7 +254,6 @@
   "login": "Login",
   "email": "Email",
   "password": "Password",
-  "forgetPassword": "Forget Password.",
   "dontHaveAccount": "Don't have an account? ",
   "register": "Register",
   "signInWithGoogle": "Sign In with Google",

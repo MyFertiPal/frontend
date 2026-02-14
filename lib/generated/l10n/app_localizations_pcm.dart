@@ -36,7 +36,7 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get signIn => 'Sign In';
 
   @override
-  String get forgotPassword => 'Forget Your Password?';
+  String get forgotPassword => 'Forgot Password?';
 
   @override
   String get resetPassword => 'Reset Password';
@@ -651,9 +651,6 @@ class AppLocalizationsPcm extends AppLocalizations {
   @override
   String get feelSupportedDesc =>
       'Join caring community and get the support wey you need for your journey';
-
-  @override
-  String get forgetPassword => 'Forget Password.';
 
   @override
   String get signInWithGoogle => 'Sign In With Google';

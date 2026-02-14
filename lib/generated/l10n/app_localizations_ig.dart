@@ -36,7 +36,7 @@ class AppLocalizationsIg extends AppLocalizations {
   String get signIn => 'Banye';
 
   @override
-  String get forgotPassword => 'Echetaghị Okwu Ọzọ?';
+  String get forgotPassword => 'Forgot Password?';
 
   @override
   String get resetPassword => 'Mweghachi Nzọpụta';
@@ -653,9 +653,6 @@ class AppLocalizationsIg extends AppLocalizations {
   @override
   String get feelSupportedDesc =>
       'Sonye na obodo na-elekọta ya ma nweta nkwado ị chọrọ na njem gị';
-
-  @override
-  String get forgetPassword => 'Echefula Nzọpụta.';
 
   @override
   String get signInWithGoogle => 'Banye Na Google';

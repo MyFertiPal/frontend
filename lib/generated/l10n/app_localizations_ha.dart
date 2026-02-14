@@ -36,7 +36,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get signIn => 'Sign In';
 
   @override
-  String get forgotPassword => 'Malimai sirri?';
+  String get forgotPassword => 'Forgot Password?';
 
   @override
   String get resetPassword => 'Sake Sada Kalmar Sirri';
@@ -653,9 +653,6 @@ class AppLocalizationsHa extends AppLocalizations {
   @override
   String get feelSupportedDesc =>
       'Shiga cikin al\'umma mai kulawa kuma samun goyon bayan da kuke buƙata a tafiyar ku';
-
-  @override
-  String get forgetPassword => 'Manta Kalmar Sirri.';
 
   @override
   String get signInWithGoogle => 'Shiga Da Google';

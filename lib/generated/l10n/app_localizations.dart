@@ -1340,12 +1340,6 @@ abstract class AppLocalizations {
   /// **'Join a caring community and get the support you need on your journey'**
   String get feelSupportedDesc;
 
-  /// No description provided for @forgetPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Forget Password.'**
-  String get forgetPassword;
-
   /// No description provided for @signInWithGoogle.
   ///
   /// In en, this message translates to:

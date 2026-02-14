@@ -80,14 +80,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Forget Password
+                  // Forgot Password
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context)
                           .pushReplacementNamed('/forgot-password');
                     },
                     child: Text(
-                      AppLocalizations.of(context).forgetPassword,
+                      AppLocalizations.of(context).forgotPassword,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
