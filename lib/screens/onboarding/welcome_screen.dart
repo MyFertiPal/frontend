@@ -49,8 +49,8 @@ class WelcomeScreen extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E683D),
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF2E683D),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -62,6 +62,7 @@ class WelcomeScreen extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
+                          color: Color(0xFF2E683D),
                         ),
                       ),
                     ),
@@ -77,10 +78,10 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.of(context).pushReplacementNamed('/login');
                       },
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: const Color(0xFF2E683D),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.white,
                         side: const BorderSide(
-                          color: Color(0xFF2E683D),
+                          color: Colors.white,
                           width: 1,
                         ),
                         shape: RoundedRectangleBorder(
