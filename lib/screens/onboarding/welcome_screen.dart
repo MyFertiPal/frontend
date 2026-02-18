@@ -29,7 +29,7 @@ class WelcomeScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF2E683D),
+                      color: Colors.white,
                       fontFamily: 'Poppins',
                     ),
                     textAlign: TextAlign.center,
@@ -78,7 +78,7 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.of(context).pushReplacementNamed('/login');
                       },
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.transparent,
                         foregroundColor: Colors.white,
                         side: const BorderSide(
                           color: Colors.white,
