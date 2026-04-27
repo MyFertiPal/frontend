@@ -305,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: MediaQuery.of(context).size.width * 0.6,
                   height: MediaQuery.of(context).size.height,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFA8D497),
+                    color: Color(0xFF01B1B2),
                   ),
                   child: SafeArea(
                     child: Padding(
@@ -320,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               IconButton(
                                 icon: const Icon(
                                   Icons.close,
-                                  color: Color(0xFF2E683D),
+                                  color: Color(0xFF064B23),
                                   size: 28,
                                 ),
                                 onPressed: _toggleSideMenu,
@@ -412,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (index) => setState(() => _selectedIndex = index),
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF2E683D),
+        selectedItemColor: const Color(0xFF064B23),
         unselectedItemColor: Colors.grey,
         showUnselectedLabels: false,
         items: [
@@ -484,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF064B23),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -517,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            Icon(icon, color: iconColor ?? const Color(0xFF2E683D), size: 22),
+            Icon(icon, color: iconColor ?? const Color(0xFF064B23), size: 22),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -526,7 +526,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   fontFamily: 'Poppins',
-                  color: textColor ?? const Color(0xFF2E683D),
+                  color: textColor ?? const Color(0xFF064B23),
                 ),
               ),
             ),
@@ -650,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Color _colorFromString(String input) {
-    if (input.isEmpty) return const Color(0xFF2E683D);
+    if (input.isEmpty) return const Color(0xFF064B23);
     final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
     final hue = (hash % 360).toDouble();
     return HSVColor.fromAHSV(1, hue, 0.45, 0.85).toColor();
@@ -675,7 +675,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF2E683D),
+              color: Color(0xFF064B23),
             ),
           ),
         ],
@@ -694,7 +694,7 @@ class _HomeScreenState extends State<HomeScreen> {
         width: 141,
         height: 120,
         decoration: BoxDecoration(
-          color: const Color(0xFF2E683D),
+          color: const Color(0xFF064B23),
           borderRadius: BorderRadius.zero,
           boxShadow: [
             BoxShadow(
@@ -709,7 +709,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(
               icon,
-              color: const Color(0xFFA8D497),
+              color: const Color(0xFF01B1B2),
               size: 24,
             ),
             const SizedBox(height: 8),
@@ -719,7 +719,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Poppins',
-                color: Color(0xFFA8D497),
+                color: Color(0xFF01B1B2),
               ),
               textAlign: TextAlign.center,
             ),
@@ -747,7 +747,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: heroHeight,
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF064B23),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(30),
                       bottomRight: Radius.circular(30),
@@ -765,7 +765,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: _toggleSideMenu,
                             child: const Icon(
                               Icons.menu,
-                              color: Color(0xFFA8D497),
+                              color: Color(0xFF01B1B2),
                               size: 28,
                             ),
                           ),
@@ -807,7 +807,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     AppLocalizations.of(context).fertileWindow,
                                     style: const TextStyle(
                                       fontSize: 28,
-                                      color: Color(0xFFA8D497),
+                                      color: Color(0xFF01B1B2),
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -856,7 +856,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         valueColor:
                                                             AlwaysStoppedAnimation<
                                                                 Color>(
-                                                          Color(0xFFA8D497),
+                                                          Color(0xFF01B1B2),
                                                         ),
                                                       ),
                                                     )
@@ -866,7 +866,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           ? Icons.pause_circle
                                                           : Icons.play_circle,
                                                       color: const Color(
-                                                          0xFFA8D497),
+                                                          0xFF01B1B2),
                                                       size: 20,
                                                     ),
                                                   const SizedBox(width: 6),
@@ -878,7 +878,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ? 'Pause'
                                                             : 'Listen',
                                                     style: const TextStyle(
-                                                      color: Color(0xFFA8D497),
+                                                      color: Color(0xFF01B1B2),
                                                       fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -911,8 +911,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ElevatedButton(
                         onPressed: _openLogSymptomScreen,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFA8D497),
-                          foregroundColor: const Color(0xFF2E683D),
+                          backgroundColor: const Color(0xFF01B1B2),
+                          foregroundColor: const Color(0xFF064B23),
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
@@ -922,7 +922,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(Icons.water_drop,
-                                color: Color(0xFF2E683D)),
+                                color: Color(0xFF064B23)),
                             const SizedBox(width: 12),
                             Text(
                               AppLocalizations.of(context).logSymptoms,
@@ -930,7 +930,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
-                                color: Color(0xFF2E683D),
+                                color: Color(0xFF064B23),
                               ),
                             ),
                           ],
@@ -952,7 +952,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: const Color(0xFF2E683D).withOpacity(0.2)),
+                      color: const Color(0xFF064B23).withOpacity(0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -962,7 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF2E683D),
+                        color: Color(0xFF064B23),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -973,10 +973,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFA8D497).withOpacity(0.3),
+                            color: const Color(0xFF01B1B2).withOpacity(0.3),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: const Color(0xFFA8D497),
+                              color: const Color(0xFF01B1B2),
                               width: 1.5,
                             ),
                           ),
@@ -984,7 +984,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               const Icon(
                                 Icons.favorite,
-                                color: Color(0xFF2E683D),
+                                color: Color(0xFF064B23),
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
@@ -1008,7 +1008,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
-                                        color: Color(0xFF2E683D),
+                                        color: Color(0xFF064B23),
                                       ),
                                     ),
                                   ],
@@ -1024,10 +1024,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFA8D497).withOpacity(0.15),
+                            color: const Color(0xFF01B1B2).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: const Color(0xFFA8D497),
+                              color: const Color(0xFF01B1B2),
                               width: 1.5,
                             ),
                           ),
@@ -1035,7 +1035,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               const Icon(
                                 Icons.hourglass_bottom,
-                                color: Color(0xFF2E683D),
+                                color: Color(0xFF064B23),
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
@@ -1068,7 +1068,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
-                                        color: Color(0xFF2E683D),
+                                        color: Color(0xFF064B23),
                                       ),
                                     ),
                                   ],
@@ -1221,7 +1221,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(
                 Icons.support_agent,
-                color: const Color(0xFF2E683D),
+                color: const Color(0xFF064B23),
                 size: 28,
               ),
               const SizedBox(width: 12),
@@ -1231,7 +1231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
-                  color: const Color(0xFF2E683D),
+                  color: const Color(0xFF064B23),
                 ),
               ),
             ],
@@ -1263,10 +1263,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFA8D497).withOpacity(0.2),
+                  color: const Color(0xFF01B1B2).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: const Color(0xFF2E683D),
+                    color: const Color(0xFF064B23),
                     width: 1.5,
                   ),
                 ),
@@ -1274,7 +1274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Icon(
                       Icons.email,
-                      color: const Color(0xFF2E683D),
+                      color: const Color(0xFF064B23),
                       size: 20,
                     ),
                     const SizedBox(width: 12),
@@ -1285,7 +1285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontFamily: 'Poppins',
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF2E683D),
+                          color: const Color(0xFF064B23),
                         ),
                       ),
                     ),
@@ -1308,7 +1308,7 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF2E683D),
+                foregroundColor: const Color(0xFF064B23),
               ),
               child: const Text(
                 'Close',
