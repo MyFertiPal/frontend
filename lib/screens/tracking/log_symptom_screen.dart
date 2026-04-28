@@ -122,7 +122,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
             SnackBar(
               content:
                   Text(AppLocalizations.of(context).symptomsLoggedSuccessfully),
-              backgroundColor: Color(0xFF2E683D),
+              backgroundColor: Color(0xFF0EA5A4),
               duration: Duration(seconds: 2),
             ),
           );
@@ -174,7 +174,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
             padding:
                 const EdgeInsets.only(left: 30, right: 30, top: 40, bottom: 20),
             decoration: const BoxDecoration(
-              color: Color(0xFF2E683D),
+              color: Color(0xFF0EA5A4),
             ),
             child: Row(
               children: [
@@ -182,7 +182,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                   onTap: () => Navigator.of(context).pop(false),
                   child: const Icon(
                     Icons.arrow_back,
-                    color: Color(0xFFA8D497),
+                    color: Color(0xFF0EA5A4),
                     size: 28,
                   ),
                 ),
@@ -190,7 +190,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                 Text(
                   l10n.logSymptoms,
                   style: const TextStyle(
-                    color: Color(0xFFA8D497),
+                    color: Color(0xFF0EA5A4),
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',
@@ -240,7 +240,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     onPressed: () => Navigator.of(context).pop(false),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: const BorderSide(color: Color(0xFF2E683D)),
+                      side: const BorderSide(color: Color(0xFF0EA5A4)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -248,7 +248,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     child: Text(
                       l10n.cancel,
                       style: const TextStyle(
-                        color: Color(0xFF2E683D),
+                        color: Color(0xFF0EA5A4),
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -261,7 +261,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     onPressed: _isSaving ? null : _saveSymptoms,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: const Color(0xFF2E683D),
+                      backgroundColor: const Color(0xFF0EA5A4),
                       disabledBackgroundColor: Colors.grey,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -320,12 +320,12 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     height: 40,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFA8D497),
+                      color: Color(0xFF0EA5A4),
                     ),
                     child: const Center(
                       child: Icon(
                         Icons.water_drop,
-                        color: Color(0xFF2E683D),
+                        color: Color(0xFF0EA5A4),
                         size: 20,
                       ),
                     ),
@@ -390,8 +390,8 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                           horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? const Color(0xFF2E683D)
-                            : const Color(0xFFA8D497),
+                            ? const Color(0xFF0EA5A4)
+                            : const Color(0xFF0EA5A4),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(

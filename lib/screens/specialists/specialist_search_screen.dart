@@ -39,7 +39,7 @@ class SpecialistSearchScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Find a Specialist'),
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
       ),
       backgroundColor: const Color(0xFFF5F5F0),
       body: Stack(
@@ -54,8 +54,8 @@ class SpecialistSearchScreen extends StatelessWidget {
                   filled: true,
                   fillColor: Colors.grey.shade200,
                   prefixIcon:
-                      const Icon(Icons.search, color: Color(0xFF2E683D)),
-                  suffixIcon: const Icon(Icons.tune, color: Color(0xFF2E683D)),
+                      const Icon(Icons.search, color: Color(0xFF0EA5A4)),
+                  suffixIcon: const Icon(Icons.tune, color: Color(0xFF0EA5A4)),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -106,12 +106,12 @@ class SpecialistSearchScreen extends StatelessWidget {
                   ),
                   title: Row(
                     children: const [
-                      Icon(Icons.lock, color: Color(0xFF2E683D), size: 28),
+                      Icon(Icons.lock, color: Color(0xFF0EA5A4), size: 28),
                       SizedBox(width: 12),
                       Text(
                         'Premium Feature',
                         style: TextStyle(
-                          color: Color(0xFF2E683D),
+                          color: Color(0xFF0EA5A4),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -135,7 +135,7 @@ class SpecialistSearchScreen extends StatelessWidget {
                         // Navigate to premium upgrade screen
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E683D),
+                        backgroundColor: const Color(0xFF0EA5A4),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -163,14 +163,14 @@ class _CategoryChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFA8D497).withOpacity(0.25),
+        color: const Color(0xFF0EA5A4).withOpacity(0.25),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF2E683D).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFF0EA5A4).withOpacity(0.2)),
       ),
       child: Text(
         label,
         style: const TextStyle(
-          color: Color(0xFF2E683D),
+          color: Color(0xFF0EA5A4),
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -204,7 +204,7 @@ class _SpecialistCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF2E683D).withOpacity(0.12)),
+        border: Border.all(color: const Color(0xFF0EA5A4).withOpacity(0.12)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -217,11 +217,11 @@ class _SpecialistCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 28,
-            backgroundColor: const Color(0xFFA8D497),
+            backgroundColor: const Color(0xFF0EA5A4),
             child: Text(
               _initials(name),
               style: const TextStyle(
-                color: Color(0xFF2E683D),
+                color: Color(0xFF0EA5A4),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -245,13 +245,13 @@ class _SpecialistCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                   ),
                 ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.place, size: 16, color: Color(0xFF2E683D)),
+                    const Icon(Icons.place, size: 16, color: Color(0xFF0EA5A4)),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -267,7 +267,7 @@ class _SpecialistCard extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(Icons.place_outlined,
-                        size: 16, color: Color(0xFF2E683D)),
+                        size: 16, color: Color(0xFF0EA5A4)),
                     const SizedBox(width: 4),
                     Text(
                       distance,
@@ -282,7 +282,7 @@ class _SpecialistCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                   ),
                 ),
               ],
@@ -296,7 +296,7 @@ class _SpecialistCard extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E683D),
+              backgroundColor: const Color(0xFF0EA5A4),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               elevation: 0,
@@ -343,12 +343,12 @@ class _LockedOverlay extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: const [
-                  Icon(Icons.lock, size: 56, color: Color(0xFF2E683D)),
+                  Icon(Icons.lock, size: 56, color: Color(0xFF0EA5A4)),
                   SizedBox(height: 12),
                   Text(
                     'Premium feature',
                     style: TextStyle(
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                     ),
@@ -357,7 +357,7 @@ class _LockedOverlay extends StatelessWidget {
                   Text(
                     'Upgrade to search and book specialists',
                     style: TextStyle(
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),

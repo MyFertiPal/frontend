@@ -12,7 +12,8 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
     GuidanceSection(
       title: 'Family Communication',
       icon: Icons.people_outline,
-      content: 'Navigate conversations about fertility with family members respectfully and confidently.',
+      content:
+          'Navigate conversations about fertility with family members respectfully and confidently.',
       subsections: [
         'When to share your fertility journey with family',
         'How to set boundaries with well-meaning relatives',
@@ -24,7 +25,8 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
     GuidanceSection(
       title: 'Cultural Practices & Fertility',
       icon: Icons.spa_outlined,
-      content: 'Understanding traditional practices alongside modern medical care.',
+      content:
+          'Understanding traditional practices alongside modern medical care.',
       subsections: [
         'Herbal remedies and their evidence base',
         'Traditional healing practices in different cultures',
@@ -36,7 +38,8 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
     GuidanceSection(
       title: 'Community & Stigma',
       icon: Icons.people_outline,
-      content: 'Building strength through community while managing cultural stigma.',
+      content:
+          'Building strength through community while managing cultural stigma.',
       subsections: [
         'Finding supportive communities that understand your culture',
         'Addressing stigma around infertility in your community',
@@ -88,7 +91,7 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -114,10 +117,10 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFA8D497).withOpacity(0.2),
+                color: const Color(0xFF0EA5A4).withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF2E683D),
+                  color: const Color(0xFF0EA5A4),
                   width: 1,
                 ),
               ),
@@ -129,7 +132,7 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                       fontFamily: 'Poppins',
                     ),
                   ),
@@ -187,7 +190,7 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
         child: ExpansionTile(
           leading: Icon(
             section.icon,
-            color: const Color(0xFF2E683D),
+            color: const Color(0xFF0EA5A4),
             size: 24,
           ),
           title: Text(
@@ -195,7 +198,7 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF2E683D),
+              color: Color(0xFF0EA5A4),
               fontFamily: 'Poppins',
             ),
           ),
@@ -226,7 +229,7 @@ class _CulturalGuidanceScreenState extends State<CulturalGuidanceScreen> {
                             padding: EdgeInsets.only(top: 4, right: 8),
                             child: Icon(
                               Icons.check_circle_outline,
-                              color: Color(0xFFA8D497),
+                              color: Color(0xFF0EA5A4),
                               size: 18,
                             ),
                           ),

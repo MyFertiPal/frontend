@@ -1000,7 +1000,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
-            backgroundColor: backendDeleted ? Colors.green : Colors.orange,
+            backgroundColor:
+                backendDeleted ? const Color(0xFF0EA5A4) : Colors.orange,
             duration: const Duration(seconds: 3),
           ),
         );

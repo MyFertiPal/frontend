@@ -68,7 +68,7 @@ class _NotificationSettingsScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Notification preferences updated'),
-            backgroundColor: Color(0xFF2E683D),
+            backgroundColor: Color(0xFF0EA5A4),
             duration: Duration(seconds: 2),
           ),
         );
@@ -91,7 +91,7 @@ class _NotificationSettingsScreenState
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         elevation: 0,
         title: const Text('Notifications & Settings'),
         centerTitle: true,
@@ -121,7 +121,7 @@ class _NotificationSettingsScreenState
                 _saveNotificationPreferences();
               },
               icon: Icons.notifications_active,
-              accentColor: const Color(0xFF2E683D),
+              accentColor: const Color(0xFF0EA5A4),
             ),
             const SizedBox(height: 24),
 
@@ -162,7 +162,7 @@ class _NotificationSettingsScreenState
                   _saveNotificationPreferences();
                 },
                 icon: Icons.assignment,
-                accentColor: const Color(0xFFA8D497),
+                accentColor: const Color(0xFF0EA5A4),
               ),
               const SizedBox(height: 12),
               _buildNotificationTile(
@@ -268,7 +268,7 @@ class _NotificationSettingsScreenState
       title,
       style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF2E683D),
+            color: const Color(0xFF0EA5A4),
             fontFamily: 'Poppins',
           ),
     );
@@ -319,8 +319,8 @@ class _NotificationSettingsScreenState
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF2E683D),
-            activeTrackColor: const Color(0xFFA8D497),
+            activeColor: const Color(0xFF0EA5A4),
+            activeTrackColor: const Color(0xFF0EA5A4),
           ),
         ],
       ),
@@ -357,7 +357,7 @@ class _NotificationSettingsScreenState
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFA8D497).withOpacity(0.3),
+                  color: const Color(0xFF0EA5A4).withOpacity(0.3),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -365,7 +365,7 @@ class _NotificationSettingsScreenState
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                   ),
                 ),
               ),
@@ -396,7 +396,7 @@ class _NotificationSettingsScreenState
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF2E683D), size: 24),
+          Icon(icon, color: const Color(0xFF0EA5A4), size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -425,7 +425,7 @@ class _NotificationSettingsScreenState
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: isGranted
-                  ? Colors.green.withOpacity(0.2)
+                  ? const Color(0xFF0EA5A4).withOpacity(0.2)
                   : Colors.orange.withOpacity(0.2),
               borderRadius: BorderRadius.circular(4),
             ),
@@ -434,7 +434,7 @@ class _NotificationSettingsScreenState
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: isGranted ? Colors.green : Colors.orange,
+                color: isGranted ? const Color(0xFF0EA5A4) : Colors.orange,
               ),
             ),
           ),
@@ -457,7 +457,7 @@ class _NotificationSettingsScreenState
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF2E683D), size: 24),
+          Icon(icon, color: const Color(0xFF0EA5A4), size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

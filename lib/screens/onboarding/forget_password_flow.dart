@@ -40,7 +40,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const Icon(
                   Icons.alternate_email,
                   size: 72,
-                  color: Color(0xFF2E683D),
+                  color: Color(0xFF0EA5A4),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -73,7 +73,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: ElevatedButton(
                     onPressed: _isSending ? null : _handleSendLink,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E683D),
+                      backgroundColor: const Color(0xFF0EA5A4),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -106,17 +106,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFA8D497).withOpacity(0.2),
+                      color: const Color(0xFF0EA5A4).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: const Color(0xFF2E683D).withOpacity(0.3),
+                        color: const Color(0xFF0EA5A4).withOpacity(0.3),
                         width: 1,
                       ),
                     ),
                     child: Column(
                       children: [
                         const Icon(Icons.mark_email_read,
-                            color: Color(0xFF2E683D), size: 48),
+                            color: Color(0xFF0EA5A4), size: 48),
                         const SizedBox(height: 12),
                         Text(
                           AppLocalizations.of(context).checkYourEmail,
@@ -124,7 +124,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Poppins',
-                            color: Color(0xFF2E683D),
+                            color: Color(0xFF0EA5A4),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -165,7 +165,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     child: Text(
                       AppLocalizations.of(context).didntReceiveEmail,
                       style: const TextStyle(
-                        color: Color(0xFF2E683D),
+                        color: Color(0xFF0EA5A4),
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Poppins',
                       ),
@@ -206,7 +206,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               fontSize: 14,
               fontWeight: FontWeight.w500,
               fontFamily: 'Poppins',
-              color: Color(0xFF2E683D),
+              color: Color(0xFF0EA5A4),
             ),
           ),
         ),
@@ -277,7 +277,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('We sent a secure reset link to $email.'),
-          backgroundColor: const Color(0xFF2E683D),
+          backgroundColor: const Color(0xFF0EA5A4),
         ),
       );
     } catch (e) {
@@ -351,13 +351,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFA8D497),
+                    color: const Color(0xFF0EA5A4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(
                     Icons.vpn_key_rounded,
                     size: 36,
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -367,7 +367,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -413,7 +413,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   child: ElevatedButton(
                     onPressed: _isResetting ? null : _handleReset,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E683D),
+                      backgroundColor: const Color(0xFF0EA5A4),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -467,7 +467,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             fontSize: 14,
             fontWeight: FontWeight.w400,
             fontFamily: 'Poppins',
-            color: Color(0xFF2E683D),
+            color: Color(0xFF0EA5A4),
           ),
         ),
         const SizedBox(height: 8),
@@ -496,7 +496,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ? IconButton(
                       icon: Icon(
                         showPassword ? Icons.visibility_off : Icons.visibility,
-                        color: const Color(0xFF2E683D),
+                        color: const Color(0xFF0EA5A4),
                       ),
                       onPressed: onToggleVisibility,
                     )
@@ -584,7 +584,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -592,7 +592,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                 const Icon(
                   Icons.check_circle,
                   size: 72,
-                  color: Color(0xFF2E683D),
+                  color: Color(0xFF0EA5A4),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -618,7 +618,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E683D),
+                      backgroundColor: const Color(0xFF0EA5A4),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

@@ -49,7 +49,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF2E683D)),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0EA5A4)),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
@@ -58,7 +58,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2E683D),
+            color: Color(0xFF0EA5A4),
           ),
         ),
       ),
@@ -77,7 +77,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   minHeight: 4,
                   backgroundColor: Colors.grey.shade300,
                   valueColor: const AlwaysStoppedAnimation<Color>(
-                    Color(0xFF2D5A3A), // dark green
+                    Color(0xFF064B23), // dark green
                   ),
                 ),
               ),
@@ -281,7 +281,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     ),
                     Switch.adaptive(
                       value: _audioGuidance,
-                      activeColor: const Color(0xFF2D5A3A),
+                      activeColor: const Color(0xFF064B23),
                       onChanged: (value) {
                         setState(() {
                           _audioGuidance = value;
@@ -303,7 +303,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         _acceptTerms = value ?? false;
                       });
                     },
-                    activeColor: const Color(0xFF2D5A3A),
+                    activeColor: const Color(0xFF064B23),
                     checkColor: Colors.white,
                   ),
                   Expanded(
@@ -324,7 +324,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   onPressed:
                       (_isLoading || !_acceptTerms) ? null : _handleContinue,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2D5A3A),
+                    backgroundColor: const Color(0xFF064B23),
                     disabledBackgroundColor: Colors.grey.shade300,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -466,7 +466,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Profile setup complete!'),
-            backgroundColor: Colors.green,
+            backgroundColor: const Color(0xFF0EA5A4),
           ),
         );
         Navigator.of(context).pushNamedAndRemoveUntil(

@@ -169,7 +169,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
             );
           },
         ),
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -233,8 +233,8 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                                 horizontal: 18, vertical: 12),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? const Color(0xFF2E683D)
-                                  : const Color(0xFFA8D497),
+                                  ? const Color(0xFF0EA5A4)
+                                  : const Color(0xFF0EA5A4),
                               borderRadius: BorderRadius.circular(24),
                             ),
                             child: Text(
@@ -318,7 +318,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isBot ? const Color(0xFFE6F4EA) : const Color(0xFF2E683D),
+          color: isBot ? const Color(0xFFE6F4EA) : const Color(0xFF0EA5A4),
           borderRadius: BorderRadius.circular(18),
         ),
         child: child,

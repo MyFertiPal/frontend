@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
-                        color: Color(0xFF2E683D),
+                        color: Color(0xFF0EA5A4),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E683D),
+                        backgroundColor: const Color(0xFF0EA5A4),
                         disabledBackgroundColor: Colors.grey.shade400,
                         foregroundColor: Colors.white,
                         elevation: 0,
@@ -161,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Poppins',
-                            color: Color(0xFF2E683D),
+                            color: Color(0xFF0EA5A4),
                           ),
                         ),
                       ),
@@ -298,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
             fontSize: 14,
             fontWeight: FontWeight.w400,
             fontFamily: 'Poppins',
-            color: Color(0xFF2E683D),
+            color: Color(0xFF0EA5A4),
           ),
         ),
         const SizedBox(height: 8),
@@ -327,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? IconButton(
                       icon: Icon(
                         showPassword ? Icons.visibility_off : Icons.visibility,
-                        color: const Color(0xFF2E683D),
+                        color: const Color(0xFF0EA5A4),
                       ),
                       onPressed: onToggleVisibility,
                     )

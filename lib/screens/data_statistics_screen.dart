@@ -101,7 +101,7 @@ class _DataStatisticsScreenState extends State<DataStatisticsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         elevation: 0,
         title: Text(AppLocalizations.of(context).exploreMyData),
         centerTitle: true,
@@ -121,7 +121,7 @@ class _DataStatisticsScreenState extends State<DataStatisticsScreen> {
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF2E683D),
+                                  color: const Color(0xFF0EA5A4),
                                   fontFamily: 'Poppins',
                                 ),
                       ),
@@ -138,12 +138,12 @@ class _DataStatisticsScreenState extends State<DataStatisticsScreen> {
                           _buildStatCard(
                             'Cycle Length',
                             '${_profileData?['cycle_length'] ?? 28} days',
-                            const Color(0xFF2E683D),
+                            const Color(0xFF0EA5A4),
                           ),
                           _buildStatCard(
                             'Period Length',
                             '${_profileData?['period_length'] ?? 5} days',
-                            const Color(0xFFA8D497),
+                            const Color(0xFF0EA5A4),
                           ),
                           _buildStatCard(
                             'Days Tracked',
@@ -222,14 +222,14 @@ class _DataStatisticsScreenState extends State<DataStatisticsScreen> {
                                 label: Text(
                                   DateFormat('MMM dd').format(parsedDate),
                                   style: const TextStyle(
-                                    color: Color(0xFF2E683D),
+                                    color: Color(0xFF0EA5A4),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 backgroundColor:
-                                    const Color(0xFFA8D497).withOpacity(0.3),
+                                    const Color(0xFF0EA5A4).withOpacity(0.3),
                                 side: const BorderSide(
-                                  color: Color(0xFF2E683D),
+                                  color: Color(0xFF0EA5A4),
                                   width: 0.5,
                                 ),
                               );
@@ -269,7 +269,7 @@ class _DataStatisticsScreenState extends State<DataStatisticsScreen> {
                           icon: const Icon(Icons.download),
                           label: const Text('Download My Data'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2E683D),
+                            backgroundColor: const Color(0xFF0EA5A4),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -309,7 +309,7 @@ class _DataStatisticsScreenState extends State<DataStatisticsScreen> {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF2E683D),
+              color: Color(0xFF0EA5A4),
               fontFamily: 'Poppins',
             ),
           ),
@@ -339,13 +339,13 @@ class _DataStatisticsScreenState extends State<DataStatisticsScreen> {
                 const SnackBar(
                   content: Text(
                       'Your data export has been prepared. Check your downloads folder.'),
-                  backgroundColor: Color(0xFF2E683D),
+                  backgroundColor: Color(0xFF0EA5A4),
                   duration: Duration(seconds: 3),
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E683D),
+              backgroundColor: const Color(0xFF0EA5A4),
             ),
             child: const Text('Download'),
           ),

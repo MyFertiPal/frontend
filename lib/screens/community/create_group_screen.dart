@@ -36,7 +36,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         title: const Text(
           'Create Group',
           style: TextStyle(
@@ -73,7 +73,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   color: Colors.grey.shade400,
                   fontFamily: 'Poppins',
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey.shade300),
@@ -85,7 +86,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                     width: 2,
                   ),
                 ),
@@ -116,7 +117,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   color: Colors.grey.shade400,
                   fontFamily: 'Poppins',
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey.shade300),
@@ -128,7 +130,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                     width: 2,
                   ),
                 ),
@@ -155,7 +157,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               onTap: _addMembers,
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -165,14 +168,16 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   children: [
                     const Icon(
                       Icons.add,
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _selectedMembers.isEmpty ? 'Add members' : '${_selectedMembers.length} member${_selectedMembers.length > 1 ? 's' : ''} added',
+                      _selectedMembers.isEmpty
+                          ? 'Add members'
+                          : '${_selectedMembers.length} member${_selectedMembers.length > 1 ? 's' : ''} added',
                       style: const TextStyle(
-                        color: Color(0xFF2E683D),
+                        color: Color(0xFF0EA5A4),
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                         fontFamily: 'Poppins',
@@ -189,7 +194,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               child: ElevatedButton(
                 onPressed: _createGroup,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2E683D),
+                  backgroundColor: const Color(0xFF0EA5A4),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

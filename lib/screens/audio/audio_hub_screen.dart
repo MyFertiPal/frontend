@@ -98,7 +98,7 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _playbackSpeed == speed
-                            ? const Color(0xFF2E683D)
+                            ? const Color(0xFF0EA5A4)
                             : Colors.grey.shade300,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 6),

@@ -8,7 +8,10 @@ class SpecialistChatScreen extends StatelessWidget {
     final mockMessages = const [
       {'sender': 'Specialist', 'text': 'Hi! How can I assist you today?'},
       {'sender': 'You', 'text': 'I need guidance on my current plan.'},
-      {'sender': 'Specialist', 'text': 'Sure, let me review your notes and suggest next steps.'},
+      {
+        'sender': 'Specialist',
+        'text': 'Sure, let me review your notes and suggest next steps.'
+      },
     ];
 
     final TextEditingController _messageController = TextEditingController();
@@ -16,7 +19,7 @@ class SpecialistChatScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chat with Specialist'),
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
       ),
       body: Stack(
         children: [
@@ -30,12 +33,14 @@ class SpecialistChatScreen extends StatelessWidget {
                     final msg = mockMessages[index];
                     final isUser = msg['sender'] == 'You';
                     return Align(
-                      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                      alignment:
+                          isUser ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isUser ? const Color(0xFFA8D497) : Colors.white,
+                          color:
+                              isUser ? const Color(0xFF0EA5A4) : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
@@ -48,7 +53,9 @@ class SpecialistChatScreen extends StatelessWidget {
                         child: Text(
                           msg['text'] ?? '',
                           style: TextStyle(
-                            color: isUser ? const Color(0xFF2E683D) : Colors.black87,
+                            color: isUser
+                                ? const Color(0xFF0EA5A4)
+                                : Colors.black87,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -93,14 +100,16 @@ class SpecialistChatScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sending messages coming soon')),
+                          const SnackBar(
+                              content: Text('Sending messages coming soon')),
                         );
                         _messageController.clear();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E683D),
+                        backgroundColor: const Color(0xFF0EA5A4),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
                       ),
                       child: const Icon(Icons.send, size: 18),
                     ),
@@ -119,12 +128,12 @@ class SpecialistChatScreen extends StatelessWidget {
                   ),
                   title: Row(
                     children: const [
-                      Icon(Icons.lock, color: Color(0xFF2E683D), size: 28),
+                      Icon(Icons.lock, color: Color(0xFF0EA5A4), size: 28),
                       SizedBox(width: 12),
                       Text(
                         'Premium Feature',
                         style: TextStyle(
-                          color: Color(0xFF2E683D),
+                          color: Color(0xFF0EA5A4),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -148,7 +157,7 @@ class SpecialistChatScreen extends StatelessWidget {
                         // Navigate to premium upgrade screen
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E683D),
+                        backgroundColor: const Color(0xFF0EA5A4),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -195,12 +204,12 @@ class _LockedOverlay extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: const [
-                  Icon(Icons.lock, size: 56, color: Color(0xFF2E683D)),
+                  Icon(Icons.lock, size: 56, color: Color(0xFF0EA5A4)),
                   SizedBox(height: 12),
                   Text(
                     'Premium feature',
                     style: TextStyle(
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                     ),
@@ -209,7 +218,7 @@ class _LockedOverlay extends StatelessWidget {
                   Text(
                     'Upgrade to chat with specialists',
                     style: TextStyle(
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),

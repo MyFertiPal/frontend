@@ -9,7 +9,7 @@ class CommunityGroupsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         title: const Text(
           'Community Groups',
           style: TextStyle(
@@ -74,13 +74,13 @@ class CommunityGroupsScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFA8D497),
+                          color: const Color(0xFF0EA5A4),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
                           'General Support',
                           style: TextStyle(
-                            color: Color(0xFF2E683D),
+                            color: Color(0xFF0EA5A4),
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                             fontFamily: 'Poppins',
@@ -123,7 +123,7 @@ class CommunityGroupsScreen extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E683D),
+                        backgroundColor: const Color(0xFF0EA5A4),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -226,7 +226,7 @@ class _CommunityGroupDetailScreenState
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Fertility Circle',
@@ -251,7 +251,7 @@ class _CommunityGroupDetailScreenState
                 child: const Text(
                   'General Support',
                   style: TextStyle(
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                     fontFamily: 'Poppins',
@@ -282,7 +282,7 @@ class _CommunityGroupDetailScreenState
                         height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFFA8D497),
+                          color: const Color(0xFF0EA5A4),
                         ),
                         child: Center(
                           child: Text(
@@ -339,7 +339,7 @@ class _CommunityGroupDetailScreenState
           ),
           // Message input area - fixed at bottom
           Container(
-            color: const Color(0xFF2E683D),
+            color: const Color(0xFF0EA5A4),
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [

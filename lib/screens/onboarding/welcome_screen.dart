@@ -50,7 +50,7 @@ class WelcomeScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF2E683D),
+                        foregroundColor: const Color(0xFF0EA5A4),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -62,7 +62,7 @@ class WelcomeScreen extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
-                          color: Color(0xFF2E683D),
+                          color: Color(0xFF0EA5A4),
                         ),
                       ),
                     ),

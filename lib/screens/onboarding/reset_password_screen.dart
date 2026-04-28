@@ -69,10 +69,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF2E683D)),
+        iconTheme: const IconThemeData(color: Color(0xFF0EA5A4)),
         title: Text(AppLocalizations.of(context).resetPassword,
             style: const TextStyle(
-                color: Color(0xFF2E683D), fontWeight: FontWeight.w600)),
+                color: Color(0xFF0EA5A4), fontWeight: FontWeight.w600)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -90,14 +90,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 obscureText: !_passwordVisible,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context).newPassword,
-                  labelStyle: const TextStyle(color: Color(0xFF2E683D)),
+                  labelStyle: const TextStyle(color: Color(0xFF0EA5A4)),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF2E683D)),
+                    borderSide: const BorderSide(color: Color(0xFF0EA5A4)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        const BorderSide(color: Color(0xFF2E683D), width: 2),
+                        const BorderSide(color: Color(0xFF0EA5A4), width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   fillColor: Colors.white,
@@ -107,7 +107,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       _passwordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: const Color(0xFF2E683D),
+                      color: const Color(0xFF0EA5A4),
                     ),
                     onPressed: () {
                       setState(() {
@@ -130,14 +130,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 obscureText: !_confirmPasswordVisible,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context).confirmPassword,
-                  labelStyle: const TextStyle(color: Color(0xFF2E683D)),
+                  labelStyle: const TextStyle(color: Color(0xFF0EA5A4)),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF2E683D)),
+                    borderSide: const BorderSide(color: Color(0xFF0EA5A4)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        const BorderSide(color: Color(0xFF2E683D), width: 2),
+                        const BorderSide(color: Color(0xFF0EA5A4), width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   fillColor: Colors.white,
@@ -147,7 +147,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       _confirmPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: const Color(0xFF2E683D),
+                      color: const Color(0xFF0EA5A4),
                     ),
                     onPressed: () {
                       setState(() {
@@ -164,12 +164,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               const SizedBox(height: 24),
               _isLoading
-                  ? const CircularProgressIndicator(color: Color(0xFF2E683D))
+                  ? const CircularProgressIndicator(color: Color(0xFF0EA5A4))
                   : SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E683D),
+                          backgroundColor: const Color(0xFF0EA5A4),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(

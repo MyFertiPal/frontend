@@ -21,7 +21,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -29,7 +29,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                 const Icon(
                   Icons.check_circle,
                   size: 72,
-                  color: Color(0xFF2E683D),
+                  color: Color(0xFF0EA5A4),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -51,7 +51,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                       Navigator.of(context).pushReplacementNamed('/login');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E683D),
+                      backgroundColor: const Color(0xFF0EA5A4),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

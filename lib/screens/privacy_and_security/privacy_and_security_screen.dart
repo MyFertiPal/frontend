@@ -9,7 +9,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2E683D),
+        backgroundColor: const Color(0xFF0EA5A4),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -28,7 +28,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFF2E683D),
+                  color: const Color(0xFF0EA5A4),
                   width: 3,
                 ),
               ),
@@ -36,7 +36,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
                 child: Icon(
                   Icons.security_outlined,
                   size: 120,
-                  color: Color(0xFF2E683D),
+                  color: Color(0xFF0EA5A4),
                 ),
               ),
             ),
@@ -50,7 +50,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF2E683D),
+                    color: Color(0xFF0EA5A4),
                     fontFamily: 'Poppins',
                   ),
                 ),
@@ -58,7 +58,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
                 Container(
                   height: 2,
                   width: 180,
-                  color: const Color(0xFF2E683D),
+                  color: const Color(0xFF0EA5A4),
                 ),
               ],
             ),
@@ -129,7 +129,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: const Color(0xFF2E683D),
+                color: const Color(0xFF0EA5A4),
                 size: 24,
               ),
               const SizedBox(width: 12),
@@ -138,7 +138,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF2E683D),
+                  color: Color(0xFF0EA5A4),
                   fontFamily: 'Poppins',
                 ),
               ),
@@ -155,7 +155,7 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
                     padding: EdgeInsets.only(top: 6),
                     child: Icon(
                       Icons.check_circle_outline,
-                      color: Color(0xFFA8D497),
+                      color: Color(0xFF0EA5A4),
                       size: 18,
                     ),
                   ),

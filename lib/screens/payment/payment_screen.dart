@@ -11,8 +11,8 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  static const _primaryColor = Color(0xFF2E683D);
-  static const _accentColor = Color(0xFFA8D497);
+  static const _primaryColor = Color(0xFF0EA5A4);
+  static const _accentColor = Color(0xFF0EA5A4);
 
   static const MethodChannel _channel = MethodChannel('paystack_android');
   bool _isInitialized = false;
@@ -150,7 +150,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Poppins',
-                  color: Color(0xFF2E683D),
+                  color: Color(0xFF0EA5A4),
                 ),
               ),
               const SizedBox(height: 4),
@@ -173,7 +173,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Poppins',
-                  color: Color(0xFF2E683D),
+                  color: Color(0xFF0EA5A4),
                 ),
               ),
               const SizedBox(height: 6),
@@ -182,7 +182,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 child: ElevatedButton(
                   onPressed: _isProcessing ? null : onPressed,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E683D),
+                    backgroundColor: const Color(0xFF0EA5A4),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding:
@@ -230,7 +230,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               fontSize: 16,
               fontWeight: FontWeight.w700,
               fontFamily: 'Poppins',
-              color: Color(0xFF2E683D),
+              color: Color(0xFF0EA5A4),
             ),
           ),
           const SizedBox(height: 6),
@@ -290,7 +290,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             '• ',
             style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF2E683D),
+              color: Color(0xFF0EA5A4),
               fontFamily: 'Poppins',
             ),
           ),
@@ -323,7 +323,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         style: TextStyle(
           fontSize: 12,
           fontFamily: 'Poppins',
-          color: Color(0xFF2E683D),
+          color: Color(0xFF0EA5A4),
         ),
       ),
     );

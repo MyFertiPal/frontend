@@ -146,7 +146,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -243,7 +243,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     child: ElevatedButton(
                       onPressed: _showVerifyModal,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E683D),
+                        backgroundColor: const Color(0xFF0EA5A4),
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -277,7 +277,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
-                        color: Color(0xFF2E683D),
+                        color: Color(0xFF0EA5A4),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -309,7 +309,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             fontSize: 14,
             fontWeight: FontWeight.w400,
             fontFamily: 'Poppins',
-            color: Color(0xFF2E683D),
+            color: Color(0xFF0EA5A4),
           ),
         ),
         const SizedBox(height: 8),
@@ -338,7 +338,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ? IconButton(
                       icon: Icon(
                         showPassword ? Icons.visibility_off : Icons.visibility,
-                        color: const Color(0xFF2E683D),
+                        color: const Color(0xFF0EA5A4),
                       ),
                       onPressed: onToggleVisibility,
                     )
@@ -372,7 +372,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             fontSize: 24,
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins',
-            color: Color(0xFF2E683D),
+            color: Color(0xFF0EA5A4),
           ),
         ),
       ),
@@ -501,7 +501,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Verification code resent successfully'),
-            backgroundColor: Colors.green,
+            backgroundColor: const Color(0xFF0EA5A4),
             duration: Duration(seconds: 2),
           ),
         );
@@ -546,7 +546,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                     const Icon(
                       Icons.check_circle_outline,
                       size: 72,
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF0EA5A4),
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -629,7 +629,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',
                               color: secondsRemaining == 0
-                                  ? const Color(0xFF2E683D)
+                                  ? const Color(0xFF0EA5A4)
                                   : Colors.grey.shade400,
                             ),
                           ),
@@ -641,7 +641,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             fontFamily: 'Poppins',
-                            color: Color(0xFF2E683D),
+                            color: Color(0xFF0EA5A4),
                           ),
                         ),
                       ],
@@ -696,7 +696,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E683D),
+                          backgroundColor: const Color(0xFF0EA5A4),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -759,7 +759,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: const Color(0xFFA8D497),
+          color: const Color(0xFF0EA5A4),
           width: 2,
         ),
       ),
@@ -794,7 +794,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
           fontSize: 24,
           fontWeight: FontWeight.bold,
           fontFamily: 'Poppins',
-          color: Color(0xFF2E683D),
+          color: Color(0xFF0EA5A4),
         ),
       ),
     );

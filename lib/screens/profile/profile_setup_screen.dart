@@ -316,7 +316,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     ),
                     Switch.adaptive(
                       value: _audioGuidance,
-                      activeColor: const Color(0xFF2D5A3A),
+                      activeColor: const Color(0xFF064B23),
                       onChanged: (value) {
                         setState(() {
                           _audioGuidance = value;
@@ -334,7 +334,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _handleUpdate,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2D5A3A),
+                    backgroundColor: const Color(0xFF064B23),
                     disabledBackgroundColor: Colors.grey.shade300,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -519,7 +519,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Profile updated successfully'),
-            backgroundColor: Colors.green,
+            backgroundColor: const Color(0xFF0EA5A4),
           ),
         );
         Navigator.of(context).pop(true);

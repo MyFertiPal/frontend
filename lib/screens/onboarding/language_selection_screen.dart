@@ -120,12 +120,12 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                             onPressed: () => _handleSelect(lang['code']!),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isSelected
-                                  ? const Color(0xFFA8D497)
+                                  ? const Color(0xFF0EA5A4)
                                   : Colors.white,
                               foregroundColor: const Color(0xFF224D2D),
                               side: BorderSide(
                                 color: isSelected
-                                    ? const Color(0xFFA8D497)
+                                    ? const Color(0xFF0EA5A4)
                                     : const Color(0x33224D2D),
                               ),
                               shape: RoundedRectangleBorder(
@@ -156,7 +156,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                             onPressed:
                                 _isSaving ? null : () => _handleNext(context),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFA8D497),
+                              backgroundColor: const Color(0xFF0EA5A4),
                               foregroundColor: const Color(0xFF224D2D),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
