@@ -153,13 +153,14 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _primaryTeal,
+                            color: Colors.white,
+                            border: Border.all(color: _primaryTeal, width: 1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             article['category'] ?? '',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: _primaryTeal,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
@@ -203,8 +204,9 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                           child: Container(
                             height: 32,
                             padding: const EdgeInsets.symmetric(horizontal: 12),
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: _primaryTeal,
+                              borderRadius: BorderRadius.circular(4),
                             ),
                             child: Row(
                               children: [
@@ -227,14 +229,16 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                         Container(
                           height: 32,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: const BoxDecoration(
-                            color: _primaryTeal,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: _primaryTeal, width: 1),
+                            borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
                             child: Text(
                               AppLocalizations.of(context).english,
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: _primaryTeal,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),

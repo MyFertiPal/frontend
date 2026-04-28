@@ -122,7 +122,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                               backgroundColor: isSelected
                                   ? const Color(0xFF0EA5A4)
                                   : Colors.white,
-                              foregroundColor: const Color(0xFF224D2D),
+                              foregroundColor: isSelected
+                                  ? Colors.white
+                                  : const Color(0xFF224D2D),
                               side: BorderSide(
                                 color: isSelected
                                     ? const Color(0xFF0EA5A4)
@@ -134,10 +136,13 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                             ),
                             child: Text(
                               lang['name']!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
                                 fontFamily: 'Poppins',
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF224D2D),
                               ),
                             ),
                           ),
@@ -157,7 +162,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                                 _isSaving ? null : () => _handleNext(context),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF0EA5A4),
-                              foregroundColor: const Color(0xFF224D2D),
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -169,7 +174,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Color(0xFF224D2D),
+                                        Colors.white,
                                       ),
                                     ),
                                   )
@@ -179,7 +184,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
                                       fontFamily: 'Poppins',
-                                      color: Color(0xFF224D2D),
+                                      color: Colors.white,
                                     ),
                                   ),
                           ),

@@ -109,7 +109,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
             const SizedBox(height: 12),
             _buildPremiumCard(_primaryColor, _accentColor),
             const SizedBox(height: 20),
-            _buildTestModeCard(),
           ],
         ),
       ),
@@ -305,26 +304,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTestModeCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: _accentColor.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _accentColor, width: 1.2),
-      ),
-      child: const Text(
-        'Android Paystack SDK is enabled. You can use test cards here. Access codes require a backend, but direct charges are supported for demos.',
-        style: TextStyle(
-          fontSize: 12,
-          fontFamily: 'Poppins',
-          color: Color(0xFF0EA5A4),
-        ),
       ),
     );
   }

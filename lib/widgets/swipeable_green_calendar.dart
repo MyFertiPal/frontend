@@ -144,9 +144,9 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
               hasDot: true,
               isPink: true),
           _LegendItem(
-              color: const Color(0xFF1976D2), label: 'Ovulation', hasDot: true),
+              color: const Color(0xFF1B4D2D), label: 'Ovulation', hasDot: true),
           _LegendItem(
-              color: const Color(0xFF4CAF50), label: 'Fertile', hasDot: true),
+              color: const Color(0xFF2E683D), label: 'Fertile', hasDot: true),
           _LegendItem(
               color: const Color(0xFFD32F2F),
               label: 'Predicted',
