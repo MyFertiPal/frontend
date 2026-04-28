@@ -12,6 +12,9 @@ import 'tracking/log_symptom_screen.dart';
 import '../services/api_service.dart';
 import '../services/notification_reminder_service.dart';
 
+const Color _primaryTeal = Color(0xFF0EA5A4);
+const Color _darkGreenText = Color(0xFF064B23);
+
 class CalendarTabScreen extends StatefulWidget {
   final ValueNotifier<bool>? refreshNotifier;
   const CalendarTabScreen({Key? key, this.refreshNotifier}) : super(key: key);
@@ -449,7 +452,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2E683D),
+      backgroundColor: _primaryTeal,
       body: SafeArea(
         child: Stack(
           children: [
@@ -551,11 +554,11 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                                 TextButton.icon(
                                   onPressed: _clearCalendarDays,
                                   icon: const Icon(Icons.delete_outline,
-                                      color: Color(0xFF2E683D)),
+                                      color: _darkGreenText),
                                   label: Text(
                                     AppLocalizations.of(context).clear,
                                     style: const TextStyle(
-                                      color: Color(0xFF2E683D),
+                                      color: _darkGreenText,
                                       fontWeight: FontWeight.w600,
                                       fontFamily: 'Poppins',
                                     ),
@@ -582,7 +585,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                                   (symptom) => _buildLoggedSymptomItem(
                                     symptom,
                                     Icons.check_circle,
-                                    const Color(0xFF2E683D),
+                                    _primaryTeal,
                                   ),
                                 ),
                             ],
@@ -599,7 +602,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
               bottom: 32,
               right: 32,
               child: FloatingActionButton(
-                backgroundColor: const Color(0xFF2E683D),
+                backgroundColor: _primaryTeal,
                 elevation: 6,
                 onPressed: () async {
                   final result = await Navigator.of(context).push(
@@ -673,7 +676,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                 displaySymptom,
                 style: const TextStyle(
                   fontSize: 16,
-                  color: Colors.black,
+                  color: _darkGreenText,
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Poppins',
                 ),
@@ -699,7 +702,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).calendarCleared),
-            backgroundColor: Colors.green,
+            backgroundColor: _primaryTeal,
           ),
         );
       }

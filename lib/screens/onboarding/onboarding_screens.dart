@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart'; // Unused
 import '../../generated/l10n/app_localizations.dart';
 
+const Color _primaryTeal = Color(0xFF0EA5A4);
+const Color _darkGreenText = Color(0xFF064B23);
+
 class OnboardingScreens extends StatefulWidget {
   const OnboardingScreens({super.key});
 
@@ -81,7 +84,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
-                        color: Colors.black,
+                        color: _darkGreenText,
                       ),
                     ),
                   ),
@@ -93,7 +96,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
-                        color: Color(0xFFA8D497),
+                        color: _primaryTeal,
                       ),
                     ),
                   ),
@@ -127,7 +130,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                 child: ElevatedButton(
                   onPressed: _nextPage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2E683D),
+                    backgroundColor: _primaryTeal,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -177,7 +180,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
         width: isActive ? 32 : 8,
         height: 8,
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFA8D497) : Colors.grey.shade400,
+          color: isActive ? _primaryTeal : Colors.grey.shade400,
           borderRadius: BorderRadius.circular(4),
         ),
       ),
@@ -195,14 +198,14 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             Container(
               width: 128,
               height: 128,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFFA8D497),
+                color: _primaryTeal,
               ),
               child: const Icon(
                 Icons.calendar_today,
                 size: 64,
-                color: Color(0xFF2E683D),
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 24),
@@ -214,7 +217,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: _darkGreenText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -227,7 +230,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: _darkGreenText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -261,14 +264,14 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             Container(
               width: 128,
               height: 128,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFFA8D497),
+                color: _primaryTeal,
               ),
               child: const Icon(
                 Icons.book_outlined,
                 size: 64,
-                color: Color(0xFF2E683D),
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 24),
@@ -279,7 +282,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: _darkGreenText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -291,7 +294,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: _darkGreenText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -325,14 +328,14 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             Container(
               width: 128,
               height: 128,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFFA8D497),
+                color: _primaryTeal,
               ),
               child: const Icon(
                 Icons.favorite_border,
                 size: 64,
-                color: Color(0xFF2E683D),
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 24),
@@ -343,7 +346,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: _darkGreenText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -355,7 +358,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: _darkGreenText,
               ),
               textAlign: TextAlign.center,
             ),

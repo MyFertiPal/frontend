@@ -8,6 +8,9 @@ import '../../services/yarngpt_tts_service.dart';
 import '../../theme.dart';
 import 'article_reading_screen.dart';
 
+const Color _primaryTeal = Color(0xFF0EA5A4);
+const Color _darkGreenText = Color(0xFF064B23);
+
 class EducationalHubScreen extends StatefulWidget {
   const EducationalHubScreen({super.key});
 
@@ -150,13 +153,13 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFA8D497),
+                            color: _primaryTeal,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             article['category'] ?? '',
                             style: const TextStyle(
-                              color: Color(0xFF2E683D),
+                              color: Colors.white,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
@@ -179,7 +182,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2E683D),
+                        color: _darkGreenText,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -201,7 +204,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                             height: 32,
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             decoration: const BoxDecoration(
-                              color: Color(0xFF2E683D),
+                              color: _primaryTeal,
                             ),
                             child: Row(
                               children: [
@@ -225,13 +228,13 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                           height: 32,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: const BoxDecoration(
-                            color: Color(0xFFA8D497),
+                            color: _primaryTeal,
                           ),
                           child: Center(
                             child: Text(
                               AppLocalizations.of(context).english,
                               style: const TextStyle(
-                                color: Color(0xFF2E683D),
+                                color: Colors.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
@@ -288,7 +291,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                     child: Text(
                       category,
                       style: const TextStyle(
-                        color: Color(0xFF2E683D),
+                        color: _darkGreenText,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -462,7 +465,7 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF2E683D),
+                            color: _darkGreenText,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -488,7 +491,7 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                               const RoundSliderOverlayShape(overlayRadius: 12),
                         ),
                         child: Slider(
-                          activeColor: const Color(0xFF2E683D),
+                          activeColor: _primaryTeal,
                           inactiveColor: Colors.grey.shade300,
                           min: 0,
                           max: _duration.inSeconds.toDouble(),
@@ -539,7 +542,7 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                       Container(
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFF2E683D),
+                          color: _primaryTeal,
                         ),
                         child: _isLoading
                             ? SizedBox(
@@ -625,7 +628,7 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                             return ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: _playbackSpeed == speed
-                                    ? const Color(0xFF2E683D)
+                                    ? _primaryTeal
                                     : Colors.grey.shade300,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 6),
@@ -639,7 +642,7 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                                 style: TextStyle(
                                   color: _playbackSpeed == speed
                                       ? Colors.white
-                                      : Colors.black87,
+                                      : _darkGreenText,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),

@@ -67,7 +67,7 @@ class _ArticleReadingScreenState extends State<ArticleReadingScreen> {
         children: [
           // Fixed header with back and listen buttons
           Container(
-            color: const Color(0xFF2E683D),
+            color: const Color(0xFF064B23),
             padding: const EdgeInsets.only(top: 40, left: 8, right: 8, bottom: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -116,7 +116,7 @@ class _ArticleReadingScreenState extends State<ArticleReadingScreen> {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2E683D),
+                      color: Color(0xFF064B23),
                     ),
                   ),
                 ),

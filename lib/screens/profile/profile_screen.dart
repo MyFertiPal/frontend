@@ -12,6 +12,9 @@ import '../privacy_and_security/privacy_and_security_screen.dart';
 import '../notification_settings_screen.dart';
 import '../data_statistics_screen.dart';
 
+const Color _primaryTeal = Color(0xFF0EA5A4);
+const Color _darkGreenText = Color(0xFF064B23);
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
@@ -163,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Color _colorFromString(String input) {
-    if (input.isEmpty) return const Color(0xFF2E683D);
+    if (input.isEmpty) return _primaryTeal;
     final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
     final hue = (hash % 360).toDouble();
     return HSVColor.fromAHSV(1, hue, 0.45, 0.85).toColor();
@@ -195,9 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return false; // We handle the pop ourselves
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F5F0),
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: const Color(0xFF2D5A3A),
+          backgroundColor: _primaryTeal,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -224,8 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _isLoading
                 ? const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Color(0xFF2D5A3A)),
+                      valueColor: AlwaysStoppedAnimation<Color>(_primaryTeal),
                     ),
                   )
                 : Builder(
@@ -297,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     _loadUserProfile();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF2D5A3A),
+                                    backgroundColor: _primaryTeal,
                                   ),
                                   child: const Text('Retry'),
                                 ),
@@ -314,8 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.black.withOpacity(0.15),
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Color(0xFF2D5A3A)),
+                      valueColor: AlwaysStoppedAnimation<Color>(_primaryTeal),
                     ),
                   ),
                 ),
@@ -365,7 +366,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: _darkGreenText,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -392,7 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Row(
                         children: [
                           const Icon(Icons.language,
-                              size: 16, color: Color(0xFF2E683D)),
+                              size: 16, color: _primaryTeal),
                           const SizedBox(width: 6),
                           Text(
                             'Language: ',
@@ -407,7 +408,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 user?.preferredLanguage ?? 'en'),
                             style: const TextStyle(
                               fontSize: 13,
-                              color: Color(0xFF2E683D),
+                              color: _darkGreenText,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -435,8 +436,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD4E9D7),
-                foregroundColor: const Color(0xFF2D5A3A),
+                backgroundColor: _primaryTeal,
+                foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -629,12 +630,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFE6F4EA), // light green
+            color: _primaryTeal.withOpacity(0.12),
             shape: BoxShape.circle,
           ),
           padding: const EdgeInsets.all(8),
-          child: const Icon(Icons.language,
-              size: 22, color: Color(0xFF2D5A3A)), // dark green
+          child: const Icon(Icons.language, size: 22, color: _darkGreenText),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -723,7 +723,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
-                  backgroundColor: const Color(0xFF2E683D),
+                  backgroundColor: _primaryTeal,
                   duration: const Duration(seconds: 2),
                 ),
               );
@@ -756,8 +756,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 8),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined,
-                  color: Color(0xFF2D5A3A)), // dark green
+              leading: const Icon(Icons.shield_outlined, color: _darkGreenText),
               title: Text(AppLocalizations.of(context).dataPrivacyPolicy),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
@@ -769,8 +768,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined,
-                  color: Color(0xFF4CAF50)), // medium green
+              leading: const Icon(Icons.shield_outlined, color: _primaryTeal),
               title: Text(AppLocalizations.of(context).manageDataPermissions),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
@@ -782,8 +780,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined,
-                  color: Color(0xFF81C784)), // light green
+              leading: const Icon(Icons.shield_outlined, color: _primaryTeal),
               title: Text(AppLocalizations.of(context).exploreMyData),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
@@ -796,7 +793,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.notifications_outlined,
-                  color: Color(0xFF2E683D)),
+                  color: _darkGreenText),
               title: const Text('Notifications & Settings'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
