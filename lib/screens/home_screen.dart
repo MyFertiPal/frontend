@@ -305,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: MediaQuery.of(context).size.width * 0.6,
                   height: MediaQuery.of(context).size.height,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF01B1B2),
+                    color: Color(0xFF064B23),
                   ),
                   child: SafeArea(
                     child: Padding(
@@ -709,7 +709,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(
               icon,
-              color: const Color(0xFF01B1B2),
+              color: const Color(0xFF064B23),
               size: 24,
             ),
             const SizedBox(height: 8),
@@ -719,7 +719,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Poppins',
-                color: Color(0xFF01B1B2),
+                color: Color(0xFF064B23),
               ),
               textAlign: TextAlign.center,
             ),
@@ -765,7 +765,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: _toggleSideMenu,
                             child: const Icon(
                               Icons.menu,
-                              color: Color(0xFF01B1B2),
+                              color: Color(0xFF064B23),
                               size: 28,
                             ),
                           ),
@@ -807,7 +807,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     AppLocalizations.of(context).fertileWindow,
                                     style: const TextStyle(
                                       fontSize: 28,
-                                      color: Color(0xFF01B1B2),
+                                      color: Color(0xFF064B23),
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -856,7 +856,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         valueColor:
                                                             AlwaysStoppedAnimation<
                                                                 Color>(
-                                                          Color(0xFF01B1B2),
+                                                          Color(0xFF064B23),
                                                         ),
                                                       ),
                                                     )
@@ -878,7 +878,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ? 'Pause'
                                                             : 'Listen',
                                                     style: const TextStyle(
-                                                      color: Color(0xFF01B1B2),
+                                                      color: Color(0xFF064B23),
                                                       fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -911,8 +911,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ElevatedButton(
                         onPressed: _openLogSymptomScreen,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF01B1B2),
-                          foregroundColor: const Color(0xFF064B23),
+                          backgroundColor: const Color(0xFF064B23),
+                          foregroundColor: Colors.white,
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
@@ -920,9 +920,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.water_drop,
-                                color: Color(0xFF064B23)),
+                            children: [
+                            const Icon(Icons.water_drop, color: Colors.white),
                             const SizedBox(width: 12),
                             Text(
                               AppLocalizations.of(context).logSymptoms,
@@ -930,7 +929,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
-                                color: Color(0xFF064B23),
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -973,10 +972,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF01B1B2).withOpacity(0.3),
+                            color: const Color(0xFF064B23).withOpacity(0.3),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: const Color(0xFF01B1B2),
+                              color: const Color(0xFF064B23),
                               width: 1.5,
                             ),
                           ),
@@ -1024,10 +1023,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF01B1B2).withOpacity(0.15),
+                            color: const Color(0xFF064B23).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: const Color(0xFF01B1B2),
+                              color: const Color(0xFF064B23),
                               width: 1.5,
                             ),
                           ),
@@ -1263,7 +1262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF01B1B2).withOpacity(0.2),
+                  color: const Color(0xFF064B23).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: const Color(0xFF064B23),
