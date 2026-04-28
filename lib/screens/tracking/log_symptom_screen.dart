@@ -182,7 +182,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                   onTap: () => Navigator.of(context).pop(false),
                   child: const Icon(
                     Icons.arrow_back,
-                    color: Color(0xFF0EA5A4),
+                    color: Colors.white,
                     size: 28,
                   ),
                 ),
@@ -190,7 +190,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                 Text(
                   l10n.logSymptoms,
                   style: const TextStyle(
-                    color: Color(0xFF0EA5A4),
+                    color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Poppins',

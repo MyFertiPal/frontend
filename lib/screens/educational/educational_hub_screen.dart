@@ -6,6 +6,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_key_config.dart';
 import '../../services/yarngpt_tts_service.dart';
 import '../../theme.dart';
+import '../../utils/responsive_utils.dart';
 import 'article_reading_screen.dart';
 
 const Color _primaryTeal = Color(0xFF0EA5A4);
@@ -101,160 +102,206 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
   }
 
   Widget _buildArticleCard(Map<String, String> article) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => ArticleReadingScreen(
-                imageUrl: article['image'] ?? '',
-                title: article['title'] ?? '',
-                articleText: article['content'] ?? article['excerpt'] ?? '',
-                audioUrl: article['audioUrl'], // Pass audio URL
-              ),
-            ),
-          );
-        },
-        child: Card(
-          color: Colors.white,
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(8)),
-                child: Image.asset(
-                  article['image']!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 180,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 180,
-                      color: Colors.grey.shade300,
-                      child: const Icon(Icons.image_not_supported),
-                    );
-                  },
+    return Builder(builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+            bottom: ResponsiveUtils.getResponsiveSpacing(context) * 2),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ArticleReadingScreen(
+                  imageUrl: article['image'] ?? '',
+                  title: article['title'] ?? '',
+                  articleText: article['content'] ?? article['excerpt'] ?? '',
+                  audioUrl: article['audioUrl'],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: _primaryTeal, width: 1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            article['category'] ?? '',
-                            style: const TextStyle(
-                              color: _primaryTeal,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
+            );
+          },
+          child: Card(
+            color: Colors.white,
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(8)),
+                  child: Image.asset(
+                    article['image']!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: ResponsiveUtils.isSmallScreen(context) ? 150 : 180,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height:
+                            ResponsiveUtils.isSmallScreen(context) ? 150 : 180,
+                        color: Colors.grey.shade300,
+                        child: const Icon(Icons.image_not_supported),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(
+                      ResponsiveUtils.getResponsivePadding(context)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  ResponsiveUtils.getResponsiveSpacing(context),
+                              vertical: ResponsiveUtils.getResponsiveSpacing(
+                                    context,
+                                  ) *
+                                  0.5,
                             ),
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          AppLocalizations.of(context).minsRead,
-                          style: const TextStyle(
-                            color: Colors.black54,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      article['title'] ?? '',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: _darkGreenText,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      article['excerpt'] ?? '',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => _showAudioModal(context, article),
-                          child: Container(
-                            height: 32,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
-                              color: _primaryTeal,
-                              borderRadius: BorderRadius.circular(4),
+                              color: Colors.white,
+                              border: Border.all(color: _primaryTeal, width: 1),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.play_arrow,
-                                    color: Colors.white, size: 18),
-                                const SizedBox(width: 4),
-                                Text(
-                                  AppLocalizations.of(context).listen,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          height: 32,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: _primaryTeal, width: 1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Center(
                             child: Text(
-                              AppLocalizations.of(context).english,
-                              style: const TextStyle(
+                              article['category'] ?? '',
+                              style: TextStyle(
                                 color: _primaryTeal,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
+                                fontSize: ResponsiveUtils.getResponsiveFontSize(
+                                    context,
+                                    baseSize: 12),
                               ),
                             ),
                           ),
+                          const Spacer(),
+                          Text(
+                            AppLocalizations.of(context).minsRead,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(
+                                  context,
+                                  baseSize: 12),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                          height:
+                              ResponsiveUtils.getResponsiveSpacing(context)),
+                      Text(
+                        article['title'] ?? '',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context,
+                              baseSize: 18),
+                          fontWeight: FontWeight.bold,
+                          color: _darkGreenText,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      SizedBox(
+                          height:
+                              ResponsiveUtils.getResponsiveSpacing(context) *
+                                  0.75),
+                      Text(
+                        article['excerpt'] ?? '',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context,
+                              baseSize: 14),
+                          color: Colors.grey[700],
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(
+                          height:
+                              ResponsiveUtils.getResponsiveSpacing(context)),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => _showAudioModal(context, article),
+                            child: Container(
+                              height: 32,
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    ResponsiveUtils.getResponsiveSpacing(
+                                        context),
+                              ),
+                              decoration: BoxDecoration(
+                                color: _primaryTeal,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.play_arrow,
+                                      color: Colors.white, size: 18),
+                                  SizedBox(
+                                    width: ResponsiveUtils.getResponsiveSpacing(
+                                            context) *
+                                        0.5,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context).listen,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize:
+                                          ResponsiveUtils.getResponsiveFontSize(
+                                              context,
+                                              baseSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width:
+                                ResponsiveUtils.getResponsiveSpacing(context),
+                          ),
+                          Container(
+                            height: 32,
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  ResponsiveUtils.getResponsiveSpacing(context),
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: _primaryTeal, width: 1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Center(
+                              child: Text(
+                                AppLocalizations.of(context).english,
+                                style: TextStyle(
+                                  color: _primaryTeal,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize:
+                                      ResponsiveUtils.getResponsiveFontSize(
+                                          context,
+                                          baseSize: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   @override
@@ -269,7 +316,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        backgroundColor: const Color(0xFF0EA5A4),
         title: Text(AppLocalizations.of(context).educationalHub,
             style: const TextStyle(color: Colors.white)),
       ),
@@ -278,9 +325,14 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
           // Category selector
           Container(
             color: AppColors.primary,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.symmetric(
+              horizontal:
+                  ResponsiveUtils.getResponsiveHorizontalPadding(context),
+              vertical: ResponsiveUtils.getResponsivePadding(context),
+            ),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.getResponsivePadding(context)),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),

@@ -10,6 +10,7 @@ import '../services/api_service.dart';
 import '../services/api_key_config.dart';
 import '../services/yarngpt_tts_service.dart';
 import '../models/user.dart';
+import '../utils/responsive_utils.dart';
 import 'profile/profile_screen.dart';
 import 'support/support_screen.dart';
 import 'onboarding/welcome_screen.dart';
@@ -693,42 +694,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 141,
-        height: 120,
-        decoration: BoxDecoration(
-          color: _primaryTeal,
-          borderRadius: BorderRadius.zero,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Poppins',
-                color: Colors.white,
+      child: Builder(builder: (context) {
+        final cardWidth = ResponsiveUtils.getResponsiveCardWidth(context);
+        final cardHeight = ResponsiveUtils.getResponsiveCardHeight(context);
+        final iconSize = ResponsiveUtils.isSmallScreen(context) ? 20.0 : 24.0;
+        final fontSize =
+            ResponsiveUtils.getResponsiveFontSize(context, baseSize: 14);
+
+        return Container(
+          width: cardWidth,
+          height: cardHeight,
+          decoration: BoxDecoration(
+            color: _primaryTeal,
+            borderRadius: BorderRadius.zero,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: Colors.white,
+                size: iconSize,
+              ),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Poppins',
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -1146,61 +1160,75 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(
+                horizontal:
+                    ResponsiveUtils.getResponsiveHorizontalPadding(context)),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildFeatureCard(
-                  icon: Icons.calendar_today,
-                  label: AppLocalizations.of(context).calendar,
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 2;
-                    });
-                  },
+                Expanded(
+                  child: _buildFeatureCard(
+                    icon: Icons.calendar_today,
+                    label: AppLocalizations.of(context).calendar,
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = 2;
+                      });
+                    },
+                  ),
                 ),
-                const SizedBox(width: 12),
-                _buildFeatureCard(
-                  icon: Icons.child_care,
-                  label: AppLocalizations.of(context).genderPredictions,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => const GenderPredictionScreen()),
-                    );
-                  },
+                SizedBox(
+                    width: ResponsiveUtils.getResponsiveSpacing(context) * 1.5),
+                Expanded(
+                  child: _buildFeatureCard(
+                    icon: Icons.child_care,
+                    label: AppLocalizations.of(context).genderPredictions,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const GenderPredictionScreen()),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(
+                horizontal:
+                    ResponsiveUtils.getResponsiveHorizontalPadding(context)),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildFeatureCard(
-                  icon: Icons.medical_services_outlined,
-                  label: AppLocalizations.of(context).findSpecialist,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const SpecialistSearchScreen(),
-                      ),
-                    );
-                  },
+                Expanded(
+                  child: _buildFeatureCard(
+                    icon: Icons.medical_services_outlined,
+                    label: AppLocalizations.of(context).findSpecialist,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SpecialistSearchScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-                const SizedBox(width: 12),
-                _buildFeatureCard(
-                  icon: Icons.chat_bubble_outline,
-                  label: AppLocalizations.of(context).chatWithSpecialist,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const SpecialistChatScreen(),
-                      ),
-                    );
-                  },
+                SizedBox(
+                    width: ResponsiveUtils.getResponsiveSpacing(context) * 1.5),
+                Expanded(
+                  child: _buildFeatureCard(
+                    icon: Icons.chat_bubble_outline,
+                    label: AppLocalizations.of(context).chatWithSpecialist,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SpecialistChatScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

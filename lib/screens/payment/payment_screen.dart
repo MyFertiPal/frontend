@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../config/paystack_config.dart';
+import '../../utils/responsive_utils.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -44,20 +45,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(
+            ResponsiveUtils.getResponsiveHorizontalPadding(context)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Choose a plan that fits you',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context,
+                    baseSize: 20),
                 fontWeight: FontWeight.w700,
                 fontFamily: 'Poppins',
                 color: _primaryColor,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context) * 2),
             _buildPlanCard(
               title: 'Monthly',
               price: '# 2000',

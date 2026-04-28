@@ -220,34 +220,42 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                   ),
                   const SizedBox(height: 12),
                   _chatBubble(
-                    child: Wrap(
-                      spacing: 12,
-                      children: _genderOptions.map((option) {
-                        final isSelected = _selectedGender == option;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() => _selectedGender = option);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF0EA5A4)
-                                  : const Color(0xFF0EA5A4),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            child: Text(
-                              option,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: _genderOptions.map((option) {
+                          final isSelected = _selectedGender == option;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() => _selectedGender = option);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? const Color(0xFF0EA5A4)
+                                      : const Color(0xFF0EA5A4),
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: Text(
+                                  option,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     ),
                     isBot: false,
                   ),

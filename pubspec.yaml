@@ -32,16 +32,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.3.8
 
 dependency_overrides:
   flutter_local_notifications: 20.0.0
-
-flutter_native_splash:
-  color: "#2E7D32"  # Green splash background
-  image: "assets/images/app_logo.png"
-  android: true
-  ios: true
 
 flutter_icons:
   android: true
