@@ -162,20 +162,11 @@ class _SplashScreenState extends State<SplashScreen>
             children: [
               // Use the provided app logo asset
               SizedBox(
-                width: 140,
-                height: 140,
+                width: 240,
+                height: 240,
                 child: Image.asset(
                   'assets/images/app_logo.png',
                   fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Fertipath',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green.shade700,
                 ),
               ),
             ],
