@@ -1347,182 +1347,48 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// Custom painter for organic blob shapes
+/// Simple circle-based decorative painter (main circles with sub-circles).
 class _OrganicBlobPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // Paint configuration
-    final paint1 = Paint()
-      ..color = Colors.white.withOpacity(0.08)
-      ..style = PaintingStyle.fill;
+    // Base colors tuned to the design: white overlays and a sparse dark green accent
+    final baseWhite1 = Colors.white.withOpacity(0.10);
+    final baseWhite2 = Colors.white.withOpacity(0.14);
+    final darkAccent = const Color(0xFF064B23).withOpacity(0.06);
 
-    final paint2 = Paint()
-      ..color = Colors.white.withOpacity(0.12)
-      ..style = PaintingStyle.fill;
+    final centers = [
+      Offset(size.width * 0.18, size.height * 0.28),
+      Offset(size.width * 0.78, size.height * 0.18),
+      Offset(size.width * 0.72, size.height * 0.62),
+    ];
 
-    final accentPaint = Paint()
-      ..color = const Color(0xFF064B23).withOpacity(0.06)
-      ..style = PaintingStyle.fill;
+    final radii = [size.width * 0.24, size.width * 0.16, size.width * 0.28];
 
-    final ovumPaint = Paint()
-      ..color = Colors.white.withOpacity(0.14)
-      ..style = PaintingStyle.fill;
+    final colors = [baseWhite1, baseWhite2, darkAccent];
 
-    // Layer 1: Large blooming petal - bottom right
-    _drawPetalBlob(
-      canvas,
-      paint1,
-      Offset(size.width * 0.86, size.height * 0.62),
-      size.width * 0.48,
-      size.width * 0.22,
-      -0.35,
-    );
+    for (var i = 0; i < centers.length; i++) {
+      final center = centers[i];
+      final radius = radii[i];
+      final paint = Paint()..color = colors[i % colors.length]..style = PaintingStyle.fill;
 
-    // Layer 2: Gentle supporting petal - top right
-    _drawPetalBlob(
-      canvas,
-      paint2,
-      Offset(size.width * 0.88, size.height * 0.16),
-      size.width * 0.32,
-      size.width * 0.15,
-      0.2,
-    );
+      // Draw main circle
+      canvas.drawCircle(center, radius, paint);
 
-    // Layer 3: Small leaf-like growth - left side
-    _drawPetalBlob(
-      canvas,
-      paint1,
-      Offset(size.width * 0.12, size.height * 0.5),
-      size.width * 0.22,
-      size.width * 0.09,
-      -0.55,
-    );
-
-    // Layer 4: Ovum-like accent - bottom left
-    _drawOvumCluster(
-      canvas,
-      ovumPaint,
-      Offset(size.width * 0.18, size.height * 0.76),
-      size.width * 0.07,
-    );
-
-    // Layer 5: Seed-like accent - center top
-    _drawOvumCluster(
-      canvas,
-      accentPaint,
-      Offset(size.width * 0.5, size.height * 0.12),
-      size.width * 0.05,
-    );
-
-    // Layer 6: Subtle curved stem - hints at growth without adding clutter
-    _drawGrowthArc(
-      canvas,
-      accentPaint,
-      Offset(size.width * 0.28, size.height * 0.66),
-      size.width * 0.16,
-      size.height * 0.12,
-    );
-  }
-
-  void _drawPetalBlob(
-    Canvas canvas,
-    Paint paint,
-    Offset center,
-    double width,
-    double height,
-    double rotation,
-  ) {
-    const segments = 7;
-    final path = Path();
-    final angleStep = (2 * pi) / segments;
-
-    for (int i = 0; i < segments; i++) {
-      final angle = angleStep * i;
-      final wave = 0.82 + 0.18 * sin((angle * 2) + rotation);
-      final x = cos(angle) * width * wave;
-      final y = sin(angle) * height * (1.0 - 0.08 * cos(angle + rotation));
-
-      final point = Offset(x, y);
-      final rotated = _rotate(point, rotation);
-      final absolute = center + rotated;
-
-      if (i == 0) {
-        path.moveTo(absolute.dx, absolute.dy);
-      } else {
-        path.quadraticBezierTo(
-          center.dx + cos(angle - angleStep / 2) * width * 0.95,
-          center.dy + sin(angle - angleStep / 2) * height * 0.92,
-          absolute.dx,
-          absolute.dy,
-        );
+      // Draw several sub-circles around the main circle to create a layered, soft look
+      final subCount = 4 + i; // vary sub circle count per main circle
+      for (var j = 0; j < subCount; j++) {
+        final angle = (2 * pi) * j / subCount + (i * 0.3);
+        final dist = radius * (0.28 + (j % 3) * 0.12);
+        final offset = Offset(cos(angle) * dist, sin(angle) * dist);
+        final subRadius = radius * (0.12 + (j % 3) * 0.05) * (1.0 - i * 0.06);
+        final subPaint = Paint()
+          ..color = Colors.white.withOpacity(0.06 + 0.03 * (j % 3))
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(center + offset, subRadius, subPaint);
       }
     }
-
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  void _drawOvumCluster(
-    Canvas canvas,
-    Paint paint,
-    Offset center,
-    double radius,
-  ) {
-    final outer = Paint()
-      ..color = paint.color
-      ..style = PaintingStyle.fill;
-
-    canvas.drawCircle(center, radius, outer);
-    canvas.drawCircle(
-      center.translate(radius * 0.2, -radius * 0.15),
-      radius * 0.45,
-      Paint()
-        ..color = Colors.white.withOpacity(0.16)
-        ..style = PaintingStyle.fill,
-    );
-  }
-
-  void _drawGrowthArc(
-    Canvas canvas,
-    Paint paint,
-    Offset center,
-    double width,
-    double height,
-  ) {
-    final path = Path();
-    path.moveTo(center.dx - width * 0.25, center.dy + height * 0.15);
-    path.quadraticBezierTo(
-      center.dx,
-      center.dy - height * 0.25,
-      center.dx + width * 0.45,
-      center.dy - height * 0.1,
-    );
-    path.quadraticBezierTo(
-      center.dx + width * 0.2,
-      center.dy + height * 0.1,
-      center.dx + width * 0.55,
-      center.dy + height * 0.3,
-    );
-
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = paint.color.withOpacity(0.55)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0
-        ..strokeCap = StrokeCap.round,
-    );
-  }
-
-  Offset _rotate(Offset point, double radians) {
-    final cosValue = cos(radians);
-    final sinValue = sin(radians);
-    return Offset(
-      point.dx * cosValue - point.dy * sinValue,
-      point.dx * sinValue + point.dy * cosValue,
-    );
   }
 
   @override
-  bool shouldRepaint(_OrganicBlobPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
