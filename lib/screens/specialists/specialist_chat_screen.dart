@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../payment/payment_screen.dart';
 
 class SpecialistChatScreen extends StatelessWidget {
   const SpecialistChatScreen({super.key});
@@ -154,7 +155,11 @@ class SpecialistChatScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        // Navigate to premium upgrade screen
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const PaymentScreen(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0EA5A4),

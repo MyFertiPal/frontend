@@ -324,7 +324,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
         children: [
           // Category selector
           Container(
-            color: AppColors.primary,
+            color: Colors.white,
             padding: EdgeInsets.symmetric(
               horizontal:
                   ResponsiveUtils.getResponsiveHorizontalPadding(context),

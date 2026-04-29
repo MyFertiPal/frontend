@@ -80,7 +80,7 @@ class CommunityGroupsScreen extends StatelessWidget {
                         child: const Text(
                           'General Support',
                           style: TextStyle(
-                            color: Color(0xFF0EA5A4),
+                            color: Colors.white,
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                             fontFamily: 'Poppins',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../specialists/specialist_chat_screen.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -25,10 +26,57 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   }
 
   void _createGroup() {
-    // TODO: Implement group creation logic
-    debugPrint('Create group with name: ${_groupNameController.text}');
-    debugPrint('Description: ${_descriptionController.text}');
-    debugPrint('Members: $_selectedMembers');
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Feature coming soon',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: const Text(
+            'Group creation is not available yet. Upgrade now in Specialist Chat.',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text(
+                'Maybe Later',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SpecialistChatScreen(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0EA5A4),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Upgrade Now'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

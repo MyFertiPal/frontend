@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -787,25 +788,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        // Decorative semicolon
-                        Positioned(
-                          bottom: 50,
-                          right: -40,
-                          child: Transform.rotate(
-                            angle: -0.3,
-                            child: Opacity(
-                              opacity: 0.15,
-                              child: Text(
-                                ';',
-                                style: TextStyle(
-                                  fontSize: 280,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                  color: Colors.white,
-                                  height: 1,
-                                ),
-                              ),
-                            ),
+                        // Organic blob shapes background
+                        Positioned.fill(
+                          child: CustomPaint(
+                            painter: _OrganicBlobPainter(),
                           ),
                         ),
                         // Insight text
@@ -1357,4 +1343,127 @@ class _HomeScreenState extends State<HomeScreen> {
     _yarngptService.dispose();
     super.dispose();
   }
+}
+
+/// Custom painter for organic blob shapes
+class _OrganicBlobPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Paint configuration
+    final paint1 = Paint()
+      ..color = Colors.white.withOpacity(0.08)
+      ..style = PaintingStyle.fill;
+
+    final paint2 = Paint()
+      ..color = Colors.white.withOpacity(0.12)
+      ..style = PaintingStyle.fill;
+
+    final accentPaint = Paint()
+      ..color = const Color(0xFF064B23).withOpacity(0.06)
+      ..style = PaintingStyle.fill;
+
+    // Layer 1: Large organic blob - bottom right
+    _drawOrganicBlob(
+      canvas,
+      paint1,
+      Offset(size.width * 0.85, size.height * 0.6),
+      size.width * 0.5,
+      -0.2,
+      [0.95, 0.9, 0.85, 0.88, 0.92, 0.98],
+    );
+
+    // Layer 2: Medium organic blob - top right
+    _drawOrganicBlob(
+      canvas,
+      paint2,
+      Offset(size.width * 0.9, size.height * 0.15),
+      size.width * 0.35,
+      0.15,
+      [0.88, 0.92, 0.95, 0.9, 0.85, 0.88],
+    );
+
+    // Layer 3: Small leaf-like shape - left side
+    _drawOrganicBlob(
+      canvas,
+      paint1,
+      Offset(size.width * 0.1, size.height * 0.5),
+      size.width * 0.25,
+      -0.35,
+      [0.92, 0.88, 0.85, 0.88, 0.92, 0.95],
+    );
+
+    // Layer 4: Cell-like shape - bottom left
+    _drawOrganicBlob(
+      canvas,
+      accentPaint,
+      Offset(size.width * 0.15, size.height * 0.75),
+      size.width * 0.18,
+      0.25,
+      [0.9, 0.85, 0.88, 0.92, 0.95, 0.9],
+    );
+
+    // Layer 5: Delicate accent blob - center top
+    _drawOrganicBlob(
+      canvas,
+      paint2,
+      Offset(size.width * 0.5, size.height * 0.1),
+      size.width * 0.22,
+      -0.1,
+      [0.85, 0.9, 0.95, 0.92, 0.88, 0.85],
+    );
+  }
+
+  void _drawOrganicBlob(
+    Canvas canvas,
+    Paint paint,
+    Offset center,
+    double baseRadius,
+    double rotation,
+    List<double> radiusVariations,
+  ) {
+    final path = Path();
+    const segments = 6;
+    final angleStep = (2 * pi) / segments;
+
+    for (int i = 0; i < segments; i++) {
+      final angle = angleStep * i + rotation;
+      
+      // Vary the radius for organic shape
+      final radiusVariation = radiusVariations[i % radiusVariations.length];
+      final radius = baseRadius * radiusVariation;
+
+      final x = center.dx + radius * cos(angle);
+      final y = center.dy + radius * sin(angle);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+
+      // Add quadratic curve to next point for smooth organic curves
+      if (i < segments - 1) {
+        final nextAngle = angleStep * (i + 1) + rotation;
+        final nextRadiusVariation = radiusVariations[(i + 1) % radiusVariations.length];
+        final nextRadius = baseRadius * nextRadiusVariation;
+        
+        final nextX = center.dx + nextRadius * cos(nextAngle);
+        final nextY = center.dy + nextRadius * sin(nextAngle);
+
+        // Control point for smooth curve
+        final controlRadius = baseRadius * 0.6;
+        final controlAngle = (angle + nextAngle) / 2;
+        final controlX = center.dx + controlRadius * cos(controlAngle);
+        final controlY = center.dy + controlRadius * sin(controlAngle);
+
+        path.quadraticBezierTo(controlX, controlY, nextX, nextY);
+      }
+    }
+
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_OrganicBlobPainter oldDelegate) => false;
 }

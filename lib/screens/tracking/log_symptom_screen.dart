@@ -325,7 +325,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     child: const Center(
                       child: Icon(
                         Icons.water_drop,
-                        color: Color(0xFF0EA5A4),
+                        color: Colors.white,
                         size: 20,
                       ),
                     ),

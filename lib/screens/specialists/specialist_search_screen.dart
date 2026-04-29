@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../payment/payment_screen.dart';
 
 class SpecialistSearchScreen extends StatelessWidget {
   const SpecialistSearchScreen({super.key});
@@ -96,58 +97,6 @@ class SpecialistSearchScreen extends StatelessWidget {
                 ...specialists.map((sp) => _SpecialistCard(data: sp)).toList(),
             ],
           ),
-          _LockedOverlay(onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  title: Row(
-                    children: const [
-                      Icon(Icons.lock, color: Color(0xFF0EA5A4), size: 28),
-                      SizedBox(width: 12),
-                      Text(
-                        'Premium Feature',
-                        style: TextStyle(
-                          color: Color(0xFF0EA5A4),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  content: const Text(
-                    'Upgrade to premium to search and book appointments with specialists in your area.',
-                    style: TextStyle(fontSize: 15, height: 1.5),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text(
-                        'Maybe Later',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        // Navigate to premium upgrade screen
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0EA5A4),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text('Upgrade Now'),
-                    ),
-                  ],
-                );
-              },
-            );
-          }),
         ],
       ),
     );
@@ -181,6 +130,14 @@ class _CategoryChip extends StatelessWidget {
 class _SpecialistCard extends StatelessWidget {
   final Map<String, String> data;
   const _SpecialistCard({required this.data});
+
+  void _openPaymentScreen(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const PaymentScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -290,11 +247,7 @@ class _SpecialistCard extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Viewing $name coming soon')),
-              );
-            },
+            onPressed: () => _openPaymentScreen(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0EA5A4),
               foregroundColor: Colors.white,
@@ -311,63 +264,6 @@ class _SpecialistCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LockedOverlay extends StatelessWidget {
-  final VoidCallback onTap;
-  const _LockedOverlay({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.45),
-                  Colors.black.withOpacity(0.25),
-                  Colors.black.withOpacity(0.05),
-                ],
-              ),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.lock, size: 56, color: Color(0xFF0EA5A4)),
-                  SizedBox(height: 12),
-                  Text(
-                    'Premium feature',
-                    style: TextStyle(
-                      color: Color(0xFF0EA5A4),
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Upgrade to search and book specialists',
-                    style: TextStyle(
-                      color: Color(0xFF0EA5A4),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

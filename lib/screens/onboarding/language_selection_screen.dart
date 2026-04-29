@@ -120,10 +120,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                             onPressed: () => _handleSelect(lang['code']!),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isSelected
-                                  ? const Color(0xFF0EA5A4)
+                                  ? Colors.white
                                   : Colors.white,
                               foregroundColor: isSelected
-                                  ? Colors.white
+                                  ? const Color(0xFF0EA5A4)
                                   : const Color(0xFF224D2D),
                               side: BorderSide(
                                 color: isSelected
@@ -141,7 +141,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                                 fontWeight: FontWeight.w400,
                                 fontFamily: 'Poppins',
                                 color: isSelected
-                                    ? Colors.white
+                                    ? const Color(0xFF0EA5A4)
                                     : const Color(0xFF224D2D),
                               ),
                             ),
@@ -161,8 +161,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                             onPressed:
                                 _isSaving ? null : () => _handleNext(context),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0EA5A4),
-                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF224D2D),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -184,7 +184,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
                                       fontFamily: 'Poppins',
-                                      color: Colors.white,
+                                      color: Color(0xFF224D2D),
                                     ),
                                   ),
                           ),

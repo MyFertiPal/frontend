@@ -40,7 +40,7 @@ flutter_icons:
   android: true
   ios: true
   image_path: "assets/images/app_logo.png"
-  adaptive_icon_background: "#2E7D32"  # Changed to green
+  adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/images/app_logo.png"
 
 flutter_gen_config:

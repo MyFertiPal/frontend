@@ -146,7 +146,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
-                      color: Color(0xFF0EA5A4),
+                      color: Color(0xFF064B23),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -277,7 +277,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
-                        color: Color(0xFF0EA5A4),
+                        color: Color(0xFF064B23),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -309,7 +309,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             fontSize: 14,
             fontWeight: FontWeight.w400,
             fontFamily: 'Poppins',
-            color: Color(0xFF0EA5A4),
+            color: Color(0xFF064B23),
           ),
         ),
         const SizedBox(height: 8),
@@ -338,7 +338,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ? IconButton(
                       icon: Icon(
                         showPassword ? Icons.visibility_off : Icons.visibility,
-                        color: const Color(0xFF0EA5A4),
+                        color: const Color(0xFF064B23),
                       ),
                       onPressed: onToggleVisibility,
                     )
@@ -372,7 +372,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             fontSize: 24,
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins',
-            color: Color(0xFF0EA5A4),
+            color: Color(0xFF064B23),
           ),
         ),
       ),
@@ -546,7 +546,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                     const Icon(
                       Icons.check_circle_outline,
                       size: 72,
-                      color: Color(0xFF0EA5A4),
+                      color: Color(0xFF064B23),
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -629,7 +629,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Poppins',
                               color: secondsRemaining == 0
-                                  ? const Color(0xFF0EA5A4)
+                                  ? const Color(0xFF064B23)
                                   : Colors.grey.shade400,
                             ),
                           ),
@@ -641,7 +641,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             fontFamily: 'Poppins',
-                            color: Color(0xFF0EA5A4),
+                            color: Color(0xFF064B23),
                           ),
                         ),
                       ],
@@ -759,7 +759,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: const Color(0xFF0EA5A4),
+          color: const Color(0xFF064B23),
           width: 2,
         ),
       ),
@@ -794,7 +794,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
           fontSize: 24,
           fontWeight: FontWeight.bold,
           fontFamily: 'Poppins',
-          color: Color(0xFF0EA5A4),
+          color: Color(0xFF064B23),
         ),
       ),
     );
