@@ -790,8 +790,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         // Organic blob shapes background
                         Positioned.fill(
-                          child: CustomPaint(
-                            painter: _OrganicBlobPainter(),
+                          child: IgnorePointer(
+                            child: CustomPaint(
+                              painter: _OrganicBlobPainter(),
+                            ),
                           ),
                         ),
                         // Insight text
@@ -1362,106 +1364,163 @@ class _OrganicBlobPainter extends CustomPainter {
       ..color = const Color(0xFF064B23).withOpacity(0.06)
       ..style = PaintingStyle.fill;
 
-    // Layer 1: Large organic blob - bottom right
-    _drawOrganicBlob(
+    final ovumPaint = Paint()
+      ..color = Colors.white.withOpacity(0.14)
+      ..style = PaintingStyle.fill;
+
+    // Layer 1: Large blooming petal - bottom right
+    _drawPetalBlob(
       canvas,
       paint1,
-      Offset(size.width * 0.85, size.height * 0.6),
-      size.width * 0.5,
-      -0.2,
-      [0.95, 0.9, 0.85, 0.88, 0.92, 0.98],
+      Offset(size.width * 0.86, size.height * 0.62),
+      size.width * 0.48,
+      size.width * 0.22,
+      -0.35,
     );
 
-    // Layer 2: Medium organic blob - top right
-    _drawOrganicBlob(
+    // Layer 2: Gentle supporting petal - top right
+    _drawPetalBlob(
       canvas,
       paint2,
-      Offset(size.width * 0.9, size.height * 0.15),
-      size.width * 0.35,
-      0.15,
-      [0.88, 0.92, 0.95, 0.9, 0.85, 0.88],
+      Offset(size.width * 0.88, size.height * 0.16),
+      size.width * 0.32,
+      size.width * 0.15,
+      0.2,
     );
 
-    // Layer 3: Small leaf-like shape - left side
-    _drawOrganicBlob(
+    // Layer 3: Small leaf-like growth - left side
+    _drawPetalBlob(
       canvas,
       paint1,
-      Offset(size.width * 0.1, size.height * 0.5),
-      size.width * 0.25,
-      -0.35,
-      [0.92, 0.88, 0.85, 0.88, 0.92, 0.95],
+      Offset(size.width * 0.12, size.height * 0.5),
+      size.width * 0.22,
+      size.width * 0.09,
+      -0.55,
     );
 
-    // Layer 4: Cell-like shape - bottom left
-    _drawOrganicBlob(
+    // Layer 4: Ovum-like accent - bottom left
+    _drawOvumCluster(
+      canvas,
+      ovumPaint,
+      Offset(size.width * 0.18, size.height * 0.76),
+      size.width * 0.07,
+    );
+
+    // Layer 5: Seed-like accent - center top
+    _drawOvumCluster(
       canvas,
       accentPaint,
-      Offset(size.width * 0.15, size.height * 0.75),
-      size.width * 0.18,
-      0.25,
-      [0.9, 0.85, 0.88, 0.92, 0.95, 0.9],
+      Offset(size.width * 0.5, size.height * 0.12),
+      size.width * 0.05,
     );
 
-    // Layer 5: Delicate accent blob - center top
-    _drawOrganicBlob(
+    // Layer 6: Subtle curved stem - hints at growth without adding clutter
+    _drawGrowthArc(
       canvas,
-      paint2,
-      Offset(size.width * 0.5, size.height * 0.1),
-      size.width * 0.22,
-      -0.1,
-      [0.85, 0.9, 0.95, 0.92, 0.88, 0.85],
+      accentPaint,
+      Offset(size.width * 0.28, size.height * 0.66),
+      size.width * 0.16,
+      size.height * 0.12,
     );
   }
 
-  void _drawOrganicBlob(
+  void _drawPetalBlob(
     Canvas canvas,
     Paint paint,
     Offset center,
-    double baseRadius,
+    double width,
+    double height,
     double rotation,
-    List<double> radiusVariations,
   ) {
+    const segments = 7;
     final path = Path();
-    const segments = 6;
     final angleStep = (2 * pi) / segments;
 
     for (int i = 0; i < segments; i++) {
-      final angle = angleStep * i + rotation;
-      
-      // Vary the radius for organic shape
-      final radiusVariation = radiusVariations[i % radiusVariations.length];
-      final radius = baseRadius * radiusVariation;
+      final angle = angleStep * i;
+      final wave = 0.82 + 0.18 * sin((angle * 2) + rotation);
+      final x = cos(angle) * width * wave;
+      final y = sin(angle) * height * (1.0 - 0.08 * cos(angle + rotation));
 
-      final x = center.dx + radius * cos(angle);
-      final y = center.dy + radius * sin(angle);
+      final point = Offset(x, y);
+      final rotated = _rotate(point, rotation);
+      final absolute = center + rotated;
 
       if (i == 0) {
-        path.moveTo(x, y);
+        path.moveTo(absolute.dx, absolute.dy);
       } else {
-        path.lineTo(x, y);
-      }
-
-      // Add quadratic curve to next point for smooth organic curves
-      if (i < segments - 1) {
-        final nextAngle = angleStep * (i + 1) + rotation;
-        final nextRadiusVariation = radiusVariations[(i + 1) % radiusVariations.length];
-        final nextRadius = baseRadius * nextRadiusVariation;
-        
-        final nextX = center.dx + nextRadius * cos(nextAngle);
-        final nextY = center.dy + nextRadius * sin(nextAngle);
-
-        // Control point for smooth curve
-        final controlRadius = baseRadius * 0.6;
-        final controlAngle = (angle + nextAngle) / 2;
-        final controlX = center.dx + controlRadius * cos(controlAngle);
-        final controlY = center.dy + controlRadius * sin(controlAngle);
-
-        path.quadraticBezierTo(controlX, controlY, nextX, nextY);
+        path.quadraticBezierTo(
+          center.dx + cos(angle - angleStep / 2) * width * 0.95,
+          center.dy + sin(angle - angleStep / 2) * height * 0.92,
+          absolute.dx,
+          absolute.dy,
+        );
       }
     }
 
     path.close();
     canvas.drawPath(path, paint);
+  }
+
+  void _drawOvumCluster(
+    Canvas canvas,
+    Paint paint,
+    Offset center,
+    double radius,
+  ) {
+    final outer = Paint()
+      ..color = paint.color
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(center, radius, outer);
+    canvas.drawCircle(
+      center.translate(radius * 0.2, -radius * 0.15),
+      radius * 0.45,
+      Paint()
+        ..color = Colors.white.withOpacity(0.16)
+        ..style = PaintingStyle.fill,
+    );
+  }
+
+  void _drawGrowthArc(
+    Canvas canvas,
+    Paint paint,
+    Offset center,
+    double width,
+    double height,
+  ) {
+    final path = Path();
+    path.moveTo(center.dx - width * 0.25, center.dy + height * 0.15);
+    path.quadraticBezierTo(
+      center.dx,
+      center.dy - height * 0.25,
+      center.dx + width * 0.45,
+      center.dy - height * 0.1,
+    );
+    path.quadraticBezierTo(
+      center.dx + width * 0.2,
+      center.dy + height * 0.1,
+      center.dx + width * 0.55,
+      center.dy + height * 0.3,
+    );
+
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = paint.color.withOpacity(0.55)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0
+        ..strokeCap = StrokeCap.round,
+    );
+  }
+
+  Offset _rotate(Offset point, double radians) {
+    final cosValue = cos(radians);
+    final sinValue = sin(radians);
+    return Offset(
+      point.dx * cosValue - point.dy * sinValue,
+      point.dx * sinValue + point.dy * cosValue,
+    );
   }
 
   @override
