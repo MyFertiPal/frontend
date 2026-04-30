@@ -788,11 +788,30 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        // Organic blob shapes background
+                        // Background pregnant woman shadow image
                         Positioned.fill(
                           child: IgnorePointer(
-                            child: CustomPaint(
-                              painter: _OrganicBlobPainter(),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final width = constraints.maxWidth;
+                                return Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Transform.translate(
+                                    // move right by 5% of width so image starts slightly off-screen
+                                    offset: Offset(width * 0.05, 0),
+                                    child: Opacity(
+                                      opacity: 0.08,
+                                      child: Image.asset(
+                                        'assets/images/pregnant_shadow.png',
+                                        color: Colors.white,
+                                        colorBlendMode: BlendMode.srcIn,
+                                        width: width * 0.6,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
