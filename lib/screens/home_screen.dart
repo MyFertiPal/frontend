@@ -805,8 +805,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         'assets/images/pregnant.png',
                                         color: Colors.white,
                                         colorBlendMode: BlendMode.srcIn,
-                                        width: width * 0.6,
-                                        fit: BoxFit.contain,
+                                        // Make image height match the available shape height
+                                        // while preserving aspect ratio
+                                        height: constraints.maxHeight,
+                                        fit: BoxFit.fitHeight,
                                       ),
                                     ),
                                   ),
