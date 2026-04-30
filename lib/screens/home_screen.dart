@@ -1351,42 +1351,127 @@ class _HomeScreenState extends State<HomeScreen> {
 class _OrganicBlobPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // Base colors tuned to the design: white overlays and a sparse dark green accent
-    final baseWhite1 = Colors.white.withOpacity(0.10);
-    final baseWhite2 = Colors.white.withOpacity(0.14);
-    final darkAccent = const Color(0xFF064B23).withOpacity(0.06);
+    // Pregnant woman shadow silhouette with subtle opacity
+    final shadowColor = Colors.black.withOpacity(0.08);
+    final shadowPaint = Paint()
+      ..color = shadowColor
+      ..style = PaintingStyle.fill;
 
-    final centers = [
-      Offset(size.width * 0.18, size.height * 0.28),
-      Offset(size.width * 0.78, size.height * 0.18),
-      Offset(size.width * 0.72, size.height * 0.62),
-    ];
+    // Position the figure in the background area
+    final centerX = size.width * 0.5;
+    final centerY = size.height * 0.4;
 
-    final radii = [size.width * 0.24, size.width * 0.16, size.width * 0.28];
+    // Head
+    canvas.drawCircle(
+      Offset(centerX, centerY - size.height * 0.18),
+      size.width * 0.08,
+      shadowPaint,
+    );
 
-    final colors = [baseWhite1, baseWhite2, darkAccent];
+    // Body with rounded pregnant belly
+    final bodyPath = Path();
+    
+    // Shoulders
+    bodyPath.moveTo(centerX - size.width * 0.09, centerY - size.height * 0.08);
+    
+    // Left side of torso
+    bodyPath.quadraticBezierTo(
+      centerX - size.width * 0.12,
+      centerY + size.height * 0.04,
+      centerX - size.width * 0.11,
+      centerY + size.height * 0.16,
+    );
+    
+    // Rounded belly - the pregnant curve
+    bodyPath.quadraticBezierTo(
+      centerX - size.width * 0.14,
+      centerY + size.height * 0.28,
+      centerX,
+      centerY + size.height * 0.32,
+    );
+    
+    bodyPath.quadraticBezierTo(
+      centerX + size.width * 0.14,
+      centerY + size.height * 0.28,
+      centerX + size.width * 0.11,
+      centerY + size.height * 0.16,
+    );
+    
+    // Right side of torso
+    bodyPath.quadraticBezierTo(
+      centerX + size.width * 0.12,
+      centerY + size.height * 0.04,
+      centerX + size.width * 0.09,
+      centerY - size.height * 0.08,
+    );
+    
+    bodyPath.close();
+    canvas.drawPath(bodyPath, shadowPaint);
 
-    for (var i = 0; i < centers.length; i++) {
-      final center = centers[i];
-      final radius = radii[i];
-      final paint = Paint()..color = colors[i % colors.length]..style = PaintingStyle.fill;
+    // Left arm
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: Offset(centerX - size.width * 0.13, centerY),
+        width: size.width * 0.08,
+        height: size.height * 0.14,
+      ),
+      pi * 0.7,
+      pi * 0.6,
+      true,
+      shadowPaint,
+    );
 
-      // Draw main circle
-      canvas.drawCircle(center, radius, paint);
+    // Right arm
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: Offset(centerX + size.width * 0.13, centerY),
+        width: size.width * 0.08,
+        height: size.height * 0.14,
+      ),
+      pi * 0.7,
+      pi * 0.6,
+      true,
+      shadowPaint,
+    );
 
-      // Draw several sub-circles around the main circle to create a layered, soft look
-      final subCount = 4 + i; // vary sub circle count per main circle
-      for (var j = 0; j < subCount; j++) {
-        final angle = (2 * pi) * j / subCount + (i * 0.3);
-        final dist = radius * (0.28 + (j % 3) * 0.12);
-        final offset = Offset(cos(angle) * dist, sin(angle) * dist);
-        final subRadius = radius * (0.12 + (j % 3) * 0.05) * (1.0 - i * 0.06);
-        final subPaint = Paint()
-          ..color = Colors.white.withOpacity(0.06 + 0.03 * (j % 3))
-          ..style = PaintingStyle.fill;
-        canvas.drawCircle(center + offset, subRadius, subPaint);
-      }
-    }
+    // Left leg
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          centerX - size.width * 0.05,
+          centerY + size.height * 0.32,
+          size.width * 0.05,
+          size.height * 0.22,
+        ),
+        Radius.circular(size.width * 0.025),
+      ),
+      shadowPaint,
+    );
+
+    // Right leg
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          centerX,
+          centerY + size.height * 0.32,
+          size.width * 0.05,
+          size.height * 0.22,
+        ),
+        Radius.circular(size.width * 0.025),
+      ),
+      shadowPaint,
+    );
+
+    // Optional: Add a soft glow/blur effect around the figure
+    final glowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.03)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+
+    canvas.drawCircle(
+      Offset(centerX, centerY + size.height * 0.08),
+      size.width * 0.22,
+      glowPaint,
+    );
   }
 
   @override
