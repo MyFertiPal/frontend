@@ -936,7 +936,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           backgroundColor: Colors.white,
                           foregroundColor: _darkGreenText,
                           elevation: 4,
-                          side: const BorderSide(color: _darkGreenText, width: 1),
+                          side: const BorderSide(color: _darkGreenText, width: 0.5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
