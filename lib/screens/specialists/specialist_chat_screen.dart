@@ -4,6 +4,8 @@ import '../payment/payment_screen.dart';
 class SpecialistChatScreen extends StatelessWidget {
   const SpecialistChatScreen({super.key});
 
+  static const Color _darkGreen = Color(0xFF0F5132);
+
   @override
   Widget build(BuildContext context) {
     final mockMessages = const [
@@ -107,7 +109,7 @@ class SpecialistChatScreen extends StatelessWidget {
                         _messageController.clear();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0EA5A4),
+                        backgroundColor: _darkGreen,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
@@ -129,12 +131,12 @@ class SpecialistChatScreen extends StatelessWidget {
                   ),
                   title: Row(
                     children: const [
-                      Icon(Icons.lock, color: Color(0xFF0EA5A4), size: 28),
+                      Icon(Icons.lock, color: _darkGreen, size: 28),
                       SizedBox(width: 12),
                       Text(
                         'Premium Feature',
                         style: TextStyle(
-                          color: Color(0xFF0EA5A4),
+                          color: _darkGreen,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -186,6 +188,8 @@ class _LockedOverlay extends StatelessWidget {
   final VoidCallback onTap;
   const _LockedOverlay({required this.onTap});
 
+  static const Color _darkGreen = Color(0xFF0F5132);
+
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
@@ -209,12 +213,12 @@ class _LockedOverlay extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: const [
-                  Icon(Icons.lock, size: 56, color: Color(0xFF0EA5A4)),
+                  Icon(Icons.lock, size: 56, color: _darkGreen),
                   SizedBox(height: 12),
                   Text(
                     'Premium feature',
                     style: TextStyle(
-                      color: Color(0xFF0EA5A4),
+                      color: _darkGreen,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                     ),
@@ -223,7 +227,7 @@ class _LockedOverlay extends StatelessWidget {
                   Text(
                     'Upgrade to chat with specialists',
                     style: TextStyle(
-                      color: Color(0xFF0EA5A4),
+                      color: _darkGreen,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
