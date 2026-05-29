@@ -1,6 +1,6 @@
 {
   "@@locale": "yo",
-  "appTitle": "Fertipath",
+  "appTitle": "MyFertiPal",
   "appSubtitle": "Orin Agbala Iná Rẹ",
   
   "@@section_auth": "Ìmúdandùn",
@@ -157,8 +157,8 @@
   "groupChatComingSoon": "Ìfọ̀rọ̀wánilẹ́nuwò ẹgbẹ́ máa bọ̀ láìpẹ́",
   
   "@@section_user_guide": "Ojú òpó Ìtọ́sọ́nà Olùmúlò",
-  "howToUseFertipath": "Báwo ni a ṣe Ń Lo Fertipath",
-  "welcomeToFertipath": "Káàbọ̀ sí Fertipath!",
+  "howToUseFertipath": "Báwo ni a ṣe Ń Lo MyFertiPal",
+  "welcomeToFertipath": "Káàbọ̀ sí MyFertiPal!",
   "guideIntro": "Tẹ̀lé àwọn ìgbésẹ̀ wọ̀nyí láti gba àbájáde tó dára jùlọ lati àwọn ẹ̀yà ìtọpinpin ọmọ wa.",
   "step1Title": "Parí Àyè Ìròyìn Rẹ",
   "step1Description": "Lọ sí Profile → Settings láti tẹ gígùn àyíká rẹ sii, gígùn ọjọ́ àìjó, àti àyàn ìgbàgbọ́. Ìròyìn tó péye máa ràn wá lọ́wọ́ láti ṣètò dáadáa.",

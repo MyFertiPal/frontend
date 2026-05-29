@@ -12,6 +12,7 @@ class LogSymptomScreen extends StatefulWidget {
 }
 
 class _LogSymptomScreenState extends State<LogSymptomScreen> {
+  static const Color _darkGreenText = Color(0xFF064B23);
   String? _expandedSymptom;
   Map<String, String?> _selectedOptions = {};
   // Change Mood to allow multiple selections
@@ -261,7 +262,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     onPressed: _isSaving ? null : _saveSymptoms,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: const Color(0xFF0EA5A4),
+                      backgroundColor: _darkGreenText,
                       disabledBackgroundColor: Colors.grey,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

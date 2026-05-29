@@ -1,6 +1,6 @@
 {
   "@@locale": "ig",
-  "appTitle": "Fertipath",
+  "appTitle": "MyFertiPal",
   "appSubtitle": "Njem Nlekọta Ihe Ejiri N'aka",
   
   "@@section_auth": "Ịhụnanya",
@@ -157,8 +157,8 @@
   "groupChatComingSoon": "Mkparịta ụka otu na-abịa n'oge na-adịghị anya",
   
   "@@section_user_guide": "Njiri Ọbà",
-  "howToUseFertipath": "Olee Ka Esi Jiri Fertipath",
-  "welcomeToFertipath": "Nnọọ na Fertipath!",
+  "howToUseFertipath": "Olee Ka Esi Jiri MyFertiPal",
+  "welcomeToFertipath": "Nnọọ na MyFertiPal!",
   "guideIntro": "Soro usoro ndị a iji nweta nsonaazụ kacha mma site na njirimara nleba anya afọ ime anyị.",
   "step1Title": "Mechaa Profaịlụ Gị",
   "step1Description": "Gaa na Profile → Settings tinye ogologo okirikiri gị, ogologo oge nsọ, na nhọrọ okwukwe. Ozi ziri ezi na-enyere anyị aka inye amụma ka mma.",

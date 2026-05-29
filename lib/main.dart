@@ -122,7 +122,7 @@ class _MyAppState extends State<MyApp> {
       child: Consumer<LanguageProvider>(
         builder: (context, languageProvider, _) {
           return MaterialApp(
-            title: "Fertipath",
+            title: "MyFertiPal",
             navigatorKey: _navigatorKey,
             onGenerateRoute: (settings) {
               final name = settings.name ?? '';

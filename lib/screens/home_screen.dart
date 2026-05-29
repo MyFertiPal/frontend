@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -557,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final initial =
         nameForInitial.isNotEmpty ? nameForInitial[0].toUpperCase() : 'U';
     final color =
-        _colorFromString(nameForInitial.isNotEmpty ? nameForInitial : initial);
+    _darkGreenText;
 
     return CircleAvatar(
       radius: radius,
@@ -655,13 +654,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Color _colorFromString(String input) {
-    if (input.isEmpty) return _primaryTeal;
-    final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
-    final hue = (hash % 360).toDouble();
-    return HSVColor.fromAHSV(1, hue, 0.45, 0.85).toColor();
-  }
-
   Widget _buildSummaryRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -709,6 +701,7 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
             color: _ctaGreen,
             borderRadius: BorderRadius.zero,
+            border: Border.all(color: _darkGreenText, width: 1),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.15),
@@ -865,8 +858,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       horizontal: 12,
                                                       vertical: 8),
                                               decoration: BoxDecoration(
-                                                color: Colors.white
-                                                    .withOpacity(0.2),
+                                                color: _darkGreenText,
+                                                border: Border.all(
+                                                  color: _darkGreenText,
+                                                  width: 1,
+                                                ),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),
@@ -940,7 +936,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           backgroundColor: Colors.white,
                           foregroundColor: _darkGreenText,
                           elevation: 4,
-                          side: const BorderSide(color: _darkGreenText, width: 2),
+                          side: const BorderSide(color: _darkGreenText, width: 1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),

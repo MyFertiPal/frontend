@@ -1,6 +1,6 @@
 {
   "@@locale": "pcm",
-  "appTitle": "Fertipath",
+  "appTitle": "MyFertiPal",
   "welcome": "Welcome",
   "login": "Sign In",
   "signup": "Make Account",
@@ -235,8 +235,8 @@
   "groupChatComingSoon": "Group chat dey come soon",
   
   "@@section_user_guide": "How to Use",
-  "howToUseFertipath": "How to Use Fertipath",
-  "welcomeToFertipath": "Welcome to Fertipath!",
+  "howToUseFertipath": "How to Use MyFertiPal",
+  "welcomeToFertipath": "Welcome to MyFertiPal!",
   "guideIntro": "Follow these steps to get the best result from our fertility tracking features.",
   "step1Title": "Complete Your Profile",
   "step1Description": "Go to Profile → Settings to enter your cycle length, period length, and faith preference. Correct data dey help us give better predictions.",

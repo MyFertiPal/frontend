@@ -1,6 +1,6 @@
 {
   "@@locale": "ha",
-  "appTitle": "Fertipath",
+  "appTitle": "MyFertiPal",
   "welcome": "Sannu",
   "login": "Shiga",
   "signup": "Sakaita akawu",
@@ -245,8 +245,8 @@
   "groupChatComingSoon": "Tattaunawar ƙungiyar tana zuwa nan ba da jimawa ba",
   
   "@@section_user_guide": "Jagorar Mai Amfani",
-  "howToUseFertipath": "Yadda Ake Amfani da Fertipath",
-  "welcomeToFertipath": "Maraba zuwa Fertipath!",
+  "howToUseFertipath": "Yadda Ake Amfani da MyFertiPal",
+  "welcomeToFertipath": "Maraba zuwa MyFertiPal!",
   "guideIntro": "Bi waɗannan matakai don samun sakamako mafi kyau daga fasalin bin haihuwa.",
   "step1Title": "Kammala Bayanan Ku",
   "step1Description": "Je zuwa Profile → Settings don shigar da tsawon zagayowar ku, tsawon lokacin al'ada, da zaɓin bangaskiya. Bayanan daidai suna taimaka mana mu ba da hasashen da suka fi kyau.",

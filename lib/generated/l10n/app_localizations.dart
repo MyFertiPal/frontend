@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Fertipath'**
+  /// **'MyFertiPal'**
   String get appTitle;
 
   /// No description provided for @appSubtitle.
@@ -953,13 +953,13 @@ abstract class AppLocalizations {
   /// No description provided for @howToUseFertipath.
   ///
   /// In en, this message translates to:
-  /// **'How to Use Fertipath'**
+  /// **'How to Use MyFertiPal'**
   String get howToUseFertipath;
 
   /// No description provided for @welcomeToFertipath.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Fertipath!'**
+  /// **'Welcome to MyFertiPal!'**
   String get welcomeToFertipath;
 
   /// No description provided for @guideIntro.

@@ -92,7 +92,7 @@ class FirebaseMessagingService {
     if (message.notification != null) {
       _localNotificationService.showNotification(
         id: message.hashCode,
-        title: message.notification!.title ?? 'Fertipath',
+        title: message.notification!.title ?? 'MyFertiPal',
         body: message.notification!.body ?? '',
         payload: message.data.toString(),
       );
@@ -113,7 +113,7 @@ class FirebaseMessagingService {
     if (message.notification != null) {
       await localNotifications.showNotification(
         id: message.hashCode,
-        title: message.notification!.title ?? 'Fertipath',
+        title: message.notification!.title ?? 'MyFertiPal',
         body: message.notification!.body ?? '',
         payload: message.data.toString(),
       );

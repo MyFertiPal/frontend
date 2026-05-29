@@ -1,6 +1,6 @@
 {
-    "name": "nexus_fertility_app",
-    "short_name": "nexus_fertility_app",
+    "name": "MyFertiPal",
+    "short_name": "MyFertiPal",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

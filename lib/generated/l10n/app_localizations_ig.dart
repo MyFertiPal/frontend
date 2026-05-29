@@ -9,7 +9,7 @@ class AppLocalizationsIg extends AppLocalizations {
   AppLocalizationsIg([String locale = 'ig']) : super(locale);
 
   @override
-  String get appTitle => 'Fertipath';
+  String get appTitle => 'MyFertiPal';
 
   @override
   String get appSubtitle => 'Njem Nlekọta Ihe Ejiri N\'aka';
@@ -446,10 +446,10 @@ class AppLocalizationsIg extends AppLocalizations {
       'Mkparịta ụka otu na-abịa n\'oge na-adịghị anya';
 
   @override
-  String get howToUseFertipath => 'Olee Ka Esi Jiri Fertipath';
+  String get howToUseFertipath => 'Olee Ka Esi Jiri MyFertiPal';
 
   @override
-  String get welcomeToFertipath => 'Nnọọ na Fertipath!';
+  String get welcomeToFertipath => 'Nnọọ na MyFertiPal!';
 
   @override
   String get guideIntro =>

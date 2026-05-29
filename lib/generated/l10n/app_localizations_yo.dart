@@ -9,7 +9,7 @@ class AppLocalizationsYo extends AppLocalizations {
   AppLocalizationsYo([String locale = 'yo']) : super(locale);
 
   @override
-  String get appTitle => 'Fertipath';
+  String get appTitle => 'MyFertiPal';
 
   @override
   String get appSubtitle => 'Orin Agbala Iná Rẹ';
@@ -447,10 +447,10 @@ class AppLocalizationsYo extends AppLocalizations {
   String get groupChatComingSoon => 'Ìfọ̀rọ̀wánilẹ́nuwò ẹgbẹ́ máa bọ̀ láìpẹ́';
 
   @override
-  String get howToUseFertipath => 'Báwo ni a ṣe Ń Lo Fertipath';
+  String get howToUseFertipath => 'Báwo ni a ṣe Ń Lo MyFertiPal';
 
   @override
-  String get welcomeToFertipath => 'Káàbọ̀ sí Fertipath!';
+  String get welcomeToFertipath => 'Káàbọ̀ sí MyFertiPal!';
 
   @override
   String get guideIntro =>

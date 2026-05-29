@@ -58,7 +58,7 @@ class NotificationManager {
   Future<void> sendTestNotification() async {
     await _localNotificationService.showNotification(
       id: 999,
-      title: 'Fertipath Test',
+      title: 'MyFertiPal Test',
       body: 'This is a test notification',
     );
   }

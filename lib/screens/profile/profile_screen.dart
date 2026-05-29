@@ -165,13 +165,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Color _colorFromString(String input) {
-    if (input.isEmpty) return _primaryTeal;
-    final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
-    final hue = (hash % 360).toDouble();
-    return HSVColor.fromAHSV(1, hue, 0.45, 0.85).toColor();
-  }
-
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthService>(context);
@@ -476,8 +469,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : 'U');
     final displayName = fullName.isNotEmpty ? fullName : fallbackName;
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
-    final bgColor =
-        _colorFromString(displayName.isNotEmpty ? displayName : initial);
+    final bgColor = _darkGreenText;
 
     return CircleAvatar(
       radius: 35,

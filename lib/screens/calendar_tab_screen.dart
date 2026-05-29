@@ -602,7 +602,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
               bottom: 32,
               right: 32,
               child: FloatingActionButton(
-                backgroundColor: _primaryTeal,
+                backgroundColor: _darkGreenText,
                 elevation: 6,
                 onPressed: () async {
                   final result = await Navigator.of(context).push(

@@ -9,7 +9,7 @@ class AppLocalizationsHa extends AppLocalizations {
   AppLocalizationsHa([String locale = 'ha']) : super(locale);
 
   @override
-  String get appTitle => 'Fertipath';
+  String get appTitle => 'MyFertiPal';
 
   @override
   String get appSubtitle => 'Your Fertility Tracking Journey';
@@ -447,10 +447,10 @@ class AppLocalizationsHa extends AppLocalizations {
       'Tattaunawar ƙungiyar tana zuwa nan ba da jimawa ba';
 
   @override
-  String get howToUseFertipath => 'Yadda Ake Amfani da Fertipath';
+  String get howToUseFertipath => 'Yadda Ake Amfani da MyFertiPal';
 
   @override
-  String get welcomeToFertipath => 'Maraba zuwa Fertipath!';
+  String get welcomeToFertipath => 'Maraba zuwa MyFertiPal!';
 
   @override
   String get guideIntro =>

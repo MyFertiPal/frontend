@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Fertipath';
+  String get appTitle => 'MyFertiPal';
 
   @override
   String get appSubtitle => 'Your Fertility Tracking Journey';
@@ -446,10 +446,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupChatComingSoon => 'Group chat coming soon';
 
   @override
-  String get howToUseFertipath => 'How to Use Fertipath';
+  String get howToUseFertipath => 'How to Use MyFertiPal';
 
   @override
-  String get welcomeToFertipath => 'Welcome to Fertipath!';
+  String get welcomeToFertipath => 'Welcome to MyFertiPal!';
 
   @override
   String get guideIntro =>
