@@ -35,6 +35,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const Color _primaryTeal = Color(0xFF0EA5A4);
   static const Color _darkGreenText = Color(0xFF064B23);
+  static const Color _ctaGreen = Color(0xFF16A34A);
 
   Future<void> _openLogSymptomScreen() async {
     final result = await Navigator.of(context).push(
@@ -706,7 +707,7 @@ class _HomeScreenState extends State<HomeScreen> {
           width: cardWidth,
           height: cardHeight,
           decoration: BoxDecoration(
-            color: _primaryTeal,
+            color: _ctaGreen,
             borderRadius: BorderRadius.zero,
             boxShadow: [
               BoxShadow(
