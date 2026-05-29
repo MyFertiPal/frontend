@@ -4,6 +4,8 @@ import '../generated/l10n/app_localizations.dart';
 class UserGuideScreen extends StatelessWidget {
   const UserGuideScreen({super.key});
 
+  static const Color _proTipsGreen = Color(0xFF0F5132);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,10 +99,10 @@ class UserGuideScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF0EA5A4).withOpacity(0.2),
+                color: _proTipsGreen.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF0EA5A4),
+                  color: _proTipsGreen,
                   width: 1,
                 ),
               ),
@@ -111,7 +113,7 @@ class UserGuideScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.lightbulb_outline,
-                        color: Color(0xFF0EA5A4),
+                        color: _proTipsGreen,
                         size: 24,
                       ),
                       SizedBox(width: 8),
@@ -126,7 +128,7 @@ class UserGuideScreen extends StatelessWidget {
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Poppins',
-                          color: Color(0xFF0EA5A4),
+                          color: _proTipsGreen,
                         ),
                       ),
                     ],
@@ -137,7 +139,7 @@ class UserGuideScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
-                      color: Colors.black87,
+                      color: _proTipsGreen,
                       height: 1.5,
                     ),
                   ),

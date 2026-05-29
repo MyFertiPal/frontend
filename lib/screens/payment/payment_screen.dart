@@ -14,6 +14,7 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   static const _primaryColor = Color(0xFF0EA5A4);
   static const _accentColor = Color(0xFF0EA5A4);
+  static const _darkGreenText = Color(0xFF064B23);
 
   static const MethodChannel _channel = MethodChannel('paystack_android');
   bool _isInitialized = false;
@@ -37,7 +38,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Payment Plans',
+          'Choose Plan',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
@@ -62,10 +63,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context) * 2),
             _buildPlanCard(
+              title: 'Free Plan',
+              price: '0',
+              subtitle: 'Current plan',
+              accent: _darkGreenText,
+              isSelected: true,
+              actionLabel: 'Current Plan',
+              onPressed: null,
+            ),
+            const SizedBox(height: 12),
+            _buildPlanCard(
               title: 'Monthly',
-              price: '# 2000',
+              price: '2000',
               subtitle: 'Billed monthly',
               accent: _accentColor,
+              isSelected: false,
+              actionLabel: 'Choose Plan',
               onPressed: () => _startPayment(
                 amountNaira: 2000,
                 planName: 'Monthly',
@@ -74,9 +87,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
             const SizedBox(height: 12),
             _buildPlanCard(
               title: 'Quarterly',
-              price: '# 7600',
+              price: '7600',
               subtitle: '5% discount',
               accent: _accentColor,
+              isSelected: false,
+              actionLabel: 'Choose Plan',
               onPressed: () => _startPayment(
                 amountNaira: 7600,
                 planName: 'Quarterly',
@@ -85,32 +100,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
             const SizedBox(height: 12),
             _buildPlanCard(
               title: 'Yearly',
-              price: '# 21,600',
+              price: '21,600',
               subtitle: '10% discount',
               accent: _accentColor,
+              isSelected: false,
+              actionLabel: 'Choose Plan',
               onPressed: () => _startPayment(
                 amountNaira: 21600,
                 planName: 'Yearly',
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Plan Details',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Poppins',
-                color: _primaryColor,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildDetailCard(
-              title: 'Free Plan',
-              description: 'Basic tracking + limited content',
-              borderColor: _accentColor,
-            ),
-            const SizedBox(height: 12),
-            _buildPremiumCard(_primaryColor, _accentColor),
             const SizedBox(height: 20),
           ],
         ),
@@ -123,20 +122,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
     required String price,
     required String subtitle,
     required Color accent,
-    required VoidCallback onPressed,
+    required bool isSelected,
+    required String actionLabel,
+    VoidCallback? onPressed,
   }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isSelected ? _darkGreenText.withOpacity(0.05) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: accent, width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -146,13 +147,32 @@ class _PaymentScreenState extends State<PaymentScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (isSelected)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _darkGreenText,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: const Text(
+                    'Current Plan',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               Text(
                 title,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Poppins',
-                  color: Color(0xFF0EA5A4),
+                  color: _darkGreenText,
                 ),
               ),
               const SizedBox(height: 4),
@@ -169,22 +189,38 @@ class _PaymentScreenState extends State<PaymentScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                price,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Poppins',
-                  color: Color(0xFF0EA5A4),
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '₦',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Poppins',
+                      color: _darkGreenText,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Poppins',
+                      color: _darkGreenText,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 6),
               SizedBox(
                 height: 32,
                 child: ElevatedButton(
-                  onPressed: _isProcessing ? null : onPressed,
+                  onPressed: _isProcessing || onPressed == null ? null : onPressed,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0EA5A4),
+                    backgroundColor: _darkGreenText,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding:
@@ -193,12 +229,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Pay',
-                    style: TextStyle(
+                  child: Text(
+                    actionLabel,
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -209,108 +246,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
     );
   }
-
-  Widget _buildDetailCard({
-    required String title,
-    required String description,
-    required Color borderColor,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 1.2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Poppins',
-              color: Color(0xFF0EA5A4),
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 13,
-              fontFamily: 'Poppins',
-              color: Colors.grey.shade700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPremiumCard(Color primaryColor, Color accentColor) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: accentColor.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: accentColor, width: 1.2),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Premium Plan',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Poppins',
-              color: primaryColor,
-            ),
-          ),
-          const SizedBox(height: 8),
-          _buildBullet(
-              'Unlimited audio (all audio languages) for fertility insights'),
-          _buildBullet('Multi-language and audio-based educational hub'),
-          _buildBullet('Virtual consultations'),
-          _buildBullet('Access to verified fertility clinics'),
-          _buildBullet('Free referrals'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBullet(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '• ',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF0EA5A4),
-              fontFamily: 'Poppins',
-            ),
-          ),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.black87,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _initializePaystack() async {
     if (PaystackConfig.publicKey.isEmpty) {
       return;
@@ -410,7 +345,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Enter card details for $planName (# $amountNaira). Access code is optional for demos.',
+                'Enter card details for $planName (₦ $amountNaira). Access code is optional for demos.',
                 style: const TextStyle(fontSize: 12),
               ),
               const SizedBox(height: 12),

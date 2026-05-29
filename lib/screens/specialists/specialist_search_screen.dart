@@ -131,6 +131,8 @@ class _SpecialistCard extends StatelessWidget {
   final Map<String, String> data;
   const _SpecialistCard({required this.data});
 
+  static const Color _darkGreen = Color(0xFF0F5132);
+
   void _openPaymentScreen(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -178,7 +180,7 @@ class _SpecialistCard extends StatelessWidget {
             child: Text(
               _initials(name),
               style: const TextStyle(
-                color: Color(0xFF0EA5A4),
+                color: Colors.white,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -239,7 +241,7 @@ class _SpecialistCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0EA5A4),
+                    color: _darkGreen,
                   ),
                 ),
               ],
@@ -249,7 +251,7 @@ class _SpecialistCard extends StatelessWidget {
           ElevatedButton(
             onPressed: () => _openPaymentScreen(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0EA5A4),
+              backgroundColor: _darkGreen,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               elevation: 0,

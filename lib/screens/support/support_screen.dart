@@ -898,13 +898,48 @@ class _SupportScreenState extends State<SupportScreen> {
                           child: Row(
                             children: [
                               const Icon(
-                                Icons.mail,
+                                Icons.phone,
                                 color: _primaryTeal,
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
                               const Text(
-                                'teamnexus@techlaunchpadi.com',
+                                '+234-813-202-7445',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: _darkGreenText,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _primaryTeal,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.email,
+                                color: _primaryTeal,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'contact@myfertipal.com',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
