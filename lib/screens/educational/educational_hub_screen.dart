@@ -101,6 +101,32 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
     });
   }
 
+  Widget _buildCategoryBubble(String category, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedCategory = category;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? _darkGreenText : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: _darkGreenText, width: 1),
+        ),
+        child: Text(
+          category,
+          style: TextStyle(
+            color: isSelected ? Colors.white : _darkGreenText,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildArticleCard(Map<String, String> article) {
     return Builder(builder: (context) {
       return Padding(
@@ -332,34 +358,17 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
             ),
             child: Container(
               padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveUtils.getResponsivePadding(context)),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
+                horizontal: ResponsiveUtils.getResponsivePadding(context),
               ),
-              child: DropdownButton<String>(
-                value: effectiveCategory.isEmpty ? null : effectiveCategory,
-                isExpanded: true,
-                underline: const SizedBox(),
-                items: categories.map((category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(
-                      category,
-                      style: const TextStyle(
-                        color: _darkGreenText,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      selectedCategory = value;
-                    });
-                  }
-                },
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: categories
+                    .map((category) => _buildCategoryBubble(
+                          category,
+                          category == effectiveCategory,
+                        ))
+                    .toList(),
               ),
             ),
           ),
