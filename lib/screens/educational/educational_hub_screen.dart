@@ -340,7 +340,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: const Color(0xFF0EA5A4),
         title: Text(AppLocalizations.of(context).educationalHub,
