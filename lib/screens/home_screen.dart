@@ -790,9 +790,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final width = constraints.maxWidth;
                                 return Align(
                                   alignment: Alignment.centerRight,
-                                  child: Transform.translate(
-                                    // move right by 5% of width so image starts slightly off-screen
-                                    offset: Offset(width * 0.05, 0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 1),
                                     child: Opacity(
                                       opacity: 0.08,
                                       child: Image.asset(
@@ -805,7 +804,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fit: BoxFit.fitHeight,
                                       ),
                                     ),
-                                  ),
+                                  );
                                 );
                               },
                             ),
