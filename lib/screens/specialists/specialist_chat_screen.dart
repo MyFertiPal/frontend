@@ -57,7 +57,7 @@ class SpecialistChatScreen extends StatelessWidget {
                           msg['text'] ?? '',
                           style: TextStyle(
                             color: isUser
-                                ? const Color(0xFF0EA5A4)
+                                ? Colors.white
                                 : Colors.black87,
                             fontWeight: FontWeight.w500,
                           ),

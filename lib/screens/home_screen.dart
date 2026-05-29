@@ -789,8 +789,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context, constraints) {
                                 return Align(
                                   alignment: Alignment.centerRight,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 1),
+                                  child: Transform.translate(
+                                    offset: const Offset(5, 0),
                                     child: Opacity(
                                       opacity: 0.08,
                                       child: Image.asset(

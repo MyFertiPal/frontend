@@ -130,9 +130,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isSelected ? _darkGreenText.withOpacity(0.05) : Colors.white,
+        color: isSelected ? _darkGreenText : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: accent, width: 1.2),
+        border: Border.all(
+          color: isSelected ? Colors.white.withOpacity(0.45) : accent,
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -153,7 +156,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _darkGreenText,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: const Text(
@@ -162,7 +165,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
-                      color: Colors.white,
+                      color: _darkGreenText,
                     ),
                   ),
                 ),
@@ -172,7 +175,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Poppins',
-                  color: _darkGreenText,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 4),
@@ -181,7 +184,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontFamily: 'Poppins',
-                  color: Colors.grey.shade600,
+                  color: Colors.white.withOpacity(0.85),
                 ),
               ),
             ],
@@ -199,7 +202,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       fontFamily: 'Poppins',
-                      color: _darkGreenText,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(width: 2),
@@ -209,7 +212,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       fontFamily: 'Poppins',
-                      color: _darkGreenText,
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -220,8 +223,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 child: ElevatedButton(
                   onPressed: _isProcessing || onPressed == null ? null : onPressed,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _darkGreenText,
-                    foregroundColor: Colors.white,
+                    backgroundColor:
+                      isSelected ? Colors.white : _darkGreenText,
+                    foregroundColor:
+                      isSelected ? _darkGreenText : Colors.white,
                     elevation: 0,
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
@@ -235,7 +240,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
-                      color: Colors.white,
+                      color: _darkGreenText,
                     ),
                   ),
                 ),

@@ -99,7 +99,7 @@ class UserGuideScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _proTipsGreen.withOpacity(0.12),
+                color: _proTipsGreen,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: _proTipsGreen,
@@ -113,7 +113,7 @@ class UserGuideScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.lightbulb_outline,
-                        color: _proTipsGreen,
+                        color: Colors.white,
                         size: 24,
                       ),
                       SizedBox(width: 8),
@@ -128,7 +128,7 @@ class UserGuideScreen extends StatelessWidget {
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Poppins',
-                          color: _proTipsGreen,
+                          color: Colors.white,
                         ),
                       ),
                     ],
@@ -139,7 +139,7 @@ class UserGuideScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins',
-                      color: _proTipsGreen,
+                      color: Colors.white,
                       height: 1.5,
                     ),
                   ),

@@ -367,10 +367,10 @@ class _SupportScreenState extends State<SupportScreen> {
                     ),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: _primaryTeal.withOpacity(0.12),
+                      color: _darkGreenText,
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(
-                        color: _primaryTeal,
+                        color: _darkGreenText,
                         width: 1,
                       ),
                     ),
@@ -383,7 +383,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                 children: [
                                   const Icon(
                                     Icons.flash_on,
-                                    color: _primaryTeal,
+                                    color: Colors.white,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
@@ -393,7 +393,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: _darkGreenText,
+                                      color: Colors.white,
                                       fontFamily: 'Poppins',
                                     ),
                                   ),
@@ -437,7 +437,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: _darkGreenText,
+                                      color: Colors.white,
                                       fontFamily: 'Poppins',
                                       height: 1.4,
                                     ),
@@ -458,14 +458,14 @@ class _SupportScreenState extends State<SupportScreen> {
                                               strokeWidth: 2,
                                               valueColor:
                                                   AlwaysStoppedAnimation<Color>(
-                                                _primaryTeal.withOpacity(0.6),
+                                                Colors.white,
                                               ),
                                             ),
                                           )
                                         : IconButton(
                                             icon: const Icon(
                                               Icons.volume_up_rounded,
-                                              color: _primaryTeal,
+                                              color: Colors.white,
                                               size: 24,
                                             ),
                                             onPressed: _playAffirmationTts,
