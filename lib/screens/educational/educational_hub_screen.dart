@@ -112,7 +112,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? _darkGreenText : Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: _darkGreenText, width: 1),
         ),
         child: Text(
@@ -197,7 +197,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                             child: Text(
                               article['category'] ?? '',
                               style: TextStyle(
-                                color: _primaryTeal,
+                                color: _darkGreenText,
                                 fontWeight: FontWeight.w600,
                                 fontSize: ResponsiveUtils.getResponsiveFontSize(
                                     context,
@@ -261,7 +261,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                                         context),
                               ),
                               decoration: BoxDecoration(
-                                color: _primaryTeal,
+                                color: _darkGreenText,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
@@ -307,7 +307,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                               child: Text(
                                 AppLocalizations.of(context).english,
                                 style: TextStyle(
-                                  color: _primaryTeal,
+                                  color: _darkGreenText,
                                   fontWeight: FontWeight.w600,
                                   fontSize:
                                       ResponsiveUtils.getResponsiveFontSize(

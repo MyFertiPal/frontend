@@ -241,7 +241,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     onPressed: () => Navigator.of(context).pop(false),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: const BorderSide(color: Color(0xFF0EA5A4)),
+                      side: const BorderSide(color: _darkGreenText),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -249,7 +249,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     child: Text(
                       l10n.cancel,
                       style: const TextStyle(
-                        color: Color(0xFF0EA5A4),
+                        color: _darkGreenText,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -319,14 +319,15 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFF0EA5A4),
+                      color: Colors.transparent,
+                      border: Border.all(color: _darkGreenText, width: 0.5),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Icon(
                         Icons.water_drop,
-                        color: Colors.white,
+                        color: _darkGreenText,
                         size: 20,
                       ),
                     ),
@@ -342,11 +343,20 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                     ),
                   ),
                   const Spacer(),
-                  Icon(
-                    isExpanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: Colors.grey,
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: _darkGreenText, width: 0.5),
+                    ),
+                    child: Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: _darkGreenText,
+                    ),
                   ),
                 ],
               ),
@@ -391,14 +401,15 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                           horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? const Color(0xFF0EA5A4)
-                            : const Color(0xFF0EA5A4),
+                            ? _darkGreenText
+                            : Colors.transparent,
+                        border: Border.all(color: _darkGreenText, width: 0.5),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         option,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
+                          color: isSelected ? Colors.white : _darkGreenText,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'Poppins',

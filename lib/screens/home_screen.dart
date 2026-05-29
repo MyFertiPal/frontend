@@ -787,7 +787,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: IgnorePointer(
                             child: LayoutBuilder(
                               builder: (context, constraints) {
-                                final width = constraints.maxWidth;
                                 return Align(
                                   alignment: Alignment.centerRight,
                                   child: Padding(
@@ -804,7 +803,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fit: BoxFit.fitHeight,
                                       ),
                                     ),
-                                  );
+                                  ),
                                 );
                               },
                             ),
