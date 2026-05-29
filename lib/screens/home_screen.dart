@@ -35,7 +35,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const Color _primaryTeal = Color(0xFF0EA5A4);
   static const Color _darkGreenText = Color(0xFF064B23);
-  static const Color _ctaGreen = Color(0xFF16A34A);
+  static const Color _ctaGreen = _darkGreenText;
 
   Future<void> _openLogSymptomScreen() async {
     final result = await Navigator.of(context).push(
@@ -937,9 +937,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ElevatedButton(
                         onPressed: _openLogSymptomScreen,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryTeal,
-                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.white,
+                          foregroundColor: _darkGreenText,
                           elevation: 4,
+                          side: const BorderSide(color: _darkGreenText, width: 2),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -947,15 +948,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.water_drop, color: Colors.white),
+                            Icon(Icons.water_drop, color: _darkGreenText),
                             const SizedBox(width: 12),
                             Text(
                               AppLocalizations.of(context).logSymptoms,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
-                                color: Colors.white,
+                                color: _darkGreenText,
                               ),
                             ),
                           ],
