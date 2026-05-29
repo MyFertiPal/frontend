@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
 
         env: 
-          API_URL: https://fertipath-backend.onrender.com
+          API_URL: https://myfertipal-backend.onrender.com
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
           YARNGPT_API_KEY: ${{ secrets.YARNGPT_API_KEY }}
           PAYSTACK_PUBLIC_KEY: ${{ secrets.PAYSTACK_PUBLIC_KEY }}
@@ -71,7 +71,7 @@ jobs:
 #        name: Build iOS App & Run Tests
 #        runs-on: macos-latest
 #        env:
-#             API_URL: https://fertipath-backend.onrender.com
+#             API_URL: https://myfertipal-backend.onrender.com
 #            FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
 #        steps:
 #            - name: Checkout code

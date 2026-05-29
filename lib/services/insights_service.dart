@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class InsightsService {
-  static const String baseUrl = 'https://fertipath-fastapi.onrender.com';
+  static const String baseUrl = 'https://myfertipal-backend.onrender.com';
 
   Future<List<Map<String, dynamic>>> getInsights() async {
     final url = Uri.parse('$baseUrl/insights/insights');

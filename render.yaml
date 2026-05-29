@@ -16,4 +16,4 @@ services:
     staticPublishPath: build/web
     envVars:
       - key: API_URL
-        value: "https://fertipath-backend.onrender.com" 
+        value: "https://myfertipal-backend.onrender.com" 
