@@ -12,7 +12,7 @@
 
 3. **Add an Android app**:
    - Click on the Android icon or "Add app"
-   - Enter package name: `com.example.nexus_fertility_app`
+   - Enter package name: `com.myfertipal.app`
    - Register the app
 
 4. **Download google-services.json**:

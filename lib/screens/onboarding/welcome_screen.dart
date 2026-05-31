@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nexus_fertility_app/generated/l10n/app_localizations.dart';
+import 'package:myfertipal/generated/l10n/app_localizations.dart';
 import 'language_selection_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {

@@ -1,4 +1,4 @@
-﻿package com.fertpath.fertilityapp
+package org.myfertipal.app
 
 import co.paystack.android.Paystack
 import co.paystack.android.PaystackSdk

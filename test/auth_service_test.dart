@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nexus_fertility_app/models/user.dart';
-import 'package:nexus_fertility_app/services/auth_service.dart';
+import 'package:myfertipal/models/user.dart';
+import 'package:myfertipal/services/auth_service.dart';
 
 void main() {
   group('AuthService Tests', () {

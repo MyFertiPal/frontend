@@ -16,6 +16,7 @@ import "screens/onboarding/profile_setup_screen.dart";
 import "screens/onboarding/email_signup_screen.dart";
 import "screens/onboarding/forget_password_flow.dart"
     show ForgotPasswordScreen, ResetPasswordScreen, PasswordUpdatedScreen;
+import "screens/privacy_and_security/delete_account_screen.dart";
 import "screens/home_screen.dart";
 import "services/auth_service.dart";
 import "services/audio_service.dart";
@@ -137,6 +138,13 @@ class _MyAppState extends State<MyApp> {
                 );
               }
 
+              if (path == DeleteAccountScreen.routeName) {
+                return MaterialPageRoute(
+                  builder: (_) => const DeleteAccountScreen(),
+                  settings: const RouteSettings(name: '/delete-account'),
+                );
+              }
+
               return null;
             },
             localizationsDelegates: const [
@@ -192,6 +200,7 @@ class _MyAppState extends State<MyApp> {
               '/forgot-password': (context) => const ForgotPasswordScreen(),
               '/reset_password': (context) => const ResetPasswordScreen(),
               '/password-updated': (context) => const PasswordUpdatedScreen(),
+              '/delete-account': (context) => const DeleteAccountScreen(),
               '/home': (context) => const HomeScreen(),
             },
           );

@@ -15,6 +15,10 @@ jobs:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
           YARNGPT_API_KEY: ${{ secrets.YARNGPT_API_KEY }}
           PAYSTACK_PUBLIC_KEY: ${{ secrets.PAYSTACK_PUBLIC_KEY }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
@@ -50,6 +54,22 @@ jobs:
 
             - name: Create Firebase credentials file
               run: echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+
+            - name: Create Android signing files
+              run: |
+                if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEYSTORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
+                  echo "Missing Android signing secrets."
+                  exit 1
+                fi
+
+                echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+
+                cat > android/key.properties <<EOF
+                storePassword=$ANDROID_KEYSTORE_PASSWORD
+                keyPassword=$ANDROID_KEY_PASSWORD
+                keyAlias=$ANDROID_KEY_ALIAS
+                storeFile=app/upload-keystore.jks
+                EOF
 
             - name: Build APK
               run: flutter build apk --release --dart-define=API_URL=$API_URL --dart-define=YARNGPT_API_KEY=$YARNGPT_API_KEY --dart-define=PAYSTACK_PUBLIC_KEY=$PAYSTACK_PUBLIC_KEY

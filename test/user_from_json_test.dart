@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nexus_fertility_app/models/user.dart';
+import 'package:myfertipal/models/user.dart';
 
 void main() {
   group('User.fromJson robustness', () {

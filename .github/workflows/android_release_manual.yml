@@ -1,0 +1,84 @@
+name: Android Manual Release AAB
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or commit to build"
+        required: false
+        default: "main"
+      run_tests:
+        description: "Run Flutter tests before build"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build-release-aab:
+    name: Build Signed Android AAB
+    runs-on: ubuntu-latest
+
+    env:
+      API_URL: https://myfertipal-backend.onrender.com
+      FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+      YARNGPT_API_KEY: ${{ secrets.YARNGPT_API_KEY }}
+      PAYSTACK_PUBLIC_KEY: ${{ secrets.PAYSTACK_PUBLIC_KEY }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.ref || 'main' }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.38.0"
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run Flutter tests
+        if: ${{ github.event.inputs.run_tests == 'true' }}
+        run: flutter test
+
+      - name: Create Firebase credentials file
+        run: echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+
+      - name: Create Android signing files
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEYSTORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
+            echo "Missing Android signing secrets."
+            exit 1
+          fi
+
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+
+          cat > android/key.properties <<EOF
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=app/upload-keystore.jks
+          EOF
+
+      - name: Build signed App Bundle
+        run: flutter build appbundle --release --dart-define=API_URL=$API_URL --dart-define=YARNGPT_API_KEY=$YARNGPT_API_KEY --dart-define=PAYSTACK_PUBLIC_KEY=$PAYSTACK_PUBLIC_KEY
+
+      - name: Upload signed App Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab-manual-${{ github.run_number }}
+          path: build/app/outputs/bundle/release/app-release.aab
