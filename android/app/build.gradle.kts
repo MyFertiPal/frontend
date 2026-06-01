@@ -15,8 +15,16 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val releaseKeystoreFile = (keystoreProperties["storeFile"] as String?)?.let { rootProject.file(it) }
+val releaseKeystoreConfigured =
+    keystorePropertiesFile.exists() &&
+        !((keystoreProperties["keyAlias"] as String?).orEmpty().isBlank()) &&
+        !((keystoreProperties["keyPassword"] as String?).orEmpty().isBlank()) &&
+        !((keystoreProperties["storePassword"] as String?).orEmpty().isBlank()) &&
+        releaseKeystoreFile?.exists() == true
+
 android {
-    namespace = "org.myfertipal.app"
+    namespace = "com.myfertipall.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -32,7 +40,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "org.myfertipal.app"
+        applicationId = "com.myfertipall.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -59,12 +67,12 @@ android {
         release {
             isMinifyEnabled = false
             isShrinkResources = false
-            // Use release keystore when key.properties exists, otherwise fallback for local development.
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
+            if (!releaseKeystoreConfigured) {
+                throw org.gradle.api.GradleException(
+                        "Release signing is not configured. Add android/key.properties and android/app/permanent-upload-keystore.jks before building an AAB for Play Console."
+                )
             }
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

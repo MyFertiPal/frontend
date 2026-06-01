@@ -65,13 +65,13 @@ jobs:
             exit 1
           fi
 
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/permanent-upload-keystore.jks
 
           cat > android/key.properties <<EOF
           storePassword=$ANDROID_KEYSTORE_PASSWORD
           keyPassword=$ANDROID_KEY_PASSWORD
           keyAlias=$ANDROID_KEY_ALIAS
-          storeFile=app/upload-keystore.jks
+          storeFile=app/permanent-upload-keystore.jks
           EOF
 
       - name: Build signed App Bundle

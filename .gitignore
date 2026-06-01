@@ -72,6 +72,7 @@ flutter_*.log
 lib/services/api_key_config.local.dart
 *.local.dart
 lib/config/*.local.dart
+lib/config/*.local.json
 
 # User-specific
 login.json
