@@ -418,6 +418,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final result = await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => const ProfileSetupScreen(),
+                    settings: const RouteSettings(name: '/profile-setup'),
                   ),
                 );
                 // After returning from profile setup, reload profile to fetch new goal values
@@ -999,7 +1000,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
 
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+          MaterialPageRoute(
+            builder: (_) => const WelcomeScreen(),
+            settings: const RouteSettings(name: '/welcome'),
+          ),
           (route) => false,
         );
       }

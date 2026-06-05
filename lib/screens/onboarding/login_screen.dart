@@ -378,6 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (_) => const ProfileSetupScreen(),
+              settings: const RouteSettings(name: '/profile-setup'),
             ),
           );
           return;
@@ -406,6 +407,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (_) => const ProfileSetupScreen(),
+                settings: const RouteSettings(name: '/profile-setup'),
               ),
             );
           }

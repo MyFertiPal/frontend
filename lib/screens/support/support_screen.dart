@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
+import '../../services/analytics_service.dart';
 import '../../services/api_service.dart';
 import '../../services/api_key_config.dart';
 import '../../services/yarngpt_tts_service.dart';
@@ -190,9 +191,11 @@ class _SupportScreenState extends State<SupportScreen> {
           _currentAffirmation,
           voice: 'Aria',
         );
+        await AnalyticsService.logSupportAudioListened(source: 'affirmation_tts');
       } catch (e) {
         debugPrint('Affirmation TTS voice failed, retrying default: $e');
         await _affirmationTtsService.speakText(_currentAffirmation);
+        await AnalyticsService.logSupportAudioListened(source: 'affirmation_tts');
       }
     } catch (e) {
       debugPrint('Error playing affirmation TTS: $e');
@@ -257,6 +260,7 @@ class _SupportScreenState extends State<SupportScreen> {
         final assetPath = _audioAssetForLocale(locale);
         await _audioPlayer.setSource(AssetSource(assetPath));
         await _audioPlayer.resume();
+        await AnalyticsService.logSupportAudioListened(source: 'support_audio');
         if (mounted) {
           setState(() {
             _isAudioLoading = false;
@@ -400,6 +404,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                   const Spacer(),
                                   GestureDetector(
                                     onTap: () {
+                                      AnalyticsService.logSupportQuoteRefreshed();
                                       setState(() {
                                         // Cycle to next affirmation
                                         final currentIdx = _affirmations
@@ -690,6 +695,7 @@ class _SupportScreenState extends State<SupportScreen> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => const CreateGroupScreen(),
+                              settings: const RouteSettings(name: '/create-group'),
                             ),
                           );
                         },

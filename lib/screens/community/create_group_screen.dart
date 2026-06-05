@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/analytics_service.dart';
 import '../specialists/specialist_chat_screen.dart';
 
 class CreateGroupScreen extends StatefulWidget {
@@ -26,6 +27,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   }
 
   void _createGroup() {
+    AnalyticsService.logGroupCreated();
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -61,6 +63,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const SpecialistChatScreen(),
+                    settings: const RouteSettings(name: '/specialist-chat'),
                   ),
                 );
               },

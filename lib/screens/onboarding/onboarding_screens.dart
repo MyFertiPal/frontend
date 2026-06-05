@@ -3,6 +3,7 @@ import 'registration_screen.dart';
 import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart'; // Unused
 import '../../generated/l10n/app_localizations.dart';
+import '../../services/analytics_service.dart';
 
 const Color _primaryTeal = Color(0xFF0EA5A4);
 const Color _darkGreenText = Color(0xFF064B23);
@@ -37,7 +38,10 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
 
   void _navigateToRegister() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const RegistrationScreen()),
+      MaterialPageRoute(
+        builder: (_) => const RegistrationScreen(),
+        settings: const RouteSettings(name: '/register'),
+      ),
     );
   }
 
@@ -75,6 +79,9 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (_) => const LanguageSelectionScreen(),
+                          settings: const RouteSettings(
+                            name: '/language-selection',
+                          ),
                         ),
                       );
                     },
@@ -89,7 +96,10 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: _navigateToRegister,
+                    onTap: () {
+                      AnalyticsService.logOnboardingSkipped();
+                      _navigateToRegister();
+                    },
                     child: Text(
                       AppLocalizations.of(context).skip,
                       style: const TextStyle(

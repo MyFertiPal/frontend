@@ -55,7 +55,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
         // Navigate to onboarding screens
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingScreens()),
+          MaterialPageRoute(
+            builder: (_) => const OnboardingScreens(),
+            settings: const RouteSettings(name: '/onboarding'),
+          ),
         );
       }
     } catch (e) {

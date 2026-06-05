@@ -11,6 +11,7 @@ import '../services/api_key_config.dart';
 import '../services/yarngpt_tts_service.dart';
 import '../models/user.dart';
 import '../utils/responsive_utils.dart';
+import '../services/analytics_service.dart';
 import 'profile/profile_screen.dart';
 import 'support/support_screen.dart';
 import 'onboarding/welcome_screen.dart';
@@ -40,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => LogSymptomScreen(),
+        settings: const RouteSettings(name: '/log-symptoms'),
       ),
     );
     if (result != null && result is Map && result['symptoms'] is List<String>) {
@@ -76,6 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView(
+      screenName: HomeScreen.routeName,
+      screenClass: 'HomeScreen',
+    );
     // Initialize with default values immediately
     _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
     _insightText = _defaultInsightText;
@@ -379,7 +385,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               _toggleSideMenu();
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) => const PaymentScreen(),
+                                    builder: (_) => const PaymentScreen(),
+                                    settings: const RouteSettings(name: '/payment'),
                                 ),
                               );
                             },

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import 'api_service.dart';
+import 'analytics_service.dart';
 
 abstract class AuthServiceInterface {
   Future<User?> signIn(String email, String password);
@@ -97,6 +98,8 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
       _authStateController.add(_currentUser);
       notifyListeners();
 
+      await AnalyticsService.logLogin(method: 'email');
+
       return _currentUser;
     } catch (e) {
       if (kDebugMode) {
@@ -125,6 +128,9 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
     await _saveUserToPrefs(_currentUser);
     _authStateController.add(_currentUser);
     notifyListeners();
+
+    await AnalyticsService.logSignUp(method: 'email');
+
     return _currentUser;
   }
 
@@ -267,6 +273,8 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
         _currentUser = user;
         _authStateController.add(_currentUser);
         notifyListeners();
+
+        await AnalyticsService.logSignUp(method: 'phone_otp');
 
         // Clear verification_id after successful verification
         _verificationId = null;

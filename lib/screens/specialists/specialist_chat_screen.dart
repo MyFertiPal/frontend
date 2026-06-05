@@ -160,6 +160,7 @@ class SpecialistChatScreen extends StatelessWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const PaymentScreen(),
+                            settings: const RouteSettings(name: '/payment'),
                           ),
                         );
                       },

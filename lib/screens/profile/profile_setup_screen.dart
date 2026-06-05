@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
+import '../../services/analytics_service.dart';
 import '../../theme.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
@@ -509,6 +510,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 : null,
         audioPreference: _audioGuidance,
       );
+
+      await AnalyticsService.logAgeRange(_age);
 
       // Generate and save period days to calendar if last period date is set
       if (_lastPeriodDate != null) {

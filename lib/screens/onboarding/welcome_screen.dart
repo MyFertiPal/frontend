@@ -45,6 +45,9 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const LanguageSelectionScreen(),
+                            settings: const RouteSettings(
+                              name: '/language-selection',
+                            ),
                           ),
                         );
                       },

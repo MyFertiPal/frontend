@@ -10,6 +10,7 @@ import '../widgets/swipeable_green_calendar.dart';
 import '../widgets/reminder_panel.dart';
 import 'tracking/log_symptom_screen.dart';
 import '../services/api_service.dart';
+import '../services/analytics_service.dart';
 import '../services/notification_reminder_service.dart';
 
 const Color _primaryTeal = Color(0xFF0EA5A4);
@@ -361,6 +362,12 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
 
         debugPrint(
             'Profile updated with cycleLength: $finalCycleLength, periodLength: $finalPeriodLength');
+
+          await AnalyticsService.logPeriodLogged(
+            periodLength: finalPeriodLength,
+            cycleLength: finalCycleLength,
+            source: 'calendar_tab',
+          );
       } catch (e) {
         debugPrint(
             'Failed to sync last period date to profile: ${e.toString()}');
@@ -609,6 +616,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                     MaterialPageRoute(
                       builder: (context) => const LogSymptomScreen(),
                       settings: RouteSettings(
+                        name: '/log-symptoms',
                         arguments: {
                           'lastPeriodDate': _lastPeriodDate,
                           'cycleLength': _selectedCalendarDays.length,

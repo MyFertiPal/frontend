@@ -3,6 +3,10 @@
 import "package:app_links/app_links.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'services/analytics_service.dart';
 import "package:provider/provider.dart";
 // import "package:flutter_localizations/flutter_localizations.dart";
 import "generated/l10n/app_localizations.dart";
@@ -26,6 +30,21 @@ import "utils/url_strategy.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase early so analytics and messaging can use it.
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    // Log a lightweight startup event to help verify Analytics is working
+    try {
+      await AnalyticsService.logAppOpen();
+    } catch (e) {
+      debugPrint('Analytics log failed: $e');
+    }
+  } catch (e) {
+    debugPrint('Firebase already initialized (main): $e');
+  }
 
   if (kIsWeb) {
     setAppUrlStrategy();
@@ -183,6 +202,9 @@ class _MyAppState extends State<MyApp> {
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.light,
             home: const SplashScreen(),
+            navigatorObservers: [
+              FirebaseAnalyticsObserver(analytics: AnalyticsService.instance),
+            ],
             debugShowCheckedModeBanner: false,
             builder: (context, child) {
               // Prevent gray screen during widget building

@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import '../../services/analytics_service.dart';
 import 'forget_password_flow.dart' show ResetPasswordScreen;
 import 'welcome_screen.dart';
 
@@ -19,6 +20,11 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
+    AnalyticsService.logScreenView(
+      screenName: 'splash',
+      screenClass: 'SplashScreen',
+    );
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 2500),
@@ -86,7 +92,10 @@ class _SplashScreenState extends State<SplashScreen>
       debugPrint('Route navigation failed: $e, using direct navigation');
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+          MaterialPageRoute(
+            builder: (_) => const WelcomeScreen(),
+            settings: const RouteSettings(name: '/welcome'),
+          ),
         );
       }
     }

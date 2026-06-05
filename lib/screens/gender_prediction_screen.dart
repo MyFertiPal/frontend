@@ -165,7 +165,10 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const HomeScreen(),
+                  settings: const RouteSettings(name: '/home'),
+                ),
             );
           },
         ),

@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../../services/auth_error_helper.dart';
 import '../../services/api_service.dart';
+import '../../services/analytics_service.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -461,6 +462,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         faithPreference: _faithPreference ?? '',
         audioPreference: _audioGuidance,
       );
+
+      await AnalyticsService.logAgeRange(_age);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

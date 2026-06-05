@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/analytics_service.dart';
 
 class LanguageProvider extends ChangeNotifier {
   Locale _locale = const Locale('en');
@@ -21,6 +22,7 @@ class LanguageProvider extends ChangeNotifier {
   Future<void> setLanguage(String languageCode) async {
     _locale = Locale(languageCode);
     await _prefs.setString('selected_language', languageCode);
+    await AnalyticsService.logLanguageSelected(languageCode);
     notifyListeners();
   }
 

@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
-import 'onboarding_screens.dart';
+import 'welcome_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -195,6 +195,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         _showPassword = !_showPassword;
                       });
                     },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return AppLocalizations.of(context).fieldRequired(
+                            AppLocalizations.of(context).password);
+                      }
+                      if (value.length < 8) {
+                        return AppLocalizations.of(context).passwordMinLength;
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 5),
 
@@ -208,6 +218,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       setState(() {
                         _showConfirmPassword = !_showConfirmPassword;
                       });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return AppLocalizations.of(context).fieldRequired(
+                            AppLocalizations.of(context).confirmPassword);
+                      }
+                      if (value != _passwordController.text) {
+                        return AppLocalizations.of(context).passwordsDoNotMatch;
+                      }
+                      return null;
                     },
                   ),
                   const SizedBox(height: 24),
@@ -268,12 +288,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     onTap: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                            builder: (_) => const OnboardingScreens()),
+                          builder: (_) => const WelcomeScreen(),
+                          settings: const RouteSettings(name: '/welcome'),
+                        ),
                       );
                     },
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context).cancel,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Poppins',
@@ -281,6 +303,37 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Have account? Login
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).alreadyHaveAccount,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Poppins',
+                          color: Colors.black,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushReplacementNamed('/login');
+                        },
+                        child: Text(
+                          AppLocalizations.of(context).login,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                            color: Color(0xFF064B23),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 30),
                 ],
@@ -299,6 +352,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     bool isPassword = false,
     bool showPassword = false,
     VoidCallback? onToggleVisibility,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,7 +379,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             keyboardType: keyboardType,
             obscureText: isPassword && !showPassword,
             decoration: InputDecoration(
-              border: InputBorder.none,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.transparent),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Color(0xFF064B23)),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.red),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 18,
@@ -343,11 +416,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       onPressed: onToggleVisibility,
                     )
                   : null,
+              errorStyle: const TextStyle(fontSize: 12),
             ),
             style: const TextStyle(
               fontFamily: 'Poppins',
               fontSize: 14,
             ),
+            validator: validator,
           ),
         ),
       ],

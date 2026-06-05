@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../services/api_service.dart';
 import '../../generated/l10n/app_localizations.dart';
+import '../../services/analytics_service.dart';
 
 class LogSymptomScreen extends StatefulWidget {
   const LogSymptomScreen({super.key});
@@ -118,6 +119,12 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
       debugPrint('Log API response: ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        await AnalyticsService.logSymptomsLogged(
+          symptomCount: _selectedSymptoms.length,
+          symptoms: _selectedSymptoms,
+          screenName: 'log_symptoms',
+        );
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
