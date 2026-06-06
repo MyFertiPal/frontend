@@ -119,8 +119,7 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
             },
           ),
         ),
-        const SizedBox(height: 12),
-        _buildLegend(),
+        
       ],
     );
   }
@@ -301,9 +300,17 @@ class _MonthGrid extends StatelessWidget {
           // Priority order: Period > Next Period > Ovulation > Fertile Window
           if (isPeriod) {
             // Period days: pink background, dark pink text, pink border
-            bg = const Color(0xFFFFB3BA); // Pink
-            txtColor = const Color(0xFFD32F2F); // Dark pink/red text
-            border = Border.all(color: const Color(0xFFD32F2F), width: 1.5);
+            bg = const Color(0xFFF06292);
+txtColor = Colors.white;
+
+border = Border.all(
+  color: const Color(0xFFD81B60),
+  width: 2,
+);
+
+indicator = _buildDot(
+  Colors.white,
+);
             indicator = _buildDot(const Color(0xFFD32F2F));
           } else if (isNextPeriodWindow || isNextPeriod) {
             // Next period prediction: red border and red text, transparent bg

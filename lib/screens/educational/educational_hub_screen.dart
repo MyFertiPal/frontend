@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
-import '../../services/analytics_service.dart';
 import '../../services/api_key_config.dart';
 import '../../services/yarngpt_tts_service.dart';
 import '../../theme.dart';
@@ -143,7 +142,6 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
                   articleText: article['content'] ?? article['excerpt'] ?? '',
                   audioUrl: article['audioUrl'],
                 ),
-                settings: const RouteSettings(name: '/article-read'),
               ),
             );
           },
@@ -484,9 +482,6 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
 
         // Speak the article text using YarnGPT TTS
         await _ttsService.speakText(articleContent);
-        AnalyticsService.logArticleListened(
-          title: widget.article['title'] ?? '',
-        );
       }
     } catch (e) {
       debugPrint('Error toggling play/pause: $e');

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +12,6 @@ import '../services/api_key_config.dart';
 import '../services/yarngpt_tts_service.dart';
 import '../models/user.dart';
 import '../utils/responsive_utils.dart';
-import '../services/analytics_service.dart';
 import 'profile/profile_screen.dart';
 import 'support/support_screen.dart';
 import 'onboarding/welcome_screen.dart';
@@ -35,13 +35,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const Color _primaryTeal = Color(0xFF0EA5A4);
   static const Color _darkGreenText = Color(0xFF064B23);
-  static const Color _ctaGreen = _darkGreenText;
 
   Future<void> _openLogSymptomScreen() async {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => LogSymptomScreen(),
-        settings: const RouteSettings(name: '/log-symptoms'),
       ),
     );
     if (result != null && result is Map && result['symptoms'] is List<String>) {
@@ -78,10 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    AnalyticsService.logScreenView(
-      screenName: HomeScreen.routeName,
-      screenClass: 'HomeScreen',
-    );
     // Initialize with default values immediately
     _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
     _insightText = _defaultInsightText;
@@ -385,8 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               _toggleSideMenu();
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                    builder: (_) => const PaymentScreen(),
-                                    settings: const RouteSettings(name: '/payment'),
+                                  builder: (_) => const PaymentScreen(),
                                 ),
                               );
                             },
@@ -563,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final initial =
         nameForInitial.isNotEmpty ? nameForInitial[0].toUpperCase() : 'U';
     final color =
-    _darkGreenText;
+        _colorFromString(nameForInitial.isNotEmpty ? nameForInitial : initial);
 
     return CircleAvatar(
       radius: radius,
@@ -661,6 +654,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Color _colorFromString(String input) {
+    if (input.isEmpty) return _primaryTeal;
+    final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
+    final hue = (hash % 360).toDouble();
+    return HSVColor.fromAHSV(1, hue, 0.45, 0.85).toColor();
+  }
+
   Widget _buildSummaryRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -706,9 +706,8 @@ class _HomeScreenState extends State<HomeScreen> {
           width: cardWidth,
           height: cardHeight,
           decoration: BoxDecoration(
-            color: _ctaGreen,
+            color:Colors.white,
             borderRadius: BorderRadius.zero,
-            border: Border.all(color: _darkGreenText, width: 1),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.15),
@@ -722,7 +721,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(
                 icon,
-                color: Colors.white,
+                color: _primaryTeal,
                 size: iconSize,
               ),
               SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context)),
@@ -734,7 +733,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: fontSize,
                     fontWeight: FontWeight.w500,
                     fontFamily: 'Poppins',
-                    color: Colors.white,
+                    color: _primaryTeal,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2,
@@ -794,10 +793,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: IgnorePointer(
                             child: LayoutBuilder(
                               builder: (context, constraints) {
+                                final width = constraints.maxWidth;
                                 return Align(
                                   alignment: Alignment.centerRight,
                                   child: Transform.translate(
-                                    offset: const Offset(5, 0),
+                                    // move right by 5% of width so image starts slightly off-screen
+                                    offset: Offset(width * 0.05, 0),
                                     child: Opacity(
                                       opacity: 0.08,
                                       child: Image.asset(
@@ -863,11 +864,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       horizontal: 12,
                                                       vertical: 8),
                                               decoration: BoxDecoration(
-                                                color: _darkGreenText,
-                                                border: Border.all(
-                                                  color: _darkGreenText,
-                                                  width: 1,
-                                                ),
+                                                color: Colors.white
+                                                    .withOpacity(0.2),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),
@@ -938,10 +936,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ElevatedButton(
                         onPressed: _openLogSymptomScreen,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: _darkGreenText,
+                          backgroundColor: _primaryTeal,
+                          foregroundColor: Colors.white,
                           elevation: 4,
-                          side: const BorderSide(color: _darkGreenText, width: 0.5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -949,15 +946,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.water_drop, color: _darkGreenText),
+                            const Icon(Icons.water_drop, color: Colors.white),
                             const SizedBox(width: 12),
                             Text(
                               AppLocalizations.of(context).logSymptoms,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
-                                color: _darkGreenText,
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -1313,40 +1310,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.phone,
-                      color: _primaryTeal,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        '+234-813-202-7445',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: _darkGreenText,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _primaryTeal.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _primaryTeal,
-                    width: 1.5,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
                       Icons.email,
                       color: _primaryTeal,
                       size: 20,
@@ -1354,7 +1317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'contact@myfertipal.com',
+                        'teamnexus@techlaunchpadi.com',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,

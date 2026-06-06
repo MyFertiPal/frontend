@@ -122,9 +122,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                           child: ElevatedButton(
                             onPressed: () => _handleSelect(lang['code']!),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isSelected
-                                  ? Colors.white
-                                  : Colors.white,
+                              backgroundColor:
+                                  isSelected ? Colors.white : Colors.white,
                               foregroundColor: isSelected
                                   ? const Color(0xFF0EA5A4)
                                   : const Color(0xFF224D2D),

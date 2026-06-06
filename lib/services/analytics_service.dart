@@ -24,6 +24,24 @@ class AnalyticsService {
   static const String _userPropertyPreferredLanguage = 'preferred_language';
   static const String _userPropertyAgeRange = 'age_range';
 
+  /// Log an arbitrary custom analytics event.
+  ///
+  /// Use this for product-specific events that do not need a dedicated
+  /// wrapper method yet.
+  static Future<void> logCustomEvent(
+    String name, {
+    Map<String, Object>? parameters,
+  }) async {
+    try {
+      await _analytics.logEvent(
+        name: name,
+        parameters: parameters,
+      );
+    } catch (e) {
+      debugPrint('Failed to log custom event $name: $e');
+    }
+  }
+
   /// Log a simple app-open event for diagnostics
   static Future<void> logAppOpen() async {
     try {

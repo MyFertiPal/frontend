@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../config/paystack_config.dart';
-import '../../services/analytics_service.dart';
 import '../../utils/responsive_utils.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -25,7 +24,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   void initState() {
     super.initState();
-    AnalyticsService.logPaymentPageViewed();
     _initializePaystack();
   }
 
@@ -303,8 +301,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (details == null) {
       return;
     }
-
-    AnalyticsService.logPayClicked(planName: planName);
 
     setState(() {
       _isProcessing = true;

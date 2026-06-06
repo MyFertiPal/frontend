@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
+ 
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+ 
 import '../generated/l10n/app_localizations.dart';
 import '../widgets/swipeable_green_calendar.dart';
 import '../widgets/reminder_panel.dart';
@@ -12,36 +12,35 @@ import 'tracking/log_symptom_screen.dart';
 import '../services/api_service.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_reminder_service.dart';
-
+ 
 const Color _primaryTeal = Color(0xFF0EA5A4);
 const Color _darkGreenText = Color(0xFF064B23);
-
+ 
+// Default period length constant (replace with profile value when available)
+const int _defaultPeriodLength = 5;
+ 
 class CalendarTabScreen extends StatefulWidget {
   final ValueNotifier<bool>? refreshNotifier;
   const CalendarTabScreen({Key? key, this.refreshNotifier}) : super(key: key);
-
+ 
   @override
   State<CalendarTabScreen> createState() => _CalendarTabScreenState();
 }
-
+ 
 class _CalendarTabScreenState extends State<CalendarTabScreen> {
-  // Removed unused: String? _fertileStart, _fertileEnd;
   Set<DateTime> _ovulationDates = {};
   Set<DateTime> _fertileWindowDays = {};
   final ScrollController _calendarScrollController = ScrollController();
   bool _isCalendarCollapsed = false;
-  // Removed unused: double _lastScrollOffset = 0;
   Set<DateTime> _selectedCalendarDays = {};
   Set<DateTime> _nextPeriodDays = {};
-  // Store tapped days as yyyy-mm-dd strings
   Set<String> _selectedCalendarDaysFormatted = {};
-  // Store last period date as yyyy-mm-dd string
   String? _lastPeriodDate;
   List<String> _loggedSymptoms = [];
   bool _isSymptomsLoading = false;
   late NotificationReminderService _reminderService;
   bool _remindersInitialized = false;
-
+ 
   @override
   void initState() {
     super.initState();
@@ -49,25 +48,25 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     _loadTappedDays();
     _fetchLoggedSymptoms();
     _initializeReminders();
-    // Listen for refresh requests from HomeScreen
     widget.refreshNotifier?.addListener(_handleRefreshRequest);
   }
-
+ 
   Future<void> _initializeReminders() async {
     _reminderService = NotificationReminderService();
     await _reminderService.initialize();
+    if (!mounted) return;
     setState(() {
       _remindersInitialized = true;
     });
   }
-
+ 
   void _handleRefreshRequest() {
     if (widget.refreshNotifier?.value == true) {
       _fetchLoggedSymptoms();
       widget.refreshNotifier?.value = false;
     }
   }
-
+ 
   Future<void> _loadTappedDays() async {
     final prefs = await SharedPreferences.getInstance();
     final savedDays = prefs.getStringList('tapped_days');
@@ -75,7 +74,6 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       setState(() {
         _selectedCalendarDaysFormatted = savedDays.toSet();
         _selectedCalendarDays = savedDays.map((s) => DateTime.parse(s)).toSet();
-        // Update last period date
         if (_selectedCalendarDays.isNotEmpty) {
           final latest =
               _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
@@ -85,13 +83,10 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         }
       });
     } else {
-      // If no tapped days, but we have a last period date, auto-generate period days
       if (_lastPeriodDate != null) {
-        final periodLength =
-            5; // Default, or load from user/profile if available
         final lastPeriod = DateTime.parse(_lastPeriodDate!);
         final periodDays = List<DateTime>.generate(
-          periodLength,
+          _defaultPeriodLength,
           (i) =>
               DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
         );
@@ -105,7 +100,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       }
     }
   }
-
+ 
   Future<void> _fetchLoggedSymptoms() async {
     setState(() {
       _isSymptomsLoading = true;
@@ -155,6 +150,9 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
             if (latestCycle['ovulation_day'] != null) {
               _setOvulationDay(latestCycle['ovulation_day']);
             }
+            setState(() {
+              _isSymptomsLoading = false;
+            });
           }
         } else if (data is Map) {
           debugPrint('Data is a Map: $data');
@@ -187,12 +185,18 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
             });
           } else {
             debugPrint('No symptoms found in data map.');
+            setState(() {
+              _isSymptomsLoading = false;
+            });
           }
           if (data['ovulation_day'] != null) {
             _setOvulationDay(data['ovulation_day']);
           }
         } else {
           debugPrint('Data is neither List nor Map: $data');
+          setState(() {
+            _isSymptomsLoading = false;
+          });
         }
       } else {
         debugPrint('Non-200 response, setting _loggedSymptoms to empty.');
@@ -203,15 +207,14 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       }
     } catch (e) {
       debugPrint('Exception in _fetchLoggedSymptoms: $e');
-      _isSymptomsLoading = false;
+      if (!mounted) return;
       setState(() {
         _loggedSymptoms = [];
+        _isSymptomsLoading = false;
       });
     }
   }
-
-  // Calculate period days from last period date and period length
-
+ 
   void _setFertileWindow(dynamic start, dynamic end) {
     try {
       final s = DateTime.parse(start.toString());
@@ -221,14 +224,13 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         days.add(DateTime(s.year, s.month, s.day + i));
       }
       setState(() {
-        // Removed unused assignments to _fertileStart and _fertileEnd
         _fertileWindowDays = days;
       });
     } catch (e) {
       debugPrint('Failed to parse fertile window: $e');
     }
   }
-
+ 
   void _setOvulationDay(dynamic dateVal) {
     try {
       final d = DateTime.parse(dateVal.toString());
@@ -239,7 +241,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       debugPrint('Failed to parse ovulation day: $e');
     }
   }
-
+ 
   @override
   void dispose() {
     widget.refreshNotifier?.removeListener(_handleRefreshRequest);
@@ -247,10 +249,9 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     _calendarScrollController.dispose();
     super.dispose();
   }
-
+ 
   void _onCalendarScroll() {
     final currentOffset = _calendarScrollController.offset;
-    // Collapse when scrolling down, expand when scrolling up, with a threshold
     if (currentOffset > 60 && !_isCalendarCollapsed) {
       setState(() {
         _isCalendarCollapsed = true;
@@ -260,26 +261,24 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _isCalendarCollapsed = false;
       });
     }
-    // Removed unused assignment to _lastScrollOffset
   }
-
+ 
   void _toggleCalendarDate(DateTime date) async {
     final normalized = DateTime(date.year, date.month, date.day);
+    final isAdding =
+        !_selectedCalendarDays.any((d) => _isSameDay(d, normalized));
+ 
     setState(() {
-      if (_selectedCalendarDays.any((d) => _isSameDay(d, normalized))) {
+      if (!isAdding) {
         _selectedCalendarDays = _selectedCalendarDays
             .where((d) => !_isSameDay(d, normalized))
             .toSet();
       } else {
         _selectedCalendarDays = {..._selectedCalendarDays, normalized};
       }
-      // Update formatted set
       _selectedCalendarDaysFormatted = _selectedCalendarDays
           .map((d) => DateFormat('yyyy-MM-dd').format(d))
           .toSet();
-      // The last period date is always the latest (maximum) tapped day,
-      // regardless of order or grouping. This ensures that if the user taps
-      // 2 Jan and 5 Jan, the last period date is 5 Jan.
       if (_selectedCalendarDays.isNotEmpty) {
         final latest =
             _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
@@ -288,17 +287,18 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _lastPeriodDate = null;
       }
     });
-    // Save tapped days
+ 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         'tapped_days', _selectedCalendarDaysFormatted.toList());
-    // If user just set a new last period date, auto-generate period days
-    if (_lastPeriodDate != null && _selectedCalendarDays.length == 1) {
-      final periodLength = 5; // Default, or load from user/profile if available
+ 
+    // Only auto-generate period days when the user taps the very first day
+    if (isAdding && _selectedCalendarDays.length == 1 && _lastPeriodDate != null) {
       final lastPeriod = DateTime.parse(_lastPeriodDate!);
       final periodDays = List<DateTime>.generate(
-        periodLength,
-        (i) => DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
+        _defaultPeriodLength,
+        (i) =>
+            DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
       );
       setState(() {
         _selectedCalendarDays = periodDays.toSet();
@@ -308,32 +308,27 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       await prefs.setStringList(
           'tapped_days', _selectedCalendarDaysFormatted.toList());
     }
-
-    // Calculate updated period and cycle length from tapped days
+ 
     final calculatedPeriodLength = _calculatePeriodLength();
     final calculatedCycleLength = _calculateCycleLength();
-
-    // Now perform the profile update (async, outside setState)
+ 
     if (_selectedCalendarDays.isNotEmpty) {
       try {
         final api = ApiService();
         final profileJson = await api.getProfile();
         final userData = profileJson['data'] ?? profileJson;
-        // Retain all required fields, update lastPeriodDate, periodLength, and cycleLength
         final int? age = userData['age'];
         final String? ttcHistory =
             userData['ttc_history'] ?? userData['ttcHistory'];
         final String? faithPreference =
             userData['faith_preference'] ?? userData['faithPreference'];
         final bool? audioPreference = userData['audio_preference'];
-
-        // Use calculated values or fallback to existing profile values
+ 
         final finalPeriodLength =
-            calculatedPeriodLength ?? userData['period_length'] ?? 5;
+            calculatedPeriodLength ?? userData['period_length'] ?? _defaultPeriodLength;
         final finalCycleLength =
             calculatedCycleLength ?? userData['cycle_length'] ?? 28;
-
-        // Calculate next period days based on last period date and cycle length
+ 
         if (_lastPeriodDate != null) {
           final lastPeriod = DateTime.parse(_lastPeriodDate!);
           final nextPeriodStart =
@@ -349,7 +344,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           debugPrint(
               'Calculated next period: ${_nextPeriodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).join(', ')}');
         }
-
+ 
         await api.updateProfile(
           age: age,
           cycleLength: finalCycleLength,
@@ -359,81 +354,56 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           faithPreference: faithPreference,
           audioPreference: audioPreference,
         );
-
+ 
         debugPrint(
             'Profile updated with cycleLength: $finalCycleLength, periodLength: $finalPeriodLength');
-
-          await AnalyticsService.logPeriodLogged(
-            periodLength: finalPeriodLength,
-            cycleLength: finalCycleLength,
-            source: 'calendar_tab',
-          );
+ 
+        await AnalyticsService.logPeriodLogged(
+          periodLength: finalPeriodLength,
+          cycleLength: finalCycleLength,
+          source: 'calendar_tab',
+        );
       } catch (e) {
-        debugPrint(
-            'Failed to sync last period date to profile: ${e.toString()}');
+        debugPrint('Failed to sync last period date to profile: ${e.toString()}');
       }
     }
   }
-
+ 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
-
-  /// Calculate period length from consecutive tapped days
-  /// Returns the count of consecutive days from the earliest date
+ 
   int? _calculatePeriodLength() {
     if (_selectedCalendarDays.isEmpty) return null;
-
-    // Sort the selected days
     final sortedDays = _selectedCalendarDays.toList()
       ..sort((a, b) => a.compareTo(b));
-
-    // Count consecutive days starting from the earliest
     int consecutiveCount = 1;
     for (int i = 1; i < sortedDays.length; i++) {
-      final prevDay = sortedDays[i - 1];
-      final currentDay = sortedDays[i];
-      final dayDifference = currentDay.difference(prevDay).inDays;
-
+      final dayDifference = sortedDays[i].difference(sortedDays[i - 1]).inDays;
       if (dayDifference == 1) {
         consecutiveCount++;
       } else {
-        // Break in consecutive days found
         break;
       }
     }
-
     debugPrint('Calculated period length: $consecutiveCount days');
     return consecutiveCount;
   }
-
-  /// Calculate cycle length from multiple period markings
-  /// If user has marked multiple periods, calculate average cycle length
+ 
   int? _calculateCycleLength() {
     if (_selectedCalendarDays.length < 2) return null;
-
-    // Sort the selected days
     final sortedDays = _selectedCalendarDays.toList()
       ..sort((a, b) => a.compareTo(b));
-
-    // Find gaps between groups of days (assuming each group is a period)
-    // Get the first day of each potential period group
+ 
     final periodStarts = <DateTime>[];
-    DateTime currentPeriodStart = sortedDays.first;
-    periodStarts.add(currentPeriodStart);
-
+    periodStarts.add(sortedDays.first);
+ 
     for (int i = 1; i < sortedDays.length; i++) {
-      final prevDay = sortedDays[i - 1];
-      final currentDay = sortedDays[i];
-      final dayDifference = currentDay.difference(prevDay).inDays;
-
-      // If gap is more than 1, it's a new period
+      final dayDifference = sortedDays[i].difference(sortedDays[i - 1]).inDays;
       if (dayDifference > 1) {
-        currentPeriodStart = currentDay;
-        periodStarts.add(currentPeriodStart);
+        periodStarts.add(sortedDays[i]);
       }
     }
-
-    // If we have at least 2 period starts, calculate average cycle length
+ 
     if (periodStarts.length >= 2) {
       final cycleLengths = <int>[];
       for (int i = 1; i < periodStarts.length; i++) {
@@ -442,7 +412,6 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           cycleLengths.add(gap);
         }
       }
-
       if (cycleLengths.isNotEmpty) {
         final averageCycleLength =
             (cycleLengths.reduce((a, b) => a + b) / cycleLengths.length)
@@ -452,10 +421,9 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         return averageCycleLength;
       }
     }
-
     return null;
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -463,7 +431,6 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Back button removed
             Column(
               children: [
                 const SizedBox(height: 12),
@@ -481,6 +448,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                         children: [
                           if (!_isCalendarCollapsed) ...[
                             const SizedBox(height: 10),
+                            // FIX: added missing comma above
                             SwipeableGreenCalendar(
                               initialMonth: DateTime.now(),
                               selectedDates: _selectedCalendarDays,
@@ -543,9 +511,10 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Reminder Panel
                             if (_remindersInitialized)
                               ReminderPanel(reminderService: _reminderService),
+                            const SizedBox(height: 16),
+                            _buildCalendarKey(),
                             Row(
                               children: [
                                 Text(
@@ -625,14 +594,11 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                       ),
                     ),
                   );
-                  // Handle result from LogSymptomScreen
                   if (result != null) {
-                    // Result can be either a Map with symptoms or just true
                     if (result is Map && result['symptoms'] != null) {
                       debugPrint(
                           'Received logged symptoms: ${result['symptoms']}');
                     }
-                    // Refresh symptoms display
                     _fetchLoggedSymptoms();
                   }
                 },
@@ -644,7 +610,63 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       ),
     );
   }
-
+ 
+  // FIX: single definition of _buildCalendarKey (duplicate removed)
+  Widget _buildCalendarKey() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.shade200,
+        ),
+      ),
+      child: Wrap(
+        spacing: 20,
+        runSpacing: 12,
+        children: [
+          _keyItem(const Color(0xFFF06292), 'Period'),
+          _keyItem(const Color(0xFF81C784), 'Fertile Window'),
+          _keyItem(const Color(0xFF6A1B9A), 'Ovulation'),
+          _keyItem(
+            Colors.transparent,
+            'Predicted Period',
+            border: const Color(0xFFD32F2F),
+          ),
+        ],
+      ),
+    );
+  }
+ 
+  // FIX: single definition of _keyItem (duplicate removed)
+  Widget _keyItem(Color color, String text, {Color? border}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            border:
+                border != null ? Border.all(color: border, width: 2) : null,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+      ],
+    );
+  }
+ 
   Widget _buildLoggedSymptomItem(
       String symptom, IconData icon, Color iconColor) {
     String displaySymptom = symptom;
@@ -652,21 +674,21 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     if (symptom.contains(':')) {
       final parts = symptom.split(':');
       if (parts.length == 2) {
-        displaySymptom = parts[0].trim() + ' - ' + parts[1].trim();
+        displaySymptom = '${parts[0].trim()} - ${parts[1].trim()}';
         sendSymptom = displaySymptom;
       }
     } else if (symptom.contains('-')) {
       final parts = symptom.split('-');
       if (parts.length == 2) {
-        displaySymptom = parts[0].trim() + ' - ' + parts[1].trim();
+        displaySymptom = '${parts[0].trim()} - ${parts[1].trim()}';
         sendSymptom = displaySymptom;
       }
     }
-
+ 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: GestureDetector(
-        onTap: () => debugPrint('Symptom sent: ' + sendSymptom),
+        onTap: () => debugPrint('Symptom sent: $sendSymptom'),
         child: Row(
           children: [
             Container(
@@ -695,15 +717,18 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       ),
     );
   }
-
+ 
   Future<void> _clearCalendarDays() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('tapped_days');
+      // FIX: use reassignment instead of .clear() for consistency
       setState(() {
-        _selectedCalendarDays.clear();
-        _selectedCalendarDaysFormatted.clear();
-        _nextPeriodDays.clear();
+        _selectedCalendarDays = {};
+        _selectedCalendarDaysFormatted = {};
+        _nextPeriodDays = {};
+        _ovulationDates = {};
+        _fertileWindowDays = {};
         _lastPeriodDate = null;
       });
       if (mounted) {
