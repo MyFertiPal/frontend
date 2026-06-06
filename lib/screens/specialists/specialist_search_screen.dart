@@ -141,6 +141,71 @@ class _SpecialistCard extends StatelessWidget {
     );
   }
 
+  void _showPremiumDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.lock,
+                color: _darkGreen,
+                size: 28,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Premium Feature',
+                  style: TextStyle(
+                    color: _darkGreen,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: const Text(
+            'Upgrade to premium to chat with specialists and get personalized advice.',
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Maybe Later',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PaymentScreen(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0EA5A4),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Upgrade Now'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final name = data['name'] ?? '';
@@ -149,124 +214,150 @@ class _SpecialistCard extends StatelessWidget {
     final distance = data['distance'] ?? '';
     final status = data['status'] ?? '';
 
-    String _initials(String input) {
-      final parts = input.split(' ');
-      if (parts.length == 1)
-        return parts.first.isNotEmpty ? parts.first[0].toUpperCase() : '?';
-      return (parts[0].isNotEmpty ? parts[0][0] : '') +
-          (parts[1].isNotEmpty ? parts[1][0] : '');
+    String initials(String input) {
+      final parts = input.trim().split(' ');
+
+      if (parts.length == 1) {
+        return parts.first.isNotEmpty
+            ? parts.first[0].toUpperCase()
+            : '?';
+      }
+
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF0EA5A4).withOpacity(0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: const Color(0xFF0EA5A4),
-            child: Text(
-              _initials(name),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 14),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: const Color(0xFF0EA5A4).withOpacity(0.12),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: const Color(0xFF0EA5A4),
+                child: Text(
+                  initials(name),
                   style: const TextStyle(
-                    fontSize: 16,
+                    color: Colors.white,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  role,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF0EA5A4),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Row(
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.place, size: 16, color: Color(0xFF0EA5A4)),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        location,
-                        style: TextStyle(
-                            color: Colors.grey.shade700, fontSize: 13),
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      role,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0EA5A4),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.place,
+                          size: 16,
+                          color: Color(0xFF0EA5A4),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            location,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.place_outlined,
+                          size: 16,
+                          color: Color(0xFF0EA5A4),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          distance,
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      status,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: _darkGreen,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    const Icon(Icons.place_outlined,
-                        size: 16, color: Color(0xFF0EA5A4)),
-                    const SizedBox(width: 4),
-                    Text(
-                      distance,
-                      style:
-                          TextStyle(color: Colors.grey.shade700, fontSize: 13),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  status,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: _darkGreen,
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () => _openPaymentScreen(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _darkGreen,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          ElevatedButton(
-            onPressed: () => _openPaymentScreen(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _darkGreen,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              elevation: 0,
-              minimumSize: const Size(10, 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                child: const Text(
+                  'View',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
-            ),
-            child: const Text(
-              'View',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+
+        /// Premium overlay
+        _LockedOverlay(
+          onTap: () => _showPremiumDialog(context),
+        ),
+      ],
     );
   }
 }
