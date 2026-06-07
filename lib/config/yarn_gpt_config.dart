@@ -1,6 +1,5 @@
 library yarn_gpt_config;
 
-part 'yarn_gpt_config.local.dart';
 
 class YarnGptConfig {
   static String get apiKey {
