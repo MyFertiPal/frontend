@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
- 
+
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
- 
+
 import '../generated/l10n/app_localizations.dart';
 import '../widgets/swipeable_green_calendar.dart';
 import '../widgets/reminder_panel.dart';
@@ -12,21 +12,22 @@ import 'tracking/log_symptom_screen.dart';
 import '../services/api_service.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_reminder_service.dart';
- 
+
 const Color _primaryTeal = Color(0xFF0EA5A4);
 const Color _darkGreenText = Color(0xFF064B23);
- 
-// Default period length constant (replace with profile value when available)
+const Color _lightGreenBg = Color(0xFFE8FAF3);
+const Color _borderGreen = Color(0xFFB6E8D3);
+
 const int _defaultPeriodLength = 5;
- 
+
 class CalendarTabScreen extends StatefulWidget {
   final ValueNotifier<bool>? refreshNotifier;
   const CalendarTabScreen({Key? key, this.refreshNotifier}) : super(key: key);
- 
+
   @override
   State<CalendarTabScreen> createState() => _CalendarTabScreenState();
 }
- 
+
 class _CalendarTabScreenState extends State<CalendarTabScreen> {
   Set<DateTime> _ovulationDates = {};
   Set<DateTime> _fertileWindowDays = {};
@@ -40,7 +41,15 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   bool _isSymptomsLoading = false;
   late NotificationReminderService _reminderService;
   bool _remindersInitialized = false;
- 
+
+  // Derived summary values
+  int? _displayPeriodLength;
+  int? _displayCycleLength;
+  DateTime? _displayOvulationDay;
+  DateTime? _displayNextPeriod;
+  DateTime? _displayFertileStart;
+  DateTime? _displayFertileEnd;
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +59,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     _initializeReminders();
     widget.refreshNotifier?.addListener(_handleRefreshRequest);
   }
- 
+
   Future<void> _initializeReminders() async {
     _reminderService = NotificationReminderService();
     await _reminderService.initialize();
@@ -59,14 +68,14 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       _remindersInitialized = true;
     });
   }
- 
+
   void _handleRefreshRequest() {
     if (widget.refreshNotifier?.value == true) {
       _fetchLoggedSymptoms();
       widget.refreshNotifier?.value = false;
     }
   }
- 
+
   Future<void> _loadTappedDays() async {
     final prefs = await SharedPreferences.getInstance();
     final savedDays = prefs.getStringList('tapped_days');
@@ -82,6 +91,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           _lastPeriodDate = null;
         }
       });
+      _updateSummaryFromLocal();
     } else {
       if (_lastPeriodDate != null) {
         final lastPeriod = DateTime.parse(_lastPeriodDate!);
@@ -97,10 +107,33 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         });
         await prefs.setStringList(
             'tapped_days', _selectedCalendarDaysFormatted.toList());
+        _updateSummaryFromLocal();
       }
     }
   }
- 
+
+  /// Derives summary values from locally stored tapped days when API has not responded yet
+  void _updateSummaryFromLocal() {
+    final periodLen = _calculatePeriodLength();
+    final cycleLen = _calculateCycleLength();
+    if (_lastPeriodDate != null) {
+      final lastPeriod = DateTime.parse(_lastPeriodDate!);
+      final cl = cycleLen ?? 28;
+      final nextPeriod = lastPeriod.add(Duration(days: cl));
+      final ovulation = lastPeriod.add(Duration(days: cl - 14));
+      final fertileStart = ovulation.subtract(const Duration(days: 5));
+      final fertileEnd = ovulation.add(const Duration(days: 1));
+      setState(() {
+        _displayPeriodLength = periodLen ?? _defaultPeriodLength;
+        _displayCycleLength = cl;
+        _displayNextPeriod = nextPeriod;
+        _displayOvulationDay = ovulation;
+        _displayFertileStart = fertileStart;
+        _displayFertileEnd = fertileEnd;
+      });
+    }
+  }
+
   Future<void> _fetchLoggedSymptoms() async {
     setState(() {
       _isSymptomsLoading = true;
@@ -111,95 +144,16 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
       final response = await http.get(url, headers: headers);
       debugPrint('GET /insights/insights response: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data is List && data.isNotEmpty) {
-          final latestCycle = data.last;
-          debugPrint('Latest cycle: $latestCycle');
-          if (latestCycle['fertile_period_start'] != null &&
-              latestCycle['fertile_period_end'] != null) {
-            _setFertileWindow(latestCycle['fertile_period_start'],
-                latestCycle['fertile_period_end']);
-          }
-          if (latestCycle['next_period'] != null &&
-              latestCycle['period_length'] != null) {
-            final nextPeriodStart = DateTime.parse(latestCycle['next_period']);
-            final periodLength = latestCycle['period_length'];
-            final nextPeriodDays = List<DateTime>.generate(
-                periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
-            setState(() {
-              _nextPeriodDays = nextPeriodDays.toSet();
-              _selectedCalendarDays = {..._selectedCalendarDays};
-              _selectedCalendarDaysFormatted = _selectedCalendarDays
-                  .map((d) => DateFormat('yyyy-MM-dd').format(d))
-                  .toSet();
-            });
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setStringList(
-                'tapped_days', _selectedCalendarDaysFormatted.toList());
-          }
-          if (latestCycle['symptoms'] != null) {
-            debugPrint('Symptoms found: ${latestCycle['symptoms']}');
-            setState(() {
-              _loggedSymptoms = List<String>.from(latestCycle['symptoms']);
-              _isSymptomsLoading = false;
-            });
-          } else {
-            debugPrint('No symptoms found in latest cycle.');
-            if (latestCycle['ovulation_day'] != null) {
-              _setOvulationDay(latestCycle['ovulation_day']);
-            }
-            setState(() {
-              _isSymptomsLoading = false;
-            });
-          }
+          _applyInsightsData(Map<dynamic, dynamic>.from(data.last));
         } else if (data is Map) {
-          debugPrint('Data is a Map: $data');
-          if (data['fertile_period_start'] != null &&
-              data['fertile_period_end'] != null) {
-            _setFertileWindow(
-                data['fertile_period_start'], data['fertile_period_end']);
-          }
-          if (data['next_period'] != null && data['period_length'] != null) {
-            final nextPeriodStart = DateTime.parse(data['next_period']);
-            final periodLength = data['period_length'];
-            final nextPeriodDays = List<DateTime>.generate(
-                periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
-            setState(() {
-              _nextPeriodDays = nextPeriodDays.toSet();
-              _selectedCalendarDays = {..._selectedCalendarDays};
-              _selectedCalendarDaysFormatted = _selectedCalendarDays
-                  .map((d) => DateFormat('yyyy-MM-dd').format(d))
-                  .toSet();
-            });
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setStringList(
-                'tapped_days', _selectedCalendarDaysFormatted.toList());
-          }
-          if (data['symptoms'] != null) {
-            debugPrint('Symptoms found: ${data['symptoms']}');
-            setState(() {
-              _loggedSymptoms = List<String>.from(data['symptoms']);
-              _isSymptomsLoading = false;
-            });
-          } else {
-            debugPrint('No symptoms found in data map.');
-            setState(() {
-              _isSymptomsLoading = false;
-            });
-          }
-          if (data['ovulation_day'] != null) {
-            _setOvulationDay(data['ovulation_day']);
-          }
+          _applyInsightsData(data);
         } else {
-          debugPrint('Data is neither List nor Map: $data');
-          setState(() {
-            _isSymptomsLoading = false;
-          });
+          setState(() => _isSymptomsLoading = false);
         }
       } else {
-        debugPrint('Non-200 response, setting _loggedSymptoms to empty.');
         setState(() {
           _loggedSymptoms = [];
           _isSymptomsLoading = false;
@@ -214,7 +168,41 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       });
     }
   }
- 
+
+  void _applyInsightsData(Map<dynamic, dynamic> d) async {
+    if (d['fertile_period_start'] != null && d['fertile_period_end'] != null) {
+      _setFertileWindow(d['fertile_period_start'], d['fertile_period_end']);
+    }
+    if (d['next_period'] != null && d['period_length'] != null) {
+      final nextPeriodStart = DateTime.parse(d['next_period'].toString());
+      final periodLength = d['period_length'] as int;
+      final nextPeriodDays = List<DateTime>.generate(
+          periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
+      setState(() {
+        _nextPeriodDays = nextPeriodDays.toSet();
+        _displayNextPeriod = nextPeriodStart;
+        if (periodLength > 0) _displayPeriodLength = periodLength;
+      });
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(
+          'tapped_days', _selectedCalendarDaysFormatted.toList());
+    }
+    if (d['ovulation_day'] != null) {
+      _setOvulationDay(d['ovulation_day']);
+    }
+    if (d['cycle_length'] != null) {
+      setState(() => _displayCycleLength = d['cycle_length'] as int);
+    }
+    if (d['symptoms'] != null) {
+      setState(() {
+        _loggedSymptoms = List<String>.from(d['symptoms']);
+        _isSymptomsLoading = false;
+      });
+    } else {
+      setState(() => _isSymptomsLoading = false);
+    }
+  }
+
   void _setFertileWindow(dynamic start, dynamic end) {
     try {
       final s = DateTime.parse(start.toString());
@@ -225,23 +213,27 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       }
       setState(() {
         _fertileWindowDays = days;
+        _displayFertileStart = s;
+        _displayFertileEnd = e;
       });
     } catch (e) {
       debugPrint('Failed to parse fertile window: $e');
     }
   }
- 
+
   void _setOvulationDay(dynamic dateVal) {
     try {
       final d = DateTime.parse(dateVal.toString());
+      final normalized = DateTime(d.year, d.month, d.day);
       setState(() {
-        _ovulationDates = {DateTime(d.year, d.month, d.day)};
+        _ovulationDates = {normalized};
+        _displayOvulationDay = normalized;
       });
     } catch (e) {
       debugPrint('Failed to parse ovulation day: $e');
     }
   }
- 
+
   @override
   void dispose() {
     widget.refreshNotifier?.removeListener(_handleRefreshRequest);
@@ -249,25 +241,21 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     _calendarScrollController.dispose();
     super.dispose();
   }
- 
+
   void _onCalendarScroll() {
     final currentOffset = _calendarScrollController.offset;
     if (currentOffset > 60 && !_isCalendarCollapsed) {
-      setState(() {
-        _isCalendarCollapsed = true;
-      });
+      setState(() => _isCalendarCollapsed = true);
     } else if (currentOffset < 20 && _isCalendarCollapsed) {
-      setState(() {
-        _isCalendarCollapsed = false;
-      });
+      setState(() => _isCalendarCollapsed = false);
     }
   }
- 
+
   void _toggleCalendarDate(DateTime date) async {
     final normalized = DateTime(date.year, date.month, date.day);
     final isAdding =
         !_selectedCalendarDays.any((d) => _isSameDay(d, normalized));
- 
+
     setState(() {
       if (!isAdding) {
         _selectedCalendarDays = _selectedCalendarDays
@@ -287,12 +275,12 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _lastPeriodDate = null;
       }
     });
- 
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
         'tapped_days', _selectedCalendarDaysFormatted.toList());
- 
-    // Only auto-generate period days when the user taps the very first day
+
+    // Only auto-generate when user taps the very first day
     if (isAdding && _selectedCalendarDays.length == 1 && _lastPeriodDate != null) {
       final lastPeriod = DateTime.parse(_lastPeriodDate!);
       final periodDays = List<DateTime>.generate(
@@ -308,10 +296,12 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       await prefs.setStringList(
           'tapped_days', _selectedCalendarDaysFormatted.toList());
     }
- 
+
+    _updateSummaryFromLocal();
+
     final calculatedPeriodLength = _calculatePeriodLength();
     final calculatedCycleLength = _calculateCycleLength();
- 
+
     if (_selectedCalendarDays.isNotEmpty) {
       try {
         final api = ApiService();
@@ -323,12 +313,12 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         final String? faithPreference =
             userData['faith_preference'] ?? userData['faithPreference'];
         final bool? audioPreference = userData['audio_preference'];
- 
+
         final finalPeriodLength =
             calculatedPeriodLength ?? userData['period_length'] ?? _defaultPeriodLength;
         final finalCycleLength =
             calculatedCycleLength ?? userData['cycle_length'] ?? 28;
- 
+
         if (_lastPeriodDate != null) {
           final lastPeriod = DateTime.parse(_lastPeriodDate!);
           final nextPeriodStart =
@@ -341,10 +331,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           setState(() {
             _nextPeriodDays = nextPeriodDaysList.toSet();
           });
-          debugPrint(
-              'Calculated next period: ${_nextPeriodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).join(', ')}');
         }
- 
+
         await api.updateProfile(
           age: age,
           cycleLength: finalCycleLength,
@@ -354,10 +342,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           faithPreference: faithPreference,
           audioPreference: audioPreference,
         );
- 
-        debugPrint(
-            'Profile updated with cycleLength: $finalCycleLength, periodLength: $finalPeriodLength');
- 
+
         await AnalyticsService.logPeriodLogged(
           periodLength: finalPeriodLength,
           cycleLength: finalCycleLength,
@@ -368,62 +353,68 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       }
     }
   }
- 
+
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
- 
+
   int? _calculatePeriodLength() {
     if (_selectedCalendarDays.isEmpty) return null;
     final sortedDays = _selectedCalendarDays.toList()
       ..sort((a, b) => a.compareTo(b));
     int consecutiveCount = 1;
     for (int i = 1; i < sortedDays.length; i++) {
-      final dayDifference = sortedDays[i].difference(sortedDays[i - 1]).inDays;
-      if (dayDifference == 1) {
+      if (sortedDays[i].difference(sortedDays[i - 1]).inDays == 1) {
         consecutiveCount++;
       } else {
         break;
       }
     }
-    debugPrint('Calculated period length: $consecutiveCount days');
     return consecutiveCount;
   }
- 
+
   int? _calculateCycleLength() {
     if (_selectedCalendarDays.length < 2) return null;
     final sortedDays = _selectedCalendarDays.toList()
       ..sort((a, b) => a.compareTo(b));
- 
-    final periodStarts = <DateTime>[];
-    periodStarts.add(sortedDays.first);
- 
+    final periodStarts = <DateTime>[sortedDays.first];
     for (int i = 1; i < sortedDays.length; i++) {
-      final dayDifference = sortedDays[i].difference(sortedDays[i - 1]).inDays;
-      if (dayDifference > 1) {
+      if (sortedDays[i].difference(sortedDays[i - 1]).inDays > 1) {
         periodStarts.add(sortedDays[i]);
       }
     }
- 
     if (periodStarts.length >= 2) {
       final cycleLengths = <int>[];
       for (int i = 1; i < periodStarts.length; i++) {
         final gap = periodStarts[i].difference(periodStarts[i - 1]).inDays;
-        if (gap > 0) {
-          cycleLengths.add(gap);
-        }
+        if (gap > 0) cycleLengths.add(gap);
       }
       if (cycleLengths.isNotEmpty) {
-        final averageCycleLength =
-            (cycleLengths.reduce((a, b) => a + b) / cycleLengths.length)
-                .round();
-        debugPrint(
-            'Calculated cycle length: $averageCycleLength days (from ${cycleLengths.length} cycle(s))');
-        return averageCycleLength;
+        return (cycleLengths.reduce((a, b) => a + b) / cycleLengths.length)
+            .round();
       }
     }
     return null;
   }
- 
+
+  void _openLogSymptomScreen() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const LogSymptomScreen(),
+        settings: RouteSettings(
+          name: '/log-symptoms',
+          arguments: {
+            'lastPeriodDate': _lastPeriodDate,
+            'cycleLength': _displayCycleLength ?? 28,
+            'periodLength': _displayPeriodLength ?? _defaultPeriodLength,
+          },
+        ),
+      ),
+    );
+    if (result != null) {
+      _fetchLoggedSymptoms();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -448,7 +439,6 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                         children: [
                           if (!_isCalendarCollapsed) ...[
                             const SizedBox(height: 10),
-                            // FIX: added missing comma above
                             SwipeableGreenCalendar(
                               initialMonth: DateTime.now(),
                               selectedDates: _selectedCalendarDays,
@@ -507,64 +497,32 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                       child: SingleChildScrollView(
                         controller: _calendarScrollController,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 24),
+                            horizontal: 20, vertical: 24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (_remindersInitialized)
+                            if (_remindersInitialized) ...[
                               ReminderPanel(reminderService: _reminderService),
-                            const SizedBox(height: 16),
-                            _buildCalendarKey(),
-                            Row(
-                              children: [
-                                Text(
-                                  AppLocalizations.of(context).loggedSymptoms,
-                                  style: const TextStyle(
-                                    fontSize: 19,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontFamily: 'Poppins',
-                                  ),
-                                ),
-                                const Spacer(),
-                                TextButton.icon(
-                                  onPressed: _clearCalendarDays,
-                                  icon: const Icon(Icons.delete_outline,
-                                      color: _darkGreenText),
-                                  label: Text(
-                                    AppLocalizations.of(context).clear,
-                                    style: const TextStyle(
-                                      color: _darkGreenText,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 18),
-                            if (_isSymptomsLoading)
-                              const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(24),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
-                            else ...[
-                              if (_loggedSymptoms.isEmpty)
-                                Text(
-                                    AppLocalizations.of(context)
-                                        .noSymptomsLogged,
-                                    style: const TextStyle(color: Colors.grey)),
-                              if (_loggedSymptoms.isNotEmpty)
-                                ..._loggedSymptoms.map(
-                                  (symptom) => _buildLoggedSymptomItem(
-                                    symptom,
-                                    Icons.check_circle,
-                                    _primaryTeal,
-                                  ),
-                                ),
+                              const SizedBox(height: 20),
                             ],
+
+                            // Calendar colour key
+                            _buildCalendarKey(),
+
+                            // Cycle summary stat cards
+                            _buildCycleSummary(),
+                            const SizedBox(height: 20),
+
+                            // Fertile window detail card
+                            if (_displayFertileStart != null &&
+                                _displayFertileEnd != null) ...[
+                              _buildFertileWindowCard(),
+                              const SizedBox(height: 20),
+                            ],
+
+                            // Symptoms chips + see all
+                            _buildSymptomsSection(),
+
                             const SizedBox(height: 80),
                           ],
                         ),
@@ -580,28 +538,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
               child: FloatingActionButton(
                 backgroundColor: _darkGreenText,
                 elevation: 6,
-                onPressed: () async {
-                  final result = await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const LogSymptomScreen(),
-                      settings: RouteSettings(
-                        name: '/log-symptoms',
-                        arguments: {
-                          'lastPeriodDate': _lastPeriodDate,
-                          'cycleLength': _selectedCalendarDays.length,
-                          'periodLength': _selectedCalendarDays.length,
-                        },
-                      ),
-                    ),
-                  );
-                  if (result != null) {
-                    if (result is Map && result['symptoms'] != null) {
-                      debugPrint(
-                          'Received logged symptoms: ${result['symptoms']}');
-                    }
-                    _fetchLoggedSymptoms();
-                  }
-                },
+                onPressed: _openLogSymptomScreen,
                 child: const Icon(Icons.add, size: 32, color: Colors.white),
               ),
             ),
@@ -610,44 +547,40 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
       ),
     );
   }
- 
-  // FIX: single definition of _buildCalendarKey (duplicate removed)
+
+  // ─────────────────────────────────────────────
+  // Calendar colour key
+  // ─────────────────────────────────────────────
   Widget _buildCalendarKey() {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: _lightGreenBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey.shade200,
-        ),
+        border: Border.all(color: _borderGreen),
       ),
       child: Wrap(
         spacing: 20,
         runSpacing: 12,
         children: [
           _keyItem(const Color(0xFFF06292), 'Period'),
-          _keyItem(const Color(0xFF81C784), 'Fertile Window'),
+          _keyItem(const Color(0xFF81C784), 'Fertile window'),
           _keyItem(const Color(0xFF6A1B9A), 'Ovulation'),
-          _keyItem(
-            Colors.transparent,
-            'Predicted Period',
-            border: const Color(0xFFD32F2F),
-          ),
+          _keyItem(Colors.transparent, 'Predicted period',
+              border: const Color(0xFFD32F2F)),
         ],
       ),
     );
   }
- 
-  // FIX: single definition of _keyItem (duplicate removed)
+
   Widget _keyItem(Color color, String text, {Color? border}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 16,
-          height: 16,
+          width: 14,
+          height: 14,
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
@@ -655,74 +588,555 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                 border != null ? Border.all(color: border, width: 2) : null,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         Text(
           text,
           style: const TextStyle(
-            fontWeight: FontWeight.w600,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: _darkGreenText,
             fontFamily: 'Poppins',
           ),
         ),
       ],
     );
   }
- 
-  Widget _buildLoggedSymptomItem(
-      String symptom, IconData icon, Color iconColor) {
-    String displaySymptom = symptom;
-    String sendSymptom = symptom;
-    if (symptom.contains(':')) {
-      final parts = symptom.split(':');
-      if (parts.length == 2) {
-        displaySymptom = '${parts[0].trim()} - ${parts[1].trim()}';
-        sendSymptom = displaySymptom;
-      }
-    } else if (symptom.contains('-')) {
-      final parts = symptom.split('-');
-      if (parts.length == 2) {
-        displaySymptom = '${parts[0].trim()} - ${parts[1].trim()}';
-        sendSymptom = displaySymptom;
-      }
-    }
- 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: GestureDetector(
-        onTap: () => debugPrint('Symptom sent: $sendSymptom'),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.12),
-                shape: BoxShape.circle,
+
+  // ─────────────────────────────────────────────
+  // Cycle summary 2x2 stat grid
+  // ─────────────────────────────────────────────
+  Widget _buildCycleSummary() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Cycle summary',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: _darkGreenText,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        const SizedBox(height: 14),
+        if (_lastPeriodDate == null)
+          _buildEmptyHint(
+            icon: Icons.touch_app_outlined,
+            text: 'Tap days on the calendar to start tracking your cycle',
+          )
+        else
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 2.1,
+            children: [
+              _statCard(
+                icon: Icons.calendar_today_outlined,
+                label: 'Period length',
+                value: _displayPeriodLength != null
+                    ? '${_displayPeriodLength} days'
+                    : '–',
+                sub: 'Based on logs',
               ),
-              child: Icon(icon, color: iconColor, size: 22),
+              _statCard(
+                icon: Icons.loop_outlined,
+                label: 'Cycle length',
+                value: _displayCycleLength != null
+                    ? '${_displayCycleLength} days'
+                    : '–',
+                sub: 'Average',
+              ),
+              _statCard(
+                icon: Icons.event_outlined,
+                label: 'Next period',
+                value: _displayNextPeriod != null
+                    ? DateFormat('MMM d').format(_displayNextPeriod!)
+                    : '–',
+                sub: 'Predicted start',
+              ),
+              _statCard(
+                icon: Icons.favorite_border,
+                label: 'Ovulation day',
+                value: _displayOvulationDay != null
+                    ? DateFormat('MMM d').format(_displayOvulationDay!)
+                    : '–',
+                sub: 'Estimated',
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _statCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required String sub,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _borderGreen),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: _primaryTeal, size: 14),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: _primaryTeal,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                    letterSpacing: 0.3,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: _darkGreenText,
+              fontFamily: 'Poppins',
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                displaySymptom,
-                style: const TextStyle(
-                  fontSize: 16,
+          ),
+          Text(
+            sub,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey.shade500,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Fertile window card
+  // ─────────────────────────────────────────────
+  Widget _buildFertileWindowCard() {
+    final start = _displayFertileStart!;
+    final end = _displayFertileEnd!;
+    final cycleLen = _displayCycleLength ?? 28;
+    final lastPeriod =
+        _lastPeriodDate != null ? DateTime.parse(_lastPeriodDate!) : null;
+
+    double barStart = 0.0;
+    double barWidth = 0.22;
+    if (lastPeriod != null) {
+      final daysIn = start.difference(lastPeriod).inDays;
+      final windowLen = end.difference(start).inDays + 1;
+      barStart = (daysIn / cycleLen).clamp(0.0, 1.0);
+      barWidth = (windowLen / cycleLen).clamp(0.0, 1.0 - barStart);
+    }
+
+    final startDayNum =
+        lastPeriod != null ? start.difference(lastPeriod).inDays + 1 : '?';
+    final endDayNum =
+        lastPeriod != null ? end.difference(lastPeriod).inDays + 1 : '?';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderGreen),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Fertile window',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
                   color: _darkGreenText,
-                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _lightGreenBg,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: _borderGreen),
+                ),
+                child: Text(
+                  '${DateFormat('MMM d').format(start)} – ${DateFormat('MMM d').format(end)}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: _darkGreenText,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final totalWidth = constraints.maxWidth;
+              return Stack(
+                children: [
+                  Container(
+                    height: 8,
+                    width: totalWidth,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  Positioned(
+                    left: totalWidth * barStart,
+                    child: Container(
+                      height: 8,
+                      width: totalWidth * barWidth,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF81C784),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Days $startDayNum–$endDayNum of your ${cycleLen}-day cycle',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade500,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 14),
+          Divider(height: 1, color: _borderGreen),
+          const SizedBox(height: 14),
+          Text(
+            'Conception timing & baby sex probability',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _conceptionPill(
+                  icon: Icons.female,
+                  label: 'Girl',
+                  desc: 'Days before\novulation',
+                  bgColor: const Color(0xFFFFF0F5),
+                  borderColor: const Color(0xFFF9A8C9),
+                  iconColor: const Color(0xFFBE185D),
+                  textColor: const Color(0xFFBE185D),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _conceptionPill(
+                  icon: Icons.male,
+                  label: 'Boy',
+                  desc: 'On or after\novulation',
+                  bgColor: const Color(0xFFE8F4FD),
+                  borderColor: const Color(0xFF93C5FD),
+                  iconColor: const Color(0xFF1E40AF),
+                  textColor: const Color(0xFF1E40AF),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _conceptionPill({
+    required IconData icon,
+    required String label,
+    required String desc,
+    required Color bgColor,
+    required Color borderColor,
+    required Color iconColor,
+    required Color textColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: borderColor),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: iconColor, size: 20),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            desc,
+            style: const TextStyle(
+              fontSize: 10,
+              color: Colors.grey,
+              fontFamily: 'Poppins',
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Symptoms section (chips)
+  // ─────────────────────────────────────────────
+  Widget _buildSymptomsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Logged symptoms',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _darkGreenText,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            Row(
+              children: [
+                if (_loggedSymptoms.isNotEmpty) ...[
+                  GestureDetector(
+                    onTap: _openLogSymptomScreen,
+                    child: const Text(
+                      'See all',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: _primaryTeal,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                GestureDetector(
+                  onTap: _clearCalendarDays,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.delete_outline,
+                          color: _darkGreenText, size: 17),
+                      SizedBox(width: 3),
+                      Text(
+                        'Clear',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: _darkGreenText,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        if (_isSymptomsLoading)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(color: _primaryTeal),
+            ),
+          )
+        else if (_loggedSymptoms.isEmpty)
+          _buildEmptyHint(
+            icon: Icons.add_circle_outline,
+            text: 'No symptoms logged yet. Tap to log how you\'re feeling.',
+            onTap: _openLogSymptomScreen,
+            showChevron: true,
+          )
+        else
+          _buildSymptomChips(),
+      ],
+    );
+  }
+
+  Widget _buildSymptomChips() {
+    final preview = _loggedSymptoms.take(4).toList();
+    final extra = _loggedSymptoms.length - preview.length;
+
+    final chipColors = [
+      const Color(0xFFF06292),
+      _primaryTeal,
+      const Color(0xFF81C784),
+      const Color(0xFF6A1B9A),
+    ];
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ...preview.asMap().entries.map((entry) {
+          final i = entry.key;
+          final symptom = entry.value;
+          String display = symptom;
+          if (symptom.contains(':')) {
+            final p = symptom.split(':');
+            if (p.length == 2) display = '${p[0].trim()} · ${p[1].trim()}';
+          } else if (symptom.contains('-')) {
+            final p = symptom.split('-');
+            if (p.length == 2) display = '${p[0].trim()} · ${p[1].trim()}';
+          }
+          return GestureDetector(
+            onTap: _openLogSymptomScreen,
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: _borderGreen),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: chipColors[i % chipColors.length],
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 7),
+                  Text(
+                    display,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: _darkGreenText,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+        if (extra > 0)
+          GestureDetector(
+            onTap: _openLogSymptomScreen,
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              decoration: BoxDecoration(
+                color: _lightGreenBg,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: _borderGreen),
+              ),
+              child: Text(
+                '+$extra more',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: _darkGreenText,
                   fontFamily: 'Poppins',
                 ),
               ),
             ),
+          ),
+      ],
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  // Shared empty-state hint tile
+  // ─────────────────────────────────────────────
+  Widget _buildEmptyHint({
+    required IconData icon,
+    required String text,
+    VoidCallback? onTap,
+    bool showChevron = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: _lightGreenBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _borderGreen),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: _primaryTeal, size: 22),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: _darkGreenText,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+            if (showChevron)
+              const Icon(Icons.chevron_right, color: _primaryTeal, size: 20),
           ],
         ),
       ),
     );
   }
- 
+
+  // ─────────────────────────────────────────────
+  // Clear calendar
+  // ─────────────────────────────────────────────
   Future<void> _clearCalendarDays() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('tapped_days');
-      // FIX: use reassignment instead of .clear() for consistency
       setState(() {
         _selectedCalendarDays = {};
         _selectedCalendarDaysFormatted = {};
@@ -730,6 +1144,12 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _ovulationDates = {};
         _fertileWindowDays = {};
         _lastPeriodDate = null;
+        _displayPeriodLength = null;
+        _displayCycleLength = null;
+        _displayNextPeriod = null;
+        _displayOvulationDay = null;
+        _displayFertileStart = null;
+        _displayFertileEnd = null;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
