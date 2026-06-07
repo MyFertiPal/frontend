@@ -3,6 +3,7 @@ import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 import 'login_screen.dart';
 
+
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -213,7 +214,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: 8),
         Container(
           width: 360,
-          height: 60,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(10),
@@ -284,7 +284,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to send link: $e'),
+          content: Text('Unable to send link. Please try again later.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -393,6 +393,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       _showNew = !_showNew;
                     });
                   },
+                  
                 ),
                 const SizedBox(height: 12),
                 _buildInputField(
@@ -409,7 +410,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 20),
                 SizedBox(
                   width: 360,
-                  height: 60,
                   child: ElevatedButton(
                     onPressed: _isResetting ? null : _handleReset,
                     style: ElevatedButton.styleFrom(
@@ -473,7 +473,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         const SizedBox(height: 8),
         Container(
           width: 360,
-          height: 60,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(10),
@@ -544,7 +543,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      _showError('Failed to reset password: $e');
+      _showError('Unable to reset password. Please try again later.');
     } finally {
       if (mounted) {
         setState(() {
@@ -608,7 +607,6 @@ class PasswordUpdatedScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 SizedBox(
                   width: 360,
-                  height: 60,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(

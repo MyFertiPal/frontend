@@ -101,7 +101,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Login labelLarge
                   SizedBox(
                     width: 360,
-                    height: 60,
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
@@ -119,7 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 24,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
                           : const Text(
@@ -173,7 +173,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Sign In with Google
                   SizedBox(
                     width: 360,
-                    height: 60,
                     child: OutlinedButton(
                       onPressed: () {
                         // TODO: Hook up Google sign in
@@ -225,7 +224,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Sign In with Facebook
                   SizedBox(
                     width: 360,
-                    height: 60,
                     child: OutlinedButton(
                       onPressed: () {
                         // TODO: Hook up Facebook sign in
@@ -305,7 +303,6 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
         Container(
           width: 360,
-          height: 60,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(10),
@@ -361,7 +358,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      
+
       // Users enter their email address for login
       await authService.signIn(
         email: _emailController.text.trim(),
@@ -369,7 +366,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (route) => false);
       }
     } catch (e) {
       if (mounted) {
@@ -390,6 +388,3 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 }
-
-
-

@@ -51,7 +51,8 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
 
     // Get the selected language from LocalizationProvider
     final localizationProvider = context.read<loc_provider.LocalizationProvider>();
-    final selectedLanguage =;
+    final selectedLanguage =
+;
         (localizationProvider.selectedLanguageCode ?? 'en').toLowerCase();
 
     // Parse full name into first and last name
@@ -239,7 +240,7 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
 
                   // Submit labelLarge
                   SizedBox(
-                    width: 360,
+                      
                     height: 60,
                     child: ElevatedButton(
                       onPressed: _showVerifyModal,
@@ -316,7 +317,7 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
         ),
         const SizedBox(height: 8),
         Container(
-          width: 360,
+            
           height: 60,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
@@ -548,7 +549,8 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                   child: ElevatedButton(
                     onPressed: () async {
                       // Get OTP from controllers
-                      final otp = widget.otp1Controller.text +;
+                      final otp = widget.otp1Controller.text +
+;
                           widget.otp2Controller.text +
                           widget.otp3Controller.text +
                           widget.otp4Controller.text;

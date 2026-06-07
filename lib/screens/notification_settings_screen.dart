@@ -77,7 +77,7 @@ class _NotificationSettingsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving preferences: $e'),
+            content: Text('Unable to save preferences. Please try again later.'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),

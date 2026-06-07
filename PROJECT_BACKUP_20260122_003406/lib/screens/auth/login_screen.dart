@@ -41,7 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () async {
                       setState(() => _loading = true);
                       try {
-                        final user = await auth.signIn(;
+                        final user = await auth.signIn(
+;
                           email: _emailController.text.trim(),
                           password: _passwordController.text,
                         );
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.pushReplacementNamed(context, '/profile');
                         }
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login error: $e')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login error: $')));
                       } finally {
                         setState(() => _loading = false);
                       }

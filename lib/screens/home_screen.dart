@@ -228,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _insightText = _defaultInsightText;
       });
     } catch (e) {
-      debugPrint('Failed to send/get insights: $e');
+      debugPrint('Unable to send insights');
       setState(() {
         _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
         _insightText = _defaultInsightText;
@@ -255,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to play audio: $e'),
+            content: Text('Unable to play audio. Please try again later.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -554,12 +554,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final nameForInitial = fullName.isNotEmpty ? fullName : fallbackName;
     final initial =
         nameForInitial.isNotEmpty ? nameForInitial[0].toUpperCase() : 'U';
-    final color =
-        _colorFromString(nameForInitial.isNotEmpty ? nameForInitial : initial);
+    
 
     return CircleAvatar(
       radius: radius,
-      backgroundColor: _darkGreenText.withOpacity(0.1),
+      backgroundColor: _darkGreenText,
       child: Text(
         initial,
         style: TextStyle(
@@ -653,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Color _colorFromString(String input) {
+   ToColorString(String input) {
     if (input.isEmpty) return _primaryTeal;
     final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
     final hue = (hash % 360).toDouble();

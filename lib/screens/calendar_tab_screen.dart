@@ -1164,7 +1164,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${AppLocalizations.of(context).failedToClearCalendar}: $e'),
+                '${AppLocalizations.of(context).failedToClearCalendar}'),
             backgroundColor: Colors.red,
           ),
         );

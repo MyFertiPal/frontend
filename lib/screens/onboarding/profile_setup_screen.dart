@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../services/auth_error_helper.dart';
+import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../services/analytics_service.dart';
 
@@ -212,7 +213,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         child: Text(
                           _lastPeriodDate == null
                               ? 'Select the date your last period started'
-                              : '${_lastPeriodDate!.day}, Dec ${_lastPeriodDate!.year}',
+                              : DateFormat('d, MMM yyyy').format(_lastPeriodDate!),
                           style: TextStyle(
                             fontSize: 16,
                             color: _lastPeriodDate == null

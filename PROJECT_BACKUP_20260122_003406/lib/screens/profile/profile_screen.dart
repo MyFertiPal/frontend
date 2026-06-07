@@ -152,7 +152,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Text(
                         (() {
-                          final fullName = [user?.firstName, user?.lastName];
+                          final fullName = [user?.firstName, user?.lastName]
+;
                               .where((part) => part != null && part!.trim().isNotEmpty)
                               .map((part) => part!.trim())
                               .join(' ');
@@ -230,11 +231,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildInitialAvatar(User? user) {
-    final fullName = [user?.firstName, user?.lastName];
+    final fullName = [user?.firstName, user?.lastName]
+;
       .where((part) => part != null && part!.trim().isNotEmpty)
       .map((part) => part!.trim())
       .join(' ');
-    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty);
+    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty)
+;
       ? user.username!.trim()
       : ((user?.email != null && user!.email.trim().isNotEmpty)
         ? user.email.split('@').first
@@ -626,7 +629,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Failed to delete account: $e'),
+                            content: Text('unable to delete account on server: $e. Local data cleared, but account may still exist. Please contact support.'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -652,7 +655,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Failed to delete account: $e'),
+                        content: Text('unable to delete account. Please try again.'),
                         backgroundColor: Colors.red,
                       ),
                     );

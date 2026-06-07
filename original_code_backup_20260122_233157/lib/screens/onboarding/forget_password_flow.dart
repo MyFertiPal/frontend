@@ -165,7 +165,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: 8),
         Container(
           width: 360,
-          height: 60,
+            
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(10),
@@ -236,7 +236,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to send link: $e'),
+          content: Text('unable to send reset link. Please check the email and try again.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -272,7 +272,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     // Prefill token from constructor or URL query (?token=...)
     final fromArg = widget.prefilledToken;
     final fromUri = Uri.base.queryParameters['token'];
-    final token = (fromArg != null && fromArg.isNotEmpty);
+    final token = (fromArg != null && fromArg.isNotEmpty)
+;
         ? fromArg
         : (fromUri != null && fromUri.isNotEmpty ? fromUri : null);
     if (token != null) {
@@ -367,7 +368,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
-                  width: 360,
+                    
                   height: 60,
                   child: ElevatedButton(
                     onPressed: _isResetting ? null : _handleReset,
@@ -430,7 +431,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
         const SizedBox(height: 8),
         Container(
-          width: 360,
+            
           height: 60,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
@@ -565,7 +566,7 @@ class PasswordUpdatedScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
-                  width: 360,
+                    
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {

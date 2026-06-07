@@ -45,7 +45,6 @@ class PasswordUpdatedScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 SizedBox(
                   width: 360,
-                  height: 60,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacementNamed('/login');

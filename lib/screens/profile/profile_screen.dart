@@ -10,7 +10,7 @@ import '../../services/api_service.dart';
 import '../onboarding/welcome_screen.dart';
 import '../privacy_and_security/privacy_and_security_screen.dart';
 import '../notification_settings_screen.dart';
-import '../data_statistics_screen.dart';
+
 
 const Color _primaryTeal = Color(0xFF0EA5A4);
 const Color _darkGreenText = Color(0xFF064B23);
@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load profile: ${e.toString()}'),
+            content: const Text('Failed to load profile. Please try again later.'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -689,8 +689,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                          'Language changed locally. Server update failed: $e'),
+                      content: const Text(
+                          'Unable to save language preference to server. Changes saved locally.'),
                       backgroundColor: Colors.orange,
                       duration: const Duration(seconds: 3),
                     ),
@@ -771,18 +771,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined, color: _primaryTeal),
-              title: Text(AppLocalizations.of(context).exploreMyData),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (_) => const DataStatisticsScreen()),
-                );
-              },
-            ),
+           
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.notifications_outlined,

@@ -102,7 +102,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Login Button
                   SizedBox(
                     width: 360,
-                    height: 60,
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
@@ -172,7 +171,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Sign In with Google
                   SizedBox(
                     width: 360,
-                    height: 60,
                     child: OutlinedButton(
                       onPressed: () {
                         // TODO: Hook up Google sign in
@@ -224,7 +222,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Sign In with Facebook
                   SizedBox(
                     width: 360,
-                    height: 60,
                     child: OutlinedButton(
                       onPressed: () {
                         // TODO: Hook up Facebook sign in
@@ -304,7 +301,6 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
         Container(
           width: 360,
-          height: 60,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(10),

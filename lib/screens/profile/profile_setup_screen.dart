@@ -91,7 +91,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         backgroundColor: _primaryTeal,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
@@ -533,7 +533,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update profile: $e'),
+            content: Text('unable to update profile. Please try again later.'),
             backgroundColor: Colors.red,
           ),
         );

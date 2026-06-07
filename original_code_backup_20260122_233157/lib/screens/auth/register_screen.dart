@@ -58,7 +58,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (!_formKey.currentState!.validate()) return;
                               setState(() => _loading = true);
                               try {
-                                final user = await auth.signUpWithEmail(;
+                                final user = await auth.signUpWithEmail(
+;
                                   email: _emailController.text?.trim() ?? "",
                                   password: _passwordController.text,
                                 );
@@ -70,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 }
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Error: $e')));
+                                    SnackBar(content: Text('unable to register. Please check your details and try again.')));
                               } finally {
                                 setState(() => _loading = false);
                               }
@@ -99,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.pushReplacementNamed(context, '/profile');
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ')));
                   } finally {
                     setState(() => _loading = false);
                   }

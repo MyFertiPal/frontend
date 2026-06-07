@@ -38,9 +38,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void _showVerifyModal() async {
     // Validate form first
     if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Please correct the highlighted fields',
+          ),
+          backgroundColor: const Color(0xFFB91C1C),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
       return;
     }
-
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -154,34 +165,77 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Full Name Field
                   _buildInputField(
-                    label: AppLocalizations.of(context).fullName,
-                    controller: _fullNameController,
-                    keyboardType: TextInputType.name,
-                  ),
+  label: AppLocalizations.of(context).fullName,
+  controller: _fullNameController,
+  keyboardType: TextInputType.name,
+  validator: (value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Required';
+    }
+    return null;
+  },
+),
                   const SizedBox(height: 5),
 
                   // Email Field
                   _buildInputField(
-                    label: AppLocalizations.of(context).email,
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
+  label: AppLocalizations.of(context).email,
+  controller: _emailController,
+  keyboardType: TextInputType.emailAddress,
+  validator: (value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Required';
+    }
+
+    final emailRegex =
+        RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+
+    if (!emailRegex.hasMatch(value.trim())) {
+      return 'Invalid email';
+    }
+
+    return null;
+  },
+),
                   const SizedBox(height: 5),
 
                   // Username Field
                   _buildInputField(
-                    label: AppLocalizations.of(context).username,
-                    controller: _usernameController,
-                    keyboardType: TextInputType.text,
-                  ),
+  label: AppLocalizations.of(context).username,
+  controller: _usernameController,
+  keyboardType: TextInputType.text,
+  validator: (value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Required';
+    }
+
+    if (value.trim().length < 3) {
+      return 'Username too short';
+    }
+
+    return null;
+  },
+),
                   const SizedBox(height: 5),
 
                   // Phone Number Field
                   _buildInputField(
-                    label: AppLocalizations.of(context).phoneNumber,
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                  ),
+  label: AppLocalizations.of(context).phoneNumber,
+  controller: _phoneController,
+  keyboardType: TextInputType.phone,
+  validator: (value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Required';
+    }
+
+    if (value.trim().length < 10) {
+      return 'Invalid phone number';
+    }
+
+    return null;
+  },
+),
+                  
                   const SizedBox(height: 5),
 
                   // Password Field
@@ -255,11 +309,39 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ],
                   ),
                   const SizedBox(height: 30),
+                  //Have an account? Login
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).alreadyHaveAccount,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Poppins',
+                          color: Colors.black,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushReplacementNamed('/login');
+                        },
+                        child: Text(
+                          AppLocalizations.of(context).login,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                            color: Color(0xFF064B23),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
 
                   // Submit Button
                   SizedBox(
                     width: 360,
-                    height: 60,
                     child: ElevatedButton(
                       onPressed: _showVerifyModal,
                       style: ElevatedButton.styleFrom(
@@ -306,35 +388,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Have account? Login
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).alreadyHaveAccount,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Poppins',
-                          color: Colors.black,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pushReplacementNamed('/login');
-                        },
-                        child: Text(
-                          AppLocalizations.of(context).login,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',
-                            color: Color(0xFF064B23),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 30),
                 ],
               ),
@@ -369,7 +422,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         const SizedBox(height: 8),
         Container(
           width: 360,
-          height: 60,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
             borderRadius: BorderRadius.circular(10),
@@ -416,7 +468,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       onPressed: onToggleVisibility,
                     )
                   : null,
-              errorStyle: const TextStyle(fontSize: 12),
+              errorStyle: const TextStyle(
+                height: 0,
+                fontSize: 0,
+              ),
             ),
             style: const TextStyle(
               fontFamily: 'Poppins',
@@ -575,7 +630,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Verification code resent successfully'),
+            content: const Text('Verification code resent successfully'),
             backgroundColor: const Color(0xFF0EA5A4),
             duration: Duration(seconds: 2),
           ),
@@ -585,7 +640,8 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to resend OTP: ${e.toString()}'),
+            content:
+                const Text('Unable to resend OTP. Please try again later.'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -754,7 +810,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                        'Verification failed: ${e.toString()}'),
+                                        'Incorrect verification code. Please try again.'),
                                     backgroundColor: Colors.red,
                                     duration: const Duration(seconds: 4),
                                   ),
@@ -764,7 +820,8 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Please enter complete OTP'),
+                                content:
+                                    const Text('Please enter complete OTP'),
                                 backgroundColor: Colors.red,
                               ),
                             );

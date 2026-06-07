@@ -46,8 +46,8 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
           SnackBar(
             content: Text(
               kIsWeb
-                  ? 'Playback speed not supported by current browser/audio backend.'
-                  : 'Failed to change playback speed.',
+                  ? 'Playback speed not supported by current browser.'
+                  : 'Unable to change playback speed.please try again later.',
             ),
           ),
         );
@@ -196,7 +196,7 @@ class _AudioHubScreenState extends State<AudioHubScreen> {
                                         content: Text(
                                           kIsWeb
                                               ? 'Web audio not supported. Try Chrome or download the mobile app.'
-                                              : 'Audio failed to play: ${e.toString()}',
+                                              : 'Unable to play audio. Please try again later.',
                                         ),
                                         duration: const Duration(seconds: 4),
                                       ),
