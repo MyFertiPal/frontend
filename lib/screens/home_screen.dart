@@ -559,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return CircleAvatar(
       radius: radius,
-      backgroundColor: color,
+      backgroundColor: _darkGreenText.withOpacity(0.1),
       child: Text(
         initial,
         style: TextStyle(

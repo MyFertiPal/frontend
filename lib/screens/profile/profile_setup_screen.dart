@@ -7,6 +7,8 @@ import '../../services/api_service.dart';
 import '../../services/analytics_service.dart';
 import '../../theme.dart';
 
+const Color _primaryTeal = Color(0xFF0EA5A4);
+
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
 
@@ -84,9 +86,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryLight,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        backgroundColor: _primaryTeal,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
@@ -98,7 +100,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
       ),
@@ -115,7 +117,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 8),
