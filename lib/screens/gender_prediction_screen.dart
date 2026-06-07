@@ -39,7 +39,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
 
   void _initTtsService() {
     try {
-      final apiKey = ApiKeyConfig.getYarnGptApiKey();
+      final apiKey = ApiKeyConfig.getApiKey();
       _ttsService = YarnGptTtsService(apiKey: apiKey);
     } catch (e) {
       _ttsUnavailable = true;

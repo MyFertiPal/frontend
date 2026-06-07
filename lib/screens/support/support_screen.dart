@@ -71,14 +71,14 @@ class _SupportScreenState extends State<SupportScreen> {
     super.initState();
     _audioPlayer = AudioPlayer();
     try {
-      final testKey = ApiKeyConfig.getTestApiKey();
+      final testKey = ApiKeyConfig.getApiKey();
       String? apiKey;
 
       if (testKey != null) {
         apiKey = testKey;
       } else {
         try {
-          apiKey = ApiKeyConfig.getYarnGptApiKey();
+          apiKey = ApiKeyConfig.getApiKey();
         } catch (e) {
           debugPrint('YarnGPT API key not configured: $e');
           apiKey = null;

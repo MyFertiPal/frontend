@@ -82,14 +82,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Initialize TTS service - gracefully handle if API key is not configured
     try {
-      final testKey = ApiKeyConfig.getTestApiKey();
+      final testKey = ApiKeyConfig.getApiKey();
       String? apiKey;
 
       if (testKey != null) {
         apiKey = testKey;
       } else {
         try {
-          apiKey = ApiKeyConfig.getYarnGptApiKey();
+          apiKey = ApiKeyConfig.getApiKey();
         } catch (e) {
           debugPrint('YarnGPT API key not configured: $e');
           apiKey = null;
@@ -706,7 +706,7 @@ class _HomeScreenState extends State<HomeScreen> {
           width: cardWidth,
           height: cardHeight,
           decoration: BoxDecoration(
-            color:Colors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.zero,
             boxShadow: [
               BoxShadow(
@@ -1367,5 +1367,3 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 }
-
-

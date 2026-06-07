@@ -417,14 +417,14 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   void initState() {
     super.initState();
     try {
-      final testKey = ApiKeyConfig.getTestApiKey();
+      final testKey = ApiKeyConfig.getApiKey();
       String? apiKey;
 
       if (testKey != null) {
         apiKey = testKey;
       } else {
         try {
-          apiKey = ApiKeyConfig.getYarnGptApiKey();
+          apiKey = ApiKeyConfig.getApiKey();
         } catch (e) {
           debugPrint('YarnGPT API key not configured: $e');
           apiKey = null;
