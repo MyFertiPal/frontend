@@ -444,12 +444,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
+if (date != null) {
+  setState(() {
+    _lastPeriodDate = date;
+  });
 
-    if (date != null) {
-      setState(() {
-        _lastPeriodDate = date;
-      });
-    }
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString(
+    'last_period_date',
+    date.toIso8601String(),
+  );
+}
   }
 
   String _getLanguageDisplayName(String code) {
@@ -488,6 +493,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   }
 
   Future<void> _handleUpdate() async {
+    final prefs = await SharedPreferences.getInstance();
+
+if (_lastPeriodDate != null) {
+  await prefs.setString(
+    'last_period_date',
+    _lastPeriodDate!.toIso8601String(),
+  );
+}
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -569,7 +582,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
       // Save to SharedPreferences for calendar to load
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('tapped_days', periodDaysFormatted);
+
+await prefs.setString(
+  'last_period_date',
+  _lastPeriodDate!.toIso8601String(),
+);
+
+await prefs.setStringList(
+  'tapped_days',
+  periodDaysFormatted,
+);
 
       debugPrint(
           'Generated and saved ${periodDays.length} period days starting from ${DateFormat('yyyy-MM-dd').format(_lastPeriodDate!)}');

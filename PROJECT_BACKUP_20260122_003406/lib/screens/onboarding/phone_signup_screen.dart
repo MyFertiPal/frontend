@@ -117,7 +117,7 @@ class _PhoneSignupScreenState extends State<PhoneSignupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to send verification code: ${e.toString()}'),
+            content: Text('Unable to send verification code. Please try again later.'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -578,7 +578,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Verification failed: ${e.toString()}'),
+                                content: Text('Unable to verify code. Please try again later.'),
                                 backgroundColor: Colors.red,
                                 duration: const Duration(seconds: 4),
                               ),

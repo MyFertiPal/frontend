@@ -59,6 +59,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     _initializeReminders();
     widget.refreshNotifier?.addListener(_handleRefreshRequest);
   }
+  
 
   Future<void> _initializeReminders() async {
     _reminderService = NotificationReminderService();
@@ -85,8 +86,12 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _selectedCalendarDays = savedDays.map((s) => DateTime.parse(s)).toSet();
         if (_selectedCalendarDays.isNotEmpty) {
           final latest =
-              _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
-          _lastPeriodDate = DateFormat('yyyy-MM-dd').format(latest);
+    _selectedCalendarDays.reduce(
+      (a, b) => a.isAfter(b) ? a : b,
+    );
+
+_lastPeriodDate =
+    DateFormat('yyyy-MM-dd').format(latest);
         } else {
           _lastPeriodDate = null;
         }
@@ -363,7 +368,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
           source: 'calendar_tab',
         );
       } catch (e) {
-        debugPrint('Failed to sync last period date to profile: ${e.toString()}');
+        debugPrint('Unable to update profile with new period data.please try again later');
       }
     }
   }
@@ -652,6 +657,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                     : '–',
                 sub: 'Based on logs',
               ),
+               const SizedBox(width: 12),
               _statCard(
                 icon: Icons.loop_outlined,
                 label: 'Cycle length',
@@ -660,6 +666,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                     : '–',
                 sub: 'Average',
               ),
+               const SizedBox(width: 12),
               _statCard(
                 icon: Icons.event_outlined,
                 label: 'Next period',
@@ -668,6 +675,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                     : '–',
                 sub: 'Predicted start',
               ),
+               const SizedBox(width: 12),
               _statCard(
                 icon: Icons.favorite_border,
                 label: 'Ovulation day',

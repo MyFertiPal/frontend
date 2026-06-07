@@ -66,7 +66,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to save language: $e'),
+            content: Text('unable to save language preference. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );

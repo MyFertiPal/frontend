@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../services/auth_error_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../services/analytics_service.dart';
@@ -435,10 +436,16 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     );
 
     if (date != null) {
-      setState(() {
-        _lastPeriodDate = date;
-      });
-    }
+  setState(() {
+    _lastPeriodDate = date;
+  });
+
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString(
+    'last_period_date',
+    date.toIso8601String(),
+  );
+}
   }
 
   Future<void> _handleContinue() async {

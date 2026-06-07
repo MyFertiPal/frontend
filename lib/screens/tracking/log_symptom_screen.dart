@@ -147,7 +147,7 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('Unable to save symptoms. Please try again later.'),
             backgroundColor: Colors.red,
           ),
         );

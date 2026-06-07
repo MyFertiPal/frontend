@@ -503,7 +503,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      _showError('Failed to reset password: $e');
+      _showError('Unable to reset password. Please check your token and try again.');
     } finally {
       if (mounted) {
         setState(() {

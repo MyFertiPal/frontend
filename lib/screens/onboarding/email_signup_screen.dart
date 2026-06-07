@@ -90,7 +90,7 @@ class _EmailSignupScreenState extends State<EmailSignupScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          SnackBar(content: Text('Unable to create account. Please try again later.')),
         );
       }
     } finally {

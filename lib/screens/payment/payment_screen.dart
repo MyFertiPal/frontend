@@ -318,7 +318,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         _showMessage(message ?? 'Payment failed.');
       }
     } catch (e) {
-      _showMessage('Payment failed: $e');
+      _showMessage('Payment failed. Please try again.');
     } finally {
       if (mounted) {
         setState(() {

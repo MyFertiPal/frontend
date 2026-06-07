@@ -127,7 +127,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${AppLocalizations.of(context).failedToSendVerificationCode}: ${e.toString()}'),
+                '${AppLocalizations.of(context).failedToSendVerificationCode}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -469,9 +469,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     )
                   : null,
               errorStyle: const TextStyle(
-                height: 0,
-                fontSize: 0,
-              ),
+  color: Color(0xFFB91C1C),
+  fontSize: 12,
+  fontWeight: FontWeight.w500,
+),
             ),
             style: const TextStyle(
               fontFamily: 'Poppins',

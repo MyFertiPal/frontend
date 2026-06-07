@@ -927,7 +927,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Failed to delete account: ${e.toString()}',
+                  'Unable to delete account. Please try again later',
                 ),
                 backgroundColor: Colors.red,
                 duration: const Duration(seconds: 5),
