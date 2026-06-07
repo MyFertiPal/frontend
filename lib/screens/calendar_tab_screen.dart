@@ -114,26 +114,39 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
 
   /// Derives summary values from locally stored tapped days when API has not responded yet
   void _updateSummaryFromLocal() {
-    final periodLen = _calculatePeriodLength();
-    final cycleLen = _calculateCycleLength();
-    if (_lastPeriodDate != null) {
-      final lastPeriod = DateTime.parse(_lastPeriodDate!);
-      final cl = cycleLen ?? 28;
-      final nextPeriod = lastPeriod.add(Duration(days: cl));
-      final ovulation = lastPeriod.add(Duration(days: cl - 14));
-      final fertileStart = ovulation.subtract(const Duration(days: 5));
-      final fertileEnd = ovulation.add(const Duration(days: 1));
-      setState(() {
-        _displayPeriodLength = periodLen ?? _defaultPeriodLength;
-        _displayCycleLength = cl;
-        _displayNextPeriod = nextPeriod;
-        _displayOvulationDay = ovulation;
-        _displayFertileStart = fertileStart;
-        _displayFertileEnd = fertileEnd;
-      });
-    }
+  if (_selectedCalendarDays.isEmpty || _lastPeriodDate == null) return;
+
+  final periodLen = _calculatePeriodLength() ?? _defaultPeriodLength;
+  final cycleLen = _calculateCycleLength() ?? 28;
+  final lastPeriod = DateTime.parse(_lastPeriodDate!);
+
+  final nextPeriod = lastPeriod.add(Duration(days: cycleLen));
+  final ovulation = lastPeriod.add(Duration(days: cycleLen - 14));
+  final fertileStart = ovulation.subtract(const Duration(days: 5));
+  final fertileEnd = ovulation.add(const Duration(days: 1));
+
+  final fertileWindowDays = <DateTime>{};
+  for (int i = 0; i <= fertileEnd.difference(fertileStart).inDays; i++) {
+    fertileWindowDays.add(fertileStart.add(Duration(days: i)));
   }
 
+  final nextPeriodDays = List<DateTime>.generate(
+    periodLen,
+    (i) => nextPeriod.add(Duration(days: i)),
+  ).toSet();
+
+  setState(() {
+    _displayPeriodLength = periodLen;
+    _displayCycleLength = cycleLen;
+    _displayNextPeriod = nextPeriod;
+    _displayOvulationDay = ovulation;
+    _displayFertileStart = fertileStart;
+    _displayFertileEnd = fertileEnd;
+    _fertileWindowDays = fertileWindowDays;
+    _ovulationDates = {ovulation};
+    _nextPeriodDays = nextPeriodDays;
+  });
+}
   Future<void> _fetchLoggedSymptoms() async {
     setState(() {
       _isSymptomsLoading = true;
@@ -252,6 +265,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 
   void _toggleCalendarDate(DateTime date) async {
+    final wasEmpty = _selectedCalendarDays.isEmpty;
     final normalized = DateTime(date.year, date.month, date.day);
     final isAdding =
         !_selectedCalendarDays.any((d) => _isSameDay(d, normalized));
@@ -281,7 +295,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         'tapped_days', _selectedCalendarDaysFormatted.toList());
 
     // Only auto-generate when user taps the very first day
-    if (isAdding && _selectedCalendarDays.length == 1 && _lastPeriodDate != null) {
+    if (isAdding && wasEmpty && _lastPeriodDate != null) {
       final lastPeriod = DateTime.parse(_lastPeriodDate!);
       final periodDays = List<DateTime>.generate(
         _defaultPeriodLength,
@@ -625,13 +639,10 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
             text: 'Tap days on the calendar to start tracking your cycle',
           )
         else
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 2.1,
+          SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
             children: [
               _statCard(
                 icon: Icons.calendar_today_outlined,
@@ -667,6 +678,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
               ),
             ],
           ),
+          ),
       ],
     );
   }
@@ -678,6 +690,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     required String sub,
   }) {
     return Container(
+      width:130,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -943,21 +956,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
             ),
             Row(
               children: [
-                if (_loggedSymptoms.isNotEmpty) ...[
-                  GestureDetector(
-                    onTap: _openLogSymptomScreen,
-                    child: const Text(
-                      'See all',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: _primaryTeal,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                ],
+                
                 GestureDetector(
                   onTap: _clearCalendarDays,
                   child: Row(

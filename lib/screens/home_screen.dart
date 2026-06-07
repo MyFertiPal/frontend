@@ -103,15 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
         _audioEnabled = false;
         debugPrint('Audio features disabled - API key not configured');
         // Create a dummy service with a placeholder key to avoid crashes
-        _yarngptService = YarnGptTtsService(apiKey: 'disabled');
+        _yarngptService = YarnGptTtsService(apiKey: apiKey ?? '');
       }
     } catch (e) {
-      debugPrint('Failed to initialize YarnGPT TTS service: $e');
       _audioEnabled = false;
-      // Create a dummy service as fallback
+      debugPrint('Error initializing YarnGPT TTS Service: $e');
+      // Create a dummy service with a placeholder key to avoid crashes
       _yarngptService = YarnGptTtsService(apiKey: 'disabled');
     }
-
     _loadAudioPreference();
     _sendInsightsPost();
   }
@@ -936,17 +935,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ElevatedButton(
                         onPressed: _openLogSymptomScreen,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryTeal,
+                          backgroundColor: Colors.white,
                           foregroundColor: Colors.white,
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
+                             side: const BorderSide(
+        color: Color(0xFF064B23), // dark green border
+        width: 1.5,
+      ),
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.water_drop, color: Colors.white),
+                            const Icon(Icons.water_drop, color:Color(0xFF064B23)),
                             const SizedBox(width: 12),
                             Text(
                               AppLocalizations.of(context).logSymptoms,
@@ -954,7 +957,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
-                                color: Colors.white,
+                                color: Color(0xFF064B23),
                               ),
                             ),
                           ],

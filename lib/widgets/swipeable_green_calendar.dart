@@ -320,7 +320,7 @@ indicator = _buildDot(
             indicator = _buildDot(const Color(0xFFD32F2F).withOpacity(0.6));
           } else if (isOvulation) {
             // Ovulation day: darker green background, white text, dark green border
-            bg = const Color(0xFF1B4D2D); // Darker green
+            bg = const Color(0xFF6A1B9A); // purple
             txtColor = Colors.white;
             border = Border.all(color: const Color(0xFF1B4D2D), width: 2);
             indicator = _buildDot(const Color(0xFF1B4D2D));

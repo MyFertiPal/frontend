@@ -38,22 +38,22 @@ dev_dependencies:
 dependency_overrides:
   flutter_local_notifications: 20.0.0
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/app_logo.png"
+  image_path: "assets/images/logo.png"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/images/app_logo.png"
+  adaptive_icon_foreground: "assets/images/logo.png"
 
 flutter_native_splash:
   color: "#ffffff"
-  image: "assets/images/app_logo.png"
+  image: "assets/images/app_logo.svg"
   android: true
   ios: true
   web: false
   android_12:
     color: "#ffffff"
-    image: "assets/images/app_logo.png"
+    image: "assets/images/app_logo.svg"
     icon_background_color: "#ffffff"
 
 flutter_gen_config:
@@ -81,6 +81,5 @@ flutter:
     - assets/images/article_2.jpeg
     - assets/images/article_3.jpeg
     - assets/images/pregnant.png
-    - assets/icon/
     - assets/icons/
     - assets/splash/
