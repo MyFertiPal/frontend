@@ -1,7 +1,7 @@
-﻿name: nexus_fertility_app
-description: A fertility tracking app for the Nexus team.
+﻿name: MyFertiPal
+description: A fertility tracking app for African women.
 publish_to: 'none'
-version: 1.0.0+1
+version: 3.0.0+3
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -38,7 +38,7 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#000000"
-  image: "assets/splash/ferti_splash.png"
+  image: "assets/images/app_logo.png"
   android: true
   ios: true
   android_gravity: center
@@ -51,26 +51,9 @@ flutter:
   assets:
     - assets/images/
     - assets/splash/logo.png
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-flutter_icons:
+  
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/logo.png"
+  image_path: "assets/splash/logo.png"
 

@@ -1,7 +1,7 @@
 name: myfertipal
 description: A fertility tracking app
 publish_to: "none"
-version: 2.1.0+1
+version: 3.0.0+3
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -41,19 +41,19 @@ dependency_overrides:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/splash/logo.png"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/images/logo.png"
+  adaptive_icon_foreground: "assets/splash/logo.png"
 
 flutter_native_splash:
   color: "#ffffff"
-  image: "assets/images/app_logo.svg"
+  image: "assets/images/app_logo.png"
   android: true
   ios: true
   web: false
   android_12:
     color: "#ffffff"
-    image: "assets/images/app_logo.svg"
+    image: "assets/images/app_logo.png"
     icon_background_color: "#ffffff"
 
 flutter_gen_config:
@@ -76,7 +76,7 @@ flutter:
     - assets/audio/yo.mp3
     - assets/audio/ig.mp3
     - assets/bg.jpeg
-    - assets/images/app_logo.svg
+    - assets/images/app_logo.png
     - assets/images/article_1.jpeg
     - assets/images/article_2.jpeg
     - assets/images/article_3.jpeg
