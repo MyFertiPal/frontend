@@ -8,10 +8,12 @@ import 'welcome_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
+  
 
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
+String _fullPhoneNumber = '';
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _fullNameController = TextEditingController();
@@ -220,17 +222,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   const SizedBox(height: 5),
 
                   // Phone Number Field
+                  
                  IntlPhoneField(
   controller: _phoneController,
+  initialCountryCode: 'GH',
   decoration: InputDecoration(
     labelText: AppLocalizations.of(context).phoneNumber,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
     ),
   ),
-  initialCountryCode: 'GH',
   onChanged: (phone) {
-    _phoneController.text = phone.completeNumber;
+    _fullPhoneNumber = phone.completeNumber;
   },
 ),
                   
