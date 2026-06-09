@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'welcome_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -219,20 +220,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   const SizedBox(height: 5),
 
                   // Phone Number Field
-                  _buildInputField(
-  label: AppLocalizations.of(context).phoneNumber,
+                 IntlPhoneField(
   controller: _phoneController,
-  keyboardType: TextInputType.phone,
-  validator: (value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Required';
-    }
-
-    if (value.trim().length < 10) {
-      return 'Invalid phone number';
-    }
-
-    return null;
+  decoration: InputDecoration(
+    labelText: AppLocalizations.of(context).phoneNumber,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
+  initialCountryCode: 'GH',
+  onChanged: (phone) {
+    _phoneController.text = phone.completeNumber;
   },
 ),
                   
