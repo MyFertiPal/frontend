@@ -90,7 +90,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
 
       await authService.signUpWithPhone(
-        phoneNumber: _phoneController.text.trim(),
+        phoneNumber: _fullPhoneNumber.trim(),
         email: _emailController.text.trim(),
         username: username.trim(),
         firstName: firstName.trim(),
@@ -219,7 +219,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return null;
   },
 ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 10),
 
                   // Phone Number Field
                   
