@@ -70,6 +70,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       if (user != null) {
         setState(() {
           _cycleLength = user.cycleLength ?? 28;
+          
           if (user.lastPeriodDate != null) {
             _lastPeriodDate = user.lastPeriodDate;
           }
@@ -525,6 +526,12 @@ if (_lastPeriodDate != null) {
                 : null,
         audioPreference: _audioGuidance,
       );
+      final auth = Provider.of<AuthService>(
+  context,
+  listen: false,
+);
+
+await auth.refreshCurrentUser();
 
       await AnalyticsService.logAgeRange(_age);
 

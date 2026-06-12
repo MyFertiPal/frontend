@@ -15,6 +15,7 @@ class AppUser {
   final String? displayName;
   final String? photoUrl;
   final String? preferredLanguage;
+  final bool? audioGuidance;
 
   AppUser({
     required this.id,
@@ -30,6 +31,7 @@ class AppUser {
     this.displayName,
     this.photoUrl,
     this.preferredLanguage,
+    this.audioGuidance,
   }) : ttcHistory = ttcHistory ?? [];
 
   factory AppUser.fromJson(Map<String, dynamic> json) {

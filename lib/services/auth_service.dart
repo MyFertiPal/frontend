@@ -62,7 +62,26 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
       }
     }
   }
+  
+  Future<void> refreshCurrentUser() async {
+  try {
+    final apiService = ApiService();
 
+    final userJson = await apiService.getUser();
+    final user = User.fromJson(userJson);
+
+    _currentUser = user;
+
+    await _saveUserToPrefs(user);
+
+    _authStateController.add(_currentUser);
+    notifyListeners();
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error refreshing user: $e');
+    }
+  }
+}
   Future<void> _saveUserToPrefs(User? user) async {
     try {
       final prefs = await SharedPreferences.getInstance();
