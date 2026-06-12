@@ -54,6 +54,9 @@ class AppUser {
         json['period_length']); // kept for compatibility
     final lastPeriod =
         _date(json['lastPeriodDate'] ?? json['last_period_date']);
+    final audio =
+    json['audioPreference'] ??
+    json['audio_preference'];
 
     List<String>? ttc;
     if (json['ttcHistory'] != null) {
@@ -81,6 +84,7 @@ class AppUser {
       displayName: _string(json['displayName']),
       photoUrl: _string(json['photoUrl']),
       preferredLanguage: lang,
+      audioGuidance: audio == true,
     );
   }
 
@@ -99,6 +103,7 @@ class AppUser {
       'displayName': displayName,
       'photoUrl': photoUrl,
       'preferredLanguage': preferredLanguage,
+      'audioPreference': audioGuidance,
     };
   }
 

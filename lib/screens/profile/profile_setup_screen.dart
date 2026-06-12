@@ -70,6 +70,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       if (user != null) {
         setState(() {
           _cycleLength = user.cycleLength ?? 28;
+          _audioGuidance = user.audioGuidance ?? false;
           
           if (user.lastPeriodDate != null) {
             _lastPeriodDate = user.lastPeriodDate;
