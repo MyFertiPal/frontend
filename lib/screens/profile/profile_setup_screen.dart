@@ -151,7 +151,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   value: _cycleLength,
                   isExpanded: true,
                   underline: const SizedBox(),
-                  items: List.generate(30, (i) => i + 1).map((days) {
+                  items: List.generate(35, (i) => i + 1).map((days) {
                     return DropdownMenuItem(
                       value: days,
                       child: Text('$days Days'),
