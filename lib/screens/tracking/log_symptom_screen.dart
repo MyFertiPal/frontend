@@ -38,8 +38,8 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
   Map<String, List<String>> get _symptomOptions {
     final l10n = AppLocalizations.of(context);
     return {
-      l10n.mood: [l10n.fatigue, l10n.anxiety, l10n.moodSwings, l10n.sadness],
-      l10n.bleeding: [l10n.light, l10n.medium, l10n.heavy, l10n.spotting],
+      l10n.mood: [l10n.happy, l10n.calm, l10n.confident ,l10n.focused ,l10n.neutral,l10n.irritable , l10n.anxious ,l10n.sad ,l10n.emotional],
+      l10n.bleeding: [l10n.light, l10n.medium, l10n.heavy, l10n.spotting, l10n.none, l10n.clots],
       l10n.cervicalMucus: [
         l10n.dry,
         l10n.sticky,
@@ -47,8 +47,8 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
         l10n.watery,
         l10n.eggWhite
       ],
-      l10n.sexualActivity: [l10n.protected, l10n.unprotected, l10n.none],
-      l10n.pain: [l10n.mild, l10n.moderate, l10n.severe],
+      l10n.sexualActivity: [l10n.protected, l10n.unprotected, l10n.none, l10n.highLibido, l10n.lowLibido],
+      l10n.pain: [l10n.abdominalCramps, l10n.lowerBackPain, l10n.pelvicPain, l10n.headache, l10n.breastTenderness, l10n.ovulationPain],
       l10n.abdominalCramps: [l10n.mild, l10n.moderate, l10n.severe],
     };
   }

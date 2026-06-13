@@ -550,19 +550,61 @@ class AppLocalizationsIg extends AppLocalizations {
   String get pain => 'Nje';
 
   @override
+  String get happy => 'Anụrị';
+
+  @override
+  String get calm => 'Udo';
+
+  @override
+  String get confident => 'Nwekwasi obi';
+
+  @override
+  String get focused => 'Leghara anya';
+
+  @override
+  String get irritable => 'Ịzụ ụjọ';
+
+  @override
+  String get anxious => 'Tụọrọ nchegbu';
+
+  @override
+  String get sad => 'Nwute';
+
+  @override
+  String get emotional => 'Mmụọ';
+
+  @override
+  String get neutral => 'Na-enweghị mmetụta';
+
+  @override
+  String get none => 'Ọ dịghị';
+
+  @override
+  String get clots => 'Ọbara kwụọrọ';
+
+  @override
+  String get highLibido => 'Akwukwo ịhụnanya dị elu';
+
+  @override
+  String get lowLibido => 'Akwukwo ịhụnanya dị ala';
+
+  @override
+  String get lowerBackPain => 'Ịgwụ azụ ala';
+
+  @override
+  String get pelvicPain => 'Ịgwụ ụkwụ ime';
+
+  @override
+  String get headache => 'Isi ọwụ';
+
+  @override
+  String get breastTenderness => 'Ịta ara';
+
+  @override
+  String get ovulationPain => 'Ịgwụ mgbe ovulation';
+
+  @override
   String get abdominalCramps => 'Nje Ihu';
-
-  @override
-  String get fatigue => 'Ire';
-
-  @override
-  String get anxiety => 'Ije';
-
-  @override
-  String get moodSwings => 'Iyiyipari';
-
-  @override
-  String get sadness => 'Ibanuje';
 
   @override
   String get light => 'Kekee';
@@ -596,9 +638,6 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get unprotected => 'Enweghị ichebe';
-
-  @override
-  String get none => 'Ọ dịghị';
 
   @override
   String get mild => 'Kekee';

@@ -550,19 +550,61 @@ class AppLocalizationsHa extends AppLocalizations {
   String get pain => 'Zafi';
 
   @override
+  String get happy => 'Farinciki';
+
+  @override
+  String get calm => 'Lahani';
+
+  @override
+  String get confident => 'Tsanani';
+
+  @override
+  String get focused => 'Mai da hankali';
+
+  @override
+  String get irritable => 'Fushi';
+
+  @override
+  String get anxious => 'Damuwa';
+
+  @override
+  String get sad => 'Baƙin ciki';
+
+  @override
+  String get emotional => 'Jin kai';
+
+  @override
+  String get neutral => 'Matsakaici';
+
+  @override
+  String get none => 'Babu';
+
+  @override
+  String get clots => 'Kwayoyin jini';
+
+  @override
+  String get highLibido => 'Sha\'awa mai ƙarfi';
+
+  @override
+  String get lowLibido => 'Sha\'awa mai rauni';
+
+  @override
+  String get lowerBackPain => 'Ciwon Kafan Baya';
+
+  @override
+  String get pelvicPain => 'Ciwo a Pelvis';
+
+  @override
+  String get headache => 'Ciwon Kai';
+
+  @override
+  String get breastTenderness => 'Jin Jinƙan Nonuwa';
+
+  @override
+  String get ovulationPain => 'Ciwo Lokacin Fitar Kwai';
+
+  @override
   String get abdominalCramps => 'Zafi Cikin Jiya';
-
-  @override
-  String get fatigue => 'Gajiya';
-
-  @override
-  String get anxiety => 'Fahimta';
-
-  @override
-  String get moodSwings => 'Canji Kamar Yadda Kake';
-
-  @override
-  String get sadness => 'Bakin Ciki';
 
   @override
   String get light => 'Kadan';
@@ -596,9 +638,6 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get unprotected => 'Ba tare da Kariya ba';
-
-  @override
-  String get none => 'Babu';
 
   @override
   String get mild => 'Kadan';

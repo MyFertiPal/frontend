@@ -1136,35 +1136,119 @@ abstract class AppLocalizations {
   /// **'Pain'**
   String get pain;
 
+  /// No description provided for @happy.
+  ///
+  /// In en, this message translates to:
+  /// **'Happy'**
+  String get happy;
+
+  /// No description provided for @calm.
+  ///
+  /// In en, this message translates to:
+  /// **'Calm'**
+  String get calm;
+
+  /// No description provided for @confident.
+  ///
+  /// In en, this message translates to:
+  /// **'Confident'**
+  String get confident;
+
+  /// No description provided for @focused.
+  ///
+  /// In en, this message translates to:
+  /// **'Focused'**
+  String get focused;
+
+  /// No description provided for @irritable.
+  ///
+  /// In en, this message translates to:
+  /// **'Irritable'**
+  String get irritable;
+
+  /// No description provided for @anxious.
+  ///
+  /// In en, this message translates to:
+  /// **'Anxious'**
+  String get anxious;
+
+  /// No description provided for @sad.
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get sad;
+
+  /// No description provided for @emotional.
+  ///
+  /// In en, this message translates to:
+  /// **'Emotional'**
+  String get emotional;
+
+  /// No description provided for @neutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get neutral;
+
+  /// No description provided for @none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get none;
+
+  /// No description provided for @clots.
+  ///
+  /// In en, this message translates to:
+  /// **'Clots'**
+  String get clots;
+
+  /// No description provided for @highLibido.
+  ///
+  /// In en, this message translates to:
+  /// **'High libido'**
+  String get highLibido;
+
+  /// No description provided for @lowLibido.
+  ///
+  /// In en, this message translates to:
+  /// **'Low libido'**
+  String get lowLibido;
+
+  /// No description provided for @lowerBackPain.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower Back Pain'**
+  String get lowerBackPain;
+
+  /// No description provided for @pelvicPain.
+  ///
+  /// In en, this message translates to:
+  /// **'Pelvic Pain'**
+  String get pelvicPain;
+
+  /// No description provided for @headache.
+  ///
+  /// In en, this message translates to:
+  /// **'Headache'**
+  String get headache;
+
+  /// No description provided for @breastTenderness.
+  ///
+  /// In en, this message translates to:
+  /// **'Breast Tenderness'**
+  String get breastTenderness;
+
+  /// No description provided for @ovulationPain.
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation Pain'**
+  String get ovulationPain;
+
   /// No description provided for @abdominalCramps.
   ///
   /// In en, this message translates to:
   /// **'Abdominal Cramps'**
   String get abdominalCramps;
-
-  /// No description provided for @fatigue.
-  ///
-  /// In en, this message translates to:
-  /// **'Fatigue'**
-  String get fatigue;
-
-  /// No description provided for @anxiety.
-  ///
-  /// In en, this message translates to:
-  /// **'Anxiety'**
-  String get anxiety;
-
-  /// No description provided for @moodSwings.
-  ///
-  /// In en, this message translates to:
-  /// **'Mood swings'**
-  String get moodSwings;
-
-  /// No description provided for @sadness.
-  ///
-  /// In en, this message translates to:
-  /// **'Sadness'**
-  String get sadness;
 
   /// No description provided for @light.
   ///
@@ -1231,12 +1315,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unprotected'**
   String get unprotected;
-
-  /// No description provided for @none.
-  ///
-  /// In en, this message translates to:
-  /// **'None'**
-  String get none;
 
   /// No description provided for @mild.
   ///

@@ -550,19 +550,61 @@ class AppLocalizationsYo extends AppLocalizations {
   String get pain => 'Ìjìn';
 
   @override
+  String get happy => 'Happy';
+
+  @override
+  String get calm => 'Calm';
+
+  @override
+  String get confident => 'Confident';
+
+  @override
+  String get focused => 'Focused';
+
+  @override
+  String get irritable => 'Irritable';
+
+  @override
+  String get anxious => 'Anxious';
+
+  @override
+  String get sad => 'Sad';
+
+  @override
+  String get emotional => 'Emotional';
+
+  @override
+  String get neutral => 'Neutral';
+
+  @override
+  String get none => 'Kò sí';
+
+  @override
+  String get clots => 'Clots';
+
+  @override
+  String get highLibido => 'High libido';
+
+  @override
+  String get lowLibido => 'Low libido';
+
+  @override
+  String get lowerBackPain => 'Lower Back Pain';
+
+  @override
+  String get pelvicPain => 'Pelvic Pain';
+
+  @override
+  String get headache => 'Headache';
+
+  @override
+  String get breastTenderness => 'Breast Tenderness';
+
+  @override
+  String get ovulationPain => 'Ovulation Pain';
+
+  @override
   String get abdominalCramps => 'Ìparun Inu';
-
-  @override
-  String get fatigue => 'Ìrè';
-
-  @override
-  String get anxiety => 'Ìbẹ̀rù';
-
-  @override
-  String get moodSwings => 'Iyipari ìmọ̀';
-
-  @override
-  String get sadness => 'Ìbànújẹ́';
 
   @override
   String get light => 'Òkè';
@@ -596,9 +638,6 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get unprotected => 'Láìní ìdènà';
-
-  @override
-  String get none => 'Kò sí';
 
   @override
   String get mild => 'Kéékéé';

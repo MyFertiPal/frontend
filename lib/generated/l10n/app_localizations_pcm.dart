@@ -548,19 +548,61 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get pain => 'Pain';
 
   @override
+  String get happy => 'Happy';
+
+  @override
+  String get calm => 'Calm';
+
+  @override
+  String get confident => 'Confident';
+
+  @override
+  String get focused => 'Focused';
+
+  @override
+  String get irritable => 'Irritable';
+
+  @override
+  String get anxious => 'Anxious';
+
+  @override
+  String get sad => 'Sad';
+
+  @override
+  String get emotional => 'Emotional';
+
+  @override
+  String get neutral => 'Neutral';
+
+  @override
+  String get none => 'Nothing';
+
+  @override
+  String get clots => 'Clots';
+
+  @override
+  String get highLibido => 'High libido';
+
+  @override
+  String get lowLibido => 'Low libido';
+
+  @override
+  String get lowerBackPain => 'Lower Back Pain';
+
+  @override
+  String get pelvicPain => 'Pelvic Pain';
+
+  @override
+  String get headache => 'Head Ache';
+
+  @override
+  String get breastTenderness => 'Breast Tenderness';
+
+  @override
+  String get ovulationPain => 'Ovulation Pain';
+
+  @override
   String get abdominalCramps => 'Belly Pain';
-
-  @override
-  String get fatigue => 'Tiredness';
-
-  @override
-  String get anxiety => 'Worry Worry';
-
-  @override
-  String get moodSwings => 'Mood Changes';
-
-  @override
-  String get sadness => 'Sadness';
 
   @override
   String get light => 'Small Small';
@@ -594,9 +636,6 @@ class AppLocalizationsPcm extends AppLocalizations {
 
   @override
   String get unprotected => 'Without Protection';
-
-  @override
-  String get none => 'Nothing';
 
   @override
   String get mild => 'Small';
