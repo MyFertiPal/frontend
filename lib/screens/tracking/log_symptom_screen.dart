@@ -369,59 +369,40 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: options.map((option) {
-                  bool isSelected;
-                  if (symptomName == moodKey) {
-                    isSelected =
-                        _multiSelectedOptions['Mood']?.contains(option) ??
-                            false;
-                  } else {
-                    isSelected = _selectedOptions[symptomName] == option;
-                  }
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (symptomName == moodKey) {
-                          final current = _multiSelectedOptions['Mood'] ?? [];
-                          if (isSelected) {
-                            _multiSelectedOptions['Mood'] = List.from(current)
-                              ..remove(option);
-                          } else {
-                            _multiSelectedOptions['Mood'] = List.from(current)
-                              ..add(option);
-                          }
-                        } else {
-                          _selectedOptions[symptomName] = option;
-                          // Do NOT collapse after selection
-                          // _expandedSymptom = null; // Remove this line
-                        }
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? _darkGreenText
-                            : Colors.transparent,
-                        border: Border.all(color: _darkGreenText, width: 0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        option,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : _darkGreenText,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-        ],
+  final current = _multiSelectedOptions[symptomName] ?? [];
+  final isSelected = current.contains(option);
+
+  return GestureDetector(
+    onTap: () {
+      setState(() {
+        final current = _multiSelectedOptions[symptomName] ?? [];
+
+        if (current.contains(option)) {
+          _multiSelectedOptions[symptomName] = List.from(current)
+            ..remove(option);
+        } else {
+          _multiSelectedOptions[symptomName] = List.from(current)
+            ..add(option);
+        }
+      });
+    },
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: isSelected ? _darkGreenText : Colors.transparent,
+        border: Border.all(color: _darkGreenText, width: 0.5),
+        borderRadius: BorderRadius.circular(20),
       ),
-    );
-  }
-}
+      child: Text(
+        option,
+        style: TextStyle(
+          color: isSelected ? Colors.white : _darkGreenText,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Poppins',
+        ),
+      ),
+    ),
+  );
+}).toList()
+), ), ], ), ); } }
