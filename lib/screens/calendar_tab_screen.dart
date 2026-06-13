@@ -1158,7 +1158,7 @@ await http.post(
     'cycle_length': _displayCycleLength ?? 28,
     'last_period_date': _lastPeriodDate,
     'period_length': _displayPeriodLength ?? _defaultPeriodLength,
-    'symptoms': Null, // temporary clear value
+    'symptoms': null, // temporary clear value
   }),
 );
       setState(() {
