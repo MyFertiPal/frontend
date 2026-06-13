@@ -1144,6 +1144,23 @@ _lastPeriodDate =
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('tapped_days');
+
+      final api = ApiService();
+final headers = await api.getHeaders(includeAuth: true);
+
+await http.post(
+  Uri.parse('${ApiService.baseUrl}/insights/insights'),
+  headers: {
+    ...headers,
+    'Content-Type': 'application/json',
+  },
+  body: jsonEncode({
+    'cycle_length': _displayCycleLength ?? 28,
+    'last_period_date': _lastPeriodDate,
+    'period_length': _displayPeriodLength ?? _defaultPeriodLength,
+    'symptoms': Null, // temporary clear value
+  }),
+);
       setState(() {
         _selectedCalendarDays = {};
         _selectedCalendarDaysFormatted = {};
@@ -1157,6 +1174,7 @@ _lastPeriodDate =
         _displayOvulationDay = null;
         _displayFertileStart = null;
         _displayFertileEnd = null;
+        _loggedSymptoms = [];
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

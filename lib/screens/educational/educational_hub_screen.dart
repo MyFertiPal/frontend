@@ -493,14 +493,6 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
     }
   }
 
-  Future<void> _setSpeed(double speed) async {
-    // Note: YarnGPT TTS API doesn't support playback speed control
-    // This is just a UI representation for now
-    if (mounted) {
-      setState(() => _playbackSpeed = speed);
-    }
-  }
-
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = duration.inMinutes.remainder(60);
@@ -667,58 +659,6 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
                       ),
                     ),
                   const SizedBox(height: 24),
-                  // Speed controls
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Playback Speed',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [0.75, 1.0, 1.25, 1.5, 2.0].map((speed) {
-                            return ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _playbackSpeed == speed
-                                    ? _primaryTeal
-                                    : Colors.grey.shade300,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              onPressed: () => _setSpeed(speed),
-                              child: Text(
-                                speed == 1.0 ? '1x' : '${speed}x',
-                                style: TextStyle(
-                                  color: _playbackSpeed == speed
-                                      ? Colors.white
-                                      : _darkGreenText,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
                 ],
               ),
             ),
