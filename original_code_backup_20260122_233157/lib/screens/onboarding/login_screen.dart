@@ -2,6 +2,7 @@
 import 'package:provider/provider.dart';
 import 'phone_signup_screen.dart';
 import '../../services/auth_error_helper.dart';
+
 import '../../services/auth_service.dart';
 import 'forget_password_flow.dart';
 
@@ -207,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(width: 12),
                           const Text(
-                            'Sign In with Google',
+                            ',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -220,57 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-
-                  // Sign In with Facebook
-                  SizedBox(
-                    width: 360,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // TODO: Hook up Facebook sign in
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey.shade400),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        backgroundColor: Colors.transparent,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey.shade200,
-                            ),
-                            child: const Center(
-                              child: Text(
-                                'f',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          const Text(
-                            'Sign In with Facebook',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Poppins',
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
                 ],
               ),
             ),

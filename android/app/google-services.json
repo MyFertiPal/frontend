@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:293422244200:android:c4dbca6b3222871eadb6dd",
+        "mobilesdk_app_id": "1:293422244200:android:56a4c9785e310e96adb6dd",
         "android_client_info": {
           "package_name": "com.myfertipall.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "293422244200-ciaei8d5275laooko0bp81brhh67ibt2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myfertipall.app",
+            "certificate_hash": "cc4a3ae7e2da41381a4573ead0d6239a154587f7"
+          }
+        },
+        {
+          "client_id": "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC1VNI1fON-XfBvFszUTt0oZwHtsgaqcYs"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

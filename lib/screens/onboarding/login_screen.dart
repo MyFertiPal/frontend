@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../providers/language_provider.dart';
 import '../../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../services/auth_error_helper.dart';
 import '../../services/api_service.dart';
 import 'profile_setup_screen.dart';
@@ -23,6 +25,87 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _showPassword = false;
   bool _isLoading = false;
+  Future<void> testGoogleSignIn() async {
+  try {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    final GoogleSignInAccount? account =
+        await googleSignIn.signIn();
+
+    if (account != null) {
+      debugPrint('Email: ${account.email}');
+      debugPrint('Name: ${account.displayName}');
+    }
+  } catch (e) {
+    debugPrint('Google Sign In Error: $e');
+  }
+}
+
+  Future<void> _signInWithGoogle() async {
+  try {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    // Optional: force account picker
+    await googleSignIn.signOut();
+
+    final GoogleSignInAccount? googleUser =
+        await googleSignIn.signIn();
+
+    if (googleUser == null) {
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(
+      credential,
+    );
+
+    final user = userCredential.user;
+
+    if (user == null) {
+      throw Exception('Google Sign-In failed');
+    }
+
+    debugPrint('Google User: ${user.email}');
+
+    if (!mounted) return;
+
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil('/home', (route) => false);
+  } catch (e) {
+    debugPrint('Google Sign-In Error: $e');
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Google Sign-In failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+}
 
   @override
   void dispose() {
@@ -172,9 +255,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     width: 360,
                     child: OutlinedButton(
-                      onPressed: () {
-                        // TODO: Hook up Google sign in
-                      },
+                      onPressed: testGoogleSignIn,
+                        //onPressed: _isLoading ? null : _signInWithGoogle,
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Colors.grey.shade400),
                         shape: RoundedRectangleBorder(

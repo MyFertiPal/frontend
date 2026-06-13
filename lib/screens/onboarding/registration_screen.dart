@@ -3,16 +3,18 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'welcome_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
-  
 
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
+
 String _fullPhoneNumber = '';
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
@@ -26,6 +28,55 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   bool _showPassword = false;
   bool _showConfirmPassword = false;
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
+      await googleSignIn.signOut();
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      final user = userCredential.user;
+
+      if (user == null) return;
+
+      debugPrint('Google Sign In Success: ${user.email}');
+
+      if (!mounted) return;
+
+      Navigator.pushReplacementNamed(
+        context,
+        '/home',
+      );
+    } catch (e) {
+      debugPrint('Google Sign In Error: $e');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Google sign in failed'),
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -168,75 +219,74 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                   // Full Name Field
                   _buildInputField(
-  label: AppLocalizations.of(context).fullName,
-  controller: _fullNameController,
-  keyboardType: TextInputType.name,
-  validator: (value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Required';
-    }
-    return null;
-  },
-),
+                    label: AppLocalizations.of(context).fullName,
+                    controller: _fullNameController,
+                    keyboardType: TextInputType.name,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Required';
+                      }
+                      return null;
+                    },
+                  ),
                   const SizedBox(height: 5),
 
                   // Email Field
                   _buildInputField(
-  label: AppLocalizations.of(context).email,
-  controller: _emailController,
-  keyboardType: TextInputType.emailAddress,
-  validator: (value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Required';
-    }
+                    label: AppLocalizations.of(context).email,
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Required';
+                      }
 
-    final emailRegex =
-        RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
-    if (!emailRegex.hasMatch(value.trim())) {
-      return 'Invalid email';
-    }
+                      if (!emailRegex.hasMatch(value.trim())) {
+                        return 'Invalid email';
+                      }
 
-    return null;
-  },
-),
+                      return null;
+                    },
+                  ),
                   const SizedBox(height: 5),
 
                   // Username Field
                   _buildInputField(
-  label: AppLocalizations.of(context).username,
-  controller: _usernameController,
-  keyboardType: TextInputType.text,
-  validator: (value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Required';
-    }
+                    label: AppLocalizations.of(context).username,
+                    controller: _usernameController,
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Required';
+                      }
 
-    if (value.trim().length < 3) {
-      return 'Username too short';
-    }
+                      if (value.trim().length < 3) {
+                        return 'Username too short';
+                      }
 
-    return null;
-  },
-),
+                      return null;
+                    },
+                  ),
                   const SizedBox(height: 10),
 
                   // Phone Number Field
-                  
-                 IntlPhoneField(
-  controller: _phoneController,
-  initialCountryCode: 'GH',
-  decoration: InputDecoration(
-    labelText: AppLocalizations.of(context).phoneNumber,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-  ),
-  onChanged: (phone) {
-    _fullPhoneNumber = phone.completeNumber;
-  },
-),
-                  
+
+                  IntlPhoneField(
+                    controller: _phoneController,
+                    initialCountryCode: 'GH',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context).phoneNumber,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onChanged: (phone) {
+                      _fullPhoneNumber = phone.completeNumber;
+                    },
+                  ),
+
                   const SizedBox(height: 5),
 
                   // Password Field
@@ -304,9 +354,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildSocialCircle('G'),
+                      GestureDetector(
+                        onTap: _signInWithGoogle,
+                        child: GestureDetector(
+                          onTap: _signInWithGoogle,
+                          child: _buildSocialCircle('G'),
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      _buildSocialCircle('f'),
                     ],
                   ),
                   const SizedBox(height: 30),
@@ -470,10 +525,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     )
                   : null,
               errorStyle: const TextStyle(
-  color: Color(0xFFB91C1C),
-  fontSize: 12,
-  fontWeight: FontWeight.w500,
-),
+                color: Color(0xFFB91C1C),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             style: const TextStyle(
               fontFamily: 'Poppins',
