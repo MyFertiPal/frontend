@@ -319,8 +319,8 @@ indicator = _buildDot(
             border = Border.all(color: const Color(0xFFD32F2F), width: 2);
             indicator = _buildDot(const Color(0xFFD32F2F).withOpacity(0.6));
           } else if (isOvulation) {
-            // Ovulation day: darker green background, white text, dark green border
-            bg = const Color(0xFF0EA5A4); // teal
+            // Ovulation day: havock blue background, white text, dark green border
+            bg = const Color(0xFF4B91E2); // havock blue
             txtColor = Colors.white;
             border = Border.all(color: const Color(0xFF1B4D2D), width: 2);
             indicator = _buildDot(const Color(0xFF1B4D2D));

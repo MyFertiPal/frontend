@@ -192,7 +192,11 @@ Future<void> _loadSavedEmail() async {
   },
   title: const Text(
     'Remember email',
-    style: TextStyle(fontSize: 14),
+    style: TextStyle(
+      fontSize: 14,
+      fontFamily: 'Poppins',
+      color: Color(0xFF064B23),
+      ),
   ),
 ),
 

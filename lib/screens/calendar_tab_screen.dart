@@ -603,7 +603,7 @@ _lastPeriodDate = lastPeriodStart != null
         children: [
           _keyItem(const Color(0xFFF06292), 'Period'),
           _keyItem(const Color(0xFF81C784), 'Fertile window'),
-          _keyItem(const Color(0xFF0EA5A4), 'Ovulation'),
+          _keyItem(const Color(0xFF4B91E2), 'Ovulation'),
           _keyItem(Colors.transparent, 'Predicted period',
               border: const Color(0xFFD32F2F)),
         ],
