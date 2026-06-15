@@ -2,9 +2,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../generated/l10n/app_localizations.dart';
+import '../screens/calendar_tab_screen.dart';
+import '../screens/educational/educational_hub_screen.dart';
+
+
 import '../services/auth_service.dart';
 import '../providers/language_provider.dart';
 import '../services/api_service.dart';
@@ -12,17 +16,17 @@ import '../services/api_key_config.dart';
 import '../services/yarngpt_tts_service.dart';
 import '../models/user.dart';
 import '../utils/responsive_utils.dart';
-import 'profile/profile_screen.dart';
-import 'support/support_screen.dart';
-import 'onboarding/welcome_screen.dart';
-import 'educational/educational_hub_screen.dart';
-import 'calendar_tab_screen.dart';
-import 'gender_prediction_screen.dart';
-import 'user_guide_screen.dart';
-import 'specialists/specialist_search_screen.dart';
-import 'specialists/specialist_chat_screen.dart';
-import 'tracking/log_symptom_screen.dart';
-import 'payment/payment_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/support/support_screen.dart';
+import '../screens/onboarding/welcome_screen.dart';
+
+
+import '../screens/gender_prediction_screen.dart';
+import '../screens/user_guide_screen.dart';
+import '../screens/specialists/specialist_search_screen.dart';
+import '../screens/specialists/specialist_chat_screen.dart';
+import '../screens/tracking/log_symptom_screen.dart';
+import '../screens/payment/payment_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -115,18 +119,39 @@ class _HomeScreenState extends State<HomeScreen> {
     _sendInsightsPost();
   }
 
-  Future<void> _loadAudioPreference() async {
-    try {
-      final api = ApiService();
-      final profile = await api.getProfile();
-      final audioPreference = profile['audio_preference'] ?? true;
-      setState(() {
-        _audioEnabled = audioPreference;
-      });
-    } catch (e) {
-      debugPrint('Error loading audio preference: $e');
+ Future<void> _loadAudioPreference() async {
+  try {
+    final api = ApiService();
+    final profile = await api.getProfile();
+
+    debugPrint('Audio profile raw: $profile');
+
+    final raw = profile['audio_preference'];
+
+    bool audioPreference;
+
+    if (raw is bool) {
+      audioPreference = raw;
+    } else if (raw is String) {
+      audioPreference = raw.toLowerCase() == 'true';
+    } else if (raw is int) {
+      audioPreference = raw == 1;
+    } else {
+      audioPreference = false; // safer default
     }
+
+    setState(() {
+      _audioEnabled = audioPreference;
+    });
+
+    debugPrint('Parsed audioPreference = $_audioEnabled');
+  } catch (e) {
+    debugPrint('Error loading audio preference: $e');
+    setState(() {
+      _audioEnabled = false;
+    });
   }
+}
 
   @override
   void didChangeDependencies() {
@@ -347,8 +372,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                               // Refresh home page data if profile was updated
                               if (result == true) {
-                                _sendInsightsPost();
-                              }
+  await _loadAudioPreference();
+
+  debugPrint(
+    'Audio after profile update: $_audioEnabled',
+  );
+
+  await _sendInsightsPost();
+}
                             },
                           ),
                           _buildMenuItem(

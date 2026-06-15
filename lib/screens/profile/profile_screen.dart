@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
-import './profile_setup_screen.dart';
+
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../generated/l10n/app_localizations.dart';
-import '../../services/auth_service.dart';
-import '../../providers/language_provider.dart';
-import '../../models/user.dart';
-import '../../services/api_service.dart';
 import '../onboarding/welcome_screen.dart';
-import '../privacy_and_security/privacy_and_security_screen.dart';
+import './profile_setup_screen.dart';
+
+import '../../models/user.dart';
 import '../notification_settings_screen.dart';
+import '../../services/auth_service.dart';
+import '../privacy_and_security/privacy_and_security_screen.dart';
+
+
+import '../../providers/language_provider.dart';
+import '../../services/api_service.dart';
+
 
 
 const Color _primaryTeal = Color(0xFF0EA5A4);
