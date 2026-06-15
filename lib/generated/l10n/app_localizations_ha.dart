@@ -145,7 +145,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get educational => 'Karatu';
 
   @override
-  String get support => 'Taimako';
+  String get support => 'goyon baya';
 
   @override
   String get profile => 'Bayani';
