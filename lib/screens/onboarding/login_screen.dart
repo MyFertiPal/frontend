@@ -180,7 +180,7 @@ Future<void> _loadSavedEmail() async {
                   ),
                   const SizedBox(height: 12),
                   // Remember Email Checkbox
-                 CheckboxListTile(
+              CheckboxListTile(
   contentPadding: EdgeInsets.zero,
   dense: true,
   controlAffinity: ListTileControlAffinity.leading,
@@ -190,16 +190,19 @@ Future<void> _loadSavedEmail() async {
       _rememberEmail = value ?? false;
     });
   },
+
+
+  activeColor: const Color(0xFF0EA5A4),   // checked box color
+  checkColor: Colors.white,               // tick color
+
   title: const Text(
     'Remember email',
     style: TextStyle(
       fontSize: 14,
       fontFamily: 'Poppins',
-      color: Color(0xFF064B23),
-      ),
+    ),
   ),
 ),
-
                   // Forgot Password
                   GestureDetector(
                     onTap: () {

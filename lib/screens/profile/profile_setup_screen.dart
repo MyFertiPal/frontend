@@ -122,11 +122,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 8),
               Text(
                 'Customize your fertility tracking experience',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
+                  fontFamily: 'Poppins',
                   color: Colors.grey.shade700,
                 ),
               ),
