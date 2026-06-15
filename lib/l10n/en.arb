@@ -229,6 +229,7 @@
   "breastTenderness" : "Breast Tenderness",
   "ovulationPain" : "Ovulation Pain",
   "abdominalCramps" : "Abdominal Cramps",
+  "nextPeriodDate" : "Next Period Date",
   "light": "Light",
   "medium": "Medium",
   "heavy": "Heavy",

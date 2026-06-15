@@ -607,6 +607,9 @@ class AppLocalizationsYo extends AppLocalizations {
   String get abdominalCramps => 'Ìparun Inu';
 
   @override
+  String get nextPeriodDate => 'Next Period Date';
+
+  @override
   String get light => 'Òkè';
 
   @override

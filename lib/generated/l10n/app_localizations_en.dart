@@ -606,6 +606,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get abdominalCramps => 'Abdominal Cramps';
 
   @override
+  String get nextPeriodDate => 'Next Period Date';
+
+  @override
   String get light => 'Light';
 
   @override

@@ -1250,6 +1250,12 @@ abstract class AppLocalizations {
   /// **'Abdominal Cramps'**
   String get abdominalCramps;
 
+  /// No description provided for @nextPeriodDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Period Date'**
+  String get nextPeriodDate;
+
   /// No description provided for @light.
   ///
   /// In en, this message translates to:

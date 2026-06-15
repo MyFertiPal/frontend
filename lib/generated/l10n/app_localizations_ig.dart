@@ -607,6 +607,9 @@ class AppLocalizationsIg extends AppLocalizations {
   String get abdominalCramps => 'Nje Ihu';
 
   @override
+  String get nextPeriodDate => 'Next Period Date';
+
+  @override
   String get light => 'Kekee';
 
   @override

@@ -73,7 +73,8 @@
     "deleteAccountWarning",
     "deleteAccountConfirmation",
     "accountDeletedSuccess",
-    "deleteAccountFailed"
+    "deleteAccountFailed",
+    "nextPeriodDate"
   ],
 
   "ig": [
@@ -93,6 +94,7 @@
     "deleteAccountConfirmation",
     "accountDeletedSuccess",
     "deleteAccountFailed",
+    "nextPeriodDate",
     "genderPredictionTitle"
   ],
 
@@ -196,7 +198,8 @@
     "lowerBackPain",
     "pelvicPain",
     "breastTenderness",
-    "ovulationPain"
+    "ovulationPain",
+    "nextPeriodDate"
   ],
 
   "yo": [
@@ -232,6 +235,7 @@
     "pelvicPain",
     "headache",
     "breastTenderness",
-    "ovulationPain"
+    "ovulationPain",
+    "nextPeriodDate"
   ]
 }

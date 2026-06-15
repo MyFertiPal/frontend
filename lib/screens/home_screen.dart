@@ -67,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'fertile_period_start': 'N/A',
     'fertile_period_end': 'N/A',
     'ovulation_day': 'N/A',
+     'next_period_date': 'N/A',
   };
   static const String _defaultInsightText =
       'Track your cycle and get personalized insights here. Once you log your symptoms and cycle data, helpful tips and predictions will appear!';
@@ -1196,6 +1197,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       AppLocalizations.of(context).ovulationDay,
                       _insightData!['ovulation_day']?.toString() ?? 'N/A',
                     ),
+                    _buildSummaryRow(
+  AppLocalizations.of(context).nextPeriodDate,
+  _insightData!['next_period_date']?.toString() ?? 'N/A',
+),
                   ],
                 ),
               ),

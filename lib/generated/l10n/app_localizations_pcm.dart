@@ -605,6 +605,9 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get abdominalCramps => 'Belly Pain';
 
   @override
+  String get nextPeriodDate => 'Next Period Date';
+
+  @override
   String get light => 'Small Small';
 
   @override

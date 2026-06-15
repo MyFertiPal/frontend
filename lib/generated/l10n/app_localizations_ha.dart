@@ -607,6 +607,9 @@ class AppLocalizationsHa extends AppLocalizations {
   String get abdominalCramps => 'Zafi Cikin Jiya';
 
   @override
+  String get nextPeriodDate => 'Next Period Date';
+
+  @override
   String get light => 'Kadan';
 
   @override
