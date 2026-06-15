@@ -297,8 +297,6 @@ class _LogSymptomScreenState extends State<LogSymptomScreen> {
   }
 
   Widget _buildSymptomContainer(String symptomName) {
-    final l10n = AppLocalizations.of(context);
-    final moodKey = l10n.mood;
     final options = _symptomOptions[symptomName] ?? [];
     final isExpanded = _expandedSymptom == symptomName;
     return Container(

@@ -41,6 +41,22 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   bool _isSymptomsLoading = false;
   late NotificationReminderService _reminderService;
   bool _remindersInitialized = false;
+  DateTime? _getLastPeriodStart() {
+  if (_selectedCalendarDays.isEmpty) return null;
+
+  final sortedDays = _selectedCalendarDays.toList()
+    ..sort((a, b) => a.compareTo(b));
+
+  DateTime latestPeriodStart = sortedDays.first;
+
+  for (int i = 1; i < sortedDays.length; i++) {
+    if (sortedDays[i].difference(sortedDays[i - 1]).inDays > 1) {
+      latestPeriodStart = sortedDays[i];
+    }
+  }
+
+  return latestPeriodStart;
+}
 
   // Derived summary values
   int? _displayPeriodLength;
@@ -85,13 +101,11 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _selectedCalendarDaysFormatted = savedDays.toSet();
         _selectedCalendarDays = savedDays.map((s) => DateTime.parse(s)).toSet();
         if (_selectedCalendarDays.isNotEmpty) {
-          final latest =
-    _selectedCalendarDays.reduce(
-      (a, b) => a.isAfter(b) ? a : b,
-    );
+       final lastPeriodStart = _getLastPeriodStart();
 
-_lastPeriodDate =
-    DateFormat('yyyy-MM-dd').format(latest);
+_lastPeriodDate = lastPeriodStart != null
+    ? DateFormat('yyyy-MM-dd').format(lastPeriodStart)
+    : null;
         } else {
           _lastPeriodDate = null;
         }
@@ -122,9 +136,11 @@ _lastPeriodDate =
   if (_selectedCalendarDays.isEmpty || _lastPeriodDate == null) return;
 
   final periodLen = _calculatePeriodLength() ?? _defaultPeriodLength;
-  final cycleLen = _calculateCycleLength() ?? 28;
+  final cycleLen =
+    _calculateCycleLength() ??
+    _displayCycleLength ??
+    28;
   final lastPeriod = DateTime.parse(_lastPeriodDate!);
-
   final nextPeriod = lastPeriod.add(Duration(days: cycleLen));
   final ovulation = lastPeriod.add(Duration(days: cycleLen - 14));
   final fertileStart = ovulation.subtract(const Duration(days: 5));
@@ -191,16 +207,26 @@ _lastPeriodDate =
     if (d['fertile_period_start'] != null && d['fertile_period_end'] != null) {
       _setFertileWindow(d['fertile_period_start'], d['fertile_period_end']);
     }
-    if (d['next_period'] != null && d['period_length'] != null) {
-      final nextPeriodStart = DateTime.parse(d['next_period'].toString());
-      final periodLength = d['period_length'] as int;
-      final nextPeriodDays = List<DateTime>.generate(
-          periodLength, (i) => nextPeriodStart.add(Duration(days: i)));
-      setState(() {
-        _nextPeriodDays = nextPeriodDays.toSet();
-        _displayNextPeriod = nextPeriodStart;
-        if (periodLength > 0) _displayPeriodLength = periodLength;
-      });
+    if (d['next_period'] != null) {
+  final nextPeriodStart =
+      DateTime.parse(d['next_period'].toString());
+
+  final periodLength =
+      d['period_length'] ??
+      _displayPeriodLength ??
+      _defaultPeriodLength;
+
+  final nextPeriodDays = List<DateTime>.generate(
+    periodLength,
+    (i) => nextPeriodStart.add(Duration(days: i)),
+  );
+
+  setState(() {
+    _nextPeriodDays = nextPeriodDays.toSet();
+    _displayNextPeriod = nextPeriodStart;
+    _displayPeriodLength = periodLength;
+  });
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setStringList(
           'tapped_days', _selectedCalendarDaysFormatted.toList());
@@ -287,9 +313,11 @@ _lastPeriodDate =
           .map((d) => DateFormat('yyyy-MM-dd').format(d))
           .toSet();
       if (_selectedCalendarDays.isNotEmpty) {
-        final latest =
-            _selectedCalendarDays.reduce((a, b) => a.isAfter(b) ? a : b);
-        _lastPeriodDate = DateFormat('yyyy-MM-dd').format(latest);
+       final lastPeriodStart = _getLastPeriodStart();
+
+_lastPeriodDate = lastPeriodStart != null
+    ? DateFormat('yyyy-MM-dd').format(lastPeriodStart)
+    : null;
       } else {
         _lastPeriodDate = null;
       }
@@ -551,16 +579,6 @@ _lastPeriodDate =
                 ),
               ],
             ),
-            Positioned(
-              bottom: 32,
-              right: 32,
-              child: FloatingActionButton(
-                backgroundColor: _darkGreenText,
-                elevation: 6,
-                onPressed: _openLogSymptomScreen,
-                child: const Icon(Icons.add, size: 32, color: Colors.white),
-              ),
-            ),
           ],
         ),
       ),
@@ -585,7 +603,7 @@ _lastPeriodDate =
         children: [
           _keyItem(const Color(0xFFF06292), 'Period'),
           _keyItem(const Color(0xFF81C784), 'Fertile window'),
-          _keyItem(const Color(0xFF6A1B9A), 'Ovulation'),
+          _keyItem(const Color(0xFF0EA5A4), 'Ovulation'),
           _keyItem(Colors.transparent, 'Predicted period',
               border: const Color(0xFFD32F2F)),
         ],
