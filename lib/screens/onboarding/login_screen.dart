@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../providers/language_provider.dart';
 import '../../services/auth_service.dart';
@@ -24,86 +25,102 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   bool _showPassword = false;
+  bool _rememberEmail = false;
   bool _isLoading = false;
   Future<void> testGoogleSignIn() async {
-  try {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    final GoogleSignInAccount? account =
-        await googleSignIn.signIn();
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
 
-    if (account != null) {
-      debugPrint('Email: ${account.email}');
-      debugPrint('Name: ${account.displayName}');
+      if (account != null) {
+        debugPrint('Email: ${account.email}');
+        debugPrint('Name: ${account.displayName}');
+      }
+    } catch (e) {
+      debugPrint('Google Sign In Error: $e');
     }
-  } catch (e) {
-    debugPrint('Google Sign In Error: $e');
   }
-}
 
   Future<void> _signInWithGoogle() async {
-  try {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    // Optional: force account picker
-    await googleSignIn.signOut();
-
-    final GoogleSignInAccount? googleUser =
-        await googleSignIn.signIn();
-
-    if (googleUser == null) {
+    try {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
-      return;
-    }
 
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      // Optional: force account picker
+      await googleSignIn.signOut();
 
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(
-      credential,
-    );
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-    final user = userCredential.user;
+      if (googleUser == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
-    if (user == null) {
-      throw Exception('Google Sign-In failed');
-    }
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-    debugPrint('Google User: ${user.email}');
-
-    if (!mounted) return;
-
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil('/home', (route) => false);
-  } catch (e) {
-    debugPrint('Google Sign-In Error: $e');
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Google Sign-In failed'),
-          backgroundColor: Colors.red,
-        ),
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
+
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      final user = userCredential.user;
+
+      if (user == null) {
+        throw Exception('Google Sign-In failed');
+      }
+
+      debugPrint('Google User: ${user.email}');
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+    } catch (e) {
+      debugPrint('Google Sign-In Error: $e');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Google Sign-In failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-  } finally {
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  }
+  @override
+void initState() {
+  super.initState();
+  _loadSavedEmail();
+}
+
+Future<void> _loadSavedEmail() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final savedEmail = prefs.getString('saved_email');
+
+  if (savedEmail != null) {
+    setState(() {
+      _emailController.text = savedEmail;
+      _rememberEmail = true;
+    });
   }
 }
 
@@ -162,6 +179,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 12),
+                  // Remember Email Checkbox
+                 CheckboxListTile(
+  contentPadding: EdgeInsets.zero,
+  dense: true,
+  controlAffinity: ListTileControlAffinity.leading,
+  value: _rememberEmail,
+  onChanged: (value) {
+    setState(() {
+      _rememberEmail = value ?? false;
+    });
+  },
+  title: const Text(
+    'Remember email',
+    style: TextStyle(fontSize: 14),
+  ),
+),
 
                   // Forgot Password
                   GestureDetector(
@@ -256,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 360,
                     child: OutlinedButton(
                       onPressed: testGoogleSignIn,
-                        //onPressed: _isLoading ? null : _signInWithGoogle,
+                      //onPressed: _isLoading ? null : _signInWithGoogle,
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Colors.grey.shade400),
                         shape: RoundedRectangleBorder(
@@ -299,57 +332,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
 
-                  // Sign In with Facebook
-                  SizedBox(
-                    width: 360,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // TODO: Hook up Facebook sign in
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey.shade400),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        backgroundColor: Colors.transparent,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey.shade200,
-                            ),
-                            child: const Center(
-                              child: Text(
-                                'f',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            AppLocalizations.of(context).signInWithFacebook,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Poppins',
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                
                   const SizedBox(height: 30),
                 ],
               ),
@@ -447,6 +431,17 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text.trim(),
         _passwordController.text,
       );
+
+      final prefs = await SharedPreferences.getInstance();
+
+if (_rememberEmail) {
+  await prefs.setString(
+    'saved_email',
+    _emailController.text.trim(),
+  );
+} else {
+  await prefs.remove('saved_email');
+}
 
       if (mounted) {
         final apiService = ApiService();
