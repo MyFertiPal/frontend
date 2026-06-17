@@ -1199,7 +1199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     _buildSummaryRow(
   AppLocalizations.of(context).nextPeriodDate,
-  _insightData!['next_period_date']?.toString() ?? 'N/A',
+  _insightData!['next_period']?.toString() ?? 'N/A',
 ),
                   ],
                 ),
