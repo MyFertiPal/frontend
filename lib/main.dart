@@ -138,7 +138,7 @@ class _MyAppState extends State<MyApp> {
 
     if (uri.path == '/reset-password' && token != null) {
       _navigatorKey.currentState?.pushNamed(
-        '/reset_password',
+        '/reset-password',
         arguments: token,
       );
     }
@@ -171,7 +171,7 @@ class _MyAppState extends State<MyApp> {
 
   final path = uri.path;
 
-  if (path == '/reset-password' || path == '/reset_password') {
+  if (path == '/reset-password') {
     final token = uri.queryParameters['token'];
 
     return MaterialPageRoute(

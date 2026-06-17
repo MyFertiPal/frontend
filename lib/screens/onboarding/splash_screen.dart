@@ -44,22 +44,35 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _initializeAndNavigate() async {
-    try {
-      await _initializeApp();
+  try {
+    await _initializeApp();
 
-      await Future.delayed(const Duration(milliseconds: 2800));
+    final uri = Uri.base;
+    final path = uri.path;
 
-      if (mounted) {
-        _navigateToWelcome();
-      }
-    } catch (e) {
-      debugPrint('Splash init error: $e');
+    if (path == '/reset-password') {
+      final token = uri.queryParameters['token'];
 
       if (mounted) {
-        _navigateToWelcome();
+        Navigator.of(context).pushReplacementNamed(
+          '/reset-password',
+          arguments: token,
+        );
+        return;
       }
     }
+
+    await Future.delayed(const Duration(milliseconds: 2800));
+
+    if (mounted) {
+      _navigateToWelcome();
+    }
+  } catch (e) {
+    if (mounted) {
+      _navigateToWelcome();
+    }
   }
+}
 
   Future<void> _initializeApp() async {
     try {
