@@ -164,29 +164,23 @@ class _MyAppState extends State<MyApp> {
             title: "MyFertiPal",
             navigatorKey: _navigatorKey,
 
-            onGenerateRoute: (settings) {
-              final name = settings.name ?? '';
-              final uri = Uri.tryParse(name);
-              final path = uri?.path ?? name;
+           onGenerateRoute: (settings) {
+  final name = settings.name ?? '';
 
-              if (path == '/reset_password' || path == '/reset-password') {
-                final token =
-                    uri?.queryParameters['token'] ?? settings.arguments as String?;
+  final uri = Uri.parse(name);
 
-                return MaterialPageRoute(
-                  builder: (_) => ResetPasswordScreen(token: token),
-                );
-              }
+  final path = uri.path;
 
-              if (path == DeleteAccountScreen.routeName) {
-                return MaterialPageRoute(
-                  builder: (_) => const DeleteAccountScreen(),
-                  settings: const RouteSettings(name: '/delete-account'),
-                );
-              }
+  if (path == '/reset-password' || path == '/reset_password') {
+    final token = uri.queryParameters['token'];
 
-              return null;
-            },
+    return MaterialPageRoute(
+      builder: (_) => ResetPasswordScreen(token: token),
+    );
+  }
+
+  return null; // IMPORTANT: let routes table handle others
+},
 
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -234,7 +228,7 @@ class _MyAppState extends State<MyApp> {
             builder: (context, child) {
               return child ?? const SizedBox.shrink();
             },
-
+        
             routes: {
               '/': (context) => const SplashScreen(),
               '/welcome': (context) => const WelcomeScreen(),
