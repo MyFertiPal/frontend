@@ -409,7 +409,6 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  double _playbackSpeed = 1.0;
   bool _isLoading = false;
   String? _errorMessage;
 

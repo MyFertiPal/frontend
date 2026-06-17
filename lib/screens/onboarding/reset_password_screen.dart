@@ -63,16 +63,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
+    // ✅ Guard clause (must be first)
+    if (_token == null || _token!.isEmpty) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Text(
+            AppLocalizations.of(context).invalidOrMissingToken,
+            style: const TextStyle(
+              color: Colors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF0EA5A4)),
-        title: Text(AppLocalizations.of(context).resetPassword,
-            style: const TextStyle(
-                color: Color(0xFF0EA5A4), fontWeight: FontWeight.w600)),
+        title: Text(
+          AppLocalizations.of(context).resetPassword,
+          style: const TextStyle(
+            color: Color(0xFF0EA5A4),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -90,24 +112,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 obscureText: !_passwordVisible,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context).newPassword,
-                  labelStyle: const TextStyle(color: Color(0xFF0EA5A4)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF0EA5A4)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Color(0xFF0EA5A4), width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _passwordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: const Color(0xFF0EA5A4),
                     ),
                     onPressed: () {
                       setState(() {
@@ -117,10 +126,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return AppLocalizations.of(context).enterNewPassword;
-                  if (value.length < 6)
-                    return AppLocalizations.of(context).passwordAtLeast6;
+                  }
                   return null;
                 },
               ),
@@ -130,24 +138,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 obscureText: !_confirmPasswordVisible,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context).confirmPassword,
-                  labelStyle: const TextStyle(color: Color(0xFF0EA5A4)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF0EA5A4)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Color(0xFF0EA5A4), width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  fillColor: Colors.white,
-                  filled: true,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _confirmPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: const Color(0xFF0EA5A4),
                     ),
                     onPressed: () {
                       setState(() {
@@ -157,30 +152,18 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ),
                 validator: (value) {
-                  if (value != _passwordController.text)
+                  if (value != _passwordController.text) {
                     return AppLocalizations.of(context).passwordsDoNotMatch;
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 24),
               _isLoading
-                  ? const CircularProgressIndicator(color: Color(0xFF0EA5A4))
-                  : SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0EA5A4),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: _resetPassword,
-                        child: Text(AppLocalizations.of(context).resetPassword,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.w600)),
-                      ),
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _resetPassword,
+                      child: Text(AppLocalizations.of(context).resetPassword),
                     ),
             ],
           ),

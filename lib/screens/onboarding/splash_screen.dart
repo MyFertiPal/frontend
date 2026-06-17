@@ -1,7 +1,5 @@
-﻿import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
-import 'forget_password_flow.dart' show ResetPasswordScreen;
 import 'welcome_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -25,7 +23,6 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    // Create a two-phase animation: zoom in (0-60%), then zoom out (60-100%)
     _scaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.0, end: 1.5)
@@ -41,7 +38,6 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Initialize and navigate
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeAndNavigate();
     });
@@ -49,93 +45,36 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _initializeAndNavigate() async {
     try {
-      // Initialize API service
       await _initializeApp();
 
-      if (_isResetPasswordLink()) {
-        await Future.delayed(const Duration(milliseconds: 2800));
-        if (mounted) {
-          _navigateToResetPassword();
-        }
-        return;
-      }
-
-      // Wait for animation to complete
       await Future.delayed(const Duration(milliseconds: 2800));
 
       if (mounted) {
         _navigateToWelcome();
       }
     } catch (e) {
-      debugPrint('Error during init: $e');
+      debugPrint('Splash init error: $e');
+
       if (mounted) {
-        if (_isResetPasswordLink()) {
-          _navigateToResetPassword();
-        } else {
-          _navigateToWelcome();
-        }
+        _navigateToWelcome();
       }
+    }
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      final apiService = ApiService();
+      final token = await apiService.getStoredToken();
+      debugPrint('App initialized. Token exists: ${token != null}');
+    } catch (e) {
+      debugPrint('Init error: $e');
     }
   }
 
   void _navigateToWelcome() {
     if (!mounted) return;
-    try {
-      Navigator.of(context).pushReplacementNamed('/welcome');
-    } catch (e) {
-      debugPrint('Route navigation failed: $e, using direct navigation');
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-        );
-      }
-    }
-  }
 
-  bool _isResetPasswordLink() {
-    if (!kIsWeb) {
-      return false;
-    }
-
-    final uri = Uri.base;
-    final resolved = _resolveWebUri(uri);
-    return resolved.path == '/reset_password' ||
-        resolved.path == '/reset-password';
-  }
-
-  void _navigateToResetPassword() {
-    if (!mounted) return;
-
-    final resolved = _resolveWebUri(Uri.base);
-    final token = resolved.queryParameters['token'];
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => ResetPasswordScreen(prefilledToken: token),
-        settings: const RouteSettings(name: '/reset_password'),
-      ),
-    );
-  }
-
-  Uri _resolveWebUri(Uri uri) {
-    if (uri.fragment.isEmpty) {
-      return uri;
-    }
-
-    final fragment = uri.fragment;
-    final normalized = fragment.startsWith('/') ? fragment : '/$fragment';
-    return Uri.parse(normalized);
-  }
-
-  Future<void> _initializeApp() async {
-    try {
-      // Initialize API service - this loads the token from SharedPreferences
-      final apiService = ApiService();
-      final token = await apiService.getStoredToken();
-      debugPrint('App initialized. Token available: ${token != null}');
-    } catch (e) {
-      debugPrint('Error initializing app: $e');
-    }
+    Navigator.of(context).pushReplacementNamed('/welcome');
   }
 
   @override
@@ -160,7 +99,6 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Use the provided app logo asset
               SizedBox(
                 width: 240,
                 height: 240,

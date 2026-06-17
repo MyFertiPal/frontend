@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import '../../services/api_service.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'welcome_screen.dart';
 
@@ -29,54 +29,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _showPassword = false;
   bool _showConfirmPassword = false;
 
-  Future<void> _signInWithGoogle() async {
-    try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-      await googleSignIn.signOut();
+Future<void> _signInWithGoogle() async {
+  final url = Uri.parse(
+    '${ApiService.baseUrl}/auth/google/login',
+  );
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+  await launchUrl(
+    url,
+    mode: LaunchMode.externalApplication,
+  );
+}
 
-      if (googleUser == null) {
-        return;
-      }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
-
-      final user = userCredential.user;
-
-      if (user == null) return;
-
-      debugPrint('Google Sign In Success: ${user.email}');
-
-      if (!mounted) return;
-
-      Navigator.pushReplacementNamed(
-        context,
-        '/home',
-      );
-    } catch (e) {
-      debugPrint('Google Sign In Error: $e');
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Google sign in failed'),
-        ),
-      );
-    }
-  }
 
   @override
   void dispose() {

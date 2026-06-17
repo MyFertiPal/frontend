@@ -262,7 +262,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     try {
       // Use the public web reset page for deep links.
       // Backend will send: https://teamnexuss.netlify.app/#/reset_password?token=ABC123
-      final resetUrl = 'https://teamnexuss.netlify.app/#/reset_password';
+      final resetUrl = 'https://teamnexuss.netlify.app/reset_password';
 
       await ApiService().forgotPassword(
         email: email,
@@ -298,14 +298,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 }
 
-class ResetPasswordScreen extends StatefulWidget {
-  final String? prefilledToken;
-  const ResetPasswordScreen({super.key, this.prefilledToken});
+ class ResetPasswordScreen extends StatefulWidget {
+  final String? token;
+
+  const ResetPasswordScreen({super.key, this.token});
+
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
-}
 
+}
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _tokenController = TextEditingController();
   final _newPasswordController = TextEditingController();
@@ -315,18 +317,31 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _isResetting = false;
 
   @override
-  void initState() {
-    super.initState();
-    // Prefill token from constructor or URL query (?token=...)
-    final fromArg = widget.prefilledToken;
-    final fromUri = Uri.base.queryParameters['token'];
-    final token = (fromArg != null && fromArg.isNotEmpty)
-        ? fromArg
-        : (fromUri != null && fromUri.isNotEmpty ? fromUri : null);
-    if (token != null) {
-      _tokenController.text = token;
-    }
+void initState() {
+  super.initState();
+
+  final uri = Uri.base;
+
+  // Works for:
+  // https://site.com/#/reset_password?token=ABC
+  final fragment = uri.fragment;
+
+  Uri? parsed;
+
+  if (fragment.isNotEmpty) {
+    final clean = fragment.startsWith('#') ? fragment.substring(1) : fragment;
+    parsed = Uri.tryParse(clean);
   }
+
+  final tokenFromFragment = parsed?.queryParameters['token'];
+  final tokenFromQuery = uri.queryParameters['token'];
+
+  final token = tokenFromFragment ?? tokenFromQuery;
+
+  if (token != null) {
+    _tokenController.text = token;
+  }
+}
 
   @override
   void dispose() {
