@@ -402,6 +402,32 @@ class ApiService {
       rethrow;
     }
   }
+ Future<Map<String, dynamic>> googleLogin(String idToken) async {
+  final url = Uri.parse('$baseUrl/auth/google/mobile');
+
+  final response = await http.post(
+    url,
+    headers: await getHeaders(),
+    body: jsonEncode({
+      'id_token': idToken,
+    }),
+  );
+
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    final data = jsonDecode(response.body);
+
+    if (data['access_token'] != null) {
+      await saveToken(data['access_token']);
+    }
+
+    return data;
+  } else {
+    throw ApiException(
+      statusCode: response.statusCode,
+      message: _extractErrorMessage(response),
+    );
+  }
+}
 
   // Get User
   Future<Map<String, dynamic>> getUser() async {

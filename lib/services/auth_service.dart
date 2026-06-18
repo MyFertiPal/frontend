@@ -128,6 +128,32 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
     }
   }
 
+Future<void> googleLogin(String idToken) async {
+  try {
+    final apiService = ApiService();
+
+    final response = await apiService.googleLogin(idToken);
+
+    // Save token returned by backend
+    if (response.containsKey('access_token')) {
+      await apiService.saveToken(response['access_token']);
+
+      final userJson = await apiService.getUser();
+      final user = User.fromJson(userJson);
+
+      _currentUser = user;
+      await _saveUserToPrefs(user);
+
+      _authStateController.add(_currentUser);
+      notifyListeners();
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Google login error: $e');
+    }
+    rethrow;
+  }
+}
   @override
   Future<User?> signUpWithEmail({
     required String email,

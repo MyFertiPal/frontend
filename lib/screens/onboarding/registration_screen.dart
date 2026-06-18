@@ -1,8 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -28,17 +29,76 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   bool _showPassword = false;
   bool _showConfirmPassword = false;
+  bool _isLoading = false;
 
 
 Future<void> _signInWithGoogle() async {
-  final url = Uri.parse(
-    '${ApiService.baseUrl}/auth/google/login',
-  );
+  try {
+    setState(() {
+      _isLoading = true;
+    });
 
-  await launchUrl(
-    url,
-    mode: LaunchMode.externalApplication,
-  );
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    final GoogleSignInAccount? account =
+        await googleSignIn.signIn();
+
+    if (account == null) {
+      return;
+    }
+
+    final GoogleSignInAuthentication auth =
+        await account.authentication;
+
+    final credential =
+        GoogleAuthProvider.credential(
+      accessToken: auth.accessToken,
+      idToken: auth.idToken,
+    );
+
+    final userCredential =
+        await FirebaseAuth.instance
+            .signInWithCredential(
+      credential,
+    );
+
+    final firebaseToken =
+        await userCredential.user?.getIdToken();
+
+    debugPrint(
+      'Firebase Token: $firebaseToken',
+    );
+
+    debugPrint(
+      'Email: ${userCredential.user?.email}',
+    );
+
+    final authService =
+    Provider.of<AuthService>(context, listen: false);
+
+await authService.googleLogin(firebaseToken!);
+
+  } catch (e) {
+    debugPrint(
+      'Google Sign-In Error: $e',
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Google Sign-In failed: $e',
+          ),
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 }
 
 
