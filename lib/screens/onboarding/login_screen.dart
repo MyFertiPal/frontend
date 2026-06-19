@@ -37,7 +37,13 @@ Future<void> _signInWithGoogle() async {
       _isLoading = true;
     });
 
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn( serverClientId:
+      '293422244200-ciaei8d5275laooko0bp81brhh67ibt2.apps.googleusercontent.com',
+);
+
+debugPrint(
+  'Using client ID: ${googleSignIn.serverClientId}',
+);
 
     final GoogleSignInAccount? account =
         await googleSignIn.signIn();

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "293422244200-7k52438ana61b6gas9mq4eu5rnhj9k3i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myfertipall.app",
+            "certificate_hash": "f271175509c60eef238eb421da036b76a00ea500"
+          }
+        },
+        {
           "client_id": "293422244200-ciaei8d5275laooko0bp81brhh67ibt2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

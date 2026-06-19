@@ -408,9 +408,7 @@ class ApiService {
   final response = await http.post(
     url,
     headers: await getHeaders(),
-    body: jsonEncode({
-      'id_token': idToken,
-    }),
+    body: jsonEncode(idToken),
   );
 
   if (response.statusCode == 200 || response.statusCode == 201) {
