@@ -31,74 +31,90 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _showConfirmPassword = false;
   bool _isLoading = false;
 
-  Future<void> _signInWithGoogle() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
+               
+     Future<void> _signInWithGoogle() async {
+  try {
+    setState(() {
+      _isLoading = true;
+    });
 
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        serverClientId:
-            "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
-      );
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      serverClientId:
+           "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
+    );
 
-      debugPrint(
-        'Using client ID: ${googleSignIn.serverClientId}',
-      );
+    debugPrint(
+      'Using client ID: ${googleSignIn.serverClientId}',
+    );
 
-      final GoogleSignInAccount? account = await googleSignIn.signIn();
+    final GoogleSignInAccount? account =
+        await googleSignIn.signIn();
 
-      if (account == null) {
-        return;
-      }
+    if (account == null) {
+      return;
+    }
 
-      final GoogleSignInAuthentication auth = await account.authentication;
+    final GoogleSignInAuthentication auth =
+        await account.authentication;
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: auth.accessToken,
-        idToken: auth.idToken,
-      );
+    debugPrint(
+      'Google ID Token: ${auth.idToken}',
+    );
 
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
+    debugPrint(
+      'Access Token: ${auth.accessToken}',
+    );
 
-      final firebaseToken = await userCredential.user?.getIdToken();
+    final credential =
+        GoogleAuthProvider.credential(
+      accessToken: auth.accessToken,
+      idToken: auth.idToken,
+    );
 
-      debugPrint(
-        'Firebase Token: $firebaseToken',
-      );
+    final userCredential =
+        await FirebaseAuth.instance
+            .signInWithCredential(
+      credential,
+    );
 
-      debugPrint(
-        'Email: ${userCredential.user?.email}',
-      );
+    debugPrint(
+      'Email: ${userCredential.user?.email}',
+    );
 
-      final authService = Provider.of<AuthService>(context, listen: false);
+    final authService =
+        Provider.of<AuthService>(
+      context,
+      listen: false,
+    );
 
-      await authService.googleLogin(firebaseToken!);
-    } catch (e) {
-      debugPrint(
-        'Google Sign-In Error: $e',
-      );
+    // Send Google ID token to backend
+    await authService.googleLogin(
+      auth.idToken!,
+    );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Google Sign-In failed: $e',
-            ),
+  } catch (e) {
+    debugPrint(
+      'Google Sign-In Error: $e',
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Google Sign-In failed: $e',
           ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
-
+}
+    
   @override
   void dispose() {
     _fullNameController.dispose();

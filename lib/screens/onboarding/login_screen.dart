@@ -31,19 +31,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
-Future<void> _signInWithGoogle() async {
+     Future<void> _signInWithGoogle() async {
   try {
     setState(() {
       _isLoading = true;
     });
 
-    final GoogleSignIn googleSignIn = GoogleSignIn( serverClientId:
-      "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
-);
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      serverClientId:
+           "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
+    );
 
-debugPrint(
-  'Using client ID: ${googleSignIn.serverClientId}',
-);
+    debugPrint(
+      'Using client ID: ${googleSignIn.serverClientId}',
+    );
 
     final GoogleSignInAccount? account =
         await googleSignIn.signIn();
@@ -54,6 +55,14 @@ debugPrint(
 
     final GoogleSignInAuthentication auth =
         await account.authentication;
+
+    debugPrint(
+      'Google ID Token: ${auth.idToken}',
+    );
+
+    debugPrint(
+      'Access Token: ${auth.accessToken}',
+    );
 
     final credential =
         GoogleAuthProvider.credential(
@@ -67,22 +76,20 @@ debugPrint(
       credential,
     );
 
-    final firebaseToken =
-        await userCredential.user?.getIdToken();
-        
-
-    debugPrint(
-      'Firebase Token: $firebaseToken',
-    );
-
     debugPrint(
       'Email: ${userCredential.user?.email}',
     );
 
     final authService =
-    Provider.of<AuthService>(context, listen: false);
+        Provider.of<AuthService>(
+      context,
+      listen: false,
+    );
 
-await authService.googleLogin(firebaseToken!);
+    // Send Google ID token to backend
+    await authService.googleLogin(
+      auth.idToken!,
+    );
 
   } catch (e) {
     debugPrint(
