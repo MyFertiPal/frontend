@@ -1,6 +1,5 @@
 
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,66 +30,84 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
 
-     Future<void> _signInWithGoogle() async {
+ Future<void> _signInWithGoogle() async {
   try {
     setState(() {
       _isLoading = true;
     });
 
+    debugPrint('STEP 1 - Function entered');
+
     final GoogleSignIn googleSignIn = GoogleSignIn(
       serverClientId:
-           "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
+          'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
     );
 
-    debugPrint(
-      'Using client ID: ${googleSignIn.serverClientId}',
-    );
+    debugPrint('STEP 2 - Before signIn');
 
     final GoogleSignInAccount? account =
         await googleSignIn.signIn();
 
+    debugPrint('STEP 3 - After signIn');
+
     if (account == null) {
+      debugPrint('STEP 4 - User cancelled');
       return;
     }
 
-    final GoogleSignInAuthentication auth =
-        await account.authentication;
+    debugPrint('STEP 5 - Email: ${account.email}');
 
-    debugPrint(
-      'Google ID Token: ${auth.idToken}',
-    );
+    final auth = await account.authentication;
 
-    debugPrint(
-      'Access Token: ${auth.accessToken}',
-    );
+    debugPrint('STEP 6 - Got authentication');
 
-    final credential =
-        GoogleAuthProvider.credential(
-      accessToken: auth.accessToken,
-      idToken: auth.idToken,
-    );
+    debugPrint('ID Token exists: ${auth.idToken != null}');
+    debugPrint('Access Token exists: ${auth.accessToken != null}');
 
-    final userCredential =
-        await FirebaseAuth.instance
-            .signInWithCredential(
-      credential,
-    );
-
-    debugPrint(
-      'Email: ${userCredential.user?.email}',
-    );
+    if (auth.idToken == null) {
+      throw Exception('Google did not return an ID token');
+    }
 
     final authService =
-        Provider.of<AuthService>(
-      context,
-      listen: false,
+        Provider.of<AuthService>(context, listen: false);
+
+    debugPrint('STEP 7 - Calling backend');
+
+    await authService.googleLogin(auth.idToken!);
+
+    debugPrint('STEP 8 - Backend login successful');
+
+    final apiService = ApiService();
+
+    final profileJson = await apiService.getProfile();
+
+    debugPrint('STEP 9 - Profile fetched');
+
+    final isProfileComplete =
+        profileJson.containsKey('age') ||
+        profileJson.containsKey('cycle_length') ||
+        profileJson.containsKey('period_length') ||
+        profileJson.containsKey('audio_preference');
+
+    debugPrint(
+      'STEP 10 - Profile complete: $isProfileComplete',
     );
 
-    // Send Google ID token to backend
-    await authService.googleLogin(
-      auth.idToken!,
-    );
+    if (!mounted) return;
 
+    if (isProfileComplete) {
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(
+        '/home',
+        (route) => false,
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const ProfileSetupScreen(),
+        ),
+      );
+    }
   } catch (e) {
     debugPrint(
       'Google Sign-In Error: $e',
@@ -113,7 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 }
-
 
   @override
 void initState() {

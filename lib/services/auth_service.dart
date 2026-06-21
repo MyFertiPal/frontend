@@ -130,15 +130,25 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
 
 Future<void> googleLogin(String idToken) async {
   try {
+    print('AUTH STEP 1');
+
     final apiService = ApiService();
 
     final response = await apiService.googleLogin(idToken);
 
-    // Save token returned by backend
+    print('AUTH STEP 2');
+    print('Response: $response');
+
     if (response.containsKey('access_token')) {
+      print('AUTH STEP 3 - Access token found');
+
       await apiService.saveToken(response['access_token']);
 
       final userJson = await apiService.getUser();
+
+      print('AUTH STEP 4');
+      print(userJson);
+
       final user = User.fromJson(userJson);
 
       _currentUser = user;
@@ -146,11 +156,13 @@ Future<void> googleLogin(String idToken) async {
 
       _authStateController.add(_currentUser);
       notifyListeners();
+
+      print('AUTH STEP 5 - Complete');
+    } else {
+      print('AUTH STEP 3 FAILED - No access_token');
     }
   } catch (e) {
-    if (kDebugMode) {
-      print('Google login error: $e');
-    }
+    print('GOOGLE LOGIN ERROR: $e');
     rethrow;
   }
 }
