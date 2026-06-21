@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final testKey = ApiKeyConfig.getApiKey();
       String? apiKey;
 
-      if (testKey != null) {
+      if (testKey == 'YOUR_YARNGPT_API_KEY') {
         apiKey = testKey;
       } else {
         try {
@@ -1355,7 +1354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'teamnexus@techlaunchpadi.com',
+                        'contact@myfertipal.com',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,

@@ -31,77 +31,73 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _showConfirmPassword = false;
   bool _isLoading = false;
 
-
-Future<void> _signInWithGoogle() async {
-  try {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    final GoogleSignInAccount? account =
-        await googleSignIn.signIn();
-
-    if (account == null) {
-      return;
-    }
-
-    final GoogleSignInAuthentication auth =
-        await account.authentication;
-
-    final credential =
-        GoogleAuthProvider.credential(
-      accessToken: auth.accessToken,
-      idToken: auth.idToken,
-    );
-
-    final userCredential =
-        await FirebaseAuth.instance
-            .signInWithCredential(
-      credential,
-    );
-
-    final firebaseToken =
-        await userCredential.user?.getIdToken();
-
-    debugPrint(
-      'Firebase Token: $firebaseToken',
-    );
-
-    debugPrint(
-      'Email: ${userCredential.user?.email}',
-    );
-
-    final authService =
-    Provider.of<AuthService>(context, listen: false);
-
-await authService.googleLogin(firebaseToken!);
-
-  } catch (e) {
-    debugPrint(
-      'Google Sign-In Error: $e',
-    );
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Google Sign-In failed: $e',
-          ),
-        ),
-      );
-    }
-  } finally {
-    if (mounted) {
+  Future<void> _signInWithGoogle() async {
+    try {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
+
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        serverClientId:
+            "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
+      );
+
+      debugPrint(
+        'Using client ID: ${googleSignIn.serverClientId}',
+      );
+
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
+
+      if (account == null) {
+        return;
+      }
+
+      final GoogleSignInAuthentication auth = await account.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: auth.accessToken,
+        idToken: auth.idToken,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      final firebaseToken = await userCredential.user?.getIdToken();
+
+      debugPrint(
+        'Firebase Token: $firebaseToken',
+      );
+
+      debugPrint(
+        'Email: ${userCredential.user?.email}',
+      );
+
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      await authService.googleLogin(firebaseToken!);
+    } catch (e) {
+      debugPrint(
+        'Google Sign-In Error: $e',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Google Sign-In failed: $e',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-}
-
-
 
   @override
   void dispose() {
@@ -201,14 +197,27 @@ await authService.googleLogin(firebaseToken!);
           );
         },
       );
-    } catch (e) {
+    } on ApiException catch (e) {
+      debugPrint(
+        'Registration API Error: ${e.statusCode} - ${e.message}',
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-                '${AppLocalizations.of(context).failedToSendVerificationCode}'),
+            content: Text(e.message),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Registration Error: $e');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to send verification code'),
+            backgroundColor: Colors.red,
           ),
         );
       }

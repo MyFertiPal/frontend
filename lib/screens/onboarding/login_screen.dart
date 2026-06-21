@@ -38,7 +38,7 @@ Future<void> _signInWithGoogle() async {
     });
 
     final GoogleSignIn googleSignIn = GoogleSignIn( serverClientId:
-      '293422244200-ciaei8d5275laooko0bp81brhh67ibt2.apps.googleusercontent.com',
+      "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
 );
 
 debugPrint(
