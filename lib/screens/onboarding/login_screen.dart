@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final GoogleSignIn googleSignIn = GoogleSignIn(
       serverClientId:
-          'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+       "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
     );
 
     debugPrint('STEP 2 - Before signIn');

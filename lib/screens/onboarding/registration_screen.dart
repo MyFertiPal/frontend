@@ -1,7 +1,7 @@
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'profile_setup_screen.dart';
 import 'package:provider/provider.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
@@ -30,91 +30,78 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _showPassword = false;
   bool _showConfirmPassword = false;
   bool _isLoading = false;
-
                
-     Future<void> _signInWithGoogle() async {
+Future<void> _signInWithGoogle() async {
   try {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
+
+    debugPrint('STEP 1 - Google SignIn started');
 
     final GoogleSignIn googleSignIn = GoogleSignIn(
       serverClientId:
-           "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
+          'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
     );
 
-    debugPrint(
-      'Using client ID: ${googleSignIn.serverClientId}',
-    );
-
-    final GoogleSignInAccount? account =
-        await googleSignIn.signIn();
+    final GoogleSignInAccount? account = await googleSignIn.signIn();
 
     if (account == null) {
+      debugPrint('User cancelled login');
       return;
     }
 
-    final GoogleSignInAuthentication auth =
-        await account.authentication;
+    debugPrint('STEP 2 - User: ${account.email}');
 
-    debugPrint(
-      'Google ID Token: ${auth.idToken}',
-    );
+    final auth = await account.authentication;
 
-    debugPrint(
-      'Access Token: ${auth.accessToken}',
-    );
+    debugPrint('STEP 3 - Got tokens');
 
-    final credential =
-        GoogleAuthProvider.credential(
-      accessToken: auth.accessToken,
-      idToken: auth.idToken,
-    );
+    if (auth.idToken == null) {
+      throw Exception("Missing ID Token");
+    }
 
-    final userCredential =
-        await FirebaseAuth.instance
-            .signInWithCredential(
-      credential,
-    );
+    // ✅ GET auth service properly
+    final authService = context.read<AuthService>();
 
-    debugPrint(
-      'Email: ${userCredential.user?.email}',
-    );
+    // IMPORTANT: backend expects ID TOKEN (NOT firebase token)
+    await authService.googleLogin(auth.idToken!);
 
-    final authService =
-        Provider.of<AuthService>(
-      context,
-      listen: false,
-    );
+    debugPrint('STEP 4 - Backend login success');
 
-    // Send Google ID token to backend
-    await authService.googleLogin(
-      auth.idToken!,
-    );
+    // OPTIONAL: fetch profile
+    final apiService = ApiService();
+    final profileJson = await apiService.getProfile();
 
+    final isProfileComplete =
+        profileJson.containsKey('age') ||
+        profileJson.containsKey('cycle_length') ||
+        profileJson.containsKey('period_length') ||
+        profileJson.containsKey('audio_preference');
+
+    if (!mounted) return;
+
+    // ✅ NAVIGATION HERE
+    if (isProfileComplete) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/home', (r) => false);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
+      );
+    }
   } catch (e) {
-    debugPrint(
-      'Google Sign-In Error: $e',
-    );
+    debugPrint('Google Sign-In Error: $e');
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Google Sign-In failed: $e',
-          ),
-        ),
+        SnackBar(content: Text('Google Sign-In failed: $e')),
       );
     }
   } finally {
     if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 }
-    
+
   @override
   void dispose() {
     _fullNameController.dispose();
