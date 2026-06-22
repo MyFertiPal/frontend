@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "293422244200-r50n2hilag0mjkd779n1dgciu0g8rp0p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myfertipall.app",
+            "certificate_hash": "1e1d1b3b4f16c9dea1a2ab4fe67e1b2de22df94d"
+          }
+        },
+        {
           "client_id": "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
           "client_type": 3
         }
