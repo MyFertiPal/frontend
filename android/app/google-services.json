@@ -53,6 +53,13 @@
             {
               "client_id": "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "293422244200-gec3busnh009dacb1oam6bh2emq35jp4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nexusFertilityApp"
+              }
             }
           ]
         }
