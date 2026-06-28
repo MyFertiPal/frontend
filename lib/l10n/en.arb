@@ -351,5 +351,22 @@
   "@@section_support_tts": "Support Screen TTS",
   "readAffirmationAloud": "Read affirmation aloud",
   "failedPlayAffirmation": "Failed to play affirmation. Please try again.",
-  "failedPlayAudio": "Failed to play audio. Please try again."
+  "failedPlayAudio": "Failed to play audio. Please try again.",
+
+  "formErrorText":"Please correct the highlighted fields",
+  "failedToVerify":"Failed to send verification code",
+  "submit":"Submit",
+  "rememberEmail":"Remember Email",
+  "verifyAccount":"Verify Your Account",
+  "verificationCodeSent":"A verification code has been sent to your email. Please enter it to continue.",
+  "otpInfoText": "Not seeing the email? Check your spam/junk folder.",
+  "resendCode": "Resend",
+  "verify" : "Verify",
+
+  "profileSetup" : " Complete Your Profile" ,
+  "profileSetupInfo" : "This will help us personalize your cycle guide",
+  "ageInfoText" : "Select your age",
+  "age" : "Age",
+  "cycleLength" : "Cycle Length ",
+  "selectCycleLength" : "Select cycle length"
 }

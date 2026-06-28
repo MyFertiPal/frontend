@@ -90,3 +90,4 @@ flutter:
     - assets/images/pregnant.png
     - assets/icons/
     - assets/splash/
+    - shorebird.yaml

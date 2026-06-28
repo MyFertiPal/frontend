@@ -294,7 +294,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get dateOfBirth => 'Rana haifa';
 
   @override
-  String get cycleLength => 'Cycle Length';
+  String get cycleLength => 'Cycle Length ';
 
   @override
   String get periodLength => 'Period Length';
@@ -911,4 +911,46 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get failedPlayAudio => 'An kasa bugawa sauti. Jiya yi sau.';
+
+  @override
+  String get formErrorText => 'Please correct the highlighted fields';
+
+  @override
+  String get failedToVerify => 'Failed to send verification code';
+
+  @override
+  String get rememberEmail => 'Remember Email';
+
+  @override
+  String get verifyAccount => 'Verify Your Account';
+
+  @override
+  String get verificationCodeSent =>
+      'A verification code has been sent to your email. Please enter it to continue.';
+
+  @override
+  String get otpInfoText =>
+      'Not seeing the email? Check your spam/junk folder.';
+
+  @override
+  String get resendCode => 'Resend';
+
+  @override
+  String get verify => 'Verify';
+
+  @override
+  String get profileSetup => ' Complete Your Profile';
+
+  @override
+  String get profileSetupInfo =>
+      'This will help us personalize your cycle guide';
+
+  @override
+  String get ageInfoText => 'Select your age';
+
+  @override
+  String get age => 'Shekara';
+
+  @override
+  String get selectCycleLength => 'Select cycle length';
 }

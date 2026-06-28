@@ -74,7 +74,19 @@
     "deleteAccountConfirmation",
     "accountDeletedSuccess",
     "deleteAccountFailed",
-    "nextPeriodDate"
+    "nextPeriodDate",
+    "formErrorText",
+    "failedToVerify",
+    "rememberEmail",
+    "verifyAccount",
+    "verificationCodeSent",
+    "otpInfoText",
+    "resendCode",
+    "verify",
+    "profileSetup",
+    "profileSetupInfo",
+    "ageInfoText",
+    "selectCycleLength"
   ],
 
   "ig": [
@@ -95,7 +107,20 @@
     "accountDeletedSuccess",
     "deleteAccountFailed",
     "nextPeriodDate",
-    "genderPredictionTitle"
+    "genderPredictionTitle",
+    "formErrorText",
+    "failedToVerify",
+    "rememberEmail",
+    "verifyAccount",
+    "verificationCodeSent",
+    "otpInfoText",
+    "resendCode",
+    "verify",
+    "profileSetup",
+    "profileSetupInfo",
+    "ageInfoText",
+    "age",
+    "selectCycleLength"
   ],
 
   "pcm": [
@@ -199,7 +224,19 @@
     "pelvicPain",
     "breastTenderness",
     "ovulationPain",
-    "nextPeriodDate"
+    "nextPeriodDate",
+    "formErrorText",
+    "failedToVerify",
+    "rememberEmail",
+    "verifyAccount",
+    "verificationCodeSent",
+    "otpInfoText",
+    "resendCode",
+    "verify",
+    "profileSetup",
+    "profileSetupInfo",
+    "ageInfoText",
+    "selectCycleLength"
   ],
 
   "yo": [
@@ -236,6 +273,19 @@
     "headache",
     "breastTenderness",
     "ovulationPain",
-    "nextPeriodDate"
+    "nextPeriodDate",
+    "formErrorText",
+    "failedToVerify",
+    "rememberEmail",
+    "verifyAccount",
+    "verificationCodeSent",
+    "otpInfoText",
+    "resendCode",
+    "verify",
+    "profileSetup",
+    "profileSetupInfo",
+    "ageInfoText",
+    "age",
+    "selectCycleLength"
   ]
 }

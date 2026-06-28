@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../../services/auth_error_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../generated/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../services/analytics_service.dart';
@@ -27,21 +28,21 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   bool _acceptTerms = false;
 
   final List<String> _ttcHistories = [
-    'Trying to Conceive',
-    'Trying to Conceive - Default',
-    'Preparing to conceive',
-    'Just tracking my cycle',
-    'TTC 6+ months',
-    'TTC 12+ months',
-    'Using fertility treatment',
-    'Prefer not to say'
+    "Trying To Conceive",
+    "Trying To Conceive - default",
+    "Preparing To Conceive",
+    "Just Tracking My Cycle",
+    "TTc 6+ Months",
+    "TTc 12+ Months",
+    "Using Fertility Treatment",
+    "Prefer Not To Say"
   ];
 
   final List<String> _faithPreferences = [
-    'Christian',
-    'Muslim',
-    'Traditionalist',
-    'Neutral'
+    "Christian",
+    "Muslim",
+    "Traditionalist",
+    "Neutral"
   ];
 
   @override
@@ -57,7 +58,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          'Complete Your Profile',
+          "Profile Setup",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -97,7 +98,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'This will help us personalize your cycle guide',
+                AppLocalizations.of(context).profileSetupInfo,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey.shade700,
@@ -106,7 +107,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 32),
 
               // Age
-              _buildFieldLabel('Age'),
+              _buildFieldLabel(AppLocalizations.of(context).age),
               _buildNumberDropdown(
                 value: _age,
                 items: List.generate(73, (i) => i + 18),
@@ -115,7 +116,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
                 child: Text(
-                  'Select your age',
+                  AppLocalizations.of(context).ageInfoText,
                   style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade500,
@@ -125,7 +126,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // Cycle Length
-              _buildFieldLabel('Cycle Length'),
+              _buildFieldLabel(AppLocalizations.of(context).cycleLength),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
@@ -136,7 +137,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   value: _cycleLength,
                   isExpanded: true,
                   underline: const SizedBox(),
-                  hint: const Text('Select cycle length'),
+                  hint: const Text("Select cycle length"),
                   items: List.generate(35, (i) => i + 1).map((days) {
                     return DropdownMenuItem(
                       value: days,

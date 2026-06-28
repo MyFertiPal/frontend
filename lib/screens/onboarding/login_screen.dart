@@ -222,7 +222,7 @@ Future<void> _loadSavedEmail() async {
   checkColor: Colors.white,               // tick color
 
   title: const Text(
-    'Remember email',
+    "Remember Email",
     style: TextStyle(
       fontSize: 14,
       fontFamily: 'Poppins',

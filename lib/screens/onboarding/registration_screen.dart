@@ -39,7 +39,7 @@ Future<void> _signInWithGoogle() async {
 
     final GoogleSignIn googleSignIn = GoogleSignIn(
       serverClientId:
-          'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+        "293422244200-d0bk8gs0vcivbqp3up6lrr5gifgrduas.apps.googleusercontent.com",
     );
 
     final GoogleSignInAccount? account = await googleSignIn.signIn();
@@ -119,7 +119,7 @@ Future<void> _signInWithGoogle() async {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
-            'Please correct the highlighted fields',
+           "Please correct highlighted errors before proceeding.",
           ),
           backgroundColor: const Color(0xFFB91C1C),
           behavior: SnackBarBehavior.floating,
@@ -219,7 +219,7 @@ Future<void> _signInWithGoogle() async {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to send verification code'),
+            content: Text("An unexpected error occurred. Please try again."),
             backgroundColor: Colors.red,
           ),
         );
@@ -446,7 +446,7 @@ Future<void> _signInWithGoogle() async {
                         ),
                       ),
                       child: const Text(
-                        'Submit',
+                        "Submit",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -775,7 +775,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Verify Your Account',
+                      "Verify Your Account",
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
@@ -786,7 +786,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'A verification code has been sent to your email. Please enter it to continue.',
+                      "Verification code has been sent to your email.",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -810,7 +810,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Not seeing the email? Check your spam/junk folder.',
+                              AppLocalizations.of(context).otpInfoText,
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w500,
@@ -848,7 +848,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                         GestureDetector(
                           onTap: secondsRemaining == 0 ? _resendOTP : null,
                           child: Text(
-                            'Resend',
+                            AppLocalizations.of(context).resendCode,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -930,7 +930,7 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                           ),
                         ),
                         child: const Text(
-                          'Verify',
+                          "Verify",
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,

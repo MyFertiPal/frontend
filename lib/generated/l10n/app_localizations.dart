@@ -659,7 +659,7 @@ abstract class AppLocalizations {
   /// No description provided for @cycleLength.
   ///
   /// In en, this message translates to:
-  /// **'Cycle Length'**
+  /// **'Cycle Length '**
   String get cycleLength;
 
   /// No description provided for @periodLength.
@@ -1801,6 +1801,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to play audio. Please try again.'**
   String get failedPlayAudio;
+
+  /// No description provided for @formErrorText.
+  ///
+  /// In en, this message translates to:
+  /// **'Please correct the highlighted fields'**
+  String get formErrorText;
+
+  /// No description provided for @failedToVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send verification code'**
+  String get failedToVerify;
+
+  /// No description provided for @rememberEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember Email'**
+  String get rememberEmail;
+
+  /// No description provided for @verifyAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Your Account'**
+  String get verifyAccount;
+
+  /// No description provided for @verificationCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification code has been sent to your email. Please enter it to continue.'**
+  String get verificationCodeSent;
+
+  /// No description provided for @otpInfoText.
+  ///
+  /// In en, this message translates to:
+  /// **'Not seeing the email? Check your spam/junk folder.'**
+  String get otpInfoText;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get resendCode;
+
+  /// No description provided for @verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verify;
+
+  /// No description provided for @profileSetup.
+  ///
+  /// In en, this message translates to:
+  /// **' Complete Your Profile'**
+  String get profileSetup;
+
+  /// No description provided for @profileSetupInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This will help us personalize your cycle guide'**
+  String get profileSetupInfo;
+
+  /// No description provided for @ageInfoText.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your age'**
+  String get ageInfoText;
+
+  /// No description provided for @age.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get age;
+
+  /// No description provided for @selectCycleLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Select cycle length'**
+  String get selectCycleLength;
 }
 
 class _AppLocalizationsDelegate
