@@ -29,6 +29,8 @@
 		<key>UIMainStoryboardFile</key>
 		<string>Main</string>
 		<key>UISupportedInterfaceOrientations</key>
+		<key>NSMicrophoneUsageDescription</key>
+<string>This permission may be requested by the system for audio playback features. MyFertiPal does not record audio.</string>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
 			<string>UIInterfaceOrientationLandscapeLeft</string>
