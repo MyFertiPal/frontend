@@ -16,6 +16,17 @@
 		<string>MyFertiPal</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
+		<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.293422244200-tpc624au7p7iprjrdqs975qveka1tlo6</string>
+        </array>
+    </dict>
+</array>
 		<key>CFBundleShortVersionString</key>
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
