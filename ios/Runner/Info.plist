@@ -14,23 +14,8 @@
 		<string>6.0</string>
 		<key>CFBundleName</key>
 		<string>MyFertiPal</string>
-		<key>GIDClientID</key>
-		<string>293422244200-tpc624au7p7iprjrdqs975qveka1tlo6.apps.googleusercontent.com</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
-		<key>ITSAppUsesNonExemptEncryption</key>
-		<false/>
-		<key>CFBundleURLTypes</key>
-<array>
-    <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>com.googleusercontent.apps.293422244200-tpc624au7p7iprjrdqs975qveka1tlo6</string>
-        </array>
-    </dict>
-</array>
 		<key>CFBundleShortVersionString</key>
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
@@ -43,9 +28,6 @@
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>
 		<string>Main</string>
-		<key>NSMicrophoneUsageDescription</key>
-        <string>This permission may be requested by the system for audio playback features.
-		MyFertiPal does not record audio.</string>
 		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
