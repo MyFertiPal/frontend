@@ -14,10 +14,12 @@
 		<string>6.0</string>
 		<key>CFBundleName</key>
 		<string>MyFertiPal</string>
+		<key>GIDClientID</key>
+		<string>293422244200-tpc624au7p7iprjrdqs975qveka1tlo6.apps.googleusercontent.com</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>ITSAppUsesNonExemptEncryption</key>
-		<false/>
+		<false/>;
 		<key>CFBundleURLTypes</key>
 <array>
     <dict>
