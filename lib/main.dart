@@ -36,18 +36,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    if (!kIsWeb) {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-    try {
-      await AnalyticsService.logAppOpen();
+  await AnalyticsService.logAppOpen();
+}
+   
     } catch (e) {
       debugPrint('Analytics log failed: $e');
     }
-  } catch (e) {
-    debugPrint('Firebase already initialized (main): $e');
-  }
+ 
 
   if (kIsWeb) {
     setAppUrlStrategy();
@@ -216,12 +216,13 @@ class _MyAppState extends State<MyApp> {
             themeMode: ThemeMode.light,
 
             initialRoute: '/',
-
-            navigatorObservers: [
-              FirebaseAnalyticsObserver(
-                analytics: AnalyticsService.instance,
-              ),
-            ],
+navigatorObservers: kIsWeb
+    ? []
+    : [
+        FirebaseAnalyticsObserver(
+          analytics: AnalyticsService.instance,
+        ),
+      ],
 
             debugShowCheckedModeBanner: false,
 
@@ -238,7 +239,7 @@ class _MyAppState extends State<MyApp> {
               '/signup-email': (context) => const EmailSignupScreen(),
               '/profile-setup': (context) => const ProfileSetupScreen(),
               '/forgot-password': (context) => const ForgotPasswordScreen(),
-              '/reset_password': (context) {
+              '/reset-password': (context) {
                 final args = ModalRoute.of(context)?.settings.arguments;
                 return ResetPasswordScreen(token: args as String?);
               },
