@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../providers/language_provider.dart';
 import '../../services/auth_service.dart';
+import '../../services/notification_reminder_service.dart';
+import '../../services/local_notification_service.dart';
 import '../../services/auth_error_helper.dart';
 import '../../services/api_service.dart';
 import 'profile_setup_screen.dart';
@@ -463,6 +465,32 @@ Future<void> _loadSavedEmail() async {
         _emailController.text.trim(),
         _passwordController.text,
       );
+      // Check symptom reminder after successful login
+final reminderService = NotificationReminderService();
+
+await reminderService.initialize();
+
+final shouldRemind =
+    await reminderService.shouldShowSymptomLoginReminder();
+
+
+if (shouldRemind) {
+
+  await LocalNotificationService()
+      .showNotification(
+
+    id: 500,
+
+    title: 'Log Your Symptoms 📝',
+
+    body:
+        'How are you feeling today? Add your symptoms to get better fertility insights.',
+
+    payload: 'symptom_log',
+
+  );
+
+}
 
       final prefs = await SharedPreferences.getInstance();
 
@@ -488,6 +516,7 @@ if (_rememberEmail) {
           );
           return;
         }
+
 
         // Check if user profile is complete by fetching profile data
         try {
@@ -522,6 +551,7 @@ if (_rememberEmail) {
           Navigator.of(context)
               .pushNamedAndRemoveUntil('/home', (route) => false);
         }
+        
       }
     } catch (e) {
       if (mounted) {

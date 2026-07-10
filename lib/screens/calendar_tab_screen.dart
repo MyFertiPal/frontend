@@ -110,7 +110,7 @@ _lastPeriodDate = lastPeriodStart != null
           _lastPeriodDate = null;
         }
       });
-      _updateSummaryFromLocal();
+      _recalculateCycleData();
     } else {
       if (_lastPeriodDate != null) {
         final lastPeriod = DateTime.parse(_lastPeriodDate!);
@@ -126,46 +126,82 @@ _lastPeriodDate = lastPeriodStart != null
         });
         await prefs.setStringList(
             'tapped_days', _selectedCalendarDaysFormatted.toList());
-        _updateSummaryFromLocal();
+        _recalculateCycleData();
       }
     }
   }
 
   /// Derives summary values from locally stored tapped days when API has not responded yet
-  void _updateSummaryFromLocal() {
-  if (_selectedCalendarDays.isEmpty || _lastPeriodDate == null) return;
+  void _recalculateCycleData() {
+  if (_selectedCalendarDays.isEmpty) {
+    setState(() {
+      _displayPeriodLength = null;
+      _displayCycleLength = null;
+      _displayNextPeriod = null;
+      _displayOvulationDay = null;
+      _displayFertileStart = null;
+      _displayFertileEnd = null;
 
-  final periodLen = _calculatePeriodLength() ?? _defaultPeriodLength;
-  final cycleLen =
-    _calculateCycleLength() ??
-    _displayCycleLength ??
-    28;
-  final lastPeriod = DateTime.parse(_lastPeriodDate!);
-  final nextPeriod = lastPeriod.add(Duration(days: cycleLen));
-  final ovulation = lastPeriod.add(Duration(days: cycleLen - 14));
-  final fertileStart = ovulation.subtract(const Duration(days: 5));
-  final fertileEnd = ovulation.add(const Duration(days: 1));
-
-  final fertileWindowDays = <DateTime>{};
-  for (int i = 0; i <= fertileEnd.difference(fertileStart).inDays; i++) {
-    fertileWindowDays.add(fertileStart.add(Duration(days: i)));
+      _nextPeriodDays = {};
+      _ovulationDates = {};
+      _fertileWindowDays = {};
+    });
+    return;
   }
 
-  final nextPeriodDays = List<DateTime>.generate(
-    periodLen,
+  final lastPeriodStart = _getLastPeriodStart();
+
+  if (lastPeriodStart == null) return;
+
+  final periodLength =
+      _calculatePeriodLength() ?? _defaultPeriodLength;
+
+  final cycleLength =
+      _calculateCycleLength() ??
+      _displayCycleLength ??
+      28;
+
+  final nextPeriod =
+      lastPeriodStart.add(Duration(days: cycleLength));
+
+  final ovulation =
+      nextPeriod.subtract(const Duration(days: 14));
+
+  final fertileStart =
+      ovulation.subtract(const Duration(days: 5));
+
+  final fertileEnd =
+      ovulation.add(const Duration(days: 1));
+
+  final fertileDays = <DateTime>{};
+
+  for (int i = 0;
+      i <= fertileEnd.difference(fertileStart).inDays;
+      i++) {
+    fertileDays.add(
+      fertileStart.add(Duration(days: i)),
+    );
+  }
+
+  final nextPeriodDays = List.generate(
+    periodLength,
     (i) => nextPeriod.add(Duration(days: i)),
   ).toSet();
 
   setState(() {
-    _displayPeriodLength = periodLen;
-    _displayCycleLength = cycleLen;
+    _lastPeriodDate =
+        DateFormat('yyyy-MM-dd').format(lastPeriodStart);
+
+    _displayPeriodLength = periodLength;
+    _displayCycleLength = cycleLength;
     _displayNextPeriod = nextPeriod;
     _displayOvulationDay = ovulation;
     _displayFertileStart = fertileStart;
     _displayFertileEnd = fertileEnd;
-    _fertileWindowDays = fertileWindowDays;
-    _ovulationDates = {ovulation};
+
     _nextPeriodDays = nextPeriodDays;
+    _ovulationDates = {ovulation};
+    _fertileWindowDays = fertileDays;
   });
 }
   Future<void> _fetchLoggedSymptoms() async {
@@ -204,49 +240,57 @@ _lastPeriodDate = lastPeriodStart != null
   }
 
   void _applyInsightsData(Map<dynamic, dynamic> d) async {
-    if (d['fertile_period_start'] != null && d['fertile_period_end'] != null) {
-      _setFertileWindow(d['fertile_period_start'], d['fertile_period_end']);
-    }
-    if (d['next_period'] != null) {
-  final nextPeriodStart =
-      DateTime.parse(d['next_period'].toString());
+  if (d['fertile_period_start'] != null &&
+      d['fertile_period_end'] != null) {
+    _setFertileWindow(
+      d['fertile_period_start'],
+      d['fertile_period_end'],
+    );
+  }
+
+  if (d['ovulation_day'] != null) {
+    _setOvulationDay(d['ovulation_day']);
+  }
 
   final periodLength =
       d['period_length'] ??
       _displayPeriodLength ??
       _defaultPeriodLength;
 
-  final nextPeriodDays = List<DateTime>.generate(
-    periodLength,
-    (i) => nextPeriodStart.add(Duration(days: i)),
-  );
+  DateTime? nextPeriodStart;
 
-  setState(() {
-    _nextPeriodDays = nextPeriodDays.toSet();
-    _displayNextPeriod = nextPeriodStart;
-    _displayPeriodLength = periodLength;
-  });
+  if (d['next_period'] != null) {
+    nextPeriodStart = DateTime.parse(d['next_period'].toString());
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList(
-          'tapped_days', _selectedCalendarDaysFormatted.toList());
-    }
-    if (d['ovulation_day'] != null) {
-      _setOvulationDay(d['ovulation_day']);
-    }
-    if (d['cycle_length'] != null) {
-      setState(() => _displayCycleLength = d['cycle_length'] as int);
-    }
-    if (d['symptoms'] != null) {
-      setState(() {
-        _loggedSymptoms = List<String>.from(d['symptoms']);
-        _isSymptomsLoading = false;
-      });
-    } else {
-      setState(() => _isSymptomsLoading = false);
-    }
+    _nextPeriodDays = List.generate(
+      periodLength,
+      (i) => nextPeriodStart!.add(Duration(days: i)),
+    ).toSet();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      'tapped_days',
+      _selectedCalendarDaysFormatted.toList(),
+    );
   }
 
+  setState(() {
+    if (nextPeriodStart != null) {
+      _displayNextPeriod = nextPeriodStart;
+      _displayPeriodLength = periodLength;
+    }
+
+    if (d['cycle_length'] != null) {
+      _displayCycleLength = d['cycle_length'] as int;
+    }
+
+    _loggedSymptoms = d['symptoms'] != null
+        ? List<String>.from(d['symptoms'])
+        : [];
+
+    _isSymptomsLoading = false;
+  });
+}
   void _setFertileWindow(dynamic start, dynamic end) {
     try {
       final s = DateTime.parse(start.toString());
@@ -344,7 +388,7 @@ _lastPeriodDate = lastPeriodStart != null
           'tapped_days', _selectedCalendarDaysFormatted.toList());
     }
 
-    _updateSummaryFromLocal();
+    _recalculateCycleData();
 
     final calculatedPeriodLength = _calculatePeriodLength();
     final calculatedCycleLength = _calculateCycleLength();
@@ -405,43 +449,80 @@ _lastPeriodDate = lastPeriodStart != null
       a.year == b.year && a.month == b.month && a.day == b.day;
 
   int? _calculatePeriodLength() {
-    if (_selectedCalendarDays.isEmpty) return null;
-    final sortedDays = _selectedCalendarDays.toList()
-      ..sort((a, b) => a.compareTo(b));
-    int consecutiveCount = 1;
-    for (int i = 1; i < sortedDays.length; i++) {
-      if (sortedDays[i].difference(sortedDays[i - 1]).inDays == 1) {
-        consecutiveCount++;
-      } else {
-        break;
-      }
+  if (_selectedCalendarDays.isEmpty) return null;
+
+  final sortedDays = _selectedCalendarDays.toList()
+    ..sort((a, b) => a.compareTo(b));
+
+  int latestStart = 0;
+
+  for (int i = 1; i < sortedDays.length; i++) {
+    final gap =
+        sortedDays[i].difference(sortedDays[i - 1]).inDays;
+
+    if (gap >= 10) {
+      latestStart = i;
     }
-    return consecutiveCount;
   }
 
-  int? _calculateCycleLength() {
-    if (_selectedCalendarDays.length < 2) return null;
-    final sortedDays = _selectedCalendarDays.toList()
-      ..sort((a, b) => a.compareTo(b));
-    final periodStarts = <DateTime>[sortedDays.first];
-    for (int i = 1; i < sortedDays.length; i++) {
-      if (sortedDays[i].difference(sortedDays[i - 1]).inDays > 1) {
-        periodStarts.add(sortedDays[i]);
-      }
+  int length = 1;
+
+  for (int i = latestStart + 1; i < sortedDays.length; i++) {
+    final gap =
+        sortedDays[i].difference(sortedDays[i - 1]).inDays;
+
+    if (gap <= 2) {
+      length++;
+    } else {
+      break;
     }
-    if (periodStarts.length >= 2) {
-      final cycleLengths = <int>[];
-      for (int i = 1; i < periodStarts.length; i++) {
-        final gap = periodStarts[i].difference(periodStarts[i - 1]).inDays;
-        if (gap > 0) cycleLengths.add(gap);
-      }
-      if (cycleLengths.isNotEmpty) {
-        return (cycleLengths.reduce((a, b) => a + b) / cycleLengths.length)
-            .round();
-      }
-    }
-    return null;
   }
+
+  return length;
+}
+  int? _calculateCycleLength() {
+  if (_selectedCalendarDays.length < 2) return null;
+
+  final sortedDays = _selectedCalendarDays.toList()
+    ..sort((a, b) => a.compareTo(b));
+
+  const minGap = 10;
+
+  final periodStarts = <DateTime>[
+    sortedDays.first,
+  ];
+
+  for (int i = 1; i < sortedDays.length; i++) {
+    final gap =
+        sortedDays[i].difference(sortedDays[i - 1]).inDays;
+
+    if (gap >= minGap) {
+      periodStarts.add(sortedDays[i]);
+    }
+  }
+
+  if (periodStarts.length < 2) return null;
+
+  final cycles = <int>[];
+
+  for (int i = 1; i < periodStarts.length; i++) {
+    final length =
+        periodStarts[i].difference(periodStarts[i - 1]).inDays;
+
+    if (length >= 15 && length <= 45) {
+      cycles.add(length);
+    }
+  }
+
+  if (cycles.isEmpty) return null;
+
+  final recent = cycles.length > 6
+      ? cycles.sublist(cycles.length - 6)
+      : cycles;
+
+  return (recent.reduce((a, b) => a + b) / recent.length)
+      .round();
+}
 
   void _openLogSymptomScreen() async {
     final result = await Navigator.of(context).push(

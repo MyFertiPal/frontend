@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'local_notification_service.dart';
 
 class NotificationReminder {
   final String id;
@@ -45,17 +46,52 @@ class NotificationReminderService {
   static const String _remindersKey = 'fertility_reminders';
   static const String _settingsKey = 'reminder_settings';
   late SharedPreferences _prefs;
+  final LocalNotificationService _localNotificationService =
+    LocalNotificationService();
 
   Future<void> initialize() async {
-    _prefs = await SharedPreferences.getInstance();
-  }
+  _prefs = await SharedPreferences.getInstance();
+
+  await _localNotificationService.initialize();
+}
 
   // Enable/disable notification types
-  Future<void> setReminderEnabled(String type, bool enabled) async {
-    final settings = await getReminderSettings();
-    settings[type] = enabled;
-    await _prefs.setString(_settingsKey, jsonEncode(settings));
-  }
+  Future<void> setReminderEnabled(
+String type,
+bool enabled
+) async {
+
+final settings =
+await getReminderSettings();
+
+
+settings[type]=enabled;
+
+
+await _prefs.setString(
+_settingsKey,
+jsonEncode(settings),
+);
+
+
+if(!enabled){
+
+final reminders =
+await getRemindersByType(type);
+
+
+for(final reminder in reminders){
+
+await _localNotificationService
+.cancelNotification(
+reminder.id.hashCode
+);
+
+}
+
+}
+
+}
 
   Future<Map<String, dynamic>> getReminderSettings() async {
     final settingsJson = _prefs.getString(_settingsKey);
@@ -101,23 +137,33 @@ class NotificationReminderService {
       ),
     );
 
-    // Midday reminder during fertile window
-    reminders.add(
-      NotificationReminder(
-        id: 'fertile_midday_${cycleStartDate.millisecondsSinceEpoch}',
-        title: 'Fertile Window: Midday Reminder',
-        message: 'Remember to track any changes in cervical mucus or basal body temperature. Every detail helps!',
-        scheduledTime: DateTime(
-          fertileStart.year,
-          fertileStart.month,
-          (fertileStart.day + fertileEnd.day) ~/ 2,
-          12,
-          0,
-        ),
-        type: 'fertile_window',
-      ),
-    );
+   // Midday reminder during fertile window
 
+final fertileMid = fertileStart.add(
+  const Duration(days: 2),
+);
+
+
+reminders.add(
+  NotificationReminder(
+    id: 'fertile_midday_${cycleStartDate.millisecondsSinceEpoch}',
+
+    title: 'Fertile Window: Midday Reminder',
+
+    message:
+        'Remember to track any changes in cervical mucus or basal body temperature. Every detail helps!',
+
+    scheduledTime: DateTime(
+      fertileMid.year,
+      fertileMid.month,
+      fertileMid.day,
+      12,
+      0,
+    ),
+
+    type: 'fertile_window',
+  ),
+);
     // End of fertile window reminder
     reminders.add(
       NotificationReminder(
@@ -164,6 +210,48 @@ class NotificationReminderService {
 
     await _saveReminders(reminders);
   }
+  Future<bool> shouldShowSymptomLoginReminder() async {
+
+  final prefs = await SharedPreferences.getInstance();
+
+  final lastLogged =
+      prefs.getString('last_symptom_logged_date');
+
+
+  if (lastLogged == null) {
+    return true;
+  }
+
+
+  final lastDate =
+      DateTime.parse(lastLogged);
+
+
+  final today =
+      DateTime.now();
+
+
+  return !(
+    lastDate.year == today.year &&
+    lastDate.month == today.month &&
+    lastDate.day == today.day
+  );
+
+}
+Future<void> markSymptomsLoggedToday() async {
+
+  final prefs =
+      await SharedPreferences.getInstance();
+
+
+  await prefs.setString(
+    'last_symptom_logged_date',
+    DateTime.now()
+        .toIso8601String(),
+  );
+
+}
+
 
   // Schedule period logging reminders
   Future<void> schedulePeriodLoggingReminders(
@@ -275,7 +363,30 @@ class NotificationReminderService {
     }
 
     final jsonList = reminderMap.values.map((r) => r.toJson()).toList();
-    await _prefs.setString(_remindersKey, jsonEncode(jsonList));
+   await _prefs.setString(
+  _remindersKey,
+  jsonEncode(jsonList),
+);
+
+
+// Schedule actual phone notifications
+for(final reminder in reminders){
+
+  await _localNotificationService.scheduleNotification(
+
+    id: reminder.id.hashCode,
+
+    title: reminder.title,
+
+    body: reminder.message,
+
+    scheduledTime: reminder.scheduledTime,
+
+    payload: reminder.type,
+
+  );
+
+}
   }
 
   // Get all reminders

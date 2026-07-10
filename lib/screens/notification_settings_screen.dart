@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../services/notification_reminder_service.dart';
+import '../services/local_notification_service.dart';
+
+final LocalNotificationService _localNotification =
+    LocalNotificationService();
 
 class NotificationSettingsScreen extends StatefulWidget {
   static const routeName = '/notification-settings';
@@ -15,17 +20,65 @@ class NotificationSettingsScreen extends StatefulWidget {
 
 class _NotificationSettingsScreenState
     extends State<NotificationSettingsScreen> {
+
   late NotificationReminderService _notificationService;
 
+
+  // Notification settings
   bool _enableNotifications = true;
   bool _enableFertileWindowReminder = true;
   bool _enablePeriodReminder = true;
   bool _enableSymptomLogReminder = true;
   bool _enableInsightNotifications = true;
+
+
+  // Permissions
+  bool _calendarPermission = false;
+  bool _locationPermission = false;
+  bool _notificationPermission = false;
+
+
+  // Data sharing
+  bool _shareHealthcare = false;
+  bool _researchParticipation = false;
+
+
+  @override
   void initState() {
     super.initState();
+
     _notificationService = NotificationReminderService();
+
     _loadNotificationPreferences();
+    _loadPermissions();
+  }
+
+  Future<void> _loadPermissions() async {
+    final calendar = await Permission.calendar.status;
+
+    final location = await Permission.location.status;
+
+    final notifications = await Permission.notification.status;
+
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      _calendarPermission = calendar.isGranted;
+
+      _locationPermission = location.isGranted;
+
+      _notificationPermission = notifications.isGranted;
+
+      _shareHealthcare = prefs.getBool(
+            "share_healthcare",
+          ) ??
+          false;
+
+      _researchParticipation = prefs.getBool(
+            "research_participation",
+          ) ??
+          false;
+    });
   }
 
   Future<void> _loadNotificationPreferences() async {
@@ -77,7 +130,8 @@ class _NotificationSettingsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Unable to save preferences. Please try again later.'),
+            content:
+                Text('Unable to save preferences. Please try again later.'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -108,7 +162,7 @@ class _NotificationSettingsScreenState
               title: 'Enable All Notifications',
               subtitle: 'Turn on/off all notification types',
               value: _enableNotifications,
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   _enableNotifications = value;
                   if (!value) {
@@ -118,6 +172,17 @@ class _NotificationSettingsScreenState
                     _enableInsightNotifications = false;
                   }
                 });
+
+if(value){
+
+await _localNotification.requestPermission();
+
+}else{
+
+await _localNotification
+.cancelAllNotifications();
+
+}
                 _saveNotificationPreferences();
               },
               icon: Icons.notifications_active,
@@ -223,38 +288,16 @@ class _NotificationSettingsScreenState
               title: 'Calendar Access',
               description: 'Allow access to view your calendar',
               icon: Icons.calendar_month,
-              isGranted: true,
+              permission: Permission.calendar,
+              isGranted: _calendarPermission,
             ),
             const SizedBox(height: 12),
             _buildPermissionCard(
               title: 'Location Access',
               description: 'Optional: For health facility recommendations',
               icon: Icons.location_on,
+              permission: Permission.location,
               isGranted: false,
-            ),
-            const SizedBox(height: 12),
-            _buildPermissionCard(
-              title: 'Contacts Access',
-              description:
-                  'Optional: To share cycle data with trusted contacts',
-              icon: Icons.contacts,
-              isGranted: false,
-            ),
-            const SizedBox(height: 32),
-
-            // Data Sharing Settings
-            _buildSectionHeader('Data Sharing'),
-            const SizedBox(height: 12),
-            _buildDataSharingTile(
-              title: 'Share with Healthcare Providers',
-              subtitle: 'Allow healthcare providers to view your data',
-              icon: Icons.local_hospital,
-            ),
-            const SizedBox(height: 12),
-            _buildDataSharingTile(
-              title: 'Anonymous Research Participation',
-              subtitle: 'Contribute anonymized data to fertility research',
-              icon: Icons.science,
             ),
             const SizedBox(height: 32),
           ],
@@ -385,106 +428,67 @@ class _NotificationSettingsScreenState
     required String title,
     required String description,
     required IconData icon,
+    required Permission permission,
     required bool isGranted,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[200]!),
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.grey[50],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: const Color(0xFF0EA5A4), size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
+    return InkWell(
+      onTap: () async {
+        if (!isGranted) {
+          await permission.request();
+
+          _loadPermissions();
+        } else {
+          await openAppSettings();
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[200]!),
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.grey[50],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFF0EA5A4), size: 24),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isGranted
-                  ? const Color(0xFF0EA5A4).withOpacity(0.2)
-                  : Colors.orange.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              isGranted ? 'Granted' : 'Denied',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: isGranted ? const Color(0xFF0EA5A4) : Colors.orange,
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  )
+                ],
               ),
             ),
-          ),
-        ],
+            Text(
+              isGranted ? 'Granted' : 'Allow',
+              style: TextStyle(
+                color: isGranted ? Colors.green : Colors.orange,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
+  @override
+void dispose(){
 
-  Widget _buildDataSharingTile({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[200]!),
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.grey[50],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: const Color(0xFF0EA5A4), size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right, color: Colors.grey),
-        ],
-      ),
-    );
-  }
+super.dispose();
+
+}
 }
