@@ -318,35 +318,25 @@ class AnalyticsService {
 
 
   static Future<void> logPeriodLogged({
-
-    required int cycleLength,
-
-    required int periodLength,
-
-  }) async {
-
-
+  required int cycleLength,
+  required int periodLength,
+  String? source,
+}) async {
+  try {
     await _analytics.logEvent(
-
-      name:_eventPeriodLogged,
-
-      parameters:{
-
-        'cycle_length':cycleLength,
-
-        'period_length':periodLength,
-
+      name: _eventPeriodLogged,
+      parameters: {
+        'cycle_length': cycleLength,
+        'period_length': periodLength,
+        if (source != null) 'source': source,
       },
-
     );
-
-
+  } catch (e) {
+    debugPrint(
+      'Failed to log period_logged event: $e',
+    );
   }
-
-
-
-
-
+}
   static Future<void> logSymptomsLogged({
 
     required int symptomCount,

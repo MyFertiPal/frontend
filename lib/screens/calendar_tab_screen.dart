@@ -70,6 +70,9 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   @override
   void initState() {
     super.initState();
+     AnalyticsService.logScreenView(
+      screenName: "Calendar Tab Screen",
+    );
     _calendarScrollController.addListener(_onCalendarScroll);
     _loadTappedDays();
     _fetchLoggedSymptoms();

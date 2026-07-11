@@ -64,8 +64,8 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
   void initState() {
     super.initState();
 
-     AnalyticsService.logScreen(
-    "Educational Hub",
+     AnalyticsService.logScreenView(
+    screenName:"Educational Hub",
   );
     _audioPlayer = AudioPlayer();
   }

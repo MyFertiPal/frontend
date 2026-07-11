@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../../services/api_key_config.dart';
+import '../../services/analytics_service.dart';
 import '../../services/yarngpt_tts_service.dart';
 import '../community/community_groups_screen.dart';
 import '../community/create_group_screen.dart';
@@ -69,6 +70,9 @@ class _SupportScreenState extends State<SupportScreen> {
   @override
   void initState() {
     super.initState();
+     AnalyticsService.logScreenView(
+      screenName: "Support Screen",
+    );
     _audioPlayer = AudioPlayer();
     try {
       final testKey = ApiKeyConfig.getApiKey();

@@ -7,10 +7,10 @@ import '../generated/l10n/app_localizations.dart';
 import '../screens/calendar_tab_screen.dart';
 import '../screens/educational/educational_hub_screen.dart';
 
-
 import '../services/auth_service.dart';
 import '../providers/language_provider.dart';
 import '../services/api_service.dart';
+import '../services/analytics_service.dart';
 import '../services/api_key_config.dart';
 import '../services/yarngpt_tts_service.dart';
 import '../models/user.dart';
@@ -18,7 +18,6 @@ import '../utils/responsive_utils.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/support/support_screen.dart';
 import '../screens/onboarding/welcome_screen.dart';
-
 
 import '../screens/gender_prediction_screen.dart';
 import '../screens/user_guide_screen.dart';
@@ -67,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'fertile_period_start': 'N/A',
     'fertile_period_end': 'N/A',
     'ovulation_day': 'N/A',
-     'next_period_date': 'N/A',
+    'next_period_date': 'N/A',
   };
   static const String _defaultInsightText =
       'Track your cycle and get personalized insights here. Once you log your symptoms and cycle data, helpful tips and predictions will appear!';
@@ -81,6 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView(
+      screenName: "Home Screen",
+    );
     // Initialize with default values immediately
     _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
     _insightText = _defaultInsightText;
@@ -120,39 +122,39 @@ class _HomeScreenState extends State<HomeScreen> {
     _sendInsightsPost();
   }
 
- Future<void> _loadAudioPreference() async {
-  try {
-    final api = ApiService();
-    final profile = await api.getProfile();
+  Future<void> _loadAudioPreference() async {
+    try {
+      final api = ApiService();
+      final profile = await api.getProfile();
 
-    debugPrint('Audio profile raw: $profile');
+      debugPrint('Audio profile raw: $profile');
 
-    final raw = profile['audio_preference'];
+      final raw = profile['audio_preference'];
 
-    bool audioPreference;
+      bool audioPreference;
 
-    if (raw is bool) {
-      audioPreference = raw;
-    } else if (raw is String) {
-      audioPreference = raw.toLowerCase() == 'true';
-    } else if (raw is int) {
-      audioPreference = raw == 1;
-    } else {
-      audioPreference = false; // safer default
+      if (raw is bool) {
+        audioPreference = raw;
+      } else if (raw is String) {
+        audioPreference = raw.toLowerCase() == 'true';
+      } else if (raw is int) {
+        audioPreference = raw == 1;
+      } else {
+        audioPreference = false; // safer default
+      }
+
+      setState(() {
+        _audioEnabled = audioPreference;
+      });
+
+      debugPrint('Parsed audioPreference = $_audioEnabled');
+    } catch (e) {
+      debugPrint('Error loading audio preference: $e');
+      setState(() {
+        _audioEnabled = false;
+      });
     }
-
-    setState(() {
-      _audioEnabled = audioPreference;
-    });
-
-    debugPrint('Parsed audioPreference = $_audioEnabled');
-  } catch (e) {
-    debugPrint('Error loading audio preference: $e');
-    setState(() {
-      _audioEnabled = false;
-    });
   }
-}
 
   @override
   void didChangeDependencies() {
@@ -311,16 +313,16 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           IndexedStack(
-  index: _selectedIndex,
-  children: [
-    _buildHomeTab(),
-    const EducationalHubScreen(),
-    CalendarTabScreen(
-      key: ValueKey(_calendarRefreshKey),
-    ),
-    const SupportScreen(),
-  ],
-),
+            index: _selectedIndex,
+            children: [
+              _buildHomeTab(),
+              const EducationalHubScreen(),
+              CalendarTabScreen(
+                key: ValueKey(_calendarRefreshKey),
+              ),
+              const SupportScreen(),
+            ],
+          ),
           if (_showSideMenu)
             GestureDetector(
               onTap: _toggleSideMenu,
@@ -375,14 +377,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                               // Refresh home page data if profile was updated
                               if (result == true) {
-  await _loadAudioPreference();
+                                await _loadAudioPreference();
 
-  debugPrint(
-    'Audio after profile update: $_audioEnabled',
-  );
+                                debugPrint(
+                                  'Audio after profile update: $_audioEnabled',
+                                );
 
-  await _sendInsightsPost();
-}
+                                await _sendInsightsPost();
+                              }
                             },
                           ),
                           _buildMenuItem(
@@ -448,21 +450,21 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) async {
-  if (index == 2) {
-    await _sendInsightsPost();
+          if (index == 2) {
+            await _sendInsightsPost();
 
-    if (!mounted) return;
+            if (!mounted) return;
 
-    setState(() {
-      _calendarRefreshKey++;
-      _selectedIndex = index;
-    });
-  } else {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-},
+            setState(() {
+              _calendarRefreshKey++;
+              _selectedIndex = index;
+            });
+          } else {
+            setState(() {
+              _selectedIndex = index;
+            });
+          }
+        },
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: _primaryTeal,
@@ -603,7 +605,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final nameForInitial = fullName.isNotEmpty ? fullName : fallbackName;
     final initial =
         nameForInitial.isNotEmpty ? nameForInitial[0].toUpperCase() : 'U';
-    
 
     return CircleAvatar(
       radius: radius,
@@ -701,7 +702,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-   ToColorString(String input) {
+  ToColorString(String input) {
     if (input.isEmpty) return _primaryTeal;
     final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
     final hue = (hash % 360).toDouble();
@@ -988,16 +989,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
-                             side: const BorderSide(
-        color: Color(0xFF064B23), // dark green border
-        width: 1.5,
-      ),
+                            side: const BorderSide(
+                              color: Color(0xFF064B23), // dark green border
+                              width: 1.5,
+                            ),
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.water_drop, color:Color(0xFF064B23)),
+                            const Icon(Icons.water_drop,
+                                color: Color(0xFF064B23)),
                             const SizedBox(width: 12),
                             Text(
                               AppLocalizations.of(context).logSymptoms,
@@ -1215,9 +1217,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       _insightData!['ovulation_day']?.toString() ?? 'N/A',
                     ),
                     _buildSummaryRow(
-  AppLocalizations.of(context).nextPeriodDate,
-  _insightData!['next_period']?.toString() ?? 'N/A',
-),
+                      AppLocalizations.of(context).nextPeriodDate,
+                      _insightData!['next_period']?.toString() ?? 'N/A',
+                    ),
                   ],
                 ),
               ),
@@ -1232,20 +1234,20 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: _buildFeatureCard(
-  icon: Icons.calendar_today,
-  label: AppLocalizations.of(context).calendar,
-  onTap: () async {
-    // Refresh latest data
-    await _sendInsightsPost();
+                    icon: Icons.calendar_today,
+                    label: AppLocalizations.of(context).calendar,
+                    onTap: () async {
+                      // Refresh latest data
+                      await _sendInsightsPost();
 
-    // Then open calendar
-    if (!mounted) return;
+                      // Then open calendar
+                      if (!mounted) return;
 
-    setState(() {
-      _selectedIndex = 2;
-    });
-  },
-),
+                      setState(() {
+                        _selectedIndex = 2;
+                      });
+                    },
+                  ),
                 ),
                 SizedBox(
                     width: ResponsiveUtils.getResponsiveSpacing(context) * 1.5),

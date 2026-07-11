@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../services/notification_reminder_service.dart';
+import '../services/analytics_service.dart';
 import '../services/local_notification_service.dart';
 
 final LocalNotificationService _localNotification =
@@ -46,6 +47,9 @@ class _NotificationSettingsScreenState
   @override
   void initState() {
     super.initState();
+     AnalyticsService.logScreenView(
+      screenName: "Notification Settings Screen",
+    );
 
     _notificationService = NotificationReminderService();
 

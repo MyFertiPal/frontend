@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import '../services/api_service.dart';
 import '../generated/l10n/app_localizations.dart';
+import '../services/analytics_service.dart';
 import '../services/api_key_config.dart';
 import '../services/yarngpt_tts_service.dart';
 import 'home_screen.dart';
@@ -33,6 +34,9 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   @override
   void initState() {
     super.initState();
+     AnalyticsService.logScreenView(
+      screenName: "Gender",
+    );
     _fetchOvulationDay();
     _initTtsService();
   }
