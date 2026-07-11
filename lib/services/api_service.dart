@@ -49,7 +49,31 @@ class ApiService {
       return null;
     }
   }
+Future<Map<String,dynamic>> get(String endpoint) async {
 
+final headers = await getHeaders(
+ includeAuth:true
+);
+
+
+final response = await http.get(
+ Uri.parse('$baseUrl$endpoint'),
+ headers: headers,
+);
+
+
+if(response.statusCode == 200){
+
+return jsonDecode(response.body);
+
+}
+
+
+throw Exception(
+"Failed loading data"
+);
+
+}
   // Save token to storage
   Future<void> saveToken(String token) async {
     _accessToken = token;
@@ -61,6 +85,49 @@ class ApiService {
       debugPrint('Error saving token: $e');
     }
   }
+  Future<dynamic> post(
+  String endpoint,
+  Map<String, dynamic> body,
+) async {
+
+  final headers = await getHeaders(
+    includeAuth: true,
+  );
+
+
+  final response = await http.post(
+    Uri.parse('$baseUrl$endpoint'),
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(body),
+  );
+
+
+  debugPrint(
+    'POST $endpoint: ${response.statusCode}'
+  );
+
+
+  debugPrint(
+    response.body
+  );
+
+
+  if(response.statusCode >= 200 &&
+     response.statusCode < 300){
+
+    return jsonDecode(response.body);
+
+  }
+
+
+  throw Exception(
+    'POST failed: ${response.statusCode}: ${response.body}'
+  );
+
+}
 
   // Clear token
   Future<void> clearToken() async {

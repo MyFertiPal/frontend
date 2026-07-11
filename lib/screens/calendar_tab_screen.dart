@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +11,9 @@ import 'tracking/log_symptom_screen.dart';
 import '../services/api_service.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_reminder_service.dart';
+import '../services/firestore_period_service.dart';
+
+final _firestore = FirestorePeriodService();
 
 const Color _primaryTeal = Color(0xFF0EA5A4);
 const Color _darkGreenText = Color(0xFF064B23);
@@ -35,28 +37,27 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   bool _isCalendarCollapsed = false;
   Set<DateTime> _selectedCalendarDays = {};
   Set<DateTime> _nextPeriodDays = {};
-  Set<String> _selectedCalendarDaysFormatted = {};
   String? _lastPeriodDate;
   List<String> _loggedSymptoms = [];
   bool _isSymptomsLoading = false;
   late NotificationReminderService _reminderService;
   bool _remindersInitialized = false;
   DateTime? _getLastPeriodStart() {
-  if (_selectedCalendarDays.isEmpty) return null;
+    if (_selectedCalendarDays.isEmpty) return null;
 
-  final sortedDays = _selectedCalendarDays.toList()
-    ..sort((a, b) => a.compareTo(b));
+    final sortedDays = _selectedCalendarDays.toList()
+      ..sort((a, b) => a.compareTo(b));
 
-  DateTime latestPeriodStart = sortedDays.first;
+    DateTime latestPeriodStart = sortedDays.first;
 
-  for (int i = 1; i < sortedDays.length; i++) {
-    if (sortedDays[i].difference(sortedDays[i - 1]).inDays > 1) {
-      latestPeriodStart = sortedDays[i];
+    for (int i = 1; i < sortedDays.length; i++) {
+      if (sortedDays[i].difference(sortedDays[i - 1]).inDays > 1) {
+        latestPeriodStart = sortedDays[i];
+      }
     }
-  }
 
-  return latestPeriodStart;
-}
+    return latestPeriodStart;
+  }
 
   // Derived summary values
   int? _displayPeriodLength;
@@ -75,7 +76,6 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     _initializeReminders();
     widget.refreshNotifier?.addListener(_handleRefreshRequest);
   }
-  
 
   Future<void> _initializeReminders() async {
     _reminderService = NotificationReminderService();
@@ -94,116 +94,78 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 
   Future<void> _loadTappedDays() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedDays = prefs.getStringList('tapped_days');
-    if (savedDays != null && savedDays.isNotEmpty) {
-      setState(() {
-        _selectedCalendarDaysFormatted = savedDays.toSet();
-        _selectedCalendarDays = savedDays.map((s) => DateTime.parse(s)).toSet();
-        if (_selectedCalendarDays.isNotEmpty) {
-       final lastPeriodStart = _getLastPeriodStart();
+    final days = await _firestore.loadPeriodDays();
 
-_lastPeriodDate = lastPeriodStart != null
-    ? DateFormat('yyyy-MM-dd').format(lastPeriodStart)
-    : null;
-        } else {
-          _lastPeriodDate = null;
-        }
-      });
-      _recalculateCycleData();
-    } else {
-      if (_lastPeriodDate != null) {
-        final lastPeriod = DateTime.parse(_lastPeriodDate!);
-        final periodDays = List<DateTime>.generate(
-          _defaultPeriodLength,
-          (i) =>
-              DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
-        );
-        setState(() {
-          _selectedCalendarDays = periodDays.toSet();
-          _selectedCalendarDaysFormatted =
-              periodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).toSet();
-        });
-        await prefs.setStringList(
-            'tapped_days', _selectedCalendarDaysFormatted.toList());
-        _recalculateCycleData();
-      }
-    }
+    setState(() {
+      _selectedCalendarDays = days.toSet();
+    });
+
+    _recalculateCycleData();
   }
 
   /// Derives summary values from locally stored tapped days when API has not responded yet
   void _recalculateCycleData() {
-  if (_selectedCalendarDays.isEmpty) {
+    if (_selectedCalendarDays.isEmpty) {
+      setState(() {
+        _displayPeriodLength = null;
+        _displayCycleLength = null;
+        _displayNextPeriod = null;
+        _displayOvulationDay = null;
+        _displayFertileStart = null;
+        _displayFertileEnd = null;
+
+        _nextPeriodDays = {};
+        _ovulationDates = {};
+        _fertileWindowDays = {};
+      });
+      return;
+    }
+
+    final lastPeriodStart = _getLastPeriodStart();
+
+    if (lastPeriodStart == null) return;
+
+    final periodLength = _calculatePeriodLength() ?? _defaultPeriodLength;
+
+    final cycleLength = _calculateCycleLength() ?? _displayCycleLength ?? 28;
+
+    final nextPeriod = lastPeriodStart.add(Duration(days: cycleLength));
+
+    final ovulation = nextPeriod.subtract(const Duration(days: 14));
+
+    final fertileStart = ovulation.subtract(const Duration(days: 5));
+
+    final fertileEnd = ovulation.add(const Duration(days: 1));
+
+    final fertileDays = <DateTime>{};
+
+    for (int i = 0; i <= fertileEnd.difference(fertileStart).inDays; i++) {
+      fertileDays.add(
+        fertileStart.add(Duration(days: i)),
+      );
+    }
+
+    final nextPeriodDays = List.generate(
+      periodLength,
+      (i) => nextPeriod.add(Duration(days: i)),
+    ).toSet();
+
     setState(() {
-      _displayPeriodLength = null;
-      _displayCycleLength = null;
-      _displayNextPeriod = null;
-      _displayOvulationDay = null;
-      _displayFertileStart = null;
-      _displayFertileEnd = null;
+      _lastPeriodDate = DateFormat('yyyy-MM-dd').format(lastPeriodStart);
 
-      _nextPeriodDays = {};
-      _ovulationDates = {};
-      _fertileWindowDays = {};
+      _displayPeriodLength = periodLength;
+      _displayCycleLength = cycleLength;
+      _displayNextPeriod = nextPeriod;
+      _displayOvulationDay = ovulation;
+      _displayFertileStart = fertileStart;
+      _displayFertileEnd = fertileEnd;
+
+      _nextPeriodDays = nextPeriodDays;
+      _ovulationDates = {ovulation};
+      _fertileWindowDays = fertileDays;
     });
-    return;
   }
 
-  final lastPeriodStart = _getLastPeriodStart();
-
-  if (lastPeriodStart == null) return;
-
-  final periodLength =
-      _calculatePeriodLength() ?? _defaultPeriodLength;
-
-  final cycleLength =
-      _calculateCycleLength() ??
-      _displayCycleLength ??
-      28;
-
-  final nextPeriod =
-      lastPeriodStart.add(Duration(days: cycleLength));
-
-  final ovulation =
-      nextPeriod.subtract(const Duration(days: 14));
-
-  final fertileStart =
-      ovulation.subtract(const Duration(days: 5));
-
-  final fertileEnd =
-      ovulation.add(const Duration(days: 1));
-
-  final fertileDays = <DateTime>{};
-
-  for (int i = 0;
-      i <= fertileEnd.difference(fertileStart).inDays;
-      i++) {
-    fertileDays.add(
-      fertileStart.add(Duration(days: i)),
-    );
-  }
-
-  final nextPeriodDays = List.generate(
-    periodLength,
-    (i) => nextPeriod.add(Duration(days: i)),
-  ).toSet();
-
-  setState(() {
-    _lastPeriodDate =
-        DateFormat('yyyy-MM-dd').format(lastPeriodStart);
-
-    _displayPeriodLength = periodLength;
-    _displayCycleLength = cycleLength;
-    _displayNextPeriod = nextPeriod;
-    _displayOvulationDay = ovulation;
-    _displayFertileStart = fertileStart;
-    _displayFertileEnd = fertileEnd;
-
-    _nextPeriodDays = nextPeriodDays;
-    _ovulationDates = {ovulation};
-    _fertileWindowDays = fertileDays;
-  });
-}
   Future<void> _fetchLoggedSymptoms() async {
     setState(() {
       _isSymptomsLoading = true;
@@ -240,57 +202,48 @@ _lastPeriodDate = lastPeriodStart != null
   }
 
   void _applyInsightsData(Map<dynamic, dynamic> d) async {
-  if (d['fertile_period_start'] != null &&
-      d['fertile_period_end'] != null) {
-    _setFertileWindow(
-      d['fertile_period_start'],
-      d['fertile_period_end'],
-    );
-  }
-
-  if (d['ovulation_day'] != null) {
-    _setOvulationDay(d['ovulation_day']);
-  }
-
-  final periodLength =
-      d['period_length'] ??
-      _displayPeriodLength ??
-      _defaultPeriodLength;
-
-  DateTime? nextPeriodStart;
-
-  if (d['next_period'] != null) {
-    nextPeriodStart = DateTime.parse(d['next_period'].toString());
-
-    _nextPeriodDays = List.generate(
-      periodLength,
-      (i) => nextPeriodStart!.add(Duration(days: i)),
-    ).toSet();
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      'tapped_days',
-      _selectedCalendarDaysFormatted.toList(),
-    );
-  }
-
-  setState(() {
-    if (nextPeriodStart != null) {
-      _displayNextPeriod = nextPeriodStart;
-      _displayPeriodLength = periodLength;
+    if (d['fertile_period_start'] != null && d['fertile_period_end'] != null) {
+      _setFertileWindow(
+        d['fertile_period_start'],
+        d['fertile_period_end'],
+      );
     }
 
-    if (d['cycle_length'] != null) {
-      _displayCycleLength = d['cycle_length'] as int;
+    if (d['ovulation_day'] != null) {
+      _setOvulationDay(d['ovulation_day']);
     }
 
-    _loggedSymptoms = d['symptoms'] != null
-        ? List<String>.from(d['symptoms'])
-        : [];
+    final periodLength =
+        d['period_length'] ?? _displayPeriodLength ?? _defaultPeriodLength;
 
-    _isSymptomsLoading = false;
-  });
-}
+    DateTime? nextPeriodStart;
+
+    if (d['next_period'] != null) {
+      nextPeriodStart = DateTime.parse(d['next_period'].toString());
+
+      _nextPeriodDays = List.generate(
+        periodLength,
+        (i) => nextPeriodStart!.add(Duration(days: i)),
+      ).toSet();
+    }
+
+    setState(() {
+      if (nextPeriodStart != null) {
+        _displayNextPeriod = nextPeriodStart;
+        _displayPeriodLength = periodLength;
+      }
+
+      if (d['cycle_length'] != null) {
+        _displayCycleLength = d['cycle_length'] as int;
+      }
+
+      _loggedSymptoms =
+          d['symptoms'] != null ? List<String>.from(d['symptoms']) : [];
+
+      _isSymptomsLoading = false;
+    });
+  }
+
   void _setFertileWindow(dynamic start, dynamic end) {
     try {
       final s = DateTime.parse(start.toString());
@@ -353,39 +306,35 @@ _lastPeriodDate = lastPeriodStart != null
       } else {
         _selectedCalendarDays = {..._selectedCalendarDays, normalized};
       }
-      _selectedCalendarDaysFormatted = _selectedCalendarDays
-          .map((d) => DateFormat('yyyy-MM-dd').format(d))
-          .toSet();
-      if (_selectedCalendarDays.isNotEmpty) {
-       final lastPeriodStart = _getLastPeriodStart();
 
-_lastPeriodDate = lastPeriodStart != null
-    ? DateFormat('yyyy-MM-dd').format(lastPeriodStart)
-    : null;
+      if (_selectedCalendarDays.isNotEmpty) {
+        final lastPeriodStart = _getLastPeriodStart();
+
+        _lastPeriodDate = lastPeriodStart != null
+            ? DateFormat('yyyy-MM-dd').format(lastPeriodStart)
+            : null;
       } else {
         _lastPeriodDate = null;
       }
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        'tapped_days', _selectedCalendarDaysFormatted.toList());
+    if (isAdding) {
+      await _firestore.savePeriodDay(normalized);
+    } else {
+      await _firestore.deletePeriodDay(normalized);
+    }
 
     // Only auto-generate when user taps the very first day
     if (isAdding && wasEmpty && _lastPeriodDate != null) {
       final lastPeriod = DateTime.parse(_lastPeriodDate!);
       final periodDays = List<DateTime>.generate(
         _defaultPeriodLength,
-        (i) =>
-            DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
+        (i) => DateTime(lastPeriod.year, lastPeriod.month, lastPeriod.day + i),
       );
       setState(() {
         _selectedCalendarDays = periodDays.toSet();
-        _selectedCalendarDaysFormatted =
-            periodDays.map((d) => DateFormat('yyyy-MM-dd').format(d)).toSet();
       });
-      await prefs.setStringList(
-          'tapped_days', _selectedCalendarDaysFormatted.toList());
+      await _firestore.savePeriodDays(periodDays);
     }
 
     _recalculateCycleData();
@@ -405,8 +354,9 @@ _lastPeriodDate = lastPeriodStart != null
             userData['faith_preference'] ?? userData['faithPreference'];
         final bool? audioPreference = userData['audio_preference'];
 
-        final finalPeriodLength =
-            calculatedPeriodLength ?? userData['period_length'] ?? _defaultPeriodLength;
+        final finalPeriodLength = calculatedPeriodLength ??
+            userData['period_length'] ??
+            _defaultPeriodLength;
         final finalCycleLength =
             calculatedCycleLength ?? userData['cycle_length'] ?? 28;
 
@@ -440,7 +390,8 @@ _lastPeriodDate = lastPeriodStart != null
           source: 'calendar_tab',
         );
       } catch (e) {
-        debugPrint('Unable to update profile with new period data.please try again later');
+        debugPrint(
+            'Unable to update profile with new period data.please try again later');
       }
     }
   }
@@ -449,80 +400,75 @@ _lastPeriodDate = lastPeriodStart != null
       a.year == b.year && a.month == b.month && a.day == b.day;
 
   int? _calculatePeriodLength() {
-  if (_selectedCalendarDays.isEmpty) return null;
+    if (_selectedCalendarDays.isEmpty) return null;
 
-  final sortedDays = _selectedCalendarDays.toList()
-    ..sort((a, b) => a.compareTo(b));
+    final sortedDays = _selectedCalendarDays.toList()
+      ..sort((a, b) => a.compareTo(b));
 
-  int latestStart = 0;
+    int latestStart = 0;
 
-  for (int i = 1; i < sortedDays.length; i++) {
-    final gap =
-        sortedDays[i].difference(sortedDays[i - 1]).inDays;
+    for (int i = 1; i < sortedDays.length; i++) {
+      final gap = sortedDays[i].difference(sortedDays[i - 1]).inDays;
 
-    if (gap >= 10) {
-      latestStart = i;
+      if (gap >= 10) {
+        latestStart = i;
+      }
     }
+
+    int length = 1;
+
+    for (int i = latestStart + 1; i < sortedDays.length; i++) {
+      final gap = sortedDays[i].difference(sortedDays[i - 1]).inDays;
+
+      if (gap <= 2) {
+        length++;
+      } else {
+        break;
+      }
+    }
+
+    return length;
   }
 
-  int length = 1;
-
-  for (int i = latestStart + 1; i < sortedDays.length; i++) {
-    final gap =
-        sortedDays[i].difference(sortedDays[i - 1]).inDays;
-
-    if (gap <= 2) {
-      length++;
-    } else {
-      break;
-    }
-  }
-
-  return length;
-}
   int? _calculateCycleLength() {
-  if (_selectedCalendarDays.length < 2) return null;
+    if (_selectedCalendarDays.length < 2) return null;
 
-  final sortedDays = _selectedCalendarDays.toList()
-    ..sort((a, b) => a.compareTo(b));
+    final sortedDays = _selectedCalendarDays.toList()
+      ..sort((a, b) => a.compareTo(b));
 
-  const minGap = 10;
+    const minGap = 10;
 
-  final periodStarts = <DateTime>[
-    sortedDays.first,
-  ];
+    final periodStarts = <DateTime>[
+      sortedDays.first,
+    ];
 
-  for (int i = 1; i < sortedDays.length; i++) {
-    final gap =
-        sortedDays[i].difference(sortedDays[i - 1]).inDays;
+    for (int i = 1; i < sortedDays.length; i++) {
+      final gap = sortedDays[i].difference(sortedDays[i - 1]).inDays;
 
-    if (gap >= minGap) {
-      periodStarts.add(sortedDays[i]);
+      if (gap >= minGap) {
+        periodStarts.add(sortedDays[i]);
+      }
     }
-  }
 
-  if (periodStarts.length < 2) return null;
+    if (periodStarts.length < 2) return null;
 
-  final cycles = <int>[];
+    final cycles = <int>[];
 
-  for (int i = 1; i < periodStarts.length; i++) {
-    final length =
-        periodStarts[i].difference(periodStarts[i - 1]).inDays;
+    for (int i = 1; i < periodStarts.length; i++) {
+      final length = periodStarts[i].difference(periodStarts[i - 1]).inDays;
 
-    if (length >= 15 && length <= 45) {
-      cycles.add(length);
+      if (length >= 15 && length <= 45) {
+        cycles.add(length);
+      }
     }
+
+    if (cycles.isEmpty) return null;
+
+    final recent =
+        cycles.length > 6 ? cycles.sublist(cycles.length - 6) : cycles;
+
+    return (recent.reduce((a, b) => a + b) / recent.length).round();
   }
-
-  if (cycles.isEmpty) return null;
-
-  final recent = cycles.length > 6
-      ? cycles.sublist(cycles.length - 6)
-      : cycles;
-
-  return (recent.reduce((a, b) => a + b) / recent.length)
-      .round();
-}
 
   void _openLogSymptomScreen() async {
     final result = await Navigator.of(context).push(
@@ -702,8 +648,7 @@ _lastPeriodDate = lastPeriodStart != null
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
-            border:
-                border != null ? Border.all(color: border, width: 2) : null,
+            border: border != null ? Border.all(color: border, width: 2) : null,
           ),
         ),
         const SizedBox(width: 6),
@@ -744,47 +689,47 @@ _lastPeriodDate = lastPeriodStart != null
           )
         else
           SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: [
-              _statCard(
-                icon: Icons.calendar_today_outlined,
-                label: 'Period length',
-                value: _displayPeriodLength != null
-                    ? '${_displayPeriodLength} days'
-                    : '–',
-                sub: 'Based on logs',
-              ),
-               const SizedBox(width: 12),
-              _statCard(
-                icon: Icons.loop_outlined,
-                label: 'Cycle length',
-                value: _displayCycleLength != null
-                    ? '${_displayCycleLength} days'
-                    : '–',
-                sub: 'Average',
-              ),
-               const SizedBox(width: 12),
-              _statCard(
-                icon: Icons.event_outlined,
-                label: 'Next period',
-                value: _displayNextPeriod != null
-                    ? DateFormat('MMM d').format(_displayNextPeriod!)
-                    : '–',
-                sub: 'Predicted start',
-              ),
-               const SizedBox(width: 12),
-              _statCard(
-                icon: Icons.favorite_border,
-                label: 'Ovulation day',
-                value: _displayOvulationDay != null
-                    ? DateFormat('MMM d').format(_displayOvulationDay!)
-                    : '–',
-                sub: 'Estimated',
-              ),
-            ],
-          ),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                _statCard(
+                  icon: Icons.calendar_today_outlined,
+                  label: 'Period length',
+                  value: _displayPeriodLength != null
+                      ? '${_displayPeriodLength} days'
+                      : '–',
+                  sub: 'Based on logs',
+                ),
+                const SizedBox(width: 12),
+                _statCard(
+                  icon: Icons.loop_outlined,
+                  label: 'Cycle length',
+                  value: _displayCycleLength != null
+                      ? '${_displayCycleLength} days'
+                      : '–',
+                  sub: 'Average',
+                ),
+                const SizedBox(width: 12),
+                _statCard(
+                  icon: Icons.event_outlined,
+                  label: 'Next period',
+                  value: _displayNextPeriod != null
+                      ? DateFormat('MMM d').format(_displayNextPeriod!)
+                      : '–',
+                  sub: 'Predicted start',
+                ),
+                const SizedBox(width: 12),
+                _statCard(
+                  icon: Icons.favorite_border,
+                  label: 'Ovulation day',
+                  value: _displayOvulationDay != null
+                      ? DateFormat('MMM d').format(_displayOvulationDay!)
+                      : '–',
+                  sub: 'Estimated',
+                ),
+              ],
+            ),
           ),
       ],
     );
@@ -797,7 +742,7 @@ _lastPeriodDate = lastPeriodStart != null
     required String sub,
   }) {
     return Container(
-      width:130,
+      width: 130,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1063,7 +1008,6 @@ _lastPeriodDate = lastPeriodStart != null
             ),
             Row(
               children: [
-                
                 GestureDetector(
                   onTap: _clearCalendarDays,
                   child: Row(
@@ -1109,74 +1053,74 @@ _lastPeriodDate = lastPeriodStart != null
   }
 
   Widget _buildSymptomChips() {
-  final chipColors = [
-    const Color(0xFFF06292),
-    _primaryTeal,
-    const Color(0xFF81C784),
-    const Color(0xFF6A1B9A),
-  ];
+    final chipColors = [
+      const Color(0xFFF06292),
+      _primaryTeal,
+      const Color(0xFF81C784),
+      const Color(0xFF6A1B9A),
+    ];
 
-  return Wrap(
-    spacing: 8,
-    runSpacing: 8,
-    children: _loggedSymptoms.asMap().entries.map((entry) {
-      final i = entry.key;
-      final symptom = entry.value;
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: _loggedSymptoms.asMap().entries.map((entry) {
+        final i = entry.key;
+        final symptom = entry.value;
 
-      String display = symptom;
+        String display = symptom;
 
-      if (symptom.contains(':')) {
-        final p = symptom.split(':');
-        if (p.length == 2) {
-          display = '${p[0].trim()} • ${p[1].trim()}';
+        if (symptom.contains(':')) {
+          final p = symptom.split(':');
+          if (p.length == 2) {
+            display = '${p[0].trim()} • ${p[1].trim()}';
+          }
+        } else if (symptom.contains('-')) {
+          final p = symptom.split('-');
+          if (p.length == 2) {
+            display = '${p[0].trim()} • ${p[1].trim()}';
+          }
         }
-      } else if (symptom.contains('-')) {
-        final p = symptom.split('-');
-        if (p.length == 2) {
-          display = '${p[0].trim()} • ${p[1].trim()}';
-        }
-      }
 
-      return GestureDetector(
-        onTap: _openLogSymptomScreen,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 9,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: _borderGreen),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: chipColors[i % chipColors.length],
-                  shape: BoxShape.circle,
+        return GestureDetector(
+          onTap: _openLogSymptomScreen,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 9,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: _borderGreen),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: chipColors[i % chipColors.length],
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 7),
-              Text(
-                display,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: _darkGreenText,
-                  fontFamily: 'Poppins',
+                const SizedBox(width: 7),
+                Text(
+                  display,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: _darkGreenText,
+                    fontFamily: 'Poppins',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    }).toList(),
-  );
-}
+        );
+      }).toList(),
+    );
+  }
 
   // ─────────────────────────────────────────────
   // Shared empty-state hint tile
@@ -1223,28 +1167,26 @@ _lastPeriodDate = lastPeriodStart != null
   // ─────────────────────────────────────────────
   Future<void> _clearCalendarDays() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('tapped_days');
+      await _firestore.clearAll();
 
       final api = ApiService();
-final headers = await api.getHeaders(includeAuth: true);
+      final headers = await api.getHeaders(includeAuth: true);
 
-await http.post(
-  Uri.parse('${ApiService.baseUrl}/insights/insights'),
-  headers: {
-    ...headers,
-    'Content-Type': 'application/json',
-  },
-  body: jsonEncode({
-    'cycle_length': _displayCycleLength ?? 28,
-    'last_period_date': _lastPeriodDate,
-    'period_length': _displayPeriodLength ?? _defaultPeriodLength,
-    'symptoms': null, // temporary clear value
-  }),
-);
+      await http.post(
+        Uri.parse('${ApiService.baseUrl}/insights/insights'),
+        headers: {
+          ...headers,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'cycle_length': _displayCycleLength ?? 28,
+          'last_period_date': _lastPeriodDate,
+          'period_length': _displayPeriodLength ?? _defaultPeriodLength,
+          'symptoms': null, // temporary clear value
+        }),
+      );
       setState(() {
         _selectedCalendarDays = {};
-        _selectedCalendarDaysFormatted = {};
         _nextPeriodDays = {};
         _ovulationDates = {};
         _fertileWindowDays = {};
@@ -1270,8 +1212,8 @@ await http.post(
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-                '${AppLocalizations.of(context).failedToClearCalendar}'),
+            content:
+                Text('${AppLocalizations.of(context).failedToClearCalendar}'),
             backgroundColor: Colors.red,
           ),
         );

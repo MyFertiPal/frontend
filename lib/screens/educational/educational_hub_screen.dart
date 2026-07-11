@@ -1,10 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import '../../services/api_service.dart';
 import '../../generated/l10n/app_localizations.dart';
-import '../../services/api_key_config.dart';
-import '../../services/yarngpt_tts_service.dart';
+import '../../services/analytics_service.dart';
 import '../../theme.dart';
 import '../../utils/responsive_utils.dart';
 import 'article_reading_screen.dart';
@@ -31,7 +30,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
         'title': l10n.article1Title,
         'excerpt': l10n.article1Excerpt,
         'image': 'assets/images/article_1.jpeg',
-        'audioUrl': 'audio/article_1.mp3',
+        'audioUrl': '',
         'content': l10n.article1Content,
       },
       {
@@ -39,7 +38,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
         'title': l10n.article2Title,
         'excerpt': l10n.article2Excerpt,
         'image': 'assets/images/article_2.jpeg',
-        'audioUrl': 'audio/article_2.mp3',
+        'audioUrl': '',
         'content': l10n.article2Content,
       },
       {
@@ -47,7 +46,7 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
         'title': l10n.article3Title,
         'excerpt': l10n.article3Excerpt,
         'image': 'assets/images/article_3.jpeg',
-        'audioUrl': 'audio/article_3.mp3',
+        'audioUrl': '',
         'content': l10n.article3Content,
       },
     ];
@@ -64,6 +63,10 @@ class _EducationalHubScreenState extends State<EducationalHubScreen> {
   @override
   void initState() {
     super.initState();
+
+     AnalyticsService.logScreen(
+    "Educational Hub",
+  );
     _audioPlayer = AudioPlayer();
   }
 
@@ -404,266 +407,432 @@ class AudioPlayerModal extends StatefulWidget {
   State<AudioPlayerModal> createState() => _AudioPlayerModalState();
 }
 
+
 class _AudioPlayerModalState extends State<AudioPlayerModal> {
-  late YarnGptTtsService _ttsService;
+
   bool _isPlaying = false;
+  bool _isLoading = false;
+
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  bool _isLoading = false;
+
   String? _errorMessage;
+
 
   @override
   void initState() {
     super.initState();
-    try {
-      final testKey = ApiKeyConfig.getApiKey();
-      String? apiKey;
 
-      if (testKey != null) {
-        apiKey = testKey;
-      } else {
-        try {
-          apiKey = ApiKeyConfig.getApiKey();
-        } catch (e) {
-          debugPrint('YarnGPT API key not configured: $e');
-          apiKey = null;
-        }
-      }
 
-      if (apiKey != null && apiKey.isNotEmpty) {
-        _ttsService = YarnGptTtsService(apiKey: apiKey);
-      } else {
-        debugPrint('Audio features disabled - API key not configured');
-        _ttsService = YarnGptTtsService(apiKey: 'disabled');
-      }
-    } catch (e) {
-      debugPrint('Failed to initialize TTS service: $e');
-      _ttsService = YarnGptTtsService(apiKey: 'disabled');
-    }
-    _setupAudioPlayer();
-  }
+    widget.audioPlayer.onDurationChanged.listen((duration) {
 
-  @override
-  void dispose() {
-    _ttsService.dispose();
-    super.dispose();
-  }
-
-  void _setupAudioPlayer() {
-    _ttsService.addListener(() {
-      if (mounted) {
+      if(mounted){
         setState(() {
-          _isPlaying = _ttsService.isPlaying;
-          _duration = _ttsService.duration;
-          _position = _ttsService.position;
-          _isLoading = _ttsService.isLoading;
+          _duration = duration;
         });
       }
+
     });
+
+
+    widget.audioPlayer.onPositionChanged.listen((position) {
+
+      if(mounted){
+        setState(() {
+          _position = position;
+        });
+      }
+
+    });
+
+
+    widget.audioPlayer.onPlayerStateChanged.listen((state){
+
+      if(mounted){
+        setState(() {
+          _isPlaying = state == PlayerState.playing;
+        });
+      }
+
+    });
+
+
+    widget.audioPlayer.onPlayerComplete.listen((event){
+
+      if(mounted){
+        setState(() {
+          _isPlaying = false;
+          _position = Duration.zero;
+        });
+      }
+
+    });
+
   }
+
+
 
   Future<void> _togglePlayPause() async {
+
     try {
-      if (_isPlaying) {
-        // Pause functionality not yet supported in YarnGptTtsService
-        setState(() {
-          _errorMessage = 'Pause feature coming soon. Please reload to stop.';
-        });
-      } else {
-        // Get the article content and speak it using YarnGPT TTS
-        final articleContent = widget.article['content'] ?? '';
-        if (articleContent.isEmpty) {
-          setState(() {
-            _errorMessage = 'No article content available.';
-          });
-          return;
-        }
 
-        // Speak the article text using YarnGPT TTS
-        await _ttsService.speakText(articleContent);
+
+      if(_isPlaying){
+
+        await widget.audioPlayer.pause();
+
+        return;
+
       }
-    } catch (e) {
-      debugPrint('Error toggling play/pause: $e');
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Playback error. Please try again.';
-        });
+
+
+
+      setState(() {
+
+        _isLoading = true;
+        _errorMessage = null;
+
+      });
+
+
+
+      final text = widget.article['content'] ?? '';
+
+
+
+      if(text.isEmpty){
+
+        throw Exception(
+          "Article content missing"
+        );
+
       }
+
+
+
+
+      final response = await ApiService().post(
+
+        '/user/api/v1/audio/generate-tts',
+
+        {
+
+          "text": text,
+
+          "voice": "Idera",
+
+          "language": "en",
+
+        },
+
+      );
+
+
+
+      debugPrint(
+        "TTS Response: $response"
+      );
+
+
+
+      final audioUrl = response['audio_url'];
+
+
+
+      if(audioUrl == null){
+
+        throw Exception(
+          "Audio URL missing"
+        );
+
+      }
+
+
+
+
+      await widget.audioPlayer.play(
+
+        UrlSource(
+          audioUrl.toString()
+        ),
+
+      );
+
+
+
+      setState(() {
+
+        _isLoading = false;
+
+      });
+
+
+
+    } catch(e){
+
+
+      debugPrint(
+        "Audio error: $e"
+      );
+
+
+
+      setState(() {
+
+        _isLoading = false;
+
+        _errorMessage =
+            "Unable to generate audio";
+
+      });
+
+
     }
+
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = duration.inMinutes.remainder(60);
-    final seconds = duration.inSeconds.remainder(60);
-    return '${twoDigits(minutes)}:${twoDigits(seconds)}';
+
+
+
+  String _formatDuration(Duration duration){
+
+    String twoDigits(int n) =>
+        n.toString().padLeft(2,'0');
+
+
+    final minutes =
+        duration.inMinutes.remainder(60);
+
+
+    final seconds =
+        duration.inSeconds.remainder(60);
+
+
+    return "${twoDigits(minutes)}:${twoDigits(seconds)}";
+
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
+
+
     return Container(
+
       color: Colors.white,
-      child: SingleChildScrollView(
+
+      child: Padding(
+
+        padding: const EdgeInsets.all(16),
+
         child: Column(
+
           mainAxisSize: MainAxisSize.min,
+
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.article['title'] ?? '',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: _darkGreenText,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // Progress bar
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SliderTheme(
-                        data: SliderThemeData(
-                          trackHeight: 4,
-                          thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 6),
-                          overlayShape:
-                              const RoundSliderOverlayShape(overlayRadius: 12),
-                        ),
-                        child: Slider(
-                          activeColor: _primaryTeal,
-                          inactiveColor: Colors.grey.shade300,
-                          min: 0,
-                          max: _duration.inSeconds.toDouble(),
-                          value: _position.inSeconds
-                              .toDouble()
-                              .clamp(0, _duration.inSeconds.toDouble()),
-                          onChanged: (value) {
-                            // Seeking not supported with YarnGPT TTS
-                            // This is a visual-only slider for now
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _formatDuration(_position),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            Text(
-                              _formatDuration(_duration),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  // Playback controls
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.skip_previous),
-                        onPressed:
-                            null, // Disabled: seeking not supported with YarnGPT TTS
-                      ),
-                      const SizedBox(width: 16),
-                      Container(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _primaryTeal,
-                        ),
-                        child: _isLoading
-                            ? SizedBox(
-                                width: 56,
-                                height: 56,
-                                child: Center(
-                                  child: SizedBox(
-                                    width: 30,
-                                    height: 30,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white.withOpacity(0.7),
-                                      ),
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : IconButton(
-                                icon: Icon(
-                                  _isPlaying ? Icons.pause : Icons.play_arrow,
-                                  color: Colors.white,
-                                ),
-                                iconSize: 32,
-                                onPressed: _togglePlayPause,
-                              ),
-                      ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        icon: const Icon(Icons.skip_next),
-                        onPressed:
-                            null, // Disabled: seeking not supported with YarnGPT TTS
-                      ),
-                    ],
-                  ),
-                  // Error message
-                  if (_errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          border: Border.all(color: Colors.red.shade300),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          _errorMessage!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.red.shade700,
-                          ),
-                        ),
-                      ),
+
+
+            Row(
+
+              children: [
+
+                Expanded(
+
+                  child: Text(
+
+                    widget.article['title'] ?? '',
+
+                    style: const TextStyle(
+
+                      fontSize:18,
+
+                      fontWeight:FontWeight.bold,
+
+                      color:_darkGreenText,
+
                     ),
-                  const SizedBox(height: 24),
-                ],
-              ),
+
+                  ),
+
+                ),
+
+
+
+                IconButton(
+
+                  icon: const Icon(Icons.close),
+
+                  onPressed: () {
+
+                    Navigator.pop(context);
+
+                  },
+
+                )
+
+              ],
+
             ),
+
+
+
+            const SizedBox(height:20),
+
+
+
+            Slider(
+
+              activeColor:_primaryTeal,
+
+              min:0,
+
+              max:_duration.inSeconds == 0
+                  ? 1
+                  : _duration.inSeconds.toDouble(),
+
+
+              value:_position.inSeconds
+                  .toDouble()
+                  .clamp(
+
+                    0,
+
+                    _duration.inSeconds == 0
+                        ? 1
+                        : _duration.inSeconds.toDouble(),
+
+                  ),
+
+
+              onChanged:null,
+
+            ),
+
+
+
+            Row(
+
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+
+
+              children:[
+
+
+                Text(
+                  _formatDuration(_position),
+                ),
+
+
+                Text(
+                  _formatDuration(_duration),
+                ),
+
+
+              ],
+
+            ),
+
+
+
+            const SizedBox(height:20),
+
+
+
+
+            Container(
+
+              decoration: const BoxDecoration(
+
+                shape:BoxShape.circle,
+
+                color:_primaryTeal,
+
+              ),
+
+
+
+              child:_isLoading
+
+              ? const SizedBox(
+
+                  width:60,
+
+                  height:60,
+
+                  child:Center(
+
+                    child:CircularProgressIndicator(
+
+                      color:Colors.white,
+
+                    ),
+
+                  ),
+
+                )
+
+
+              : IconButton(
+
+                  icon:Icon(
+
+                    _isPlaying
+                    ? Icons.pause
+                    : Icons.play_arrow,
+
+
+                    color:Colors.white,
+
+                  ),
+
+
+                  iconSize:35,
+
+
+                  onPressed:_togglePlayPause,
+
+                ),
+
+            ),
+
+
+
+
+            if(_errorMessage != null)
+
+              Padding(
+
+                padding:
+                    const EdgeInsets.only(top:15),
+
+
+                child:Text(
+
+                  _errorMessage!,
+
+                  style:const TextStyle(
+
+                    color:Colors.red,
+
+                  ),
+
+                ),
+
+              ),
+
+
+
           ],
+
         ),
+
       ),
+
     );
+
   }
+
 }
