@@ -1109,92 +1109,74 @@ _lastPeriodDate = lastPeriodStart != null
   }
 
   Widget _buildSymptomChips() {
-    final preview = _loggedSymptoms.take(4).toList();
-    final extra = _loggedSymptoms.length - preview.length;
+  final chipColors = [
+    const Color(0xFFF06292),
+    _primaryTeal,
+    const Color(0xFF81C784),
+    const Color(0xFF6A1B9A),
+  ];
 
-    final chipColors = [
-      const Color(0xFFF06292),
-      _primaryTeal,
-      const Color(0xFF81C784),
-      const Color(0xFF6A1B9A),
-    ];
+  return Wrap(
+    spacing: 8,
+    runSpacing: 8,
+    children: _loggedSymptoms.asMap().entries.map((entry) {
+      final i = entry.key;
+      final symptom = entry.value;
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ...preview.asMap().entries.map((entry) {
-          final i = entry.key;
-          final symptom = entry.value;
-          String display = symptom;
-          if (symptom.contains(':')) {
-            final p = symptom.split(':');
-            if (p.length == 2) display = '${p[0].trim()} · ${p[1].trim()}';
-          } else if (symptom.contains('-')) {
-            final p = symptom.split('-');
-            if (p.length == 2) display = '${p[0].trim()} · ${p[1].trim()}';
-          }
-          return GestureDetector(
-            onTap: _openLogSymptomScreen,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: _borderGreen),
+      String display = symptom;
+
+      if (symptom.contains(':')) {
+        final p = symptom.split(':');
+        if (p.length == 2) {
+          display = '${p[0].trim()} • ${p[1].trim()}';
+        }
+      } else if (symptom.contains('-')) {
+        final p = symptom.split('-');
+        if (p.length == 2) {
+          display = '${p[0].trim()} • ${p[1].trim()}';
+        }
+      }
+
+      return GestureDetector(
+        onTap: _openLogSymptomScreen,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 9,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: _borderGreen),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: chipColors[i % chipColors.length],
+                  shape: BoxShape.circle,
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: chipColors[i % chipColors.length],
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 7),
-                  Text(
-                    display,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: _darkGreenText,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
-        if (extra > 0)
-          GestureDetector(
-            onTap: _openLogSymptomScreen,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-              decoration: BoxDecoration(
-                color: _lightGreenBg,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: _borderGreen),
-              ),
-              child: Text(
-                '+$extra more',
+              const SizedBox(width: 7),
+              Text(
+                display,
                 style: const TextStyle(
                   fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: _darkGreenText,
                   fontFamily: 'Poppins',
                 ),
               ),
-            ),
+            ],
           ),
-      ],
-    );
-  }
+        ),
+      );
+    }).toList(),
+  );
+}
 
   // ─────────────────────────────────────────────
   // Shared empty-state hint tile

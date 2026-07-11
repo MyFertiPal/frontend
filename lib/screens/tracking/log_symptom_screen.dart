@@ -14,26 +14,23 @@ class LogSymptomScreen extends StatefulWidget {
 class _LogSymptomScreenState extends State<LogSymptomScreen> {
   static const Color _darkGreenText = Color(0xFF064B23);
   String? _expandedSymptom;
-  Map<String, String?> _selectedOptions = {};
+ 
   // Change Mood to allow multiple selections
-  Map<String, List<String>> _multiSelectedOptions = {'Mood': []};
+  Map<String, List<String>> _multiSelectedOptions = {};
   bool _isSaving = false;
 
-  List<String> get _selectedSymptoms {
-    // For multi-select symptoms, add all selected values with container name
-    List<String> symptoms = [];
-    // Always add selected Mood values first
-    for (var mood in _multiSelectedOptions['Mood'] ?? []) {
-      symptoms.add('Mood -$mood');
+  
+   List<String> get _selectedSymptoms {
+  final symptoms = <String>[];
+
+  _multiSelectedOptions.forEach((category, values) {
+    for (final value in values) {
+      symptoms.add('$category - $value');
     }
-    // Add other selected symptoms
-    _selectedOptions.forEach((key, value) {
-      if (key != 'Mood' && value != null) {
-        symptoms.add('$key -$value');
-      }
-    });
-    return symptoms;
-  }
+  });
+
+  return symptoms;
+}
 
   Map<String, List<String>> get _symptomOptions {
     final l10n = AppLocalizations.of(context);

@@ -36,6 +36,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _calendarRefreshKey = 0;
   static const Color _primaryTeal = Color(0xFF0EA5A4);
   static const Color _darkGreenText = Color(0xFF064B23);
 
@@ -310,14 +311,16 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           IndexedStack(
-            index: _selectedIndex,
-            children: [
-              _buildHomeTab(),
-              const EducationalHubScreen(),
-              const CalendarTabScreen(),
-              const SupportScreen(),
-            ],
-          ),
+  index: _selectedIndex,
+  children: [
+    _buildHomeTab(),
+    const EducationalHubScreen(),
+    CalendarTabScreen(
+      key: ValueKey(_calendarRefreshKey),
+    ),
+    const SupportScreen(),
+  ],
+),
           if (_showSideMenu)
             GestureDetector(
               onTap: _toggleSideMenu,
@@ -444,7 +447,22 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
+        onTap: (index) async {
+  if (index == 2) {
+    await _sendInsightsPost();
+
+    if (!mounted) return;
+
+    setState(() {
+      _calendarRefreshKey++;
+      _selectedIndex = index;
+    });
+  } else {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+},
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: _primaryTeal,
@@ -1214,14 +1232,20 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: _buildFeatureCard(
-                    icon: Icons.calendar_today,
-                    label: AppLocalizations.of(context).calendar,
-                    onTap: () {
-                      setState(() {
-                        _selectedIndex = 2;
-                      });
-                    },
-                  ),
+  icon: Icons.calendar_today,
+  label: AppLocalizations.of(context).calendar,
+  onTap: () async {
+    // Refresh latest data
+    await _sendInsightsPost();
+
+    // Then open calendar
+    if (!mounted) return;
+
+    setState(() {
+      _selectedIndex = 2;
+    });
+  },
+),
                 ),
                 SizedBox(
                     width: ResponsiveUtils.getResponsiveSpacing(context) * 1.5),

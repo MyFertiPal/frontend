@@ -116,9 +116,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildMenuItem(
                             label: 'Calendar',
                             icon: Icons.calendar_today_outlined,
-                            onTap: () {
-                              _toggleSideMenu();
-                              setState(() => _selectedIndex = 2);
+                            onTap: () async {
+  await _sendInsightsPost();
+
+  if (!mounted) return;
+
+  setState(() {
+    _calendarRefreshKey++;
+    _selectedIndex = 2;
+  });
+},
                             },
                           ),
                           const Spacer(),
@@ -210,11 +217,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildProfileCard(User? user) {
-    final fullName = [user?.firstName, user?.lastName];
+    final fullName = [user?.firstName, user?.lastName]
+;
         .where((part) => part != null && part!.trim().isNotEmpty)
         .map((part) => part!.trim())
         .join(' ');
-    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty);
+    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty)
+;
         ? user.username!.trim()
         : ((user?.email != null && user!.email.trim().isNotEmpty)
             ? user.email.split('@').first
@@ -314,11 +323,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildAvatar(User? user, {double radius = 18}) {
-    final fullName = [user?.firstName, user?.lastName];
+    final fullName = [user?.firstName, user?.lastName]
+;
       .where((part) => part != null && part!.trim().isNotEmpty)
       .map((part) => part!.trim())
       .join(' ');
-    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty);
+    final fallbackName = (user?.username != null && user!.username!.trim().isNotEmpty)
+;
       ? user.username!.trim()
       : ((user?.email != null && user!.email.trim().isNotEmpty)
         ? user.email.split('@').first

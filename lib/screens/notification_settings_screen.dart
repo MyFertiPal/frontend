@@ -359,12 +359,22 @@ await _localNotification
               ],
             ),
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: const Color(0xFF0EA5A4),
-            activeTrackColor: const Color(0xFF0EA5A4),
-          ),
+      Switch(
+  value: value,
+  onChanged: onChanged,
+  thumbColor: WidgetStateProperty.resolveWith((states) {
+    if (states.contains(WidgetState.selected)) {
+      return const Color(0xFF0EA5A4); // teal thumb
+    }
+    return Colors.white;
+  }),
+  trackColor: WidgetStateProperty.resolveWith((states) {
+    if (states.contains(WidgetState.selected)) {
+      return Colors.grey.shade300; // light track
+    }
+    return Colors.grey.shade400;
+  }),
+)
         ],
       ),
     );
