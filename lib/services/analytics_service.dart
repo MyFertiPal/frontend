@@ -267,29 +267,22 @@ class AnalyticsService {
     }
 
   }
-
-
-
-
-
-  static Future<void> logLogin({
-    required String method,
-  }) async {
-
+static Future<void> logLogin({
+  required String method,
+}) async {
+  try {
     await _analytics.logEvent(
-
-      name:_eventLogin,
-
-      parameters:{
-
-        'method':method,
-
+      name: _eventLogin,
+      parameters: {
+        'method': method,
       },
-
     );
-
+  } catch (e) {
+    debugPrint(
+      'Login analytics error: $e',
+    );
   }
-
+}
 
 
 
@@ -583,16 +576,18 @@ class AnalyticsService {
 
 
   static Future<void> setUserId(
-      String userId) async {
-
+  Object userId,
+) async {
+  try {
     await _analytics.setUserId(
-      id:userId,
+      id: userId.toString(),
     );
-
+  } catch (e) {
+    debugPrint(
+      'Analytics user id error: $e',
+    );
   }
-
-
-
+}
 
 
   static String _ageRangeFor(int age){
