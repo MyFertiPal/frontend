@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../screens/calendar_tab_screen.dart';
 import '../screens/educational/educational_hub_screen.dart';
@@ -57,8 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _insightText;
   String? _insightAudioUrl;
   bool _audioEnabled = true;
-  late YarnGptTtsService _yarngptService;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
+bool _isAudioPlaying = false;
+bool _isAudioLoading = false;
   Locale? _lastLocale;
 
   // Default fallback data
@@ -88,39 +91,12 @@ class _HomeScreenState extends State<HomeScreen> {
     _insightText = _defaultInsightText;
 
     // Initialize TTS service - gracefully handle if API key is not configured
-    try {
-      final testKey = ApiKeyConfig.getApiKey();
-      String? apiKey;
-
-      if (testKey == 'YOUR_YARNGPT_API_KEY') {
-        apiKey = testKey;
-      } else {
-        try {
-          apiKey = ApiKeyConfig.getApiKey();
-        } catch (e) {
-          debugPrint('YarnGPT API key not configured: $e');
-          apiKey = null;
-        }
-      }
-
-      if (apiKey != null && apiKey.isNotEmpty) {
-        _yarngptService = YarnGptTtsService(apiKey: apiKey);
-      } else {
-        // Disable audio functionality if API key is not available
-        _audioEnabled = false;
-        debugPrint('Audio features disabled - API key not configured');
-        // Create a dummy service with a placeholder key to avoid crashes
-        _yarngptService = YarnGptTtsService(apiKey: apiKey ?? '');
-      }
-    } catch (e) {
-      _audioEnabled = false;
-      debugPrint('Error initializing YarnGPT TTS Service: $e');
-      // Create a dummy service with a placeholder key to avoid crashes
-      _yarngptService = YarnGptTtsService(apiKey: 'disabled');
-    }
-    _loadAudioPreference();
-    _sendInsightsPost();
-  }
+ 
+_audioPlayer.onPlayerStateChanged.listen((state) {
+  setState(() {
+    _isAudioPlaying = state == PlayerState.playing;
+  });
+});
 
   Future<void> _loadAudioPreference() async {
     try {
@@ -264,44 +240,62 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _playInsightAudioWithTTS() async {
-    if (_insightText == null || _insightText!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No insight text to read'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    try {
-      // Use YarnGPT to convert text to speech and play
-      await _yarngptService.speakText(_insightText!);
-    } catch (e) {
-      debugPrint('Error playing insight audio with YarnGPT: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Unable to play audio. Please try again later.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+  Future<void> _playInsightAudio() async {
+  if (_insightAudioUrl == null || _insightAudioUrl!.isEmpty) {
+    debugPrint("No audio URL available");
+    return;
   }
 
-  void _stopInsightAudio() async {
-    await _yarngptService.pause();
-  }
+  try {
+    setState(() {
+      _isAudioLoading = true;
+    });
 
-  void _toggleInsightAudio() async {
-    if (_yarngptService.isPlaying) {
-      _stopInsightAudio();
-    } else {
-      await _playInsightAudioWithTTS();
+    debugPrint("Playing URL: $_insightAudioUrl");
+
+    await _audioPlayer.stop();
+
+    await _audioPlayer.setSource(
+      UrlSource(
+        _insightAudioUrl!,
+        mimeType: "audio/mpeg",
+      ),
+    );
+
+    await _audioPlayer.resume();
+
+  } catch (e, stack) {
+    debugPrint("Audio playback error: $e");
+    debugPrint(stack.toString());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Unable to play audio"),
+      ),
+    );
+
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isAudioLoading = false;
+      });
     }
   }
+}
+
+void _toggleInsightAudio() async {
+
+  if (_isAudioPlaying) {
+
+    await _audioPlayer.pause();
+
+  } else {
+
+    await _playInsightAudio();
+
+  }
+
+}
 
   @override
   Widget build(BuildContext context) {
@@ -901,69 +895,60 @@ class _HomeScreenState extends State<HomeScreen> {
                                   if (_audioEnabled && _insightText != null)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 12),
-                                      child: ListenableBuilder(
-                                        listenable: _yarngptService,
-                                        builder: (context, _) {
-                                          return GestureDetector(
-                                            onTap: _toggleInsightAudio,
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white
-                                                    .withOpacity(0.2),
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  if (_yarngptService.isLoading)
-                                                    const SizedBox(
-                                                      width: 16,
-                                                      height: 16,
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        strokeWidth: 2,
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                          Colors.white,
-                                                        ),
-                                                      ),
-                                                    )
-                                                  else
-                                                    Icon(
-                                                      _yarngptService.isPlaying
-                                                          ? Icons.pause_circle
-                                                          : Icons.play_circle,
-                                                      color: Colors.white,
-                                                      size: 20,
-                                                    ),
-                                                  const SizedBox(width: 6),
-                                                  Text(
-                                                    _yarngptService.isLoading
-                                                        ? 'Loading...'
-                                                        : _yarngptService
-                                                                .isPlaying
-                                                            ? 'Pause'
-                                                            : 'Listen',
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontFamily: 'Poppins',
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                      child:GestureDetector(
+  onTap: _toggleInsightAudio,
+  child: Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: 8,
+    ),
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.2),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+
+        if (_isAudioLoading)
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(
+                    Colors.white,
+                  ),
+            ),
+          )
+        else
+          Icon(
+            _isAudioPlaying
+                ? Icons.pause_circle
+                : Icons.play_circle,
+            color: Colors.white,
+            size: 20,
+          ),
+
+        const SizedBox(width: 6),
+
+        Text(
+          _isAudioLoading
+              ? "Loading..."
+              : _isAudioPlaying
+                  ? "Pause"
+                  : "Listen",
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  ),
+)
                                     ),
                                 ],
                               ),
@@ -1426,7 +1411,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _yarngptService.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 }
