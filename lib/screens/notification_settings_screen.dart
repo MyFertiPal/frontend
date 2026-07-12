@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../services/notification_reminder_service.dart';
+import '../services/analytics_service.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   static const routeName = '/notification-settings';
@@ -129,12 +130,15 @@ class _NotificationSettingsScreenState
             if (_enableNotifications) ...[
               _buildSectionHeader('Notification Types'),
               const SizedBox(height: 12),
-              _buildNotificationTile(
+            _buildNotificationTile(
                 title: 'Fertile Window Reminders',
                 subtitle: 'Get reminded about your fertile window',
                 value: _enableFertileWindowReminder,
                 onChanged: (value) {
                   setState(() => _enableFertileWindowReminder = value);
+                  if (value) {
+                    AnalyticsService.logReminderEnabled();
+                  }
                   _saveNotificationPreferences();
                 },
                 icon: Icons.favorite,
@@ -147,6 +151,9 @@ class _NotificationSettingsScreenState
                 value: _enablePeriodReminder,
                 onChanged: (value) {
                   setState(() => _enablePeriodReminder = value);
+                  if (value) {
+                    AnalyticsService.logReminderEnabled();
+                  }
                   _saveNotificationPreferences();
                 },
                 icon: Icons.calendar_today,

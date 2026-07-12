@@ -552,6 +552,10 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
 
     await widget.audioPlayer.play(UrlSource(audioUrl));
 
+    // Log article audio listened event
+    await AnalyticsService.logArticleListened(
+      articleId: widget.article['title'] ?? 'unknown',
+    );
 
       setState(() {
 

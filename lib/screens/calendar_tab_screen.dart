@@ -73,6 +73,9 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
      AnalyticsService.logScreenView(
       screenName: "Calendar Tab Screen",
     );
+    // Log calendar viewed
+    AnalyticsService.logCalendarViewed();
+    
     _calendarScrollController.addListener(_onCalendarScroll);
     _loadTappedDays();
     _fetchLoggedSymptoms();
@@ -260,6 +263,8 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
         _displayFertileStart = s;
         _displayFertileEnd = e;
       });
+      // Log fertile window viewed
+      AnalyticsService.logFertileWindowViewed();
     } catch (e) {
       debugPrint('Failed to parse fertile window: $e');
     }

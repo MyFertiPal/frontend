@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import 'api_service.dart';
 import 'analytics_service.dart';
+import 'local_notification_service.dart';
 
 abstract class AuthServiceInterface {
   Future<User?> signIn(String email, String password);
@@ -118,6 +119,17 @@ class AuthService extends ChangeNotifier implements AuthServiceInterface {
       notifyListeners();
 
       await AnalyticsService.logLogin(method: 'email');
+      await AnalyticsService.setUserId(_currentUser?.id ?? '');
+
+      // Show welcome back notification with user name
+      final displayName = _currentUser?.firstName ?? _currentUser?.username ?? 'Welcome back';
+      final notificationService = LocalNotificationService();
+      await notificationService.showNotification(
+        id: 1001,
+        title: 'Welcome Back! 👋',
+        body: 'Hello $displayName, we\'re happy to see you again!',
+        payload: 'welcome_notification',
+      );
 
       return _currentUser;
     } catch (e) {
@@ -156,6 +168,20 @@ Future<void> googleLogin(String idToken) async {
 
       _authStateController.add(_currentUser);
       notifyListeners();
+
+      // Log analytics and set user ID for Google login
+      await AnalyticsService.logLogin(method: 'google');
+      await AnalyticsService.setUserId(_currentUser?.id ?? '');
+
+      // Show welcome back notification
+      final displayName = _currentUser?.firstName ?? _currentUser?.username ?? 'Welcome back';
+      final notificationService = LocalNotificationService();
+      await notificationService.showNotification(
+        id: 1001,
+        title: 'Welcome Back! 👋',
+        body: 'Hello $displayName, we\'re happy to see you again!',
+        payload: 'welcome_notification',
+      );
 
       print('AUTH STEP 5 - Complete');
     } else {

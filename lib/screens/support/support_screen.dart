@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/api_service.dart';
-import '../../services/api_key_config.dart';
 import '../../services/analytics_service.dart';
-import '../../services/yarngpt_tts_service.dart';
 import '../community/community_groups_screen.dart';
 import '../community/create_group_screen.dart';
 import 'cultural_guidance_screen.dart';
@@ -35,9 +33,8 @@ class _SupportScreenState extends State<SupportScreen> {
   Duration _audioDuration = Duration.zero;
   Duration _audioPosition = Duration.zero;
 
-  // TTS service for affirmations
-  late YarnGptTtsService _affirmationTtsService;
-  bool _affirmationTtsLoading = false;
+String? _affirmationAudioUrl;
+bool _affirmationTtsLoading = false;
 
   Map<String, List<String>> get _faithAffirmations {
     final l10n = AppLocalizations.of(context);
@@ -74,21 +71,7 @@ class _SupportScreenState extends State<SupportScreen> {
       screenName: "Support Screen",
     );
     _audioPlayer = AudioPlayer();
-    try {
-      final apiKey = ApiKeyConfig.getApiKey();
-
-      if (apiKey.isNotEmpty) {
-        _affirmationTtsService = YarnGptTtsService(apiKey: apiKey);
-      } else {
-        debugPrint('Audio features disabled - API key not configured');
-        _affirmationTtsService = YarnGptTtsService(apiKey: 'disabled');
-      }
-    } catch (e) {
-      debugPrint('Failed to initialize affirmation TTS service: $e');
-      _affirmationTtsService = YarnGptTtsService(apiKey: 'disabled');
-    }
     _initializeAudioPlayer();
-    _initializeAffirmationTts();
     _fetchFaithPreference();
     _loadAudioPreference();
   }
@@ -105,6 +88,45 @@ class _SupportScreenState extends State<SupportScreen> {
       }
     } catch (e) {
       debugPrint('Error loading audio preference: $e');
+    }
+  }
+
+  Future<void> _fetchFaithPreference() async {
+    setState(() {
+      _loadingAffirmations = true;
+    });
+    try {
+      final api = ApiService();
+      final profile = await api.getProfile();
+      final userData = profile['data'] ?? profile;
+      final String? faithPref =
+          userData['faith_preference'] ?? userData['faithPreference'];
+      String faith = 'neutral';
+      if (faithPref != null) {
+        final f = faithPref.toLowerCase();
+        if (f.contains('christian'))
+          faith = 'christian';
+        else if (f.contains('muslim'))
+          faith = 'muslim';
+        else if (f.contains('traditionalist')) faith = 'traditionalist';
+      }
+      if (mounted) {
+        setState(() {
+          _currentFaith = faith;
+          _affirmations = _faithAffirmations[faith]!;
+          _currentAffirmation = _affirmations[0];
+          _loadingAffirmations = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _currentFaith = 'neutral';
+          _affirmations = _faithAffirmations['neutral']!;
+          _currentAffirmation = _affirmations[0];
+          _loadingAffirmations = false;
+        });
+      }
     }
   }
 
@@ -128,6 +150,13 @@ class _SupportScreenState extends State<SupportScreen> {
             currentIndex >= 0 && currentIndex < _affirmations.length
                 ? _affirmations[currentIndex]
                 : _affirmations[0];
+                if (_audioEnabled) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted) {
+      _playAffirmationTts();
+    }
+  });
+}
       });
     }
   }
@@ -158,82 +187,64 @@ class _SupportScreenState extends State<SupportScreen> {
     });
   }
 
-  void _initializeAffirmationTts() {
-    _affirmationTtsService.addListener(() {
-      if (mounted) {
-        setState(() {
-          _affirmationTtsLoading = _affirmationTtsService.isLoading;
-        });
-      }
-    });
-  }
-
   Future<void> _playAffirmationTts() async {
-    if (_currentAffirmation.isEmpty) return;
+  if (_currentAffirmation.isEmpty) return;
 
-    try {
-      setState(() {
-        _affirmationTtsLoading = true;
-      });
-
-      try {
-        // Attempt a specific voice first for a calmer tone.
-        await _affirmationTtsService.speakText(
-          _currentAffirmation,
-          voice: 'Aria',
-        );
-      } catch (e) {
-        debugPrint('Affirmation TTS voice failed, retrying default: $e');
-        await _affirmationTtsService.speakText(_currentAffirmation);
-      }
-    } catch (e) {
-      debugPrint('Error playing affirmation TTS: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).failedPlayAffirmation),
-            backgroundColor: Colors.red.shade400,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _fetchFaithPreference() async {
+  try {
     setState(() {
-      _loadingAffirmations = true;
+      _affirmationTtsLoading = true;
     });
-    try {
-      final api = ApiService();
-      final profile = await api.getProfile();
-      final userData = profile['data'] ?? profile;
-      final String? faithPref =
-          userData['faith_preference'] ?? userData['faithPreference'];
-      String faith = 'neutral';
-      if (faithPref != null) {
-        final f = faithPref.toLowerCase();
-        if (f.contains('christian'))
-          faith = 'christian';
-        else if (f.contains('muslim'))
-          faith = 'muslim';
-        else if (f.contains('traditionalist')) faith = 'traditionalist';
-      }
+
+    // Reuse generated audio
+    if (_affirmationAudioUrl != null) {
+      await _audioPlayer.play(
+        UrlSource(_affirmationAudioUrl!),
+      );
+      await AnalyticsService.logSupportAudioListened('affirmation');
+      return;
+    }
+
+    final response = await ApiService().post(
+      '/user/api/v1/audio/generate-tts',
+      {
+        "text": _currentAffirmation,
+        "voice": "Idera",
+        "language": "en",
+      },
+    );
+
+    final audioUrl = response["audio_url"];
+
+    if (audioUrl == null) {
+      throw Exception("No audio URL returned");
+    }
+
+    _affirmationAudioUrl = audioUrl.toString();
+
+    await _audioPlayer.play(
+      UrlSource(_affirmationAudioUrl!),
+    );
+    await AnalyticsService.logSupportAudioListened('affirmation');
+  } catch (e) {
+    debugPrint("Affirmation audio error: $e");
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).failedPlayAffirmation,
+          ),
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
       setState(() {
-        _currentFaith = faith; // Store the current faith preference
-        _affirmations = _faithAffirmations[faith]!;
-        _currentAffirmation = _affirmations[0];
-        _loadingAffirmations = false;
-      });
-    } catch (e) {
-      setState(() {
-        _currentFaith = 'neutral'; // Store the current faith preference
-        _affirmations = _faithAffirmations['neutral']!;
-        _currentAffirmation = _affirmations[0];
-        _loadingAffirmations = false;
+        _affirmationTtsLoading = false;
       });
     }
   }
+}
 
   Future<void> _togglePlayPause() async {
     if (_isPlayingAudio) {
@@ -249,6 +260,10 @@ class _SupportScreenState extends State<SupportScreen> {
         final assetPath = _audioAssetForLocale(locale);
         await _audioPlayer.setSource(AssetSource(assetPath));
         await _audioPlayer.resume();
+        
+        // Log support audio listened
+        await AnalyticsService.logSupportAudioListened('encouragement');
+        
         if (mounted) {
           setState(() {
             _isAudioLoading = false;
@@ -298,7 +313,6 @@ class _SupportScreenState extends State<SupportScreen> {
   @override
   void dispose() {
     _audioPlayer.dispose();
-    _affirmationTtsService.dispose();
     super.dispose();
   }
 
@@ -391,8 +405,9 @@ class _SupportScreenState extends State<SupportScreen> {
                                   ),
                                   const Spacer(),
                                   GestureDetector(
-                                    onTap: () {
-                                      setState(() {
+                                    onTap: () {                                      // Log support quote refreshed
+                                      AnalyticsService.logSupportQuoteRefreshed();
+                                                                            setState(() {
                                         // Cycle to next affirmation
                                         final currentIdx = _affirmations
                                             .indexOf(_currentAffirmation);
@@ -400,6 +415,7 @@ class _SupportScreenState extends State<SupportScreen> {
                                             _affirmations.length;
                                         _currentAffirmation =
                                             _affirmations[nextIdx];
+                                            _affirmationAudioUrl = null;
                                       });
                                     },
                                     child: Container(

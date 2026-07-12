@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../../services/analytics_service.dart';
 import 'educational_hub_screen.dart';
 
 class ArticleReadingScreen extends StatefulWidget {
@@ -27,6 +28,11 @@ class _ArticleReadingScreenState extends State<ArticleReadingScreen> {
   @override
   void initState() {
     super.initState();
+    // Log article opened with title as article ID
+    AnalyticsService.logArticleOpened(
+      articleId: widget.title,
+      category: 'educational',
+    );
   }
 
   @override

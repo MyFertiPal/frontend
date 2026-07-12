@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../config/paystack_config.dart';
 import '../../utils/responsive_utils.dart';
+import '../../services/analytics_service.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -25,6 +26,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
     _initializePaystack();
+    // Log that payment page was viewed
+    AnalyticsService.logPaymentPageViewed();
   }
 
   bool get _isAndroid =>
@@ -279,6 +282,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     required int amountNaira,
     required String planName,
   }) async {
+    // Log that pay button was clicked
+    await AnalyticsService.logPayClicked(planName);
+
     if (!_isAndroid) {
       _showMessage('Paystack Android SDK is only available on Android.');
       return;
@@ -311,6 +317,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final status = response?['status']?.toString();
       final message = response?['message']?.toString();
       if (status == 'success') {
+        // Log successful subscription
+        await AnalyticsService.logSubscriptionCompleted(planName);
         _showMessage('Payment successful for $planName plan.');
       } else if (status == 'pending') {
         _showMessage('Payment is processing.');
