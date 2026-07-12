@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _sendInsightsPost();
     }
   }
-}
+
   Map<String, dynamic>? _insightData;
   String? _insightText;
   String? _insightAudioUrl;
@@ -79,6 +79,7 @@ bool _isAudioLoading = false;
 
   // Store last logged symptoms
   List<String> _lastLoggedSymptoms = [];
+}
 
   @override
   void initState() {
@@ -97,6 +98,7 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
     _isAudioPlaying = state == PlayerState.playing;
   });
 });
+  }
 
   Future<void> _loadAudioPreference() async {
     try {
@@ -219,7 +221,7 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
           if (_audioEnabled &&
               _insightText != null &&
               _insightText!.isNotEmpty) {
-            _playInsightAudioWithTTS();
+            await _playInsightAudio();
           }
           return;
         }
@@ -696,7 +698,7 @@ void _toggleInsightAudio() async {
     }
   }
 
-  ToColorString(String input) {
+  Color stringToColor(String input)  {
     if (input.isEmpty) return _primaryTeal;
     final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
     final hue = (hash % 360).toDouble();

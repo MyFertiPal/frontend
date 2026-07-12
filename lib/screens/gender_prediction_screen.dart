@@ -53,6 +53,15 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
 
  
      Future<void> _speakInstructions() async {
+      if (_audioUrl != null) {
+  await _audioPlayer.play(
+    UrlSource(
+      _audioUrl!,
+      mimeType: "audio/mpeg",
+    ),
+  );
+  return;
+}
   try {
     final l10n = AppLocalizations.of(context);
 
@@ -88,6 +97,11 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
         mimeType: "audio/mpeg",
       ),
     );
+    _audioUrl = audioUrl.toString();
+
+setState(() {
+  _isLoadingAudio = false;
+});
 
 
   } catch(e) {
@@ -114,7 +128,18 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
 
   }
 }
+Future<void> _toggleAudio() async {
+  if (_isPlayingAudio) {
+    await _audioPlayer.pause();
+  } else {
+    if (_audioUrl != null) {
+      await _audioPlayer.resume();
+    } else {
+      await _speakInstructions();
+    }
   }
+}
+  
 
   Future<void> _fetchOvulationDay() async {
     setState(() => _loading = true);
@@ -216,12 +241,24 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.volume_up),
-            onPressed: _speakInstructions,
-            tooltip: l10n.readAffirmationAloud,
+  IconButton(
+    onPressed: _isLoadingAudio ? null : _toggleAudio,
+    icon: _isLoadingAudio
+        ? const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white,
+            ),
+          )
+        : Icon(
+            _isPlayingAudio
+                ? Icons.pause_circle
+                : Icons.volume_up,
           ),
-        ],
+  ),
+],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -280,8 +317,8 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
                                     horizontal: 14, vertical: 10),
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? const Color(0xFF0EA5A4)
-                                      : const Color(0xFF0EA5A4),
+    ? const Color(0xFF0EA5A4)
+    : Colors.grey.shade300,
                                   borderRadius: BorderRadius.circular(24),
                                 ),
                                 child: Text(
@@ -379,6 +416,7 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
 
   @override
   void dispose() {
+    await _audioPlayer.stop();
     _audioPlayer.dispose();
     super.dispose();
   }
