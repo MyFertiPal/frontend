@@ -75,21 +75,9 @@ class _SupportScreenState extends State<SupportScreen> {
     );
     _audioPlayer = AudioPlayer();
     try {
-      final testKey = ApiKeyConfig.getApiKey();
-      String? apiKey;
+      final apiKey = ApiKeyConfig.getApiKey();
 
-      if (testKey != null) {
-        apiKey = testKey;
-      } else {
-        try {
-          apiKey = ApiKeyConfig.getApiKey();
-        } catch (e) {
-          debugPrint('YarnGPT API key not configured: $e');
-          apiKey = null;
-        }
-      }
-
-      if (apiKey != null && apiKey.isNotEmpty) {
+      if (apiKey.isNotEmpty) {
         _affirmationTtsService = YarnGptTtsService(apiKey: apiKey);
       } else {
         debugPrint('Audio features disabled - API key not configured');

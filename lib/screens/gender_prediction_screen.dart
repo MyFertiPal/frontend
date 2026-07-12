@@ -54,14 +54,9 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
  
      Future<void> _speakInstructions() async {
       if (_audioUrl != null) {
-  await _audioPlayer.play(
-    UrlSource(
-      _audioUrl!,
-      mimeType: "audio/mpeg",
-    ),
-  );
-  return;
-}
+        await _audioPlayer.play(UrlSource(_audioUrl!));
+        return;
+      }
   try {
     final l10n = AppLocalizations.of(context);
 
@@ -92,11 +87,8 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
 
 
     await _audioPlayer.play(
-      UrlSource(
-        audioUrl.toString(),
-        mimeType: "audio/mpeg",
-      ),
-    );
+  UrlSource(audioUrl),
+);
     _audioUrl = audioUrl.toString();
 
 setState(() {
@@ -416,7 +408,7 @@ Future<void> _toggleAudio() async {
 
   @override
   void dispose() {
-    await _audioPlayer.stop();
+    _audioPlayer.stop();
     _audioPlayer.dispose();
     super.dispose();
   }

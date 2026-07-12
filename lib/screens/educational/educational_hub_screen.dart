@@ -19,8 +19,8 @@ class EducationalHubScreen extends StatefulWidget {
 }
 
 class _EducationalHubScreenState extends State<EducationalHubScreen> {
-  String selectedCategory = '';
   late AudioPlayer _audioPlayer;
+  String selectedCategory = '';
 
   List<Map<String, String>> get allArticles {
     final l10n = AppLocalizations.of(context);
@@ -550,12 +550,7 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
 
 
 
-      await widget.audioPlayer.play(
-  UrlSource(
-    audioUrl.toString(),
-    mimeType: "audio/mpeg",
-  ),
-);
+    await widget.audioPlayer.play(UrlSource(audioUrl));
 
 
       setState(() {

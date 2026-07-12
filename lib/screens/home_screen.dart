@@ -12,8 +12,6 @@ import '../services/auth_service.dart';
 import '../providers/language_provider.dart';
 import '../services/api_service.dart';
 import '../services/analytics_service.dart';
-import '../services/api_key_config.dart';
-import '../services/yarngpt_tts_service.dart';
 import '../models/user.dart';
 import '../utils/responsive_utils.dart';
 import '../screens/profile/profile_screen.dart';
@@ -39,22 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _calendarRefreshKey = 0;
   static const Color _primaryTeal = Color(0xFF0EA5A4);
   static const Color _darkGreenText = Color(0xFF064B23);
-
-  Future<void> _openLogSymptomScreen() async {
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => LogSymptomScreen(),
-      ),
-    );
-    if (result != null && result is Map && result['symptoms'] is List<String>) {
-      setState(() {
-        _lastLoggedSymptoms = List<String>.from(result['symptoms']);
-      });
-      _sendInsightsPost();
-    }
-  }
-
-  Map<String, dynamic>? _insightData;
+   Map<String, dynamic>? _insightData;
   String? _insightText;
   String? _insightAudioUrl;
   bool _audioEnabled = true;
@@ -79,7 +62,22 @@ bool _isAudioLoading = false;
 
   // Store last logged symptoms
   List<String> _lastLoggedSymptoms = [];
-}
+  
+  Future<void> _openLogSymptomScreen() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => LogSymptomScreen(),
+      ),
+    );
+    if (result != null && result is Map && result['symptoms'] is List<String>) {
+      setState(() {
+        _lastLoggedSymptoms = List<String>.from(result['symptoms']);
+      });
+      _sendInsightsPost();
+    }
+  }
+
+ 
 
   @override
   void initState() {
@@ -243,46 +241,40 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
   }
 
   Future<void> _playInsightAudio() async {
-  if (_insightAudioUrl == null || _insightAudioUrl!.isEmpty) {
-    debugPrint("No audio URL available");
-    return;
-  }
-
-  try {
-    setState(() {
-      _isAudioLoading = true;
-    });
-
-    debugPrint("Playing URL: $_insightAudioUrl");
-
-    await _audioPlayer.stop();
-
-    await _audioPlayer.setSource(
-      UrlSource(
-        _insightAudioUrl!,
-        mimeType: "audio/mpeg",
-      ),
-    );
-
-    await _audioPlayer.resume();
-
-  } catch (e, stack) {
-    debugPrint("Audio playback error: $e");
-    debugPrint(stack.toString());
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Unable to play audio"),
-      ),
-    );
-
-  } finally {
-    if (mounted) {
-      setState(() {
-        _isAudioLoading = false;
-      });
+    if (_insightAudioUrl == null || _insightAudioUrl!.isEmpty) {
+      debugPrint("No audio URL available");
+      return;
     }
-  }
+
+    try {
+      setState(() {
+        _isAudioLoading = true;
+      });
+
+      debugPrint("Playing URL: $_insightAudioUrl");
+
+      await _audioPlayer.stop();
+
+      // Play the provided insight audio URL
+      await _audioPlayer.play(UrlSource(_insightAudioUrl!));
+
+    } catch (e, stack) {
+      debugPrint("Audio playback error: $e");
+      debugPrint(stack.toString());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Unable to play audio"),
+        ),
+      );
+
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAudioLoading = false;
+        });
+      }
+    }
 }
 
 void _toggleInsightAudio() async {

@@ -119,6 +119,8 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
             },
           ),
         ),
+        const SizedBox(height: 12),
+        _buildLegend(),
         
       ],
     );

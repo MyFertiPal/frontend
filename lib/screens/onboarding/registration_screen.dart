@@ -392,9 +392,9 @@ Future<void> _signInWithGoogle() async {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: _signInWithGoogle,
+                        onTap: _isLoading ? null : _signInWithGoogle,
                         child: GestureDetector(
-                          onTap: _signInWithGoogle,
+                          onTap: _isLoading ? null : _signInWithGoogle,
                           child: _buildSocialCircle('G'),
                         ),
                       ),
