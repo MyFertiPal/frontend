@@ -551,13 +551,11 @@ class _AudioPlayerModalState extends State<AudioPlayerModal> {
 
 
       await widget.audioPlayer.play(
-
-        UrlSource(
-          audioUrl.toString()
-        ),
-
-      );
-
+  UrlSource(
+    audioUrl.toString(),
+    mimeType: "audio/mpeg",
+  ),
+);
 
 
       setState(() {

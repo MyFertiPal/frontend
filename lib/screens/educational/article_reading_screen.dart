@@ -45,13 +45,14 @@ class _ArticleReadingScreenState extends State<ArticleReadingScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return AudioPlayerModal(
-          audioPlayer: _audioPlayer,
-          article: {
-            'title': widget.title,
-            'audioUrl': widget.audioUrl ?? '',
-          },
-        );
+       return AudioPlayerModal(
+  audioPlayer: _audioPlayer,
+  article: {
+    'title': widget.title,
+    'content': widget.articleText,
+    'audioUrl': widget.audioUrl ?? '',
+  },
+);
       },
     ).then((_) {
       // Ensure audio is stopped when modal is dismissed

@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:audioplayers/audioplayers.dart';
 import '../services/api_service.dart';
 import '../generated/l10n/app_localizations.dart';
 import '../services/analytics_service.dart';
-import '../services/api_key_config.dart';
-import '../services/yarngpt_tts_service.dart';
 import 'home_screen.dart';
 
 class GenderPredictionScreen extends StatefulWidget {
@@ -22,9 +21,11 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   DateTime? _fertileStart;
   DateTime? _fertileEnd;
   bool _loading = true;
-  YarnGptTtsService? _ttsService;
-  bool _hasSpoken = false;
-  bool _ttsUnavailable = false;
+ final AudioPlayer _audioPlayer = AudioPlayer();
+
+bool _isLoadingAudio = false;
+bool _isPlayingAudio = false;
+String? _audioUrl;
 
   List<String> get _genderOptions {
     final l10n = AppLocalizations.of(context);
@@ -37,29 +38,18 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
      AnalyticsService.logScreenView(
       screenName: "Gender",
     );
-    _fetchOvulationDay();
-    _initTtsService();
+  _fetchOvulationDay();
+
+_audioPlayer.onPlayerStateChanged.listen((state) {
+  if (mounted) {
+    setState(() {
+      _isPlayingAudio = state == PlayerState.playing;
+    });
+  }
+});
   }
 
-  void _initTtsService() {
-    try {
-      final apiKey = ApiKeyConfig.getApiKey();
-      _ttsService = YarnGptTtsService(apiKey: apiKey);
-    } catch (e) {
-      _ttsUnavailable = true;
-    }
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasSpoken && !_ttsUnavailable) {
-      _hasSpoken = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _speakInstructions();
-      });
-    }
-  }
 
   Future<void> _speakInstructions() async {
     if (_ttsService == null) {
@@ -70,14 +60,68 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
     final text =
         '${l10n.genderPredictionDisclaimer} ${l10n.selectGenderExpectation}';
     try {
-      await _ttsService!.speakText(text);
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.failedPlayAudio)),
-        );
-      }
+     Future<void> _speakInstructions() async {
+  try {
+    final l10n = AppLocalizations.of(context);
+
+    final text =
+        '${l10n.genderPredictionDisclaimer} ${l10n.selectGenderExpectation}';
+
+    setState(() {
+      _isLoadingAudio = true;
+    });
+
+
+    final response = await ApiService().post(
+      '/user/api/v1/audio/generate-tts',
+      {
+        "text": text,
+        "voice": "Idera",
+        "language": "en",
+      },
+    );
+
+
+    final audioUrl = response['audio_url'];
+
+
+    if (audioUrl == null) {
+      throw Exception("No audio URL returned");
     }
+
+
+    await _audioPlayer.play(
+      UrlSource(
+        audioUrl.toString(),
+        mimeType: "audio/mpeg",
+      ),
+    );
+
+
+  } catch(e) {
+
+    debugPrint("Gender audio error: $e");
+
+    if(mounted){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).failedPlayAudio,
+          ),
+        ),
+      );
+    }
+
+  } finally {
+
+    if(mounted){
+      setState(() {
+        _isLoadingAudio = false;
+      });
+    }
+
+  }
+}
   }
 
   Future<void> _fetchOvulationDay() async {
@@ -182,7 +226,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.volume_up),
-            onPressed: _ttsUnavailable ? null : _speakInstructions,
+            onPressed: _speakInstructions,
             tooltip: l10n.readAffirmationAloud,
           ),
         ],
@@ -343,7 +387,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
 
   @override
   void dispose() {
-    _ttsService?.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 }
