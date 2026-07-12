@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _sendInsightsPost();
     }
   }
-
+}
   Map<String, dynamic>? _insightData;
   String? _insightText;
   String? _insightAudioUrl;

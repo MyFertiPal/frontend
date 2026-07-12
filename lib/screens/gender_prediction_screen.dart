@@ -51,15 +51,7 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
 
 
 
-  Future<void> _speakInstructions() async {
-    if (_ttsService == null) {
-      return;
-    }
-
-    final l10n = AppLocalizations.of(context);
-    final text =
-        '${l10n.genderPredictionDisclaimer} ${l10n.selectGenderExpectation}';
-    try {
+ 
      Future<void> _speakInstructions() async {
   try {
     final l10n = AppLocalizations.of(context);
