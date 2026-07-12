@@ -144,6 +144,7 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
   }
 
   Future<void> _sendInsightsPost() async {
+      bool _hasAutoPlayedInsight = false;
     try {
       final api = ApiService();
       final headers = await api.getHeaders(includeAuth: true);
@@ -204,6 +205,7 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
           debugPrint('First insight object keys: ${insights.keys.toList()}');
 
           setState(() {
+          
             _insightData = insights;
             // Try to get insight_text, or generate one from available data
             _insightText = insights['insight_text']?.toString() ??
@@ -215,13 +217,19 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
             debugPrint('Set _insightText to: $_insightText');
             debugPrint('Audio URL: $_insightAudioUrl');
           });
-          // Auto-play insights with YarnGPT TTS
-          if (_audioEnabled &&
-              _insightText != null &&
-              _insightText!.isNotEmpty) {
-            await _playInsightAudio();
-          }
-          return;
+       if (_audioEnabled &&
+    !_hasAutoPlayedInsight &&
+    _insightText != null &&
+    _insightText!.trim().isNotEmpty) {
+
+  _hasAutoPlayedInsight = true;
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted) {
+      _playInsightAudio();
+    }
+  });
+}
         }
       }
 
@@ -241,40 +249,52 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
   }
 
   Future<void> _playInsightAudio() async {
-    if (_insightAudioUrl == null || _insightAudioUrl!.isEmpty) {
-      debugPrint("No audio URL available");
+  if (_insightText == null || _insightText!.trim().isEmpty) {
+    return;
+  }
+
+  try {
+    setState(() {
+      _isAudioLoading = true;
+    });
+
+    // Replay cached audio if available
+    if (_insightAudioUrl != null) {
+      await _audioPlayer.play(
+        UrlSource(_insightAudioUrl!),
+      );
       return;
     }
 
-    try {
-      setState(() {
-        _isAudioLoading = true;
-      });
+    final response = await ApiService().post(
+      '/user/api/v1/audio/generate-tts',
+      {
+        "text": _insightText!,
+        "voice": "Idera",
+        "language": "en",
+      },
+    );
 
-      debugPrint("Playing URL: $_insightAudioUrl");
+    final audioUrl = response["audio_url"];
 
-      await _audioPlayer.stop();
-
-      // Play the provided insight audio URL
-      await _audioPlayer.play(UrlSource(_insightAudioUrl!));
-
-    } catch (e, stack) {
-      debugPrint("Audio playback error: $e");
-      debugPrint(stack.toString());
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Unable to play audio"),
-        ),
-      );
-
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isAudioLoading = false;
-        });
-      }
+    if (audioUrl == null) {
+      throw Exception("No audio URL returned");
     }
+
+    _insightAudioUrl = audioUrl.toString();
+
+    await _audioPlayer.play(
+      UrlSource(_insightAudioUrl!),
+    );
+  } catch (e) {
+    debugPrint("Insight audio error: $e");
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isAudioLoading = false;
+      });
+    }
+  }
 }
 
 void _toggleInsightAudio() async {

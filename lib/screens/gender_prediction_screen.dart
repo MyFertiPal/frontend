@@ -33,21 +33,28 @@ String? _audioUrl;
   }
 
   @override
-  void initState() {
-    super.initState();
-     AnalyticsService.logScreenView(
-      screenName: "Gender",
-    );
+void initState() {
+  super.initState();
+
+  AnalyticsService.logScreenView(
+    screenName: "Gender",
+  );
+
   _fetchOvulationDay();
 
-_audioPlayer.onPlayerStateChanged.listen((state) {
-  if (mounted) {
-    setState(() {
-      _isPlayingAudio = state == PlayerState.playing;
-    });
-  }
-});
-  }
+  _audioPlayer.onPlayerStateChanged.listen((state) {
+    if (mounted) {
+      setState(() {
+        _isPlayingAudio = state == PlayerState.playing;
+      });
+    }
+  });
+
+  // Automatically play instructions after the screen loads
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _speakInstructions();
+  });
+}
 
 
 
