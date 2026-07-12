@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
 
 bool _isAudioPlaying = false;
+bool _hasAutoPlayedInsight = false;
 bool _isAudioLoading = false;
   Locale? _lastLocale;
 
@@ -94,6 +95,8 @@ bool _isAudioLoading = false;
 _audioPlayer.onPlayerStateChanged.listen((state) {
   setState(() {
     _isAudioPlaying = state == PlayerState.playing;
+    _loadAudioPreference();
+    _sendInsightsPost(autoPlay: true);
   });
 });
   }
@@ -143,111 +146,121 @@ _audioPlayer.onPlayerStateChanged.listen((state) {
     }
   }
 
-  Future<void> _sendInsightsPost() async {
-      bool _hasAutoPlayedInsight = false;
+  Future<void> _sendInsightsPost({bool autoPlay = false}) async {
+  try {
+    final api = ApiService();
+    final headers = await api.getHeaders(includeAuth: true);
+
+    Map<String, dynamic>? profile;
     try {
-      final api = ApiService();
-      final headers = await api.getHeaders(includeAuth: true);
-
-      // Fetch user profile to get period_length, cycle_length, last_period_date
-      Map<String, dynamic>? profile;
-      try {
-        profile = await api.getProfile();
-      } catch (e) {
-        // If fetching profile fails, show fallback data
-        setState(() {
-          _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
-          _insightText = _defaultInsightText;
-        });
-        return;
-      }
-
-      int? cycleLength;
-      int? periodLength;
-      String? lastPeriodDate;
-
-      cycleLength = profile['cycle_length'] is int
-          ? profile['cycle_length']
-          : int.tryParse(profile['cycle_length']?.toString() ?? '');
-      periodLength = profile['period_length'] is int
-          ? profile['period_length']
-          : int.tryParse(profile['period_length']?.toString() ?? '');
-      lastPeriodDate = profile['last_period_date']?.toString();
-
-      final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
-      final body = {
-        'cycle_length': cycleLength ?? 0,
-        'last_period_date': lastPeriodDate ?? '',
-        'period_length': periodLength ?? 0,
-        'symptoms':
-            _lastLoggedSymptoms.isNotEmpty ? _lastLoggedSymptoms : ['none'],
-      };
-
-      debugPrint('Sending POST to /insights/insights with body: $body');
-      final postResponse = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(body),
-      );
-      debugPrint('POST response status: ${postResponse.statusCode}');
-
-      // Now GET insights/insights
-      final getResponse = await http.get(url, headers: headers);
-      debugPrint('GET /insights/insights status: ${getResponse.statusCode}');
-      debugPrint('GET /insights/insights response: ${getResponse.body}');
-
-      if (getResponse.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(getResponse.body);
-        debugPrint('Parsed insights data: $data');
-
-        if (data.isNotEmpty && data[0] is Map<String, dynamic>) {
-          final insights = data[0] as Map<String, dynamic>;
-          debugPrint('First insight object keys: ${insights.keys.toList()}');
-
-          setState(() {
-          
-            _insightData = insights;
-            // Try to get insight_text, or generate one from available data
-            _insightText = insights['insight_text']?.toString() ??
-                insights['prediction']?.toString() ??
-                insights['recommendation']?.toString() ??
-                _defaultInsightText;
-            // Get audio URL if available
-            _insightAudioUrl = insights['audio_url']?.toString();
-            debugPrint('Set _insightText to: $_insightText');
-            debugPrint('Audio URL: $_insightAudioUrl');
-          });
-       if (_audioEnabled &&
-    !_hasAutoPlayedInsight &&
-    _insightText != null &&
-    _insightText!.trim().isNotEmpty) {
-
-  _hasAutoPlayedInsight = true;
-
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (mounted) {
-      _playInsightAudio();
-    }
-  });
-}
-        }
-      }
-
-      // If no data or bad response, show fallback
-      debugPrint('No valid insights data, using fallback');
-      setState(() {
-        _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
-        _insightText = _defaultInsightText;
-      });
+      profile = await api.getProfile();
     } catch (e) {
-      debugPrint('Unable to send insights');
       setState(() {
         _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
         _insightText = _defaultInsightText;
       });
+      return;
     }
-  }
 
+    final cycleLength = profile['cycle_length'] is int
+        ? profile['cycle_length']
+        : int.tryParse(profile['cycle_length']?.toString() ?? '');
+
+    final periodLength = profile['period_length'] is int
+        ? profile['period_length']
+        : int.tryParse(profile['period_length']?.toString() ?? '');
+
+    final lastPeriodDate = profile['last_period_date']?.toString();
+
+    final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
+
+    final body = {
+      'cycle_length': cycleLength ?? 0,
+      'last_period_date': lastPeriodDate ?? '',
+      'period_length': periodLength ?? 0,
+      'symptoms':
+          _lastLoggedSymptoms.isNotEmpty ? _lastLoggedSymptoms : ['none'],
+    };
+
+    debugPrint('POST body: $body');
+
+    await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    final getResponse = await http.get(url, headers: headers);
+
+    debugPrint('GET status: ${getResponse.statusCode}');
+    debugPrint('GET response: ${getResponse.body}');
+
+    if (getResponse.statusCode != 200) {
+      throw Exception('GET failed');
+    }
+
+    final decoded = jsonDecode(getResponse.body);
+
+    if (decoded is List &&
+        decoded.isNotEmpty &&
+        decoded.first is Map<String, dynamic>) {
+      final insights = decoded.first as Map<String, dynamic>;
+
+      final newInsightText =
+          insights['insight_text']?.toString() ??
+          insights['prediction']?.toString() ??
+          insights['recommendation']?.toString() ??
+          _defaultInsightText;
+
+      final oldText = _insightText;
+
+      setState(() {
+        _insightData = insights;
+        _insightText = newInsightText;
+
+        // regenerate audio if text changed
+        if (oldText != newInsightText) {
+          _insightAudioUrl = null;
+          _hasAutoPlayedInsight = false;
+        }
+
+        if (insights['audio_url'] != null &&
+            insights['audio_url'].toString().isNotEmpty) {
+          _insightAudioUrl = insights['audio_url'].toString();
+        }
+      });
+
+      debugPrint('Insight text: $_insightText');
+
+      if (autoPlay &&
+          _audioEnabled &&
+          !_hasAutoPlayedInsight &&
+          mounted) {
+        _hasAutoPlayedInsight = true;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _playInsightAudio();
+        });
+      }
+
+      return;
+    }
+
+    // No insights returned
+    setState(() {
+      _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
+      _insightText = _defaultInsightText;
+    });
+  } catch (e, stack) {
+    debugPrint('Insights error: $e');
+    debugPrint(stack.toString());
+
+    setState(() {
+      _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
+      _insightText = _defaultInsightText;
+    });
+  }
+}
   Future<void> _playInsightAudio() async {
   if (_insightText == null || _insightText!.trim().isEmpty) {
     return;
