@@ -1,7 +1,7 @@
 name: myfertipal
 description: A fertility tracking app
 publish_to: "none"
-version: 9.6.2+3
+version: 9.7.0+1
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

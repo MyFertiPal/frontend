@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -588,8 +588,7 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
                               const SizedBox(height: 20),
                             ],
 
-                            // Calendar colour key
-                            _buildCalendarKey(),
+                           
 
                             // Cycle summary stat cards
                             _buildCycleSummary(),

@@ -115,24 +115,6 @@ class PrivacyAndSecurityScreen extends StatelessWidget {
               onTap: _openSettings,
             ),
 
-            const SizedBox(height: 14),
-
-            _buildActionTile(
-              icon: Icons.location_on_outlined,
-              title: 'Location',
-              subtitle: 'Manage location access.',
-              onTap: _openSettings,
-            ),
-
-            const SizedBox(height: 14),
-
-            _buildActionTile(
-              icon: Icons.mic_none_outlined,
-              title: 'Microphone',
-              subtitle: 'Manage microphone access.',
-              onTap: _openSettings,
-            ),
-
             const SizedBox(height: 30),
 
             Text(

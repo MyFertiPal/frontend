@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+﻿﻿import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -65,10 +65,30 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
     final monthLabel = DateFormat('MMMM yyyy').format(_visibleMonth);
 
     return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
+  children: [
+    Padding(
+      padding: const EdgeInsets.only(
+        left: 16,
+        right: 16,
+        bottom: 4,
+      ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          'Today, ${DateFormat('MMM d, yyyy').format(DateTime.now())}',
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Poppins',
+          ),
+        ),
+      ),
+    ),
+
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
@@ -120,42 +140,13 @@ class _SwipeableGreenCalendarState extends State<SwipeableGreenCalendar> {
           ),
         ),
         const SizedBox(height: 12),
-        _buildLegend(),
+        
         
       ],
     );
   }
 
-  Widget _buildLegend() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 8,
-        alignment: WrapAlignment.center,
-        children: [
-          _LegendItem(
-              color: const Color(0xFFD32F2F),
-              label: 'Period',
-              hasDot: true,
-              isPink: true),
-          _LegendItem(
-              color: const Color(0xFF1B4D2D), label: 'Ovulation', hasDot: true),
-          _LegendItem(
-              color: const Color(0xFF2E683D), label: 'Fertile', hasDot: true),
-          _LegendItem(
-              color: const Color(0xFFD32F2F),
-              label: 'Predicted',
-              hasBorder: true),
-        ],
-      ),
-    );
-  }
+  
 
   Widget _buildDayLabels() {
     const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
