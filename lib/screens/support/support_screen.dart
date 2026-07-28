@@ -31,7 +31,7 @@ class SupportScreen extends StatelessWidget {
           },
         ),
       ),
-      bottomNavigationBar: const _BottomNavBar(),
+      
     );
   }
 }
@@ -230,160 +230,184 @@ class _SpecialistAndLiveSessionCard extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Merged Live Session sub-card with doctor avatar overlay
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(bottom: 26),
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: SupportScreen.kDarkGreen,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'LIVE WEBINAR',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Understanding Ovulation and Your Fertile Window',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                        height: 1.3,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.calendar_today,
-                            size: 13, color: Colors.grey[600]),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            'Sat, May 24, 2025 · 7:00 PM WAT',
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: SupportScreen.kDarkGreen,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('Register Now'),
-                            SizedBox(width: 6),
-                            Icon(Icons.arrow_forward, size: 16),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // extra space so the overlay avatar doesn't cover the button
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
+         Stack(
+  clipBehavior: Clip.none,
+  children: [
 
-              // Doctor-in-charge avatar overlaid at the bottom of the card
-              Positioned(
-                bottom: 0,
-                left: 14,
-                right: 14,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.grey.shade200),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Color(0xFFD8E9DF),
-                        backgroundImage: NetworkImage(
-                          'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&q=80',
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Dr. Mawa',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              'Fertility Specialist',
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+    // Main webinar image
+    ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: SizedBox(
+        height: 250,
+        width: double.infinity,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+
+            Image.asset(
+              "assets/images/live_session.jpg",
+              fit: BoxFit.cover,
+            ),
+
+            // Dark gradient overlay
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black54,
+                    Colors.black87,
+                  ],
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+
+            // Live text
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 85,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Text(
+                      "LIVE",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  const Text(
+                    "Understanding Ovulation\nand Your Fertile Window",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      height: 1.25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  const Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.white70,
+                        size: 15,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        "Saturday • 7:00 PM",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
+    ),
+
+    // Bottom floating card
+    Positioned(
+      left: 18,
+      right: 18,
+      bottom: -28,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 12,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+
+            const CircleAvatar(
+              radius: 24,
+              backgroundImage:
+                  AssetImage("assets/images/doctor_placeholder.png"),
+            ),
+
+            const SizedBox(width: 12),
+
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Text(
+                    "Dr. Mawa",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+
+                  SizedBox(height: 2),
+
+                  Text(
+                    "Fertility Specialist",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            ElevatedButton(
+              onPressed: null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SupportScreen.kDarkGreen,
+                foregroundColor: Colors.white,
+                shape: StadiumBorder(),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
+                ),
+              ),
+              child: const Text("Register"),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ],
+),
+
+const SizedBox(height: 40),
+      ]),
     );
   }
 }
@@ -548,78 +572,6 @@ class _ConnectCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-// ---------------- Bottom nav bar ----------------
-
-class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _NavItem(icon: Icons.home_outlined, label: 'Home', selected: true),
-            const _NavItem(icon: Icons.eco_outlined, label: 'Journey'),
-            Container(
-              width: 52,
-              height: 52,
-              decoration: const BoxDecoration(
-                color: SupportScreen.kDarkGreen,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.add, color: Colors.white, size: 28),
-            ),
-            const _NavItem(icon: Icons.menu_book_outlined, label: 'Learn'),
-            const _NavItem(icon: Icons.person_outline, label: 'Profile'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool selected;
-
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    this.selected = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected ? SupportScreen.kDarkGreen : Colors.grey;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(fontSize: 11, color: color),
-        ),
-      ],
     );
   }
 }

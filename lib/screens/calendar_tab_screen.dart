@@ -46,6 +46,7 @@ class CalendarTabScreen extends StatefulWidget {
 }
 
 class _CalendarTabScreenState extends State<CalendarTabScreen> {
+  List<dynamic> _loggedSymptoms = [];
   void _buildBackendMarkers(){
 
   _dayMarkers.clear();
@@ -238,7 +239,11 @@ void initState() {
               _buildLegend(),
               const SizedBox(height: 8),
               _buildSummaryRow(),
-              const SizedBox(height: 16),
+const SizedBox(height: 24),
+
+_buildLoggedSymptoms(),
+
+const SizedBox(height: 20),
             ],
           ),
         ),
@@ -261,16 +266,19 @@ await api.getProfile();
 final predictions =
 await api.getCyclePrediction();
 
+final symptoms =
+await api.getSymptoms();
 
-final prediction =
-predictions.first;
 
+if (predictions.isEmpty) return;
+
+final prediction = predictions.first;
 
 if(!mounted) return;
 
 
 setState(() {
-
+_loggedSymptoms = symptoms;
 
 _cycleLength =
 profile["cycle_length"] ?? 0;
@@ -324,6 +332,42 @@ debugPrint(
 
 }
 
+}
+Widget _buildLoggedSymptoms() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        const Text(
+          "Logged Symptoms",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        if (_loggedSymptoms.isEmpty)
+          const Center(
+            child: Text("No symptoms logged yet"),
+          ),
+
+        ..._loggedSymptoms.map((item) {
+          return Card(
+            child: ListTile(
+              title: Text(
+                item["symptoms"].join(", "),
+              ),
+              subtitle: Text(item["created_at"]),
+            ),
+          );
+        }),
+      ],
+    ),
+  );
 }
   Widget _buildHero() {
     final todayLabel =

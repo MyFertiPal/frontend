@@ -378,6 +378,38 @@ throw Exception(
       rethrow;
     }
   }
+
+  Future<List<dynamic>> getSymptoms() async {
+  final token = await getStoredToken();
+
+  final response = await http.get(
+    Uri.parse('$baseUrl/symptoms'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+
+    // If API returns:
+    // [ {...}, {...} ]
+    if (data is List) {
+      return data;
+    }
+
+    // If API returns:
+    // { "data": [ ... ] }
+    if (data is Map && data["data"] != null) {
+      return data["data"];
+    }
+
+    return [];
+  }
+
+  throw Exception("Failed to load symptoms");
+}
   Future<void> saveSymptoms({
   required List<String> symptoms,
   required int severity,
