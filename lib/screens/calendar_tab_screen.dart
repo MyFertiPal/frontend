@@ -26,12 +26,7 @@ class SummaryStat {
   const SummaryStat({required this.value, required this.label});
 }
 
-/// Cycle tracking screen: hero week strip, a month calendar with
-/// functional prev/next navigation, a legend, and a horizontally
-/// scrollable row of summary cards.
-///
-/// This widget intentionally does NOT include a bottom nav bar -- wire it
-/// into your existing scaffold/nav shell.
+/// Cycle tracking screen: hero week strip, a month calendar with markers, and a summary row of stats.
 class CalendarTabScreen extends StatefulWidget {
 
   final DateTime today;

@@ -1,972 +1,625 @@
-﻿import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
-import '../../generated/l10n/app_localizations.dart';
-import '../../services/api_service.dart';
-import '../../services/analytics_service.dart';
-import '../community/community_groups_screen.dart';
-import '../community/create_group_screen.dart';
-import 'cultural_guidance_screen.dart';
-
-const Color _primaryTeal = Color(0xFF0EA5A4);
-const Color _darkGreenText = Color(0xFF064B23);
-
-class SupportScreen extends StatefulWidget {
+class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
 
-  @override
-  State<SupportScreen> createState() => _SupportScreenState();
-}
-
-class _SupportScreenState extends State<SupportScreen> {
-  String _currentAffirmation = "";
-  List<String> _affirmations = [];
-  bool _loadingAffirmations = true;
-  String _currentFaith = 'neutral'; // Track current faith preference
-  bool _audioEnabled = true; // Track if audio guidance is enabled
-
-  // Audio player properties
-  late AudioPlayer _audioPlayer;
-  bool _isPlayingAudio = false;
-  bool _isAudioLoading = false;
-  Duration _audioDuration = Duration.zero;
-  Duration _audioPosition = Duration.zero;
-
-String? _affirmationAudioUrl;
-bool _affirmationTtsLoading = false;
-
-  Map<String, List<String>> get _faithAffirmations {
-    final l10n = AppLocalizations.of(context);
-    return {
-      'christian': [
-        l10n.christianAffirmation1,
-        l10n.christianAffirmation2,
-        l10n.christianAffirmation3,
-      ],
-      'muslim': [
-        l10n.muslimAffirmation1,
-        l10n.muslimAffirmation2,
-        l10n.muslimAffirmation3,
-      ],
-      'traditionalist': [
-        l10n.traditionalistAffirmation1,
-        l10n.traditionalistAffirmation2,
-        l10n.traditionalistAffirmation3,
-        l10n.traditionalistAffirmation4,
-        l10n.traditionalistAffirmation5,
-      ],
-      'neutral': [
-        l10n.neutralAffirmation1,
-        l10n.neutralAffirmation2,
-        l10n.neutralAffirmation3,
-      ],
-    };
-  }
-
-  @override
-  void initState() {
-    super.initState();
-     AnalyticsService.logScreenView(
-      screenName: "Support Screen",
-    );
-    _audioPlayer = AudioPlayer();
-    _initializeAudioPlayer();
-    _fetchFaithPreference();
-    _loadAudioPreference();
-  }
-
-  Future<void> _loadAudioPreference() async {
-    try {
-      final api = ApiService();
-      final profile = await api.getProfile();
-      final audioPreference = profile['audio_preference'] ?? true;
-      if (mounted) {
-        setState(() {
-          _audioEnabled = audioPreference;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading audio preference: $e');
-    }
-  }
-
-  Future<void> _fetchFaithPreference() async {
-    setState(() {
-      _loadingAffirmations = true;
-    });
-    try {
-      final api = ApiService();
-      final profile = await api.getProfile();
-      final userData = profile['data'] ?? profile;
-      final String? faithPref =
-          userData['faith_preference'] ?? userData['faithPreference'];
-      String faith = 'neutral';
-      if (faithPref != null) {
-        final f = faithPref.toLowerCase();
-        if (f.contains('christian'))
-          faith = 'christian';
-        else if (f.contains('muslim'))
-          faith = 'muslim';
-        else if (f.contains('traditionalist')) faith = 'traditionalist';
-      }
-      if (mounted) {
-        setState(() {
-          _currentFaith = faith;
-          _affirmations = _faithAffirmations[faith]!;
-          _currentAffirmation = _affirmations[0];
-          _loadingAffirmations = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _currentFaith = 'neutral';
-          _affirmations = _faithAffirmations['neutral']!;
-          _currentAffirmation = _affirmations[0];
-          _loadingAffirmations = false;
-        });
-      }
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Refresh affirmations when locale changes to ensure translations are updated
-    _refreshAffirmations();
-  }
-
-  void _refreshAffirmations() {
-    if (_affirmations.isNotEmpty && mounted) {
-      // Reload affirmations from the new language using stored faith preference
-      setState(() {
-        _affirmations = _faithAffirmations[_currentFaith]!;
-        // Keep the current affirmation index if possible, otherwise reset to first
-        final currentIndex = _currentAffirmation.isEmpty
-            ? 0
-            : _affirmations.indexWhere((a) => a == _currentAffirmation);
-        _currentAffirmation =
-            currentIndex >= 0 && currentIndex < _affirmations.length
-                ? _affirmations[currentIndex]
-                : _affirmations[0];
-                if (_audioEnabled) {
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (mounted) {
-      _playAffirmationTts();
-    }
-  });
-}
-      });
-    }
-  }
-
-  void _initializeAudioPlayer() {
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlayingAudio = state == PlayerState.playing;
-        });
-      }
-    });
-
-    _audioPlayer.onDurationChanged.listen((duration) {
-      if (mounted) {
-        setState(() {
-          _audioDuration = duration;
-        });
-      }
-    });
-
-    _audioPlayer.onPositionChanged.listen((position) {
-      if (mounted) {
-        setState(() {
-          _audioPosition = position;
-        });
-      }
-    });
-  }
-
-  Future<void> _playAffirmationTts() async {
-  if (_currentAffirmation.isEmpty) return;
-
-  try {
-    setState(() {
-      _affirmationTtsLoading = true;
-    });
-
-    // Reuse generated audio
-    if (_affirmationAudioUrl != null) {
-      await _audioPlayer.play(
-        UrlSource(_affirmationAudioUrl!),
-      );
-      await AnalyticsService.logSupportAudioListened('affirmation');
-      return;
-    }
-
-    final response = await ApiService().post(
-      '/user/api/v1/audio/generate-tts',
-      {
-        "text": _currentAffirmation,
-        "voice": "Idera",
-        "language": "en",
-      },
-    );
-
-    final audioUrl = response["audio_url"];
-
-    if (audioUrl == null) {
-      throw Exception("No audio URL returned");
-    }
-
-    _affirmationAudioUrl = audioUrl.toString();
-
-    await _audioPlayer.play(
-      UrlSource(_affirmationAudioUrl!),
-    );
-    await AnalyticsService.logSupportAudioListened('affirmation');
-  } catch (e) {
-    debugPrint("Affirmation audio error: $e");
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).failedPlayAffirmation,
-          ),
-        ),
-      );
-    }
-  } finally {
-    if (mounted) {
-      setState(() {
-        _affirmationTtsLoading = false;
-      });
-    }
-  }
-}
-
-  Future<void> _togglePlayPause() async {
-    if (_isPlayingAudio) {
-      await _audioPlayer.pause();
-    } else {
-      // Load and play audio - using encouragement audio from assets
-      try {
-        setState(() {
-          _isAudioLoading = true;
-        });
-        // Set the audio source and play based on the current language
-        final locale = Localizations.localeOf(context);
-        final assetPath = _audioAssetForLocale(locale);
-        await _audioPlayer.setSource(AssetSource(assetPath));
-        await _audioPlayer.resume();
-        
-        // Log support audio listened
-        await AnalyticsService.logSupportAudioListened('encouragement');
-        
-        if (mounted) {
-          setState(() {
-            _isAudioLoading = false;
-          });
-        }
-      } catch (e) {
-        debugPrint('Audio play failed: $e');
-        if (mounted) {
-          setState(() {
-            _isAudioLoading = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).failedPlayAudio),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = duration.inMinutes;
-    final seconds = duration.inSeconds.remainder(60);
-    return '$minutes:${twoDigits(seconds)}';
-  }
-
-  String _audioAssetForLocale(Locale locale) {
-    switch (locale.languageCode) {
-      case 'ha':
-        return 'audio/ha.mp3';
-      case 'pcm':
-        return 'audio/pcm.mp3';
-      case 'yo':
-        return 'audio/yo.mp3';
-      case 'ig':
-        return 'audio/ig.mp3';
-      case 'en':
-      default:
-        return 'audio/en.mp3';
-    }
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
+  static const Color kDarkGreen = Color(0xFF0B6E4F);
+  static const Color kLightGreenBg = Color(0xFFEAF4EE);
 
   @override
   Widget build(BuildContext context) {
-    // Localization removed
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // Green appbar
-          Container(
-            width: double.infinity,
-            padding:
-                const EdgeInsets.only(left: 30, right: 30, top: 40, bottom: 20),
-            decoration: const BoxDecoration(
-              color: _primaryTeal,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context).supportHub,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  AppLocalizations.of(context).supportHubSubtitle,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Body with daily affirmation and other content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double hPad = constraints.maxWidth * 0.055; // ~16 on 360
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 12),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Daily affirmation card
-                  Container(
-                    width: double.infinity,
-                    constraints: const BoxConstraints(
-                      minHeight: 130,
-                      maxHeight: 200,
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: _primaryTeal.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: _primaryTeal.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: _loadingAffirmations
-                        ? const Center(child: CircularProgressIndicator())
-                        : Column(
-                            children: [
-                              // Top row: spark icon, text, refresh button
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.flash_on,
-                                    color: _primaryTeal,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    AppLocalizations.of(context)
-                                        .dailyAffirmation,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: _darkGreenText,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  GestureDetector(
-                                    onTap: () {                                      // Log support quote refreshed
-                                      AnalyticsService.logSupportQuoteRefreshed();
-                                                                            setState(() {
-                                        // Cycle to next affirmation
-                                        final currentIdx = _affirmations
-                                            .indexOf(_currentAffirmation);
-                                        final nextIdx = (currentIdx + 1) %
-                                            _affirmations.length;
-                                        _currentAffirmation =
-                                            _affirmations[nextIdx];
-                                            _affirmationAudioUrl = null;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 32,
-                                      height: 32,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.refresh,
-                                          size: 16,
-                                          color: _primaryTeal,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              // Affirmation text (expandable)
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Text(
-                                    _currentAffirmation,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: _darkGreenText,
-                                      fontFamily: 'Poppins',
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              // Play button for affirmation TTS (only show if audio enabled)
-                              if (_audioEnabled)
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _affirmationTtsLoading
-                                        ? SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                Colors.white,
-                                              ),
-                                            ),
-                                          )
-                                        : IconButton(
-                                            icon: const Icon(
-                                              Icons.volume_up_rounded,
-                                              color: _primaryTeal,
-                                              size: 24,
-                                            ),
-                                            onPressed: _playAffirmationTts,
-                                            tooltip:
-                                                AppLocalizations.of(context)
-                                                    .readAffirmationAloud,
-                                          ),
-                                  ],
-                                ),
-                            ],
-                          ),
-                  ),
+                  _Header(),
+                  const SizedBox(height: 20),
+                  const _SpecialistAndLiveSessionCard(),
+                  const SizedBox(height: 32),
+                  _ConnectWithOthersSection(),
                   const SizedBox(height: 24),
-                  // Audio encouragement card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: const _BottomNavBar(),
+    );
+  }
+}
+
+// ---------------- Header ----------------
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Connect',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: SupportScreen.kDarkGreen,
+                ),
+              ),
+              const SizedBox(height: 6),
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.4,
+                    color: Colors.grey[800],
+                  ),
+                  children: const [
+                    TextSpan(text: "You're "),
+                    TextSpan(
+                      text: 'not alone.',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text:
+                          ' Get expert support and connect with women like you.',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.notifications_none,
+                  color: SupportScreen.kDarkGreen),
+            ),
+            Positioned(
+              right: -2,
+              top: -2,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                constraints:
+                    const BoxConstraints(minWidth: 18, minHeight: 18),
+                child: const Center(
+                  child: Text(
+                    '3',
+                    style: TextStyle(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Title row with audio icon
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.music_note,
-                              color: _primaryTeal,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              AppLocalizations.of(context).audioEncouragement,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        // Play/Pause button, Title and Progress bar, Duration
-                        Row(
-                          children: [
-                            // Play/Pause button with loading state
-                            _isAudioLoading
-                                ? Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      width: 40,
-                                      height: 40,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          _primaryTeal,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : IconButton(
-                                    icon: Icon(
-                                      _isPlayingAudio
-                                          ? Icons.pause_circle_filled
-                                          : Icons.play_circle_filled,
-                                      color: _primaryTeal,
-                                      size: 40,
-                                    ),
-                                    onPressed: _togglePlayPause,
-                                  ),
-                            const SizedBox(width: 12),
-                            // Title and Progress bar
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context).audioTitle,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: _darkGreenText,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // Progress bar with actual duration and position
-                                  SliderTheme(
-                                    data: SliderTheme.of(context).copyWith(
-                                      thumbShape: const RoundSliderThumbShape(
-                                          enabledThumbRadius: 5),
-                                      trackHeight: 3,
-                                    ),
-                                    child: Slider(
-                                      value:
-                                          _audioPosition.inSeconds.toDouble(),
-                                      max: _audioDuration.inSeconds.toDouble() >
-                                              0
-                                          ? _audioDuration.inSeconds.toDouble()
-                                          : 1.0,
-                                      activeColor: _primaryTeal,
-                                      inactiveColor: Colors.grey.shade300,
-                                      onChanged: (value) async {
-                                        final position =
-                                            Duration(seconds: value.toInt());
-                                        await _audioPlayer.seek(position);
-                                      },
-                                    ),
-                                  ),
-                                  // Show progress time
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      '${_formatDuration(_audioPosition)} / ${_formatDuration(_audioDuration)}',
-                                      style: TextStyle(
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.grey.shade600,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Duration display removed (now shown with progress)
-                            Text(
-                              _formatDuration(_audioDuration),
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey.shade600,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    AppLocalizations.of(context).culturalGuidance,
-                    style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const CulturalGuidanceScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              AppLocalizations.of(context)
-                                  .culturalGuidanceDescription,
-                              style: TextStyle(color: Colors.grey.shade700),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.arrow_forward,
-                            color: Colors.grey.shade400,
-                            size: 20,
-                          ),
-                        ],
-                      ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------- Specialist card + merged Live Session ----------------
+
+class _SpecialistAndLiveSessionCard extends StatelessWidget {
+  const _SpecialistAndLiveSessionCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: SupportScreen.kLightGreenBg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Top: text + doctor image
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final bool narrow = constraints.maxWidth < 340;
+              final textColumn = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Talk to a\nFertility Specialist',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: SupportScreen.kDarkGreen,
+                      height: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  // Community groups section
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.group,
-                        color: _primaryTeal,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        AppLocalizations.of(context).communityGroups,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const CreateGroupScreen(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: _darkGreenText,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                AppLocalizations.of(context).create,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Community group card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Row(
-                      children: [
-                        // Group info
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Group name
-                              Text(
-                                AppLocalizations.of(context).fertilityCircle,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Category badge
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: _primaryTeal,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      AppLocalizations.of(context)
-                                          .generalSupport,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 11,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '24 ${AppLocalizations.of(context).members}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.shade600,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Latest message
-                              Text(
-                                AppLocalizations.of(context).latestMessage,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.grey.shade700,
-                                  fontFamily: 'Poppins',
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Right arrow
-                        GestureDetector(
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(AppLocalizations.of(context)
-                                      .groupChatComingSoon)),
-                            );
-                          },
-                          child: const Icon(
-                            Icons.chevron_right,
-                            color: Colors.grey,
-                            size: 24,
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 10),
+                  Text(
+                    'Book a 1-on-1 consultation with trusted fertility experts.',
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      color: Colors.grey[800],
+                      height: 1.35,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const CommunityGroupsScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                          AppLocalizations.of(context).exploreCommunityGroups),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Contact Support section
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: _primaryTeal.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: _primaryTeal.withOpacity(0.3),
-                        width: 1,
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: SupportScreen.kDarkGreen,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
                       ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.email_outlined,
-                              color: _primaryTeal,
-                              size: 24,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              AppLocalizations.of(context).contactSupport,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: _darkGreenText,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          AppLocalizations.of(context).contactSupportMessage,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: _darkGreenText,
-                            fontFamily: 'Poppins',
-                            height: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _primaryTeal,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.phone,
-                                color: _primaryTeal,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                '+234-813-202-7445',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: _darkGreenText,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _primaryTeal,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.email,
-                                color: _primaryTeal,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                'contact@myfertipal.com',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: _darkGreenText,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        Text('Book a Consultation'),
+                        SizedBox(width: 6),
+                        Icon(Icons.arrow_forward, size: 16),
                       ],
                     ),
                   ),
                 ],
+              );
+
+              final doctorImage = ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80',
+                  height: 170,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 170,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.person, size: 60),
+                  ),
+                ),
+              );
+
+              if (narrow) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    textColumn,
+                    const SizedBox(height: 16),
+                    doctorImage,
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 3, child: textColumn),
+                  const SizedBox(width: 12),
+                  Expanded(flex: 2, child: doctorImage),
+                ],
+              );
+            },
+          ),
+
+          const SizedBox(height: 20),
+
+          // Merged Live Session sub-card with doctor avatar overlay
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(bottom: 26),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: SupportScreen.kDarkGreen,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'LIVE WEBINAR',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Understanding Ovulation and Your Fertile Window',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today,
+                            size: 13, color: Colors.grey[600]),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'Sat, May 24, 2025 · 7:00 PM WAT',
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: SupportScreen.kDarkGreen,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Register Now'),
+                            SizedBox(width: 6),
+                            Icon(Icons.arrow_forward, size: 16),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // extra space so the overlay avatar doesn't cover the button
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
-            ),
+
+              // Doctor-in-charge avatar overlaid at the bottom of the card
+              Positioned(
+                bottom: 0,
+                left: 14,
+                right: 14,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Color(0xFFD8E9DF),
+                        backgroundImage: NetworkImage(
+                          'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&q=80',
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Dr. Mawa',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              'Fertility Specialist',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+}
+
+// ---------------- Connect with others (vertical) ----------------
+
+class _ConnectWithOthersSection extends StatelessWidget {
+  const _ConnectWithOthersSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'Connect with others',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            Row(
+              children: const [
+                Text(
+                  'View all',
+                  style: TextStyle(
+                    color: SupportScreen.kDarkGreen,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                Icon(Icons.chevron_right,
+                    size: 16, color: SupportScreen.kDarkGreen),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        _ConnectCard(
+          emoji: '👥',
+          iconBg: const Color(0xFFDDEEE5),
+          title: 'Community Forum',
+          subtitle: 'Ask questions, share experiences and get support.',
+          linkText: 'Join the conversation',
+          linkColor: SupportScreen.kDarkGreen,
+        ),
+        const SizedBox(height: 12),
+        _ConnectCard(
+          emoji: '💜',
+          iconBg: const Color(0xFFEAE1F7),
+          title: 'Success Stories',
+          subtitle: 'Real stories from women who stayed hopeful and never gave up.',
+          linkText: 'Be inspired',
+          linkColor: const Color(0xFF8E5FD1),
+        ),
+        const SizedBox(height: 12),
+        _ConnectCard(
+          emoji: '🙏',
+          iconBg: const Color(0xFFFBEAD2),
+          title: 'Faith & Encouragement',
+          subtitle: 'Faith-based support and daily encouragement for your journey.',
+          linkText: 'Get encouraged',
+          linkColor: const Color(0xFFCB8A2C),
+        ),
+      ],
+    );
+  }
+}
+
+class _ConnectCard extends StatelessWidget {
+  final String emoji;
+  final Color iconBg;
+  final String title;
+  final String subtitle;
+  final String linkText;
+  final Color linkColor;
+
+  const _ConnectCard({
+    required this.emoji,
+    required this.iconBg,
+    required this.title,
+    required this.subtitle,
+    required this.linkText,
+    required this.linkColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {},
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(emoji, style: const TextStyle(fontSize: 22)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Colors.grey[600],
+                        height: 1.35,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          linkText,
+                          style: TextStyle(
+                            color: linkColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Icons.chevron_right, size: 15, color: linkColor),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------- Bottom nav bar ----------------
+
+class _BottomNavBar extends StatelessWidget {
+  const _BottomNavBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavItem(icon: Icons.home_outlined, label: 'Home', selected: true),
+            const _NavItem(icon: Icons.eco_outlined, label: 'Journey'),
+            Container(
+              width: 52,
+              height: 52,
+              decoration: const BoxDecoration(
+                color: SupportScreen.kDarkGreen,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.add, color: Colors.white, size: 28),
+            ),
+            const _NavItem(icon: Icons.menu_book_outlined, label: 'Learn'),
+            const _NavItem(icon: Icons.person_outline, label: 'Profile'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool selected;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    this.selected = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? SupportScreen.kDarkGreen : Colors.grey;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 24),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(fontSize: 11, color: color),
+        ),
+      ],
     );
   }
 }

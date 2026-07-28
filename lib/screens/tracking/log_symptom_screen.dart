@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import '../../services/api_service.dart';
 
 /// Colors used across the screen.
 class _LogColors {
@@ -117,17 +118,10 @@ const List<SymptomData> defaultSymptoms = [
   ),
 ];
 
-/// Result of logging: symptom id -> selected sub-options (or free text
-/// for symptoms with no predefined options, under the key '_text').
+/// Result of logging: symptom id -> selected sub-options (or free text).
 typedef SymptomLogResult = Map<String, Set<String>>;
 
-/// Log Symptoms screen. Tapping a symptom row selects it and expands its
-/// sub-options as chips (or a text field for free-form entries like
-/// "Other"). Multiple symptoms, and multiple options per symptom where
-/// allowed, can be selected before saving.
-///
-/// This widget intentionally does NOT include a bottom nav bar -- wire it
-/// into your existing scaffold/nav shell.
+
 class LogSymptomsScreen extends StatefulWidget {
   final List<SymptomData> symptoms;
   final ValueChanged<SymptomLogResult>? onSave;
@@ -147,6 +141,7 @@ class LogSymptomsScreen extends StatefulWidget {
 }
 
 class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
+  final ApiService _apiService = ApiService();
   final Set<String> _selectedSymptomIds = {};
   final Map<String, Set<String>> _optionSelections = {};
   final Map<String, TextEditingController> _textControllers = {};
@@ -186,19 +181,69 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
     });
   }
 
-  void _handleSave() {
-    final result = <String, Set<String>>{};
-    for (final id in _selectedSymptomIds) {
-      final symptom = widget.symptoms.firstWhere((s) => s.id == id);
-      if (symptom.options.isEmpty) {
-        final text = _controllerFor(id).text.trim();
-        result[id] = text.isEmpty ? {} : {text};
-      } else {
-        result[id] = _optionSelections[id] ?? {};
+ Future<void> _handleSave() async {
+  final result = <String, Set<String>>{};
+
+  for (final id in _selectedSymptomIds) {
+    final symptom = widget.symptoms.firstWhere((s) => s.id == id);
+
+    if (symptom.options.isEmpty) {
+      final text = _controllerFor(id).text.trim();
+      result[id] = text.isEmpty ? {} : {text};
+    } else {
+      result[id] = _optionSelections[id] ?? {};
+    }
+  }
+
+  // Convert selections into one list of strings
+  final List<String> symptoms = [];
+
+  result.forEach((category, values) {
+    if (values.isEmpty) {
+      symptoms.add(category);
+    } else {
+      for (final value in values) {
+        symptoms.add(
+  "${category.toLowerCase()}: ${value.toLowerCase()}",
+);
       }
     }
-    widget.onSave?.call(result);
+  });
+
+  // Notes from the "Other" field
+  String notes = "";
+  if (_textControllers.containsKey("other")) {
+    notes = _controllerFor("other").text.trim();
   }
+
+  try {
+    await _apiService.saveSymptoms(
+      symptoms: symptoms,
+      severity: 0,
+      notes: notes,
+    );
+
+    widget.onSave?.call(result);
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Symptoms saved successfully"),
+      ),
+    );
+
+    Navigator.pop(context);
+  } catch (e) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Failed to save symptoms: $e"),
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {

@@ -25,7 +25,6 @@ import "screens/profile/profile_screen.dart";
 import "screens/onboarding/forget_password_flow.dart"
     show ForgotPasswordScreen, ResetPasswordScreen, PasswordUpdatedScreen;
 
-import "screens/privacy_and_security/delete_account_screen.dart";
 
 import "services/auth_service.dart";
 import "services/audio_service.dart";
@@ -245,7 +244,6 @@ navigatorObservers: kIsWeb
                 return ResetPasswordScreen(token: args as String?);
               },
               '/password-updated': (context) => const PasswordUpdatedScreen(),
-              '/delete-account': (context) => const DeleteAccountScreen(),
               '/profile': (context) => ProfileScreen(
                  name: "MyFertiPal User",
   privacyPolicyUrl: "https://myfertipal.com/privacy-policy",

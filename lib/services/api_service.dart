@@ -378,6 +378,39 @@ throw Exception(
       rethrow;
     }
   }
+  Future<void> saveSymptoms({
+  required List<String> symptoms,
+  required int severity,
+  required String notes,
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse("$baseUrl/user/symptoms"),
+      headers: await getHeaders(includeAuth: true),
+      body: jsonEncode({
+        "symptoms": symptoms,
+        "severity": severity,
+        "notes": notes,
+      }),
+    );
+
+    debugPrint("Save Symptoms: ${response.statusCode}");
+    debugPrint("Response: ${response.body}");
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201) {
+      return;
+    }
+
+    throw ApiException(
+      statusCode: response.statusCode,
+      message: _extractErrorMessage(response),
+    );
+  } catch (e) {
+    debugPrint("Save symptoms error: $e");
+    rethrow;
+  }
+}
 
   // Logout
   Future<void> logout() async {

@@ -26,47 +26,67 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime? _lastPeriodDate;
 
   bool _isLoading = true;
-  String _formatDateRange(DateTime start, int days){
 
-final end =
-start.add(Duration(days: days));
+DateTime? _fertileStart;
+DateTime? _fertileEnd;
+DateTime? _ovulationDate;
+DateTime? _nextPeriod;
 
-return "${start.month}/${start.day} - ${end.month}/${end.day}";
+String _formatDateRange(DateTime? start, int days) {
+  if (start == null) return "--";
 
+  final end = start.add(Duration(days: days - 1));
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  String format(DateTime d) =>
+      "${d.day} ${months[d.month - 1]}";
+
+  if (days == 1) {
+    return format(start);
+  }
+
+  return "${format(start)} - ${format(end)}";
 }
-DateTime get _fertileStart {
+String _relativeStatus(DateTime? date) {
+  if (date == null) return "--";
 
-return _lastPeriodDate!
-.add(
-Duration(
-days: _cycleLength - 14 - 5
-)
-);
+  final today = DateTime.now();
 
-}
+  final now = DateTime(
+    today.year,
+    today.month,
+    today.day,
+  );
 
+  final target = DateTime(
+    date.year,
+    date.month,
+    date.day,
+  );
 
-DateTime get _ovulationDate {
+  final diff = target.difference(now).inDays;
 
-return _lastPeriodDate!
-.add(
-Duration(
-days: _cycleLength - 14
-)
-);
+  if (diff == 0) return "Today";
+  if (diff == 1) return "Tomorrow";
+  if (diff == -1) return "Yesterday";
 
-}
+  if (diff > 1) return "In $diff days";
 
-
-DateTime get _nextPeriod {
-
-return _lastPeriodDate!
-.add(
-Duration(
-days: _cycleLength
-)
-);
-
+  return "${diff.abs()} days ago";
 }
 
 
@@ -83,6 +103,10 @@ days: _cycleLength
 
       final user = await _apiService.getUser();
       final profile = await _apiService.getProfile();
+      
+      final predictions = await _apiService.getCyclePrediction();
+
+       final prediction = predictions.first;
 
 
       debugPrint("HOME USER: $user");
@@ -115,6 +139,21 @@ days: _cycleLength
               );
 
         }
+        _fertileStart = DateTime.parse(
+  prediction["fertile_period_start"],
+);
+
+_fertileEnd = DateTime.parse(
+  prediction["fertile_period_end"],
+);
+
+_ovulationDate = DateTime.parse(
+  prediction["ovulation_day"],
+);
+
+_nextPeriod = DateTime.parse(
+  prediction["next_period"],
+);
 
 
         _isLoading = false;
@@ -294,27 +333,30 @@ return Scaffold(
                         color: AppColors.primary,
                         title: 'Fertile Window',
                         titleColor: AppColors.primary,
-                        dateRange: _formatDateRange(
-_fertileStart,
-5
+status: _relativeStatus(_fertileStart),
+dateRange: _formatDateRange(
+  _fertileStart,
+  5,
 ),
                       ),
                       _timelineItem(
                         color: Colors.amber,
                         title: 'Ovulation',
                         titleColor: Colors.amber,
-                        dateRange: _formatDateRange(
-_ovulationDate,
-1
+    status: _relativeStatus(_ovulationDate),
+dateRange: _formatDateRange(
+  _ovulationDate,
+  1,
 ),
                       ),
                       _timelineItem(
                         color: AppColors.pinkAccent,
                         title: 'Predicted Period',
                         titleColor: AppColors.pinkAccent,
-                        dateRange: _formatDateRange(
-_nextPeriod,
-_periodLength,
+      status: _relativeStatus(_nextPeriod),
+dateRange: _formatDateRange(
+  _nextPeriod,
+  _periodLength,
 ),
                       ),
                     ],
@@ -332,6 +374,7 @@ _periodLength,
     required Color color,
     required String title,
     required Color titleColor,
+    required String status,
     required String dateRange,
   }) {
     return Row(
@@ -356,14 +399,28 @@ _periodLength,
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              dateRange,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(
+      status,
+      style: const TextStyle(
+        color: Colors.white70,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+    const SizedBox(height: 2),
+    Text(
+      dateRange,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  ],
+)
           ],
         ),
       ],

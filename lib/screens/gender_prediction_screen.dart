@@ -1,422 +1,386 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
-import 'package:audioplayers/audioplayers.dart';
-import '../services/api_service.dart';
-import '../generated/l10n/app_localizations.dart';
-import '../services/analytics_service.dart';
-import 'home_screen.dart';
+
+enum GenderExpectation { girl, boy, noPreference }
 
 class GenderPredictionScreen extends StatefulWidget {
-  const GenderPredictionScreen({Key? key}) : super(key: key);
+  const GenderPredictionScreen({super.key});
 
   @override
-  State<GenderPredictionScreen> createState() => _GenderPredictionScreenState();
+  State<GenderPredictionScreen> createState() =>
+      _GenderPredictionScreenState();
 }
 
 class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
-  String? _selectedGender;
-  DateTime? _ovulationDay;
-  DateTime? _fertileStart;
-  DateTime? _fertileEnd;
-  bool _loading = true;
- final AudioPlayer _audioPlayer = AudioPlayer();
+  GenderExpectation? _selected;
 
-bool _isLoadingAudio = false;
-bool _isPlayingAudio = false;
-String? _audioUrl;
+  static const Color kDarkGreen = Color(0xFF0B6E4F);
+  static const Color kPink = Color(0xFFE91E63);
+  static const Color kBlue = Color(0xFF1565C0);
 
-  List<String> get _genderOptions {
-    final l10n = AppLocalizations.of(context);
-    return [l10n.male, l10n.female, l10n.noPreference];
-  }
+  void _selectOption(GenderExpectation option) {
+    setState(() => _selected = option);
 
-  @override
-void initState() {
-  super.initState();
-
-  AnalyticsService.logScreenView(
-    screenName: "Gender",
-  );
-
-  _fetchOvulationDay();
-
-  _audioPlayer.onPlayerStateChanged.listen((state) {
-    if (mounted) {
-      setState(() {
-        _isPlayingAudio = state == PlayerState.playing;
-      });
-    }
-  });
-
-  // Automatically play instructions after the screen loads
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    _speakInstructions();
-  });
-}
-
-
-
- 
-     Future<void> _speakInstructions() async {
-      if (_audioUrl != null) {
-        await _audioPlayer.play(UrlSource(_audioUrl!));
-        return;
-      }
-  try {
-    final l10n = AppLocalizations.of(context);
-
-    final text =
-        '${l10n.genderPredictionDisclaimer} ${l10n.selectGenderExpectation}';
-
-    setState(() {
-      _isLoadingAudio = true;
-    });
-
-
-    final response = await ApiService().post(
-      '/user/api/v1/audio/generate-tts',
-      {
-        "text": text,
-        "voice": "Idera",
-        "language": "en",
-      },
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => GenderPredictionResultScreen(selection: option),
+      ),
     );
-
-
-    final audioUrl = response['audio_url'];
-
-
-    if (audioUrl == null) {
-      throw Exception("No audio URL returned");
-    }
-
-
-    await _audioPlayer.play(
-  UrlSource(audioUrl),
-);
-    _audioUrl = audioUrl.toString();
-
-setState(() {
-  _isLoadingAudio = false;
-});
-
-
-  } catch(e) {
-
-    debugPrint("Gender audio error: $e");
-
-    if(mounted){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context).failedPlayAudio,
-          ),
-        ),
-      );
-    }
-
-  } finally {
-
-    if(mounted){
-      setState(() {
-        _isLoadingAudio = false;
-      });
-    }
-
-  }
-}
-Future<void> _toggleAudio() async {
-  if (_isPlayingAudio) {
-    await _audioPlayer.pause();
-  } else {
-    if (_audioUrl != null) {
-      await _audioPlayer.resume();
-    } else {
-      await _speakInstructions();
-    }
-  }
-}
-  
-
-  Future<void> _fetchOvulationDay() async {
-    setState(() => _loading = true);
-    try {
-      final api = ApiService();
-      final headers = await api.getHeaders(includeAuth: true);
-      final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
-      final response = await http.get(url, headers: headers);
-      if (response.statusCode == 200) {
-        final data = response.body;
-        final decoded = data.isNotEmpty
-            ? (data.startsWith('[')
-                ? List<Map<String, dynamic>>.from(
-                    jsonDecode(data).map((e) => Map<String, dynamic>.from(e)))
-                : Map<String, dynamic>.from(jsonDecode(data)))
-            : null;
-        Map<String, dynamic>? latestCycle;
-        if (decoded is List && decoded.isNotEmpty) {
-          latestCycle = decoded.last;
-        } else if (decoded is Map) {
-          latestCycle = Map<String, dynamic>.from(decoded);
-        }
-        if (latestCycle != null) {
-          if (latestCycle['ovulation_day'] != null) {
-            _ovulationDay = DateTime.tryParse(latestCycle['ovulation_day']);
-          }
-          if (latestCycle['fertile_period_start'] != null &&
-              latestCycle['fertile_period_end'] != null) {
-            _fertileStart =
-                DateTime.tryParse(latestCycle['fertile_period_start']);
-            _fertileEnd = DateTime.tryParse(latestCycle['fertile_period_end']);
-          }
-        }
-      }
-    } catch (e) {
-      // Handle error
-    }
-    setState(() => _loading = false);
   }
 
-  List<Map<String, String>> _getAdvice() {
-    final l10n = AppLocalizations.of(context);
-    if (_ovulationDay == null || _selectedGender == null) return [];
-    final List<Map<String, String>> advice = [];
-    final maleLabel = l10n.male;
-    final femaleLabel = l10n.female;
-    for (int i = -3; i <= 1; i++) {
-      final day = _ovulationDay!.add(Duration(days: i));
-      String tip;
-      if (_selectedGender == maleLabel) {
-        tip = i == 0 ? l10n.bestChanceForMale : l10n.lowerChanceForMale;
-      } else if (_selectedGender == femaleLabel) {
-        tip = i < 0 ? l10n.bestChanceForFemale : l10n.lowerChanceForFemale;
-      } else {
-        tip = l10n.generalAdviceForConception;
-      }
-      advice.add({
-        'date': DateFormat('d MMM').format(day),
-        'tip': tip,
-      });
-    }
-    return advice;
-  }
-
-  String? getFertileWindowText() {
-    if (_fertileStart != null && _fertileEnd != null) {
-      final formatter = DateFormat('d MMM');
-      return '${formatter.format(_fertileStart!)}–${formatter.format(_fertileEnd!)}';
-    }
-    return null;
-  }
-
-  String? getOvulationDayText() {
-    if (_ovulationDay != null) {
-      return DateFormat('d MMM').format(_ovulationDay!);
-    }
-    return null;
-  }
-
-  // Update GenderPredictionScreen to look like a chat box
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.genderPredictionTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
-                settings: const RouteSettings(name: '/home'),
-              ),
-            );
-          },
-        ),
-        backgroundColor: const Color(0xFF0EA5A4),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-  IconButton(
-    onPressed: _isLoadingAudio ? null : _toggleAudio,
-    icon: _isLoadingAudio
-        ? const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white,
-            ),
-          )
-        : Icon(
-            _isPlayingAudio
-                ? Icons.pause_circle
-                : Icons.volume_up,
-          ),
-  ),
-],
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Container(
-              color: const Color(0xFFF5F5F0),
-              child: ListView(
-                padding: const EdgeInsets.all(24),
+      backgroundColor: const Color(0xFFF6FBF8),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+              child: Row(
                 children: [
-                  // Disclaimer message before bubble section
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 18),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFE5E5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Color(0xFFD32F2F), width: 1),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.info_outline,
-                            color: Color(0xFFD32F2F)),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            l10n.genderPredictionDisclaimer,
-                            style: const TextStyle(
-                                fontSize: 15, color: Color(0xFFD32F2F)),
+                  InkWell(
+                    onTap: () {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(24),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  _chatBubble(
-                    child: Text(l10n.selectGenderExpectation,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
-                    isBot: true,
-                  ),
-                  const SizedBox(height: 12),
-                  _chatBubble(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: _genderOptions.map((option) {
-                          final isSelected = _selectedGender == option;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6),
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() => _selectedGender = option);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-    ? const Color(0xFF0EA5A4)
-    : Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: Text(
-                                  option,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    isBot: false,
-                  ),
-                  const SizedBox(height: 24),
-                  if (_selectedGender != null &&
-                      (_ovulationDay != null ||
-                          (_fertileStart != null && _fertileEnd != null)))
-                    _chatBubble(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (getFertileWindowText() != null)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Text(
-                                  '${l10n.fertileWindowLabel}: ${getFertileWindowText()!}',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                          if (getOvulationDayText() != null)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Text(
-                                  '${l10n.ovulationDayLabel}: ${getOvulationDayText()!}',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                          Text(l10n.adviceForTiming,
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 12),
-                          ..._getAdvice().map((item) => Card(
-                                margin: const EdgeInsets.symmetric(vertical: 6),
-                                child: ListTile(
-                                  title: Text(item['date']!),
-                                  subtitle: Text(item['tip']!),
-                                ),
-                              )),
                         ],
                       ),
-                      isBot: true,
-                    )
-                  else
-                    Padding(
-                      padding: const EdgeInsets.only(top: 32.0, bottom: 24.0),
-                      child: Text(
-                        l10n.noPredictionDataAvailable,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      child: const Icon(Icons.arrow_back, color: kDarkGreen),
                     ),
+                  ),
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Gender Prediction',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: kDarkGreen,
+                    ),
+                  ),
                 ],
               ),
             ),
-    );
-  }
 
-  Widget _chatBubble({required Widget child, required bool isBot}) {
-    return Align(
-      alignment: isBot ? Alignment.centerLeft : Alignment.centerRight,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isBot ? const Color(0xFFE6F4EA) : const Color(0xFF0EA5A4),
-          borderRadius: BorderRadius.circular(18),
+            // Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Disclaimer card
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDECE3),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFF5C6A5)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 28,
+                            height: 28,
+                            margin: const EdgeInsets.only(top: 2),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: const Color(0xFFE0703A), width: 2),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                '!',
+                                style: TextStyle(
+                                  color: Color(0xFFE0703A),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Important Disclaimer',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Color(0xFFE0703A),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'This feature uses AI to provide gender prediction advice. These predictions may not be fully accurate and should not replace professional medical advice. Please consult a qualified doctor for health decisions.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    height: 1.4,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Section title
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Select your gender expectation',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: kDarkGreen,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'This helps personalize your insights and experience.',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('💗', style: TextStyle(fontSize: 26)),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _OptionCard(
+                      title: 'Girl',
+                      subtitle: "I'm hoping for a baby girl",
+                      emoji: '👧',
+                      accentColor: kPink,
+                      backgroundColor: const Color(0xFFFCE4EC),
+                      iconBackgroundColor: const Color(0xFFF8BBD0),
+                      selected: _selected == GenderExpectation.girl,
+                      onTap: () => _selectOption(GenderExpectation.girl),
+                    ),
+                    const SizedBox(height: 12),
+                    _OptionCard(
+                      title: 'Boy',
+                      subtitle: "I'm hoping for a baby boy",
+                      emoji: '👦',
+                      accentColor: kBlue,
+                      backgroundColor: const Color(0xFFE3EBFB),
+                      iconBackgroundColor: const Color(0xFFBBD6F8),
+                      selected: _selected == GenderExpectation.boy,
+                      onTap: () => _selectOption(GenderExpectation.boy),
+                    ),
+                    const SizedBox(height: 12),
+                    _OptionCard(
+                      title: 'No Preference',
+                      subtitle: "I'm open to either",
+                      emoji: '💚',
+                      accentColor: kDarkGreen,
+                      backgroundColor: const Color(0xFFE3F1EA),
+                      iconBackgroundColor: const Color(0xFFBFE0CD),
+                      selected: _selected == GenderExpectation.noPreference,
+                      onTap: () =>
+                          _selectOption(GenderExpectation.noPreference),
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-        child: child,
       ),
     );
   }
+}
+
+class _OptionCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String emoji;
+  final Color accentColor;
+  final Color backgroundColor;
+  final Color iconBackgroundColor;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _OptionCard({
+    required this.title,
+    required this.subtitle,
+    required this.emoji,
+    required this.accentColor,
+    required this.backgroundColor,
+    required this.iconBackgroundColor,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
-  void dispose() {
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected ? accentColor : Colors.transparent,
+              width: 2,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: iconBackgroundColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(emoji, style: const TextStyle(fontSize: 26)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: accentColor, width: 2),
+                  color: selected ? accentColor : Colors.transparent,
+                ),
+                child: selected
+                    ? const Icon(Icons.check, size: 16, color: Colors.white)
+                    : null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Simple results screen shown after an option is tapped.
+class GenderPredictionResultScreen extends StatelessWidget {
+  final GenderExpectation selection;
+
+  const GenderPredictionResultScreen({super.key, required this.selection});
+
+  String get _label {
+    switch (selection) {
+      case GenderExpectation.girl:
+        return 'Girl';
+      case GenderExpectation.boy:
+        return 'Boy';
+      case GenderExpectation.noPreference:
+        return 'No Preference';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF6FBF8),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF6FBF8),
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF0B6E4F)),
+        title: const Text(
+          'Your Results',
+          style: TextStyle(
+            color: Color(0xFF0B6E4F),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.favorite, size: 56, color: Color(0xFFE91E63)),
+              const SizedBox(height: 16),
+              Text(
+                'You selected: $_label',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0B6E4F),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This is a placeholder results screen — replace with your prediction results UI.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
