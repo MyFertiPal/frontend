@@ -14,17 +14,18 @@ import "config/fallback_localizations_delegate.dart";
 import "providers/language_provider.dart";
 
 import "screens/onboarding/splash_screen.dart";
+import "screens/root_screen.dart";
 import "screens/onboarding/welcome_screen.dart";
 import "screens/onboarding/login_screen.dart";
 import "screens/onboarding/registration_screen.dart";
 import "screens/onboarding/profile_setup_screen.dart";
 import "screens/onboarding/email_signup_screen.dart";
+import "screens/profile/profile_screen.dart";
 
 import "screens/onboarding/forget_password_flow.dart"
     show ForgotPasswordScreen, ResetPasswordScreen, PasswordUpdatedScreen;
 
 import "screens/privacy_and_security/delete_account_screen.dart";
-import "screens/home_screen.dart";
 
 import "services/auth_service.dart";
 import "services/audio_service.dart";
@@ -245,7 +246,11 @@ navigatorObservers: kIsWeb
               },
               '/password-updated': (context) => const PasswordUpdatedScreen(),
               '/delete-account': (context) => const DeleteAccountScreen(),
-              '/home': (context) => const HomeScreen(),
+              '/profile': (context) => ProfileScreen(
+                 name: "MyFertiPal User",
+  privacyPolicyUrl: "https://myfertipal.com/privacy-policy",
+),
+              '/home': (context) => const RootScreen(),
             },
           );
         },

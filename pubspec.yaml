@@ -90,6 +90,9 @@ flutter:
     - assets/images/article_2.jpeg
     - assets/images/article_3.jpeg
     - assets/images/pregnant.png
+    - assets/images/profile_placeholder.webp
+    - assets/images/doctor_placeholder.webp
+    - assets/images/pregnancy_fetus.png
     - assets/icons/
     - assets/splash/
     

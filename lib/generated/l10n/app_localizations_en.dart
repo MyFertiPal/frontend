@@ -108,7 +108,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cycleSummary => 'Cycle Summary';
 
   @override
-  String get fertileWindow => 'Fertile Window';
+  String get fertileWindow => 'Today\'s Insight';
 
   @override
   String get ovulationDay => 'Ovulation Day';

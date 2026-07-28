@@ -299,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @fertileWindow.
   ///
   /// In en, this message translates to:
-  /// **'Fertile Window'**
+  /// **'Today\'s Insight'**
   String get fertileWindow;
 
   /// No description provided for @ovulationDay.

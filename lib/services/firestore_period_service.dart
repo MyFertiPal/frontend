@@ -1,16 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestorePeriodService {
-  final _db = FirebaseFirestore.instance;
+  FirestorePeriodService({
+    required this.userId,
+  });
 
-  String get uid => FirebaseAuth.instance.currentUser!.uid;
+  final int userId;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  CollectionReference get _collection =>
-      _db.collection('users').doc(uid).collection('period_logs');
+  CollectionReference<Map<String, dynamic>> get _collection => _db
+      .collection('users')
+      .doc(userId.toString())
+      .collection('period_logs');
 
   String _dateId(DateTime day) {
-    return "${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}";
+    final normalized = DateTime(day.year, day.month, day.day);
+
+    return "${normalized.year}-"
+        "${normalized.month.toString().padLeft(2, '0')}-"
+        "${normalized.day.toString().padLeft(2, '0')}";
   }
 
   Future<void> savePeriodDay(DateTime day) async {
@@ -18,41 +26,39 @@ class FirestorePeriodService {
 
     await _collection.doc(_dateId(normalized)).set({
       "date": Timestamp.fromDate(normalized),
+      "createdAt": FieldValue.serverTimestamp(),
     });
   }
 
-
-  // NEW: Save multiple period days
   Future<void> savePeriodDays(List<DateTime> days) async {
     final batch = _db.batch();
 
     for (final day in days) {
       final normalized = DateTime(day.year, day.month, day.day);
 
-      final ref = _collection.doc(_dateId(normalized));
-
-      batch.set(ref, {
-        "date": Timestamp.fromDate(normalized),
-      });
+      batch.set(
+        _collection.doc(_dateId(normalized)),
+        {
+          "date": Timestamp.fromDate(normalized),
+          "createdAt": FieldValue.serverTimestamp(),
+        },
+      );
     }
 
     await batch.commit();
   }
 
-
   Future<void> deletePeriodDay(DateTime day) async {
     await _collection.doc(_dateId(day)).delete();
   }
-
 
   Future<List<DateTime>> loadPeriodDays() async {
     final snapshot = await _collection.get();
 
     return snapshot.docs
-        .map((e) => (e["date"] as Timestamp).toDate())
+        .map((doc) => (doc.data()['date'] as Timestamp).toDate())
         .toList();
   }
-
 
   Future<void> clearAll() async {
     final snapshot = await _collection.get();

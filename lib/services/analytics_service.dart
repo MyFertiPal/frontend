@@ -65,6 +65,7 @@ class AnalyticsService {
 
 
   /// Generic event
+  /// 
   static Future<void> logCustomEvent(
     String name, {
     Map<String, Object>? parameters,

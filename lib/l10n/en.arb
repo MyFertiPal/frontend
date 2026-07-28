@@ -40,7 +40,7 @@
   
   "@@section_home": "Home Screen",
   "cycleSummary": "Cycle Summary",
-  "fertileWindow": "Fertile Window",
+  "fertileWindow": "Today's Insight",
   "ovulationDay": "Ovulation Day",
   "fertilityCountdown": "Fertility Countdown",
   "daysUntilFertile": "{days} days until fertile window",

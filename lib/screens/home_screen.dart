@@ -1,32 +1,13 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:audioplayers/audioplayers.dart';
-import '../generated/l10n/app_localizations.dart';
-import '../screens/calendar_tab_screen.dart';
-import '../screens/educational/educational_hub_screen.dart';
-
-import '../services/auth_service.dart';
-import '../providers/language_provider.dart';
+import '../theme/app_colors.dart';
 import '../services/api_service.dart';
-import '../services/analytics_service.dart';
-import '../models/user.dart';
-import '../utils/responsive_utils.dart';
-import '../screens/profile/profile_screen.dart';
-import '../screens/support/support_screen.dart';
-import '../screens/onboarding/welcome_screen.dart';
-
-import '../screens/gender_prediction_screen.dart';
-import '../screens/user_guide_screen.dart';
 import '../screens/specialists/specialist_search_screen.dart';
-import '../screens/specialists/specialist_chat_screen.dart';
+import "../screens/root_screen.dart";
+import '../screens/gender_prediction_screen.dart';
+import '../screens/profile/profile_screen.dart';
 import '../screens/tracking/log_symptom_screen.dart';
-import '../screens/payment/payment_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const routeName = '/home';
   const HomeScreen({super.key});
 
   @override
@@ -34,1411 +15,631 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _calendarRefreshKey = 0;
-  static const Color _primaryTeal = Color(0xFF0EA5A4);
-  static const Color _darkGreenText = Color(0xFF064B23);
-   Map<String, dynamic>? _insightData;
-  String? _insightText;
-  String? _insightAudioUrl;
-  bool _audioEnabled = true;
-  final AudioPlayer _audioPlayer = AudioPlayer();
 
-bool _isAudioPlaying = false;
-bool _hasAutoPlayedInsight = false;
-bool _isAudioLoading = false;
-  Locale? _lastLocale;
+  final ApiService _apiService = ApiService();
 
-  // Default fallback data
-  static const Map<String, dynamic> _defaultCycleSummary = {
-    'fertile_period_start': 'N/A',
-    'fertile_period_end': 'N/A',
-    'ovulation_day': 'N/A',
-    'next_period_date': 'N/A',
-  };
-  static const String _defaultInsightText =
-      'Track your cycle and get personalized insights here. Once you log your symptoms and cycle data, helpful tips and predictions will appear!';
+  String _name = "User";
+  String _firstName = "User";
 
-  int _selectedIndex = 0;
-  bool _showSideMenu = false;
+  int _cycleLength = 28;
+  int _periodLength = 5;
+  DateTime? _lastPeriodDate;
 
-  // Store last logged symptoms
-  List<String> _lastLoggedSymptoms = [];
-  
-  Future<void> _openLogSymptomScreen() async {
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => LogSymptomScreen(),
-      ),
-    );
-    if (result != null && result is Map && result['symptoms'] is List<String>) {
-      setState(() {
-        _lastLoggedSymptoms = List<String>.from(result['symptoms']);
-      });
-      _sendInsightsPost();
-    }
-  }
+  bool _isLoading = true;
+  String _formatDateRange(DateTime start, int days){
 
- 
+final end =
+start.add(Duration(days: days));
+
+return "${start.month}/${start.day} - ${end.month}/${end.day}";
+
+}
+DateTime get _fertileStart {
+
+return _lastPeriodDate!
+.add(
+Duration(
+days: _cycleLength - 14 - 5
+)
+);
+
+}
+
+
+DateTime get _ovulationDate {
+
+return _lastPeriodDate!
+.add(
+Duration(
+days: _cycleLength - 14
+)
+);
+
+}
+
+
+DateTime get _nextPeriod {
+
+return _lastPeriodDate!
+.add(
+Duration(
+days: _cycleLength
+)
+);
+
+}
+
 
   @override
   void initState() {
     super.initState();
-    AnalyticsService.logScreenView(
-      screenName: "Home Screen",
-    );
-    // Initialize with default values immediately
-    _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
-    _insightText = _defaultInsightText;
-
-    // Initialize TTS service - gracefully handle if API key is not configured
- 
-_audioPlayer.onPlayerStateChanged.listen((state) {
-  setState(() {
-    _isAudioPlaying = state == PlayerState.playing;
-    _loadAudioPreference();
-    _sendInsightsPost(autoPlay: true);
-  });
-});
+    _loadHomeData();
   }
 
-  Future<void> _loadAudioPreference() async {
+
+  Future<void> _loadHomeData() async {
+
     try {
-      final api = ApiService();
-      final profile = await api.getProfile();
 
-      debugPrint('Audio profile raw: $profile');
+      final user = await _apiService.getUser();
+      final profile = await _apiService.getProfile();
 
-      final raw = profile['audio_preference'];
 
-      bool audioPreference;
+      debugPrint("HOME USER: $user");
+      debugPrint("HOME PROFILE: $profile");
 
-      if (raw is bool) {
-        audioPreference = raw;
-      } else if (raw is String) {
-        audioPreference = raw.toLowerCase() == 'true';
-      } else if (raw is int) {
-        audioPreference = raw == 1;
-      } else {
-        audioPreference = false; // safer default
-      }
 
       setState(() {
-        _audioEnabled = audioPreference;
+
+        _firstName =
+            user["first_name"] ?? "User";
+
+
+        _name =
+            "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}".trim();
+
+
+        _cycleLength =
+            profile["cycle_length"] ?? 28;
+
+
+        _periodLength =
+            profile["period_length"] ?? 5;
+
+
+        if(profile["last_period_date"] != null){
+
+          _lastPeriodDate =
+              DateTime.parse(
+                profile["last_period_date"]
+              );
+
+        }
+
+
+        _isLoading = false;
+
       });
 
-      debugPrint('Parsed audioPreference = $_audioEnabled');
-    } catch (e) {
-      debugPrint('Error loading audio preference: $e');
+
+    } catch(e){
+
+      debugPrint("HOME ERROR: $e");
+
       setState(() {
-        _audioEnabled = false;
+        _isLoading=false;
       });
+
     }
+
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final currentLocale = languageProvider.locale;
-    if (_lastLocale == null || _lastLocale != currentLocale) {
-      _lastLocale = currentLocale;
-      _sendInsightsPost();
-    }
-  }
+Widget build(BuildContext context) {
 
-  Future<void> _sendInsightsPost({bool autoPlay = false}) async {
-  try {
-    final api = ApiService();
-    final headers = await api.getHeaders(includeAuth: true);
 
-    Map<String, dynamic>? profile;
-    try {
-      profile = await api.getProfile();
-    } catch (e) {
-      setState(() {
-        _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
-        _insightText = _defaultInsightText;
-      });
-      return;
-    }
+if(_isLoading){
 
-    final cycleLength = profile['cycle_length'] is int
-        ? profile['cycle_length']
-        : int.tryParse(profile['cycle_length']?.toString() ?? '');
-
-    final periodLength = profile['period_length'] is int
-        ? profile['period_length']
-        : int.tryParse(profile['period_length']?.toString() ?? '');
-
-    final lastPeriodDate = profile['last_period_date']?.toString();
-
-    final url = Uri.parse('${ApiService.baseUrl}/insights/insights');
-
-    final body = {
-      'cycle_length': cycleLength ?? 0,
-      'last_period_date': lastPeriodDate ?? '',
-      'period_length': periodLength ?? 0,
-      'symptoms':
-          _lastLoggedSymptoms.isNotEmpty ? _lastLoggedSymptoms : ['none'],
-    };
-
-    debugPrint('POST body: $body');
-
-    await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode(body),
-    );
-
-    final getResponse = await http.get(url, headers: headers);
-
-    debugPrint('GET status: ${getResponse.statusCode}');
-    debugPrint('GET response: ${getResponse.body}');
-
-    if (getResponse.statusCode != 200) {
-      throw Exception('GET failed');
-    }
-
-    final decoded = jsonDecode(getResponse.body);
-
-    if (decoded is List &&
-        decoded.isNotEmpty &&
-        decoded.first is Map<String, dynamic>) {
-      final insights = decoded.first as Map<String, dynamic>;
-
-      final newInsightText =
-          insights['insight_text']?.toString() ??
-          insights['prediction']?.toString() ??
-          insights['recommendation']?.toString() ??
-          _defaultInsightText;
-
-      final oldText = _insightText;
-
-      setState(() {
-        _insightData = insights;
-        _insightText = newInsightText;
-
-        // regenerate audio if text changed
-        if (oldText != newInsightText) {
-          _insightAudioUrl = null;
-          _hasAutoPlayedInsight = false;
-        }
-
-        if (insights['audio_url'] != null &&
-            insights['audio_url'].toString().isNotEmpty) {
-          _insightAudioUrl = insights['audio_url'].toString();
-        }
-      });
-
-      debugPrint('Insight text: $_insightText');
-
-      if (autoPlay &&
-          _audioEnabled &&
-          !_hasAutoPlayedInsight &&
-          mounted) {
-        _hasAutoPlayedInsight = true;
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _playInsightAudio();
-        });
-      }
-
-      return;
-    }
-
-    // No insights returned
-    setState(() {
-      _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
-      _insightText = _defaultInsightText;
-    });
-  } catch (e, stack) {
-    debugPrint('Insights error: $e');
-    debugPrint(stack.toString());
-
-    setState(() {
-      _insightData = Map<String, dynamic>.from(_defaultCycleSummary);
-      _insightText = _defaultInsightText;
-    });
-  }
-}
-  Future<void> _playInsightAudio() async {
-  if (_insightText == null || _insightText!.trim().isEmpty) {
-    return;
-  }
-
-  try {
-    setState(() {
-      _isAudioLoading = true;
-    });
-
-    // Replay cached audio if available
-    if (_insightAudioUrl != null) {
-      await _audioPlayer.play(
-        UrlSource(_insightAudioUrl!),
-      );
-      return;
-    }
-
-    final response = await ApiService().post(
-      '/user/api/v1/audio/generate-tts',
-      {
-        "text": _insightText!,
-        "voice": "Idera",
-        "language": "en",
-      },
-    );
-
-    final audioUrl = response["audio_url"];
-
-    if (audioUrl == null) {
-      throw Exception("No audio URL returned");
-    }
-
-    _insightAudioUrl = audioUrl.toString();
-
-    await _audioPlayer.play(
-      UrlSource(_insightAudioUrl!),
-    );
-  } catch (e) {
-    debugPrint("Insight audio error: $e");
-  } finally {
-    if (mounted) {
-      setState(() {
-        _isAudioLoading = false;
-      });
-    }
-  }
-}
-
-void _toggleInsightAudio() async {
-
-  if (_isAudioPlaying) {
-
-    await _audioPlayer.pause();
-
-  } else {
-
-    await _playInsightAudio();
-
-  }
+return const Scaffold(
+body: Center(
+child: CircularProgressIndicator(),
+),
+);
 
 }
 
-  @override
-  Widget build(BuildContext context) {
-    final auth = Provider.of<AuthService>(context);
-    final user = auth.currentUser;
 
-    return Scaffold(
-      appBar: null,
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: _selectedIndex,
+return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHomeTab(),
-              const EducationalHubScreen(),
-              CalendarTabScreen(
-                key: ValueKey(_calendarRefreshKey),
-              ),
-              const SupportScreen(),
+               const SizedBox(height: 30),
+              _buildHeader(context),
+              const SizedBox(height: 16),
+              _buildTrackingCard(context),
+              const SizedBox(height: 28),
+              _buildQuickActions(context),
+              const SizedBox(height: 20),
+              _buildInsightCard(),
+              const SizedBox(height: 28),
+              _buildBookSpecialistSection(context),
             ],
           ),
-          if (_showSideMenu)
-            GestureDetector(
-              onTap: _toggleSideMenu,
-              child: Container(
-                color: Colors.white.withOpacity(0.3),
-              ),
-            ),
-          if (_showSideMenu)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                onTap: () {},
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 15, top: 30, right: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: _darkGreenText,
-                                  size: 28,
-                                ),
-                                onPressed: _toggleSideMenu,
-                              ),
-                              _buildAvatar(user),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          _buildProfileCard(user),
-                          const SizedBox(height: 20),
-                          _buildMenuItem(
-                            label: AppLocalizations.of(context).profile,
-                            icon: Icons.person_outline,
-                            onTap: () async {
-                              _toggleSideMenu();
-                              final result = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const ProfileScreen(),
-                                ),
-                              );
-                              // Refresh home page data if profile was updated
-                              if (result == true) {
-                                await _loadAudioPreference();
-
-                                debugPrint(
-                                  'Audio after profile update: $_audioEnabled',
-                                );
-
-                                await _sendInsightsPost();
-                              }
-                            },
-                          ),
-                          _buildMenuItem(
-                            label: AppLocalizations.of(context).support,
-                            icon: Icons.help_outline,
-                            onTap: () {
-                              _toggleSideMenu();
-                              _showSupportDialog();
-                            },
-                          ),
-                          _buildMenuItem(
-                            label: AppLocalizations.of(context).help,
-                            icon: Icons.menu_book_outlined,
-                            onTap: () {
-                              _toggleSideMenu();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const UserGuideScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildMenuItem(
-                            label: 'Payment',
-                            icon: Icons.payments_outlined,
-                            onTap: () {
-                              _toggleSideMenu();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const PaymentScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          const Spacer(),
-                          _buildMenuItem(
-                            label: AppLocalizations.of(context).logOut,
-                            icon: Icons.logout,
-                            iconColor: Colors.grey.shade600,
-                            textColor: Colors.grey.shade700,
-                            onTap: () async {
-                              _toggleSideMenu();
-                              await auth.signOut();
-                              if (mounted) {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (_) => const WelcomeScreen()),
-                                  (route) => false,
-                                );
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) async {
-          if (index == 2) {
-            await _sendInsightsPost();
-
-            if (!mounted) return;
-
-            setState(() {
-              _calendarRefreshKey++;
-              _selectedIndex = index;
-            });
-          } else {
-            setState(() {
-              _selectedIndex = index;
-            });
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: _primaryTeal,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: false,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: _selectedIndex == 0 ? AppLocalizations.of(context).home : '',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.school),
-            label: _selectedIndex == 1
-                ? AppLocalizations.of(context).educational
-                : '',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.timeline),
-            label: _selectedIndex == 2
-                ? AppLocalizations.of(context).trackCycle
-                : '',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.support_agent),
-            label:
-                _selectedIndex == 3 ? AppLocalizations.of(context).support : '',
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  void _toggleSideMenu() {
-    setState(() {
-      _showSideMenu = !_showSideMenu;
-    });
-  }
-
-  Widget _buildProfileCard(User? user) {
-    final fullName = [user?.firstName, user?.lastName]
-        .where((part) => part != null && part.trim().isNotEmpty)
-        .map((part) => part!.trim())
-        .join(' ');
-    final fallbackName =
-        (user?.username != null && user!.username!.trim().isNotEmpty)
-            ? user.username!.trim()
-            : ((user?.email != null && user!.email.trim().isNotEmpty)
-                ? user.email.split('@').first
-                : 'User');
-    final displayName = fullName.isNotEmpty ? fullName : fallbackName;
-    final email = (user?.email != null && user!.email.trim().isNotEmpty)
-        ? user.email
-        : 'No email';
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
+  // ---------- Header ----------
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
       child: Row(
         children: [
-          _buildAvatar(user, radius: 22),
-          const SizedBox(width: 10),
+          ClipOval(
+            child: SizedBox(
+              width: 56,
+              height: 56,
+              child: Image.asset(
+  "assets/images/profile_placeholder.webp",
+  fit: BoxFit.cover,
+)
+            ),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  displayName,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: _darkGreenText,
+                  'Good Morning,',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 15,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
-                  email,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
+            _name.split(" ").first,
+                  style: TextStyle(
+                    color: AppColors.primaryDark,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
+          InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) =>  ProfileScreen(
+                  name: _name,
+                  privacyPolicyUrl: 'https://myfertipal.com/privacy-policy',
+                )),
+              );
+            },
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.person, color: AppColors.pinkAccent),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem({
-    required String label,
-    required IconData icon,
-    required VoidCallback onTap,
-    Color? iconColor,
-    Color? textColor,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          children: [
-            Icon(icon, color: iconColor ?? _darkGreenText, size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                  color: textColor ?? _darkGreenText,
+  // ---------- Tracking card with silhouette + timeline ----------
+  Widget _buildTrackingCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Container(
+          height: 380,
+          decoration: const BoxDecoration(color: AppColors.primaryDark),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Silhouette side
+              Expanded(
+                flex: 4,
+                child: Container(
+                  color: Colors.white,
+                  child: ClipRRect(
+  borderRadius: const BorderRadius.only(
+    topLeft: Radius.circular(28),
+    bottomLeft: Radius.circular(28),
+  ),
+  child: Image.asset(
+    "assets/images/pregnant.png",
+    fit: BoxFit.cover,
+    width: double.infinity,
+    height: double.infinity,
+  ),
+),
                 ),
+              ),
+              // Timeline side
+              Expanded(
+                flex: 6,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 28,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _timelineItem(
+                        color: AppColors.primary,
+                        title: 'Fertile Window',
+                        titleColor: AppColors.primary,
+                        dateRange: _formatDateRange(
+_fertileStart,
+5
+),
+                      ),
+                      _timelineItem(
+                        color: Colors.amber,
+                        title: 'Ovulation',
+                        titleColor: Colors.amber,
+                        dateRange: _formatDateRange(
+_ovulationDate,
+1
+),
+                      ),
+                      _timelineItem(
+                        color: AppColors.pinkAccent,
+                        title: 'Predicted Period',
+                        titleColor: AppColors.pinkAccent,
+                        dateRange: _formatDateRange(
+_nextPeriod,
+_periodLength,
+),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _timelineItem({
+    required Color color,
+    required String title,
+    required Color titleColor,
+    required String dateRange,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 4),
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: titleColor,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              dateRange,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
-  Widget _buildAvatar(User? user, {double radius = 18}) {
-    final fullName = [user?.firstName, user?.lastName]
-        .where((part) => part != null && part.trim().isNotEmpty)
-        .map((part) => part!.trim())
-        .join(' ');
-    final fallbackName =
-        (user?.username != null && user!.username!.trim().isNotEmpty)
-            ? user.username!.trim()
-            : ((user?.email != null && user!.email.trim().isNotEmpty)
-                ? user.email.split('@').first
-                : 'U');
-    final nameForInitial = fullName.isNotEmpty ? fullName : fallbackName;
-    final initial =
-        nameForInitial.isNotEmpty ? nameForInitial[0].toUpperCase() : 'U';
-
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: _darkGreenText,
-      child: Text(
-        initial,
-        style: TextStyle(
-          fontSize: radius * 0.8,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  int? _calculateDaysUntilFertile() {
-    if (_insightData == null || _insightData!['fertile_period_start'] == null) {
-      debugPrint(
-          'Fertile calculation: No insight data or fertile_period_start is null');
-      return null;
-    }
-
-    final fertileStartStr =
-        _insightData!['fertile_period_start'].toString().trim();
-    if (fertileStartStr.isEmpty ||
-        fertileStartStr == 'N/A' ||
-        fertileStartStr == 'null') {
-      debugPrint(
-          'Fertile calculation: Invalid fertile_period_start value: $fertileStartStr');
-      return null;
-    }
-
-    try {
-      final fertileStart = DateTime.parse(fertileStartStr);
-      final today = DateTime.now();
-      // Reset time part to compare only dates
-      final fertileStartDate =
-          DateTime(fertileStart.year, fertileStart.month, fertileStart.day);
-      final todayDate = DateTime(today.year, today.month, today.day);
-      final difference = fertileStartDate.difference(todayDate).inDays;
-
-      debugPrint(
-          'Fertile calculation: Today=$todayDate, FertileStart=$fertileStartDate, Days=$difference');
-
-      return difference >= 0
-          ? difference
-          : null; // Return null if already passed
-    } catch (e) {
-      debugPrint('Fertile calculation: Error parsing date: $e');
-      return null;
-    }
-  }
-
-  bool _isInFertileWindow() {
-    if (_insightData == null ||
-        _insightData!['fertile_period_start'] == null ||
-        _insightData!['fertile_period_end'] == null) {
-      return false;
-    }
-
-    final fertileStartStr =
-        _insightData!['fertile_period_start'].toString().trim();
-    final fertileEndStr = _insightData!['fertile_period_end'].toString().trim();
-
-    if (fertileStartStr.isEmpty ||
-        fertileStartStr == 'N/A' ||
-        fertileStartStr == 'null' ||
-        fertileEndStr.isEmpty ||
-        fertileEndStr == 'N/A' ||
-        fertileEndStr == 'null') {
-      return false;
-    }
-
-    try {
-      final fertileStart = DateTime.parse(fertileStartStr);
-      final fertileEnd = DateTime.parse(fertileEndStr);
-      final today = DateTime.now();
-
-      // Reset time part to compare only dates
-      final fertileStartDate =
-          DateTime(fertileStart.year, fertileStart.month, fertileStart.day);
-      final fertileEndDate =
-          DateTime(fertileEnd.year, fertileEnd.month, fertileEnd.day);
-      final todayDate = DateTime(today.year, today.month, today.day);
-
-      final isInWindow = !todayDate.isBefore(fertileStartDate) &&
-          !todayDate.isAfter(fertileEndDate);
-      debugPrint(
-          'In fertile window check: $isInWindow (Start: $fertileStartDate, End: $fertileEndDate, Today: $todayDate)');
-
-      return isInWindow;
-    } catch (e) {
-      debugPrint('Error checking fertile window: $e');
-      return false;
-    }
-  }
-
-  Color stringToColor(String input)  {
-    if (input.isEmpty) return _primaryTeal;
-    final hash = input.codeUnits.fold<int>(0, (prev, code) => prev + code);
-    final hue = (hash % 360).toDouble();
-    return HSVColor.fromAHSV(1, hue, 0.45, 0.85).toColor();
-  }
-
-  Widget _buildSummaryRow(String label, String value) {
+  // ---------- Quick Actions ----------
+  Widget _buildQuickActions(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: _darkGreenText,
+          const Text(
+            'Quick Actions',
+            style: TextStyle(
+              color: AppColors.primaryDark,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: _darkGreenText,
-            ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _quickActionCard(
+                  icon: Icons.add,
+                  iconBg: AppColors.pinkAccent,
+                  label: 'Log\nSymptoms',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const LogSymptomsScreen(),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _quickActionCard(
+                  icon: Icons.male,
+                  iconBg: AppColors.primaryMedium,
+                  label: 'Gender\nPrediction',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const GenderPredictionScreen(),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _quickActionCard(
+                  icon: Icons.calendar_today_outlined,
+                  iconBg: AppColors.primaryLight,
+                  iconColor: AppColors.primaryDark,
+                  label: 'Calendar',
+                 onTap: () {
+  RootScreen.of(context)?.changeTab(1);
+},
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFeatureCard({
+  Widget _quickActionCard({
     required IconData icon,
+    required Color iconBg,
     required String label,
     required VoidCallback onTap,
+    Color iconColor = Colors.white,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Builder(builder: (context) {
-        final cardWidth = ResponsiveUtils.getResponsiveCardWidth(context);
-        final cardHeight = ResponsiveUtils.getResponsiveCardHeight(context);
-        final iconSize = ResponsiveUtils.isSmallScreen(context) ? 20.0 : 24.0;
-        final fontSize =
-            ResponsiveUtils.getResponsiveFontSize(context, baseSize: 14);
-
-        return Container(
-          width: cardWidth,
-          height: cardHeight,
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.zero,
-            boxShadow: [
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
+                color: Colors.black12,
+                blurRadius: 10,
+                offset: Offset(0, 3),
               ),
             ],
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: _primaryTeal,
-                size: iconSize,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: iconColor, size: 26),
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Poppins',
-                    color: _primaryTeal,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+              const SizedBox(height: 10),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.primaryDark,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
                 ),
               ),
             ],
           ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildHomeTab() {
-    final size = MediaQuery.of(context).size;
-    final heroHeight = size.height * 0.5;
-    const buttonHeight = 64.0;
-
-    return SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        children: [
-          SizedBox(
-            height: heroHeight + (buttonHeight / 2),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  height: heroHeight,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: _primaryTeal,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Stack(
-                      children: [
-                        // Hamburger menu icon
-                        Positioned(
-                          top: 30,
-                          left: 0,
-                          child: GestureDetector(
-                            onTap: _toggleSideMenu,
-                            child: const Icon(
-                              Icons.menu,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                        ),
-                        // Background pregnant woman shadow image
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final width = constraints.maxWidth;
-                                return Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Transform.translate(
-                                    // move right by 5% of width so image starts slightly off-screen
-                                    offset: Offset(width * 0.05, 0),
-                                    child: Opacity(
-                                      opacity: 0.08,
-                                      child: Image.asset(
-                                        'assets/images/pregnant.png',
-                                        color: Colors.white,
-                                        colorBlendMode: BlendMode.srcIn,
-                                        // Make image height match the available shape height
-                                        // while preserving aspect ratio
-                                        height: constraints.maxHeight,
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        // Insight text
-                        if (_insightText != null && _insightText!.isNotEmpty)
-                          Positioned(
-                            bottom: 80,
-                            left: 0,
-                            right: 0,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context).fertileWindow,
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      color: Colors.white,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    _insightText!,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    maxLines: 4,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  if (_audioEnabled && _insightText != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 12),
-                                      child:GestureDetector(
-  onTap: _toggleInsightAudio,
-  child: Container(
-    padding: const EdgeInsets.symmetric(
-      horizontal: 12,
-      vertical: 8,
-    ),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.2),
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-
-        if (_isAudioLoading)
-          const SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(
-                    Colors.white,
-                  ),
-            ),
-          )
-        else
-          Icon(
-            _isAudioPlaying
-                ? Icons.pause_circle
-                : Icons.play_circle,
-            color: Colors.white,
-            size: 20,
-          ),
-
-        const SizedBox(width: 6),
-
-        Text(
-          _isAudioLoading
-              ? "Loading..."
-              : _isAudioPlaying
-                  ? "Pause"
-                  : "Listen",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
         ),
-      ],
-    ),
-  ),
-)
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: heroHeight - (buttonHeight / 2),
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: SizedBox(
-                      width: 280,
-                      height: buttonHeight,
-                      child: ElevatedButton(
-                        onPressed: _openLogSymptomScreen,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.white,
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: const BorderSide(
-                              color: Color(0xFF064B23), // dark green border
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.water_drop,
-                                color: Color(0xFF064B23)),
-                            const SizedBox(width: 12),
-                            Text(
-                              AppLocalizations.of(context).logSymptoms,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins',
-                                color: Color(0xFF064B23),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Cycle summary table (below hero section)
-          if (_insightData != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _primaryTeal.withOpacity(0.2)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context).cycleInfo,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: _darkGreenText,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Fertility Countdown
-                    if (_isInFertileWindow())
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: _primaryTeal.withOpacity(0.18),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _primaryTeal,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.favorite,
-                                color: _primaryTeal,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppLocalizations.of(context)
-                                          .fertileWindow,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: _darkGreenText,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      AppLocalizations.of(context)
-                                          .inFertileWindow,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: _darkGreenText,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    else if (_calculateDaysUntilFertile() != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: _primaryTeal.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _primaryTeal,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.hourglass_bottom,
-                                color: _primaryTeal,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppLocalizations.of(context)
-                                          .fertileWindow,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: _darkGreenText,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      _calculateDaysUntilFertile() == 1
-                                          ? AppLocalizations.of(context)
-                                              .dayUntilFertile(
-                                              _calculateDaysUntilFertile()
-                                                  .toString(),
-                                            )
-                                          : AppLocalizations.of(context)
-                                              .daysUntilFertile(
-                                              _calculateDaysUntilFertile()
-                                                  .toString(),
-                                            ),
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: _darkGreenText,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    else
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: Colors.grey.shade600,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppLocalizations.of(context)
-                                          .fertilityCountdown,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      AppLocalizations.of(context).logCycleSee,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.grey.shade700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    _buildSummaryRow(
-                      AppLocalizations.of(context).fertileWindow,
-                      _insightData!['fertile_period_start'] != null &&
-                              _insightData!['fertile_period_end'] != null
-                          ? '${_insightData!['fertile_period_start']} - ${_insightData!['fertile_period_end']}'
-                          : 'N/A',
-                    ),
-                    const Divider(),
-                    _buildSummaryRow(
-                      AppLocalizations.of(context).ovulationDay,
-                      _insightData!['ovulation_day']?.toString() ?? 'N/A',
-                    ),
-                    _buildSummaryRow(
-                      AppLocalizations.of(context).nextPeriodDate,
-                      _insightData!['next_period']?.toString() ?? 'N/A',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal:
-                    ResponsiveUtils.getResponsiveHorizontalPadding(context)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: _buildFeatureCard(
-                    icon: Icons.calendar_today,
-                    label: AppLocalizations.of(context).calendar,
-                    onTap: () async {
-                      // Refresh latest data
-                      await _sendInsightsPost();
-
-                      // Then open calendar
-                      if (!mounted) return;
-
-                      setState(() {
-                        _selectedIndex = 2;
-                      });
-                    },
-                  ),
-                ),
-                SizedBox(
-                    width: ResponsiveUtils.getResponsiveSpacing(context) * 1.5),
-                Expanded(
-                  child: _buildFeatureCard(
-                    icon: Icons.child_care,
-                    label: AppLocalizations.of(context).genderPredictions,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const GenderPredictionScreen()),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal:
-                    ResponsiveUtils.getResponsiveHorizontalPadding(context)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: _buildFeatureCard(
-                    icon: Icons.medical_services_outlined,
-                    label: AppLocalizations.of(context).findSpecialist,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const SpecialistSearchScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                    width: ResponsiveUtils.getResponsiveSpacing(context) * 1.5),
-                Expanded(
-                  child: _buildFeatureCard(
-                    icon: Icons.chat_bubble_outline,
-                    label: AppLocalizations.of(context).chatWithSpecialist,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const SpecialistChatScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 40),
-        ],
       ),
     );
   }
 
-  void _showSupportDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: Row(
-            children: [
-              Icon(
-                Icons.support_agent,
-                color: _darkGreenText,
-                size: 28,
+  // ---------- Insight card (not tappable, per requirements) ----------
+  Widget _buildInsightCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Contact Support',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                  color: _darkGreenText,
-                ),
+              child: const Icon(
+                Icons.lightbulb_outline,
+                color: AppColors.primary,
               ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Need help or have feedback?',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Please reach out to us at:',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _primaryTeal.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _primaryTeal,
-                    width: 1.5,
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Insight',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.email,
-                      color: _primaryTeal,
-                      size: 20,
+                  SizedBox(height: 6),
+                  Text(
+                    'Get expert guidance from certified fertility doctors, anytime.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      height: 1.35,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'contact@myfertipal.com',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: _darkGreenText,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'We\'ll get back to you as soon as possible!',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: TextButton.styleFrom(
-                foregroundColor: _darkGreenText,
-              ),
-              child: const Text(
-                'Close',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                ),
+                  ),
+                ],
               ),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
+  // ---------- Book Specialist ----------
+  Widget _buildBookSpecialistSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Book Specialist',
+            style: TextStyle(
+              color: AppColors.primaryDark,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.pinkAccent,
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Talk to a Specialist',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Get expert guidance from certified fertility doctors, anytime.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Material(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    const SpecialistSearchScreen(),
+                              ),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 14,
+                              horizontal: 16,
+                            ),
+                            child: Text(
+                              'Book Consultation',
+                              style: TextStyle(
+                                color: AppColors.primaryDark,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: SizedBox(
+                    width: 110,
+                    height: 150,
+                    child:Image.asset(
+  "assets/images/doctor_placeholder.webp",
+)
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

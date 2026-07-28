@@ -523,6 +523,62 @@ throw Exception(
       rethrow;
     }
   }
+  Future<List<dynamic>> getCyclePrediction() async {
+
+ final response = await http.get(
+   Uri.parse(
+     "$baseUrl/insights/insights"
+   ),
+   headers: await getHeaders(),
+ );
+
+
+ if(response.statusCode == 200){
+
+   return jsonDecode(response.body);
+
+ }
+
+
+ throw Exception(
+   "Prediction failed"
+ );
+
+}
+
+
+  Future<List<dynamic>> getInsights() async {
+  try {
+    final headers = await getHeaders(includeAuth: true);
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/insights/insights'),
+      headers: headers,
+    );
+
+    debugPrint(
+      'Get Insights Response: ${response.statusCode}',
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      debugPrint(
+        'Insights Raw Response: $data',
+      );
+
+      return List<dynamic>.from(data);
+    } else {
+      throw ApiException(
+        statusCode: response.statusCode,
+        message: _extractErrorMessage(response),
+      );
+    }
+  } catch (e) {
+    debugPrint('Get Insights error: $e');
+    rethrow;
+  }
+}
 
   // Get Profile
   Future<Map<String, dynamic>> getProfile() async {

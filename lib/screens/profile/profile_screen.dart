@@ -1,1028 +1,699 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import "../../services/api_service.dart";
 
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../generated/l10n/app_localizations.dart';
-import '../onboarding/welcome_screen.dart';
-import './profile_setup_screen.dart';
+/// Colors used across the screen.
+class _ProfileColors {
+  static const headerBg = Color(0xFF163B30);
+  static const premiumBg = Color(0xFF2F5C4A);
+  static const gold = Color(0xFFE9B44C);
+  static const bg = Color(0xFFF7F7F5);
+  static const cardBorder = Color(0xFFECECE8);
+  static const textMuted = Color(0xFF8A8F88);
+  static const heading = Color(0xFF163B30);
+  static const danger = Color(0xFFE8756A);
+  static const dangerBorder = Color(0xFFF3C3BD);
+}
 
-import '../../models/user.dart';
-import '../notification_settings_screen.dart';
-import '../../services/auth_service.dart';
-import '../privacy_and_security/privacy_and_security_screen.dart';
+/// One row in the Settings list.
+class _SettingsItemData {
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String label;
+  final String? trailingText;
+  final bool isToggle;
+  final VoidCallback? onTap;
 
+  const _SettingsItemData({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.label,
+    this.trailingText,
+    this.isToggle = false,
+    this.onTap,
+  });
+}
 
-import '../../providers/language_provider.dart';
-import '../../services/api_service.dart';
+/// A single stat shown in the summary row under the header.
+class ProfileStat {
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String value;
+  final String label;
 
+  const ProfileStat({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.value,
+    required this.label,
+  });
+}
 
-
-const Color _primaryTeal = Color(0xFF0EA5A4);
-const Color _darkGreenText = Color(0xFF064B23);
-
+/// Profile screen: header with avatar and membership badge, a stats
+/// summary row, a settings list, and log-out / delete-account actions.
+///
+/// This widget intentionally does NOT include a bottom nav bar -- wire it
+/// into your existing scaffold/nav shell.
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final String name;
+  final String avatarUrl;
+  final bool isPremiumMember;
+  final List<ProfileStat> stats;
+
+  /// URL opened when "Privacy & Security" is tapped.
+  final String privacyPolicyUrl;
+
+  final String language;
+  final VoidCallback? onPersonalInformationTap;
+  final VoidCallback? onLanguageTap;
+  final VoidCallback? onHelpSupportTap;
+  final VoidCallback? onAboutTap;
+  final VoidCallback? onLogOut;
+  final VoidCallback? onDeleteAccount;
+  final VoidCallback? onBack;
+
+ ProfileScreen({
+    super.key,
+    required this.name,
+    
+    required this.privacyPolicyUrl,
+    this.isPremiumMember = true,
+     this.avatarUrl = "assets/images/profile_placeholder.png",
+    this.stats = const [
+      ProfileStat(
+        icon: Icons.donut_large,
+        iconColor: Color(0xFF1F9E75),
+        iconBg: Color(0xFFDCF3E8),
+        value: '14',
+        label: 'Cycles Tracked',
+      ),
+      ProfileStat(
+        icon: Icons.event_note,
+        iconColor: Color(0xFFE8756A),
+        iconBg: Color(0xFFFBE1DE),
+        value: '86',
+        label: 'Symptoms Logged',
+      ),
+      ProfileStat(
+        icon: Icons.videocam,
+        iconColor: Color(0xFF3B8AD8),
+        iconBg: Color(0xFFDCEBFB),
+        value: '5',
+        label: 'Consultations',
+      ),
+    ],
+    this.language = 'English',
+    this.onPersonalInformationTap,
+    this.onLanguageTap,
+    this.onHelpSupportTap,
+    this.onAboutTap,
+    this.onLogOut,
+    this.onDeleteAccount,
+    this.onBack,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isLoading = true;
-  bool _isRefreshing = false;
-  User? _user;
-  User? _userCard;
-  bool _isDeleting = false;
-  late final ApiService apiService; // Add as member variable
-  bool _profileWasUpdated = false; // Track if profile was updated
+  final List<String> _languages = const [
+  'English',
+  'Yoruba',
+  'Igbo',
+  'Pidgin',
+  'Hausa',
+];
+final ApiService _apiService = ApiService();
+String _name = "";
+String _avatarUrl = "";
+String _selectedLanguage = "English";
 
-  // Add missing fields for preferences
-  String selectedLanguage = 'English';
+bool _isPremium = false;
+bool _notificationsEnabled = true;
 
-  @override
-  void initState() {
-    super.initState();
-    apiService = ApiService(); // Initialize in initState
-    _loadUserProfile();
-    _loadUserCard();
-  }
+int _cyclesTracked = 0;
+int _symptomsLogged = 0;
+int _consultations = 0;
 
-  Future<void> _loadUserProfile() async {
-    try {
-      // Use member variable instead of creating local
+bool _isLoading = true;
 
-      // Fetch profile data (contains age, cycle_length, etc.)
-      final profileJson = await apiService.getProfile();
-      debugPrint('Profile JSON received: ' + profileJson.toString());
 
-      // Also fetch basic user info (contains email, name, etc.)
-      final userJson = await apiService.getUser();
-      debugPrint('User JSON received: ' + userJson.toString());
+Future<void> _loadProfile() async {
+  try {
 
-      // Merge both responses - profile data takes priority, fill in missing basic user info
-      final mergedJson = {...userJson, ...profileJson};
-      debugPrint('Merged User Data: ' + mergedJson.toString());
+    final user = await _apiService.getUser();
+    final profile = await _apiService.getProfile();
 
-      final fetchedUser = User.fromJson(mergedJson);
-      debugPrint('Parsed User: id=' +
-          fetchedUser.id.toString() +
-          ', email=' +
-          (fetchedUser.email) +
-          ', firstName=' +
-          (fetchedUser.firstName?.toString() ?? 'null') +
-          ', lastName=' +
-          (fetchedUser.lastName?.toString() ?? 'null') +
-          ', username=' +
-          (fetchedUser.username?.toString() ?? 'null') +
-          ', phoneNumber=' +
-          (fetchedUser.phoneNumber?.toString() ?? 'null') +
-          ', preferredLanguage=' +
-          (fetchedUser.preferredLanguage?.toString() ?? 'null') +
-          ', ttcHistory=' +
-          fetchedUser.ttcHistory.toString() +
-          ', faithPreference=' +
-          (fetchedUser.faithPreference?.toString() ?? 'null') +
-          ', cycleLength=' +
-          (fetchedUser.cycleLength?.toString() ?? 'null') +
-          ', lastPeriodDate=' +
-          (fetchedUser.lastPeriodDate?.toString() ?? 'null'));
+    debugPrint("USER: $user");
+    debugPrint("PROFILE: $profile");
 
-      if (mounted) {
-        setState(() {
-          _user = fetchedUser;
-          if (_user != null) {
-            selectedLanguage =
-                _getLanguageDisplayName(_user!.preferredLanguage ?? 'en');
-          }
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading profile: $e');
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-      // Show error message to user
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Failed to load profile. Please try again later.'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    }
-  }
+    setState(() {
 
-  Future<void> _refreshProfile() async {
-    if (mounted) {
-      setState(() {
-        _isRefreshing = true;
-      });
-    }
-    try {
-      await Future.wait([
-        _loadUserProfile(),
-        _loadUserCard(),
-      ]);
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isRefreshing = false;
-        });
-      }
-    }
-  }
+      // Account data
+      _name =
+          "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}".trim();
 
-  Future<void> _loadUserCard() async {
-    try {
-      final apiService = ApiService();
-      final userJson = await apiService.getUser();
-      debugPrint('getUser JSON received: ' + userJson.toString());
-      final fetchedUser = User.fromJson(userJson);
-      if (mounted) {
-        setState(() {
-          _userCard = fetchedUser;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading getUser for card: $e');
-    }
-  }
 
-  String _getLanguageDisplayName(String code) {
-    switch (code.toLowerCase()) {
-      case 'en':
-        return 'English';
-      case 'ig':
-        return 'Igbo';
-      case 'ha':
-        return 'Hausa';
-      case 'yo':
-        return 'Yoruba';
-      case 'pcm':
-        return 'Pidgin';
-      default:
-        return 'English';
-    }
-  }
+      _selectedLanguage =
+          _convertLanguageCode(
+              user["language_preference"] ?? "en"
+          );
 
-  @override
-  Widget build(BuildContext context) {
-    final auth = Provider.of<AuthService>(context);
-    // Localization removed
-    final userCard = _userCard ?? auth.currentUser;
 
-    // Get calendar days from CalendarTabScreen (for demo, use SharedPreferences directly)
-    // In production, refactor to pass calendar data via provider or callback
-    final Set<DateTime> calendarDays = {};
-    // Load tapped days from SharedPreferences synchronously (for demo only)
-    // In production, this should be async and handled in state
-    // This is a workaround for demonstration
-    SharedPreferences.getInstance().then((prefs) {
-      final savedDays = prefs.getStringList('tapped_days');
-      if (savedDays != null && savedDays.isNotEmpty) {
-        calendarDays.addAll(savedDays.map((s) => DateTime.parse(s)));
-      }
+      // Fertility profile data
+      // available for Personal Information screen later
+
+      _isLoading = false;
+
     });
-    // Removed local prediction. Use backend-provided next period dates only.
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pop(_profileWasUpdated);
-        return false; // We handle the pop ourselves
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: _primaryTeal,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).pop(_profileWasUpdated);
+
+  } catch(e){
+
+    debugPrint("Profile loading error: $e");
+
+    setState(() {
+      _name = widget.name;
+      _selectedLanguage = widget.language;
+      _isLoading = false;
+    });
+
+  }
+}
+
+String _convertLanguageCode(String code) {
+  switch (code.toLowerCase()) {
+    case "en":
+      return "English";
+    case "yo":
+      return "Yoruba";
+    case "ig":
+      return "Igbo";
+    case "ha":
+      return "Hausa";
+    case "pcm":
+      return "Pidgin";
+    default:
+      return "English";
+  }
+}
+
+
+@override
+void initState() {
+  super.initState();
+  _loadProfile();
+}
+
+Widget _buildLanguageRow() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    child: Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: const BoxDecoration(
+            color: Color(0xFFDCEBFB),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.translate,
+            size: 18,
+            color: Color(0xFF3B8AD8),
+          ),
+        ),
+        const SizedBox(width: 14),
+
+        const Expanded(
+          child: Text(
+            "Language",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: _ProfileColors.heading,
+            ),
+          ),
+        ),
+
+        DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: _selectedLanguage,
+            borderRadius: BorderRadius.circular(12),
+            icon: const Icon(Icons.keyboard_arrow_down),
+            items: _languages.map((language) {
+              return DropdownMenuItem(
+                value: language,
+                child: Text(language),
+              );
+            }).toList(),
+            onChanged: (value) async{
+              if (value == null) return;
+
+              setState(() {
+ _selectedLanguage=value;
+});
+
+
+
+
+              widget.onLanguageTap?.call();
             },
           ),
-          title: Text(
-            AppLocalizations.of(context).profileSettings,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          centerTitle: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(20),
-            ),
-          ),
         ),
-        body: Stack(
-          children: [
-            _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(_primaryTeal),
-                    ),
-                  )
-                : Builder(
-                    builder: (context) {
-                      // Wrap in error boundary
-                      try {
-                        return RefreshIndicator(
-                          onRefresh: _refreshProfile,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                // User Profile Card (always use get_user)
-                                _buildProfileCard(userCard, context),
-                                const SizedBox(height: 16),
-                                // Removed nextPeriodDates display. Use backend-driven widgets only.
-                                // Goals Section
-                                _buildGoalsSection(),
-                                const SizedBox(height: 16),
-                                // Preferences Section
-                                _buildPreferencesSection(),
-                                const SizedBox(height: 16),
-                                // Privacy & Security Section
-                                _buildPrivacySection(),
-                                const SizedBox(height: 16),
-                                // Delete Account Section
-                                _buildDeleteAccountSection(context),
-                                const SizedBox(height: 24),
-                              ],
-                            ),
-                          ),
-                        );
-                      } catch (e) {
-                        debugPrint('Error building profile screen: $e');
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.error_outline,
-                                  size: 48,
-                                  color: Colors.red,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Error loading profile',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[800],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  e.toString(),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.grey[600]),
-                                ),
-                                const SizedBox(height: 24),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
-                                    _loadUserProfile();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: _primaryTeal,
-                                  ),
-                                  child: const Text('Retry'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-            if (_isRefreshing)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.15),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(_primaryTeal),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ), // Scaffold
-    ); // WillPopScope
+      ],
+    ),
+  );
+}
+
+
+  Future<void> _openPrivacyPolicy() async {
+    final uri = Uri.parse(widget.privacyPolicyUrl);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Couldn't open ${widget.privacyPolicyUrl}")),
+      );
+    }
   }
 
-  Widget _buildProfileCard(user, BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  Future<void> _confirmDeleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete account'),
+        content: const Text(
+          "This permanently deletes your account and all tracked data. This can't be undone.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: _ProfileColors.danger),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    );
+    if (confirmed == true) {
+      await _apiService.deleteUser();
+
+if(mounted){
+
+Navigator.pushNamedAndRemoveUntil(
+context,
+"/login",
+(route)=>false,
+);
+
+}
+    }
+  }
+
+  List<_SettingsItemData> get _settingsItems => [
+        _SettingsItemData(
+          icon: Icons.person_outline,
+          iconColor: const Color(0xFF1F9E75),
+          iconBg: const Color(0xFFDCF3E8),
+          label: 'Personal Information',
+          onTap: widget.onPersonalInformationTap,
+        ),
+        _SettingsItemData(
+          icon: Icons.notifications_none,
+          iconColor: const Color(0xFFCB9A2C),
+          iconBg: const Color(0xFFFBEDD2),
+          label: 'Notifications',
+          isToggle: true,
+        ),
+        
+        _SettingsItemData(
+          icon: Icons.shield_outlined,
+          iconColor: const Color(0xFF7C6FD6),
+          iconBg: const Color(0xFFE8E4FA),
+          label: 'Privacy & Security',
+          onTap: _openPrivacyPolicy,
+        ),
+        _SettingsItemData(
+          icon: Icons.help_outline,
+          iconColor: const Color(0xFF1F9E75),
+          iconBg: const Color(0xFFDCF3E8),
+          label: 'Help & Support',
+          onTap: widget.onHelpSupportTap,
+        ),
+        _SettingsItemData(
+          icon: Icons.info_outline,
+          iconColor: const Color(0xFFCB9A2C),
+          iconBg: const Color(0xFFFBEDD2),
+          label: 'About MyFertiPal',
+          onTap: widget.onAboutTap,
+        ),
+      ];
+
+  @override
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: _ProfileColors.bg,
+
+    body: SafeArea(
+      bottom: false,
+      child: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                _buildInitialAvatar(user),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        (() {
-                          final fullName = [user?.firstName, user?.lastName]
-                              .where((part) =>
-                                  part != null && part!.trim().isNotEmpty)
-                              .map((part) => part!.trim())
-                              .join(' ');
-                          if (fullName.isNotEmpty) return fullName;
-                          if (user?.username != null &&
-                              user!.username!.trim().isNotEmpty) {
-                            return user.username!.trim();
-                          }
-                          if (user?.email != null &&
-                              user!.email.trim().isNotEmpty) {
-                            return user.email.split('@').first;
-                          }
-                          return 'User';
-                        })(),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: _darkGreenText,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        (user?.email != null && user!.email.trim().isNotEmpty)
-                            ? user.email
-                            : 'No email',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      if (user?.phoneNumber != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          user!.phoneNumber!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(Icons.language,
-                              size: 16, color: _primaryTeal),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Language: ',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            _getLanguageDisplayName(
-                                user?.preferredLanguage ?? 'en'),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: _darkGreenText,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            _buildHeader(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: _buildStatsRow(),
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                final result = await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileSetupScreen(),
-                    settings: const RouteSettings(name: '/profile-setup'),
-                  ),
-                );
-                // After returning from profile setup, reload profile to fetch new goal values
-                if (result == true) {
-                  setState(() {
-                    _profileWasUpdated = true;
-                  });
-                  await _refreshProfile();
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primaryTeal,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+              child: Text(
+                'Settings',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: _ProfileColors.heading,
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _buildSettingsCard(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              child: _buildLogOutButton(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: _buildDeleteAccountButton(),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+  // ---- Header ---------------------------------------------------------------
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      color: _ProfileColors.headerBg,
+      padding: const EdgeInsets.fromLTRB(12, 8, 20, 28),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
+              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Container(
+            width: 104,
+            height: 104,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF3FA98A), width: 3),
+            ),
+            padding: const EdgeInsets.all(3),
+            child: ClipOval(
+              child: _avatarUrl.isNotEmpty
+?
+Image.network(
+  _avatarUrl,
+  fit: BoxFit.cover,
+)
+:
+Image.asset(
+  "assets/images/profile_placeholder.png",
+  fit: BoxFit.cover,
+)
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            _name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          if (_isPremium) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: _ProfileColors.premiumBg,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.person_outline, size: 20),
-                  SizedBox(width: 8),
-                  Text('Set and update profile',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
-                  Spacer(),
-                  Icon(Icons.chevron_right, size: 20),
+                  Icon(Icons.workspace_premium, size: 16, color: _ProfileColors.gold),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Premium Member',
+                    style: TextStyle(
+                      color: _ProfileColors.gold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildInitialAvatar(User? user) {
-    final fullName = [user?.firstName, user?.lastName]
-        .whereType<String>()
-        .map((part) => part.trim())
-        .where((part) => part.isNotEmpty)
-        .join(' ');
-    final fallbackName =
-        (user?.username != null && user!.username!.trim().isNotEmpty)
-            ? user.username!.trim()
-            : ((user?.email != null && user!.email.trim().isNotEmpty)
-                ? user.email.split('@').first
-                : 'U');
-    final displayName = fullName.isNotEmpty ? fullName : fallbackName;
-    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
-    final bgColor = _darkGreenText;
+  // ---- Stats row --------------------------------------------------------------
 
-    return CircleAvatar(
-      radius: 35,
-      backgroundColor: bgColor,
-      child: Text(
-        initial,
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGoalsSection() {
-    // Dynamically display user profile data fetched from API
-    if (_isLoading) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: const CircularProgressIndicator(),
-        ),
-      );
-    }
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.favorite_border, size: 20, color: Colors.grey[700]),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    () {
-                      if (_user?.ttcHistory == null ||
-                          _user!.ttcHistory.isEmpty) {
-                        return 'Not set';
-                      }
-                      return _user!.ttcHistory.join(', ');
-                    }(),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildGoalRow(AppLocalizations.of(context).faithPreference,
-                _user?.faithPreference ?? AppLocalizations.of(context).notSet),
-            const SizedBox(height: 12),
-            _buildGoalRow(
-                AppLocalizations.of(context).cycleLength,
-                _user?.cycleLength != null
-                    ? '${_user!.cycleLength} ${AppLocalizations.of(context).days}'
-                    : AppLocalizations.of(context).notSet),
-            const SizedBox(height: 12),
-            _buildGoalRow(
-                AppLocalizations.of(context).lastPeriodDate,
-                _user?.lastPeriodDate != null
-                    ? _user!.lastPeriodDate.toString().split(' ')[0]
-                    : AppLocalizations.of(context).notSet),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGoalRow(String label, String value) {
+  Widget _buildStatsRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
-        ),
-        if (label == 'Faith Preference')
-          Text(
-            () {
-              final faith = _user?.faithPreference ?? 'Not set';
-              if (faith.isEmpty) return 'Not set';
-              return faith[0].toUpperCase() + faith.substring(1);
-            }(),
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          )
-        else
-          Text(
-            value.isEmpty ? 'Not set' : value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
+        for (var i = 0; i < widget.stats.length; i++) ...[
+          if (i > 0) const SizedBox(width: 12),
+          Expanded(child: _StatCard(stat: widget.stats[i])),
+        ],
       ],
     );
   }
 
-  Widget _buildPreferencesSection() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).preference,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildLanguageRow(),
-          ],
-        ),
-      ),
-    );
-  }
+  // ---- Settings card ------------------------------------------------------------
 
-  Widget _buildLanguageRow() {
-    final languageProvider = Provider.of<LanguageProvider>(context);
-    final languageOptions = languageProvider.getAvailableLanguages();
+  Widget _buildSettingsCard() {
+  final items = _settingsItems;
 
-    String selectedCode = languageProvider.locale.languageCode;
-
-    return Row(
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: _ProfileColors.cardBorder),
+    ),
+    child: Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: _primaryTeal.withOpacity(0.12),
-            shape: BoxShape.circle,
-          ),
-          padding: const EdgeInsets.all(8),
-          child: const Icon(Icons.language, size: 22, color: _darkGreenText),
+        _SettingsRow(
+          data: items[0],
+          notificationsEnabled: _notificationsEnabled,
+          onToggleChanged: (v) =>
+              setState(() => _notificationsEnabled = v),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            AppLocalizations.of(context).language,
-            style: const TextStyle(fontSize: 15),
-          ),
+        const Divider(height: 1),
+
+        _SettingsRow(
+          data: items[1],
+          notificationsEnabled: _notificationsEnabled,
+          onToggleChanged: (v) =>
+              setState(() => _notificationsEnabled = v),
         ),
-        DropdownButton<String>(
-          value: selectedCode,
-          underline: const SizedBox(),
-          isDense: true,
-          items: languageOptions.entries.map((entry) {
-            return DropdownMenuItem<String>(
-              value: entry.key,
-              child: Text(entry.value, style: const TextStyle(fontSize: 14)),
-            );
-          }).toList(),
-          onChanged: (String? newCode) async {
-            if (newCode == null) return;
+        const Divider(height: 1),
 
-            // Show loading indicator
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: [
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                          'Changing language to ${languageOptions[newCode]}...'),
-                    ],
-                  ),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            }
+        _buildLanguageRow(),
+        const Divider(height: 1),
 
-            // Update language in provider (works immediately, even without login)
-            await languageProvider.setLanguage(newCode);
+        _SettingsRow(
+          data: items[2],
+          notificationsEnabled: _notificationsEnabled,
+          onToggleChanged: (v) =>
+              setState(() => _notificationsEnabled = v),
+        ),
+        const Divider(height: 1),
 
-            // If user is logged in, also save to backend
-            bool backendSuccess = false;
-            if (_user != null) {
-              try {
-                await apiService.updateLanguagePreference(newCode);
-                backendSuccess = true;
-                debugPrint('Language saved to backend: $newCode');
-              } catch (e) {
-                debugPrint('Failed to save language to backend: $e');
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text(
-                          'Unable to save language preference to server. Changes saved locally.'),
-                      backgroundColor: Colors.orange,
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
-                }
-              }
-            }
+        _SettingsRow(
+          data: items[3],
+          notificationsEnabled: _notificationsEnabled,
+          onToggleChanged: (v) =>
+              setState(() => _notificationsEnabled = v),
+        ),
+        const Divider(height: 1),
 
-            // Show success message
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: [
-                      const Icon(Icons.check_circle, color: Colors.white),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _user != null && backendSuccess
-                              ? 'Language changed to ${languageOptions[newCode]} and saved'
-                              : 'Language changed to ${languageOptions[newCode]}',
-                        ),
-                      ),
-                    ],
-                  ),
-                  backgroundColor: _primaryTeal,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            }
-          },
+        _SettingsRow(
+          data: items[4],
+          notificationsEnabled: _notificationsEnabled,
+          onToggleChanged: (v) =>
+              setState(() => _notificationsEnabled = v),
         ),
       ],
+    ),
+  );
+}
+
+  // ---- Actions ------------------------------------------------------------------
+
+  Widget _buildLogOutButton() {
+    return OutlinedButton.icon(
+      onPressed: () async {
+
+await _apiService.logout();
+
+if(mounted){
+Navigator.pushNamedAndRemoveUntil(
+context,
+"/login",
+(route)=>false,
+);
+}
+
+},
+      icon: const Icon(Icons.logout, size: 18, color: Colors.black87),
+      label: const Text('Log Out',
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
+      style: OutlinedButton.styleFrom(
+        backgroundColor: Colors.white,
+        side: const BorderSide(color: _ProfileColors.cardBorder),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      ),
     );
   }
 
-  Widget _buildPrivacySection() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildDeleteAccountButton() {
+    return OutlinedButton(
+      onPressed: _confirmDeleteAccount,
+      style: OutlinedButton.styleFrom(
+        backgroundColor: Colors.white,
+        side: const BorderSide(color: _ProfileColors.dangerBorder),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
+      child: const Text(
+        'Delete Account',
+        style: TextStyle(color: _ProfileColors.danger, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final ProfileStat stat;
+
+  const _StatCard({required this.stat});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: _ProfileColors.cardBorder),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(color: stat.iconBg, shape: BoxShape.circle),
+            child: Icon(stat.icon, size: 20, color: stat.iconColor),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            stat.value,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            stat.label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 11, color: _ProfileColors.textMuted),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsRow extends StatelessWidget {
+  final _SettingsItemData data;
+  final bool notificationsEnabled;
+  final ValueChanged<bool> onToggleChanged;
+
+  const _SettingsRow({
+    required this.data,
+    required this.notificationsEnabled,
+    required this.onToggleChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: data.isToggle ? null : data.onTap,
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
           children: [
-            Text(
-              AppLocalizations.of(context).privacySecurity,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(color: data.iconBg, shape: BoxShape.circle),
+              child: Icon(data.icon, size: 18, color: data.iconColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                data.label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: _ProfileColors.heading,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined, color: _darkGreenText),
-              title: Text(AppLocalizations.of(context).dataPrivacyPolicy),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (_) => const PrivacyAndSecurityScreen()),
-                );
-              },
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.shield_outlined, color: _primaryTeal),
-              title: Text(AppLocalizations.of(context).manageDataPermissions),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (_) => const PrivacyAndSecurityScreen()),
-                );
-              },
-            ),
-           
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.notifications_outlined,
-                  color: _darkGreenText),
-              title: const Text('Notifications & Settings'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (_) => const NotificationSettingsScreen()),
-                );
-              },
-            ),
+            if (data.isToggle)
+              Switch(
+                value: notificationsEnabled,
+                onChanged: onToggleChanged,
+                activeColor: Colors.white,
+                activeTrackColor: const Color(0xFF1F9E75),
+              )
+            else if (data.trailingText != null) ...[
+              Text(
+                data.trailingText!,
+                style: const TextStyle(fontSize: 14, color: _ProfileColors.textMuted),
+              ),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right, size: 20, color: _ProfileColors.textMuted),
+            ] else
+              const Icon(Icons.chevron_right, size: 20, color: _ProfileColors.textMuted),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildDeleteAccountSection(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).deleteAccount,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              AppLocalizations.of(context).deleteAccountWarning,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isDeleting
-                    ? null
-                    : () {
-                        _showDeleteConfirmation(context);
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: _isDeleting
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : const Text(
-                        'Delete my Account',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(AppLocalizations.of(context).deleteAccount),
-          content: Text(
-            AppLocalizations.of(context).deleteAccountConfirmation,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(AppLocalizations.of(context).cancel),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await _performAccountDeletion();
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-              ),
-              child: Text(AppLocalizations.of(context).delete),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _performAccountDeletion() async {
-    if (!mounted) return;
-
-    setState(() => _isDeleting = true);
-
-    try {
-      debugPrint('Starting account deletion process...');
-
-      // Attempt backend deletion
-      bool backendDeleted = false;
-
-      try {
-        await apiService.deleteUser();
-        backendDeleted = true;
-        debugPrint('Backend deletion successful');
-      } catch (e) {
-        debugPrint('Backend deletion error: $e');
-        final errorStr = e.toString().toLowerCase();
-
-        // Check for network/connectivity errors
-        final isNetworkError = errorStr.contains('failed to fetch') ||
-            errorStr.contains('network') ||
-            errorStr.contains('timeout') ||
-            errorStr.contains('client');
-
-        // If token expired or user already gone, continue to local cleanup
-        final isAuthError = errorStr.contains('401') ||
-            errorStr.contains('403') ||
-            errorStr.contains('404') ||
-            errorStr.contains('token') ||
-            errorStr.contains('unauthorized');
-
-        if (!isAuthError && !isNetworkError) {
-          // Show detailed error for non-auth/non-network errors
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Unable to delete account. Please try again later',
-                ),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 5),
-                action: SnackBarAction(
-                  label: 'Retry',
-                  textColor: Colors.white,
-                  onPressed: () {
-                    _performAccountDeletion();
-                  },
-                ),
-              ),
-            );
-            setState(() => _isDeleting = false);
-          }
-          return;
-        }
-
-        // For network errors, inform user but proceed with local cleanup
-        if (isNetworkError) {
-          debugPrint(
-              'Network error during deletion, proceeding with local cleanup: $e');
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Backend temporarily unavailable. Proceeding with local account cleanup...',
-                ),
-                backgroundColor: Colors.orange,
-                duration: Duration(seconds: 3),
-              ),
-            );
-          }
-        } else {
-          // Auth error - continue with local cleanup
-          debugPrint(
-              'Auth error during deletion, proceeding with local cleanup: $e');
-        }
-      }
-
-      // Always clear local auth state
-      debugPrint('Clearing local authentication state...');
-      final auth = Provider.of<AuthService>(context, listen: false);
-      await auth.signOut();
-      debugPrint('Local auth state cleared');
-
-      // Navigate back to welcome screen after deletion/cleanup
-      if (mounted) {
-        final message = backendDeleted
-            ? 'Account deleted successfully'
-            : 'Logged out locally (server unreachable)';
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor:
-                backendDeleted ? const Color(0xFF0EA5A4) : Colors.orange,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (_) => const WelcomeScreen(),
-            settings: const RouteSettings(name: '/welcome'),
-          ),
-          (route) => false,
-        );
-      }
-    } catch (e) {
-      debugPrint('Critical error during account deletion: $e');
-      debugPrint('Stack trace: ${StackTrace.current}');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Error: ${e.toString()}',
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-            action: SnackBarAction(
-              label: 'Retry',
-              textColor: Colors.white,
-              onPressed: () {
-                _performAccountDeletion();
-              },
-            ),
-          ),
-        );
-        setState(() => _isDeleting = false);
-      }
-    }
   }
 }
