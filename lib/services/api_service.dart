@@ -378,7 +378,19 @@ throw Exception(
       rethrow;
     }
   }
+Future<List<dynamic>> getSpecialists() async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/specialist/get_all_specialist'),
+  );
 
+  if (response.statusCode == 200) {
+    return List<dynamic>.from(
+      jsonDecode(response.body),
+    );
+  }
+
+  throw Exception(response.body);
+}
   Future<List<dynamic>> getSymptoms() async {
   final token = await getStoredToken();
 

@@ -1,11 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../theme/app_colors.dart';
+import '../../services/api_service.dart';
 import '../payment/payment_screen.dart';
 
-class SpecialistSearchScreen extends StatelessWidget {
+class SpecialistSearchScreen extends StatefulWidget {
   const SpecialistSearchScreen({super.key});
 
-  static const Color _teal = Color(0xFF0EA5A4);
-  static const Color _darkGreen = Color(0xFF0F5132);
+  @override
+  State<SpecialistSearchScreen> createState() => _SpecialistSearchScreenState();
+}
+
+class _SpecialistSearchScreenState extends State<SpecialistSearchScreen> {
+  final ApiService _api = ApiService();
+
+bool _loading = true;
+
+List<dynamic> _specialists = [];
+
+Future<void> _loadSpecialists() async {
+  try {
+    final data = await _api.getSpecialists();
+
+    if (!mounted) return;
+
+    setState(() {
+      _specialists = data;
+      _loading = false;
+    });
+  } catch (e) {
+    debugPrint(e.toString());
+
+    setState(() {
+      _loading = false;
+    });
+  }
+}
+
+@override
+void initState() {
+  super.initState();
+  _loadSpecialists();
+}
+
+
 
   void _showPremiumDialog(BuildContext context) {
     showDialog(
@@ -19,7 +57,7 @@ class SpecialistSearchScreen extends StatelessWidget {
             children: [
               Icon(
                 Icons.lock,
-                color: _darkGreen,
+                color: AppColors.primaryDark,
               ),
               SizedBox(width: 12),
               Text('Premium Feature'),
@@ -45,7 +83,7 @@ class SpecialistSearchScreen extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: _teal,
+                backgroundColor: AppColors.teal,
                 foregroundColor: Colors.white,
               ),
               child: const Text('Upgrade Now'),
@@ -58,41 +96,11 @@ class SpecialistSearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final specialists = const [
-      {
-        'name': 'Dr. Amara Obi',
-        'role': 'Fertility Specialist',
-        'location': 'Lekki, Lagos',
-        'distance': '2.1 km away',
-        'status': 'Available this week',
-      },
-      {
-        'name': 'Dr. Yusuf Bello',
-        'role': 'Gynecologist',
-        'location': 'Abuja Central',
-        'distance': '4.3 km away',
-        'status': 'Accepting new patients',
-      },
-      {
-        'name': 'Adaeze Nwosu',
-        'role': 'Mental Health Counselor',
-        'location': 'Ikeja, Lagos',
-        'distance': '5.0 km away',
-        'status': 'Next slot: Tomorrow',
-      },
-      {
-        'name': 'Chinedu Okafor',
-        'role': 'Nutritionist',
-        'location': 'VI, Lagos',
-        'distance': '6.8 km away',
-        'status': 'Video consults available',
-      },
-    ];
-
+   
     return Scaffold(
       appBar: AppBar(
         title: const Text('Find a Specialist'),
-        backgroundColor: _teal,
+        backgroundColor: AppColors.teal,
       ),
       backgroundColor: const Color(0xFFF5F5F0),
       body: Stack(
@@ -108,11 +116,11 @@ class SpecialistSearchScreen extends StatelessWidget {
                   fillColor: Colors.grey.shade200,
                   prefixIcon: const Icon(
                     Icons.search,
-                    color: _teal,
+                    color: AppColors.teal,
                   ),
                   suffixIcon: const Icon(
                     Icons.tune,
-                    color: _teal,
+                    color: AppColors.teal,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -139,9 +147,19 @@ class SpecialistSearchScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              ...specialists
-                  .map((sp) => _SpecialistCard(data: sp))
-                  .toList(),
+              if (_loading)
+  const Padding(
+    padding: EdgeInsets.only(top: 40),
+    child: Center(
+      child: CircularProgressIndicator(),
+    ),
+  )
+else
+  ..._specialists.map(
+    (sp) => _SpecialistCard(
+      data: Map<String, dynamic>.from(sp),
+    ),
+  ),
             ],
           ),
 
@@ -187,91 +205,175 @@ class _CategoryChip extends StatelessWidget {
 }
 
 class _SpecialistCard extends StatelessWidget {
-  final Map<String, String> data;
+  final Map<String, dynamic> data;
 
   const _SpecialistCard({
+    super.key,
     required this.data,
   });
 
   @override
   Widget build(BuildContext context) {
-    final name = data['name'] ?? '';
-    final role = data['role'] ?? '';
-    final location = data['location'] ?? '';
-    final distance = data['distance'] ?? '';
-    final status = data['status'] ?? '';
+    final name = data["name"] ?? "";
+
+    final qualification = data["qualification"] ?? "";
+
+    final expertise = data["area_of_expertise"] ?? "";
+
+    final fee = data["consultation_fee"].toString();
+
+    final image = data["image_url"] ?? "";
+
+    final calendly = data["calendly_url"] ?? "";
 
     String initials(String input) {
-      final parts = input.trim().split(' ');
+      final parts = input.trim().split(" ");
 
       if (parts.length == 1) {
         return parts.first.isNotEmpty
             ? parts.first[0].toUpperCase()
-            : '?';
+            : "?";
       }
 
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      return "${parts[0][0]}${parts[1][0]}".toUpperCase();
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(.05),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: const Color(0xFF0EA5A4),
-            child: Text(
-              initials(name),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Image.network(
+                  image,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+
+                    return const SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, __, ___) {
+                    return CircleAvatar(
+                      radius: 30,
+                      backgroundColor: AppColors.teal,
+                      child: Text(
+                        initials(name),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      qualification,
+                      style: const TextStyle(
+                        color: AppColors.teal,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Text(
+                      expertise,
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
+
+          const SizedBox(height: 14),
+
+          Row(
+            children: [
+              const Icon(
+                Icons.payments_outlined,
+                color: AppColors.teal,
+                size: 18,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                "GH₵ $fee",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  role,
-                  style: const TextStyle(
-                    color: Color(0xFF0EA5A4),
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                if (calendly.isEmpty) return;
+
+                final uri = Uri.parse(calendly);
+
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(
+                    uri,
+                    mode: LaunchMode.externalApplication,
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.teal,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                const SizedBox(height: 6),
-                Text(location),
-                Text(distance),
-                const SizedBox(height: 4),
-                Text(
-                  status,
-                  style: const TextStyle(
-                    color: Color(0xFF0F5132),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+              ),
+              child: const Text("Book Consultation"),
             ),
           ),
         ],
