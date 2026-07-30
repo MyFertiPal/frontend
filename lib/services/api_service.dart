@@ -391,6 +391,18 @@ Future<List<dynamic>> getSpecialists() async {
 
   throw Exception(response.body);
 }
+Future<Map<String, dynamic>> getSpecialist(int specialistId) async {
+  final response = await http.get(
+    Uri.parse("$baseUrl/specialist/get_specialist/$specialistId"),
+    headers: await getHeaders(),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  }
+
+  throw Exception("Failed to load specialist");
+}
   Future<List<dynamic>> getSymptoms() async {
   final token = await getStoredToken();
 
