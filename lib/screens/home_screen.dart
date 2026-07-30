@@ -17,6 +17,42 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   final ApiService _apiService = ApiService();
+  String _currentPhase() {
+  final today = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
+
+  bool sameDay(DateTime? date) {
+    if (date == null) return false;
+
+    return date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day;
+  }
+
+  if (_fertileStart != null &&
+      _fertileEnd != null &&
+      !today.isBefore(_fertileStart!) &&
+      !today.isAfter(_fertileEnd!)) {
+    return "Fertile Window";
+  }
+
+  if (sameDay(_ovulationDate)) {
+    return "Ovulation";
+  }
+
+  if (_nextPeriod != null &&
+      !today.isBefore(_nextPeriod!) &&
+      today.isBefore(
+        _nextPeriod!.add(Duration(days: _periodLength)),
+      )) {
+    return "Period";
+  }
+
+  return "Cycle";
+}
 
   String _name = "User";
   String _firstName = "User";
@@ -31,63 +67,6 @@ DateTime? _fertileStart;
 DateTime? _fertileEnd;
 DateTime? _ovulationDate;
 DateTime? _nextPeriod;
-
-String _formatDateRange(DateTime? start, int days) {
-  if (start == null) return "--";
-
-  final end = start.add(Duration(days: days - 1));
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  String format(DateTime d) =>
-      "${d.day} ${months[d.month - 1]}";
-
-  if (days == 1) {
-    return format(start);
-  }
-
-  return "${format(start)} - ${format(end)}";
-}
-String _relativeStatus(DateTime? date) {
-  if (date == null) return "--";
-
-  final today = DateTime.now();
-
-  final now = DateTime(
-    today.year,
-    today.month,
-    today.day,
-  );
-
-  final target = DateTime(
-    date.year,
-    date.month,
-    date.day,
-  );
-
-  final diff = target.difference(now).inDays;
-
-  if (diff == 0) return "Today";
-  if (diff == 1) return "Tomorrow";
-  if (diff == -1) return "Yesterday";
-
-  if (diff > 1) return "In $diff days";
-
-  return "${diff.abs()} days ago";
-}
 
 
   @override
@@ -189,7 +168,7 @@ child: CircularProgressIndicator(),
 
 
 return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.cardBackground,
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
@@ -238,14 +217,14 @@ return Scaffold(
                 Text(
                   'Good Morning,',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: AppColors.textPrimary,
                     fontSize: 15,
                   ),
                 ),
                 Text(
             _name.split(" ").first,
                   style: TextStyle(
-                    color: AppColors.primaryDark,
+                    color: AppColors.textPrimary,
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
                   ),
@@ -278,7 +257,7 @@ return Scaffold(
                   ),
                 ],
               ),
-              child: const Icon(Icons.person, color: AppColors.pinkAccent),
+              child: const Icon(Icons.person, color: AppColors.textPrimary),
             ),
           ),
         ],
@@ -286,147 +265,87 @@ return Scaffold(
     );
   }
 
-  // ---------- Tracking card with silhouette + timeline ----------
-  Widget _buildTrackingCard(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Container(
-          height: 380,
-          decoration: const BoxDecoration(color: AppColors.primaryDark),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Silhouette side
-              Expanded(
-                flex: 4,
-                child: Container(
-                  color: Colors.white,
-                  child: ClipRRect(
-  borderRadius: const BorderRadius.only(
-    topLeft: Radius.circular(28),
-    bottomLeft: Radius.circular(28),
-  ),
-  child: Image.asset(
-    "assets/images/pregnant.png",
-    fit: BoxFit.cover,
-    width: double.infinity,
-    height: double.infinity,
-  ),
-),
-                ),
-              ),
-              // Timeline side
-              Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 28,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _timelineItem(
-                        color: AppColors.primary,
-                        title: 'Fertile Window',
-                        titleColor: AppColors.primary,
-status: _relativeStatus(_fertileStart),
-dateRange: _formatDateRange(
-  _fertileStart,
-  5,
-),
-                      ),
-                      _timelineItem(
-                        color: Colors.amber,
-                        title: 'Ovulation',
-                        titleColor: Colors.amber,
-    status: _relativeStatus(_ovulationDate),
-dateRange: _formatDateRange(
-  _ovulationDate,
-  1,
-),
-                      ),
-                      _timelineItem(
-                        color: AppColors.pinkAccent,
-                        title: 'Predicted Period',
-                        titleColor: AppColors.pinkAccent,
-      status: _relativeStatus(_nextPeriod),
-dateRange: _formatDateRange(
-  _nextPeriod,
-  _periodLength,
-),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+  // ---------- Tracking card
+ Widget _buildTrackingCard(BuildContext context) {
+  int cycleDay = 1;
+
+  if (_lastPeriodDate != null) {
+    cycleDay =
+        (DateTime.now().difference(_lastPeriodDate!).inDays % _cycleLength) + 1;
+
+    if (cycleDay <= 0) cycleDay += _cycleLength;
+  }
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(28),
+      child: Container(
+        height: 300,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.teal,
+              AppColors.primaryDark,
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _timelineItem({
-    required Color color,
-    required String title,
-    required Color titleColor,
-    required String status,
-    required String dateRange,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 4),
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: titleColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
+            /// Flower background
+            Center(
+              child: Opacity(
+                opacity: 0.50,
+                child: Image.asset(
+                  "assets/images/flower.png",
+                  width: 280,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-            const SizedBox(height: 4),
-            Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Text(
-      status,
-      style: const TextStyle(
-        color: Colors.white70,
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-      ),
-    ),
-    const SizedBox(height: 2),
-    Text(
-      dateRange,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 15,
-        fontWeight: FontWeight.w700,
-      ),
-    ),
-  ],
-)
+
+            /// Content
+            Padding(
+              padding: const EdgeInsets.all(26),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Day $cycleDay",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  Center(
+                    child: Text(
+                      _currentPhase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 46,
+                        fontWeight: FontWeight.w300,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+
+                  const Spacer(),
+                ],
+              ),
+            ),
           ],
         ),
-      ],
-    );
-  }
-
+      ),
+    ),
+  );
+}
   // ---------- Quick Actions ----------
   Widget _buildQuickActions(BuildContext context) {
     return Padding(
@@ -437,7 +356,7 @@ dateRange: _formatDateRange(
           const Text(
             'Quick Actions',
             style: TextStyle(
-              color: AppColors.primaryDark,
+              color: AppColors.textPrimary,
               fontSize: 24,
               fontWeight: FontWeight.w800,
             ),
@@ -462,7 +381,7 @@ dateRange: _formatDateRange(
               Expanded(
                 child: _quickActionCard(
                   icon: Icons.male,
-                  iconBg: AppColors.primaryMedium,
+                  iconBg: AppColors.teal,
                   label: 'Gender\nPrediction',
                   onTap: () => Navigator.push(
                     context,
@@ -476,7 +395,7 @@ dateRange: _formatDateRange(
               Expanded(
                 child: _quickActionCard(
                   icon: Icons.calendar_today_outlined,
-                  iconBg: AppColors.primaryLight,
+                  iconBg: Color(0XFFA8E4B7),
                   iconColor: AppColors.primaryDark,
                   label: 'Calendar',
                  onTap: () {
@@ -510,7 +429,7 @@ dateRange: _formatDateRange(
             borderRadius: BorderRadius.circular(20),
             boxShadow: const [
               BoxShadow(
-                color: Colors.black12,
+                color: Colors.white,
                 blurRadius: 10,
                 offset: Offset(0, 3),
               ),
@@ -532,7 +451,7 @@ dateRange: _formatDateRange(
                 label,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: AppColors.primaryDark,
+                  color: AppColors.textPrimary,
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   height: 1.2,
@@ -545,15 +464,15 @@ dateRange: _formatDateRange(
     );
   }
 
-  // ---------- Insight card (not tappable, per requirements) ----------
+  // ---------- Insight card ----------
   Widget _buildInsightCard() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(22),
+          color: AppColors.teal,
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -567,7 +486,7 @@ dateRange: _formatDateRange(
               ),
               child: const Icon(
                 Icons.lightbulb_outline,
-                color: AppColors.primary,
+                color: AppColors.teal,
               ),
             ),
             const SizedBox(width: 14),
@@ -602,101 +521,135 @@ dateRange: _formatDateRange(
   }
 
   // ---------- Book Specialist ----------
-  Widget _buildBookSpecialistSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Book Specialist',
-            style: TextStyle(
-              color: AppColors.primaryDark,
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-            ),
+ Widget _buildBookSpecialistSection(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        /// Left Side
+        Expanded(
+          flex: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Talk to a\nSpecialist",
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  fontStyle: FontStyle.italic,
+                  height: 1.15,
+                ),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                "Get expert guidance\nfrom certified fertility\ndoctors, anytime.",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 15,
+                  height: 1.45,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: 170,
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryDark,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const SpecialistSearchScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "Book Consultation",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.pinkAccent,
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Talk to a Specialist',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Get expert guidance from certified fertility doctors, anytime.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          height: 1.35,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Material(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const SpecialistSearchScreen(),
-                              ),
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 14,
-                              horizontal: 16,
-                            ),
-                            child: Text(
-                              'Book Consultation',
-                              style: TextStyle(
-                                color: AppColors.primaryDark,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+        ),
+
+        const SizedBox(width: 20),
+
+        /// Right Side
+        Expanded(
+          flex: 6,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 220,
+                height: 220,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF2BD6D1),
+                      Color(0xFF11A8A0),
                     ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
-                const SizedBox(width: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: SizedBox(
-                    width: 110,
-                    height: 150,
-                    child:Image.asset(
-  "assets/images/doctor_placeholder.webp",
-)
-                  ),
+              ),
+
+              ClipOval(
+                child: Image.asset(
+                  "assets/images/doctor.jpeg",
+                  width: 205,
+                  height: 205,
+                  fit: BoxFit.cover,
                 ),
-              ],
-            ),
+              ),
+
+              Positioned(
+                right: 12,
+                child: Column(
+                  children: [
+                    _carouselButton(Icons.chevron_left),
+                    const SizedBox(height: 8),
+                    _carouselButton(Icons.chevron_right),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+Widget _carouselButton(IconData icon) {
+  return Container(
+    width: 22,
+    height: 22,
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: Icon(
+      icon,
+      color: Colors.white,
+      size: 16,
+    ),
+  );
+}
 }

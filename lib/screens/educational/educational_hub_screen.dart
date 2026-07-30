@@ -14,7 +14,7 @@ class EducationHubScreen extends StatelessWidget {
     return Scaffold(
 
       backgroundColor:
-      AppColors.scaffoldBackground,
+      AppColors.cardBackground,
 
 
       body: SafeArea(
@@ -49,7 +49,7 @@ horizontal: MediaQuery.of(context).size.width < 360 ? 15 : 20,
                   style:TextStyle(
 
                     color:
-                    AppColors.primaryDark,
+                    AppColors.textPrimary,
 
                     fontSize:32,
 

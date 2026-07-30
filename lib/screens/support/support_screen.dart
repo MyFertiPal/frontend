@@ -1,10 +1,9 @@
 ﻿import 'package:flutter/material.dart';
+import "../../theme/app_colors.dart";
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
 
-  static const Color kDarkGreen = Color(0xFF0B6E4F);
-  static const Color kLightGreenBg = Color(0xFFEAF4EE);
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +54,7 @@ class _Header extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: SupportScreen.kDarkGreen,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
@@ -83,200 +82,57 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.notifications_none,
-                  color: SupportScreen.kDarkGreen),
-            ),
-            Positioned(
-              right: -2,
-              top: -2,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                ),
-                constraints:
-                    const BoxConstraints(minWidth: 18, minHeight: 18),
-                child: const Center(
-                  child: Text(
-                    '3',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+
       ],
     );
   }
 }
 
-// ---------------- Specialist card + merged Live Session ----------------
+// ---------------- Live Session ----------------
 
 class _SpecialistAndLiveSessionCard extends StatelessWidget {
   const _SpecialistAndLiveSessionCard();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: SupportScreen.kLightGreenBg,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Top: text + doctor image
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final bool narrow = constraints.maxWidth < 340;
-              final textColumn = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Talk to a\nFertility Specialist',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: SupportScreen.kDarkGreen,
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Book a 1-on-1 consultation with trusted fertility experts.',
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      color: Colors.grey[800],
-                      height: 1.35,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: SupportScreen.kDarkGreen,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Book a Consultation'),
-                        SizedBox(width: 6),
-                        Icon(Icons.arrow_forward, size: 16),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-
-              final doctorImage = ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80',
-                  height: 170,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    height: 170,
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.person, size: 60),
-                  ),
-                ),
-              );
-
-              if (narrow) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    textColumn,
-                    const SizedBox(height: 16),
-                    doctorImage,
-                  ],
-                );
-              }
-
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(flex: 3, child: textColumn),
-                  const SizedBox(width: 12),
-                  Expanded(flex: 2, child: doctorImage),
-                ],
-              );
-            },
-          ),
-
-          const SizedBox(height: 20),
-
-          // Merged Live Session sub-card with doctor avatar overlay
-         Stack(
-  clipBehavior: Clip.none,
-  children: [
-
-    // Main webinar image
-    ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
       child: SizedBox(
-        height: 250,
-        width: double.infinity,
+        height: 300,
         child: Stack(
           fit: StackFit.expand,
           children: [
-
+            /// Background image
             Image.asset(
               "assets/images/live_session.jpg",
               fit: BoxFit.cover,
             ),
 
-            // Dark gradient overlay
+            /// Dark overlay
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.transparent,
-                    Colors.black54,
-                    Colors.black87,
+                    Colors.black.withOpacity(.15),
+                    Colors.black.withOpacity(.45),
+                    Colors.black.withOpacity(.85),
                   ],
                 ),
               ),
             ),
 
-            // Live text
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 85,
+            /// Content
+            Padding(
+              padding: const EdgeInsets.all(22),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 5,
+                      vertical: 6,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.red,
@@ -287,131 +143,84 @@ class _SpecialistAndLiveSessionCard extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
                         fontSize: 11,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const Spacer(),
 
                   const Text(
                     "Understanding Ovulation\nand Your Fertile Window",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
-                      height: 1.25,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
+                      height: 1.2,
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 12),
 
-                  const Row(
-                    children: [
+                  Row(
+                    children: const [
                       Icon(
-                        Icons.calendar_today,
+                        Icons.schedule,
                         color: Colors.white70,
-                        size: 15,
+                        size: 18,
                       ),
-                      SizedBox(width: 6),
+                      SizedBox(width: 8),
                       Text(
                         "Saturday • 7:00 PM",
                         style: TextStyle(
                           color: Colors.white70,
-                          fontSize: 13,
+                          fontSize: 15,
                         ),
                       ),
                     ],
                   ),
+
+                  const SizedBox(height: 22),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.primaryDark,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Register for Session",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
-    ),
-
-    // Bottom floating card
-    Positioned(
-      left: 18,
-      right: 18,
-      bottom: -28,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 12,
-              offset: Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-
-            const CircleAvatar(
-              radius: 24,
-              backgroundImage:
-                  AssetImage("assets/images/doctor_placeholder.png"),
-            ),
-
-            const SizedBox(width: 12),
-
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Text(
-                    "Dr. Mawa",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-
-                  SizedBox(height: 2),
-
-                  Text(
-                    "Fertility Specialist",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            ElevatedButton(
-              onPressed: null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: SupportScreen.kDarkGreen,
-                foregroundColor: Colors.white,
-                shape: StadiumBorder(),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text("Register"),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ],
-),
-
-const SizedBox(height: 40),
-      ]),
     );
   }
 }
-
 // ---------------- Connect with others (vertical) ----------------
 
 class _ConnectWithOthersSection extends StatelessWidget {
@@ -439,13 +248,13 @@ class _ConnectWithOthersSection extends StatelessWidget {
                 Text(
                   'View all',
                   style: TextStyle(
-                    color: SupportScreen.kDarkGreen,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
                 ),
                 Icon(Icons.chevron_right,
-                    size: 16, color: SupportScreen.kDarkGreen),
+                    size: 16, color: AppColors.textPrimary),
               ],
             ),
           ],
@@ -457,7 +266,7 @@ class _ConnectWithOthersSection extends StatelessWidget {
           title: 'Community Forum',
           subtitle: 'Ask questions, share experiences and get support.',
           linkText: 'Join the conversation',
-          linkColor: SupportScreen.kDarkGreen,
+          linkColor: AppColors.textPrimary,
         ),
         const SizedBox(height: 12),
         _ConnectCard(

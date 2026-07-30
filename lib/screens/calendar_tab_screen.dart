@@ -229,13 +229,11 @@ void initState() {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildHero(),
-              Transform.translate(
-                offset: const Offset(0, -20),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _buildCalendarCard(),
-                ),
-              ),
+
+Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  child: _buildCalendarCard(),
+),
               _buildLegend(),
               const SizedBox(height: 8),
               _buildSummaryRow(),
@@ -369,51 +367,75 @@ Widget _buildLoggedSymptoms() {
     ),
   );
 }
-  Widget _buildHero() {
-    final todayLabel =
-        '${_fullWeekday(widget.today.weekday)}, '
-        '${_monthNames[widget.today.month - 1]} ${widget.today.day}';
+ Widget _buildHero() {
+  final todayLabel =
+      '${_fullWeekday(widget.today.weekday)}, '
+      '${_monthNames[widget.today.month - 1]} ${widget.today.day}';
 
-    return Container(
-      color: _TrackingColors.header,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Today',
-              style: TextStyle(color: Colors.white70, fontSize: 14)),
-          const SizedBox(height: 2),
-          Text(
-            todayLabel,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 76,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: 7,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (context, i) {
-                // shift so "today" lands in the middle-ish, like the spec
-                final date = widget.today.add(Duration(days: i - 2));
-                final isToday = _normalize(date) == _normalize(widget.today);
-                return _DayPill(
-                  label: _shortWeekday(date.weekday),
-                  number: date.day,
-                  isToday: isToday,
-                );
-              },
-            ),
+  final days = List.generate(
+    5,
+    (i) => widget.today.add(Duration(days: i - 2)),
+  );
+
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(22, 22, 22, 26),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-    );
-  }
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+          const Text(
+            "Today",
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF0B5D4D),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            todayLabel,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF0B5D4D),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: days.map((date) {
+              final isToday =
+                  _normalize(date) == _normalize(widget.today);
+
+              return _WeekDateItem(
+                weekday: _shortWeekday(date.weekday),
+                day: date.day,
+                isToday: isToday,
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   String _fullWeekday(int weekday) {
     const names = [
@@ -610,44 +632,69 @@ class SliceGridDelegate extends SliverGridDelegateWithFixedCrossAxisCount {
       : super(childAspectRatio: 1);
 }
 
-class _DayPill extends StatelessWidget {
-  final String label;
-  final int number;
+class _WeekDateItem extends StatelessWidget {
+  final String weekday;
+  final int day;
   final bool isToday;
 
-  const _DayPill({
-    required this.label,
-    required this.number,
+  const _WeekDateItem({
+    required this.weekday,
+    required this.day,
     required this.isToday,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    if (isToday) {
+      return Container(
+        width: 64,
+        height: 64,
+        decoration: const BoxDecoration(
+          color: Color(0xFF18B7B3),
+          shape: BoxShape.circle,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              weekday,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              "$day",
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
       width: 56,
-      height: 76,
-      decoration: BoxDecoration(
-        color: isToday ? _TrackingColors.teal : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      alignment: Alignment.center,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: isToday ? Colors.white70 : _TrackingColors.textMuted,
+            weekday,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
-            '$number',
-            style: TextStyle(
-              fontSize: 17,
+            "$day",
+            style: const TextStyle(
+              color: Color(0xFF0B5D4D),
+              fontSize: 26,
               fontWeight: FontWeight.w600,
-              color: isToday ? Colors.white : Colors.black87,
             ),
           ),
         ],
