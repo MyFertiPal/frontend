@@ -381,12 +381,14 @@ throw Exception(
 Future<List<dynamic>> getSpecialists() async {
   final response = await http.get(
     Uri.parse('$baseUrl/specialist/get_all_specialist'),
+    headers: await getHeaders(includeAuth: true),
   );
 
+  debugPrint("Specialists: ${response.statusCode}");
+  debugPrint(response.body);
+
   if (response.statusCode == 200) {
-    return List<dynamic>.from(
-      jsonDecode(response.body),
-    );
+    return List<dynamic>.from(jsonDecode(response.body));
   }
 
   throw Exception(response.body);
