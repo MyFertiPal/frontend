@@ -620,7 +620,7 @@ Future<Map<String, dynamic>> getSpecialist(int specialistId) async {
    Uri.parse(
      "$baseUrl/insights/insights"
    ),
-   headers: await getHeaders(),
+   headers: await getHeaders(includeAuth: true),
  );
 
 

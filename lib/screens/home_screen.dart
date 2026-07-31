@@ -74,6 +74,17 @@ DateTime? _nextPeriod;
     super.initState();
     _loadHomeData();
   }
+  String _greeting() {
+  final hour = DateTime.now().hour;
+
+  if (hour < 12) {
+    return "Good Morning,";
+  } else if (hour < 17) {
+    return "Good Afternoon,";
+  } else {
+    return "Good Evening,";
+  }
+}
 
 
   Future<void> _loadHomeData() async {
@@ -215,7 +226,7 @@ return Scaffold(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Good Morning,',
+  _greeting(),
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 15,
@@ -553,9 +564,9 @@ return Scaffold(
                 ),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: 170,
-                height: 54,
+             SizedBox(
+  width: MediaQuery.of(context).size.width * 0.70,
+  height: 54,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryDark,
@@ -577,7 +588,7 @@ return Scaffold(
                   child: const Text(
                     "Book Consultation",
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

@@ -277,120 +277,92 @@ final availabilityHours = availabilityInfo["hours"] ?? "";
 
               const SizedBox(width: 14),
 
-             Expanded(
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        name,
-        style: const TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-
-      const SizedBox(height: 4),
-
-      Text(
-        qualification,
-        style: const TextStyle(
-          color: AppColors.teal,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-
-      const SizedBox(height: 6),
-
-      Text(
-        expertise,
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 15,
-          height: 1.4,
-        ),
-      ),
-
-      const SizedBox(height: 8),
-
-      Row(
-        children: [
-          const Icon(
-            Icons.calendar_today_outlined,
-            color: AppColors.teal,
-            size: 16,
+       Flexible(
+  child: ConstrainedBox(
+    constraints: const BoxConstraints(
+      minWidth: 120,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          name,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(width: 5),
-          Expanded(
-            child: Text(
-              "$availabilityDays • $availabilityHours",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 13,
+        ),
+
+        const SizedBox(height: 4),
+
+        Text(
+          qualification,
+          style: const TextStyle(
+            color: AppColors.teal,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        const SizedBox(height: 6),
+
+        Text(
+          expertise,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 15,
+            height: 1.4,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        Row(
+          children: [
+            const Icon(
+              Icons.calendar_today_outlined,
+              color: AppColors.teal,
+              size: 16,
+            ),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                "$availabilityDays • $availabilityHours",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
 
-      const SizedBox(height: 6),
+        const SizedBox(height: 6),
 
-      Row(
-        children: [
-          const Icon(
-            Icons.payments_outlined,
-            color: AppColors.teal,
-            size: 16,
-          ),
-          const SizedBox(width: 5),
-          Text(
-            "NGN $fee",
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+        Row(
+          children: [
+            const Icon(
+              Icons.payments_outlined,
+              color: AppColors.teal,
+              size: 16,
             ),
-          ),
-        ],
-      ),
-    ],
-  ),
-),
-
-          const SizedBox(height: 14),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () async {
-                if (calendly.isEmpty) return;
-
-                final uri = Uri.parse(calendly);
-
-               Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => CalendlyScreen(
-      calendlyUrl: calendly,
+            const SizedBox(width: 5),
+            Text(
+              "NGN $fee",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ],
     ),
   ),
-);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.teal,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: const Text("Book Consultation"),
-            ),
-          ),
-        ],
-      ),
+),
         ]
         ),
+  ]
+  )
   )
   );
   }
