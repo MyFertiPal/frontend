@@ -227,7 +227,7 @@ const SizedBox(height: 80),
         ],
       ),
       bottomNavigationBar: _BookButton(
-        calendlyUrl: specialist!["calendly_url"] ?? "",
+        calendlyUrl: specialist?["calendly_url"] ?? "",
       ),
     );
   }
