@@ -396,7 +396,7 @@ Future<List<dynamic>> getSpecialists() async {
 Future<Map<String, dynamic>> getSpecialist(int specialistId) async {
   final response = await http.get(
     Uri.parse("$baseUrl/specialist/get_specialist/$specialistId"),
-    headers: await getHeaders(),
+    headers: await getHeaders(includeAuth: true),
   );
 
   if (response.statusCode == 200) {

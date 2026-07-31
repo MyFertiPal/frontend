@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../theme/app_colors.dart';
+import 'specialist_profile_screen.dart';
 import '../../services/api_service.dart';
 import '../payment/payment_screen.dart';
 
@@ -238,7 +239,23 @@ class _SpecialistCard extends StatelessWidget {
       return "${parts[0][0]}${parts[1][0]}".toUpperCase();
     }
 
-    return Container(
+    return InkWell(
+  borderRadius: BorderRadius.circular(18),
+  onTap: () {
+    final specialistId = data["id"];
+
+    if (specialistId == null) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SpecialistProfileScreen(
+          specialistId: specialistId,
+        ),
+      ),
+    );
+  },
+  child: Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -378,7 +395,8 @@ class _SpecialistCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+        ),
+  );
   }
 }
 
