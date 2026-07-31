@@ -164,9 +164,9 @@ else
             ],
           ),
 
-          _LockedOverlay(
-            onTap: () => _showPremiumDialog(context),
-          ),
+          //_LockedOverlay(//
+           // onTap: () => _showPremiumDialog(context),
+         // ),
         ],
       ),
     );
