@@ -118,7 +118,8 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
               ),
             ),
           ),
-
+          
+const SizedBox(height: 20),
           SliverToBoxAdapter(
             child: Transform.translate(
               offset: const Offset(0, -28),
@@ -179,7 +180,7 @@ Row(
     ),
     const SizedBox(width: 10),
     Text(
-      "GH₵ $fee",
+      "NGN $fee",
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,

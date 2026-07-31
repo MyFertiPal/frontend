@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import "calendly_screen.dart";
 import '../../theme/app_colors.dart';
 import 'specialist_profile_screen.dart';
 import '../../services/api_service.dart';
@@ -137,17 +138,7 @@ void initState() {
                 },
               ),
               const SizedBox(height: 16),
-              const Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  _CategoryChip(label: 'Fertility'),
-                  _CategoryChip(label: 'Gynecology'),
-                  _CategoryChip(label: 'Mental Health'),
-                  _CategoryChip(label: 'Nutrition'),
-                ],
-              ),
-              const SizedBox(height: 20),
+              
               if (_loading)
   const Padding(
     padding: EdgeInsets.only(top: 40),
@@ -173,37 +164,7 @@ else
   }
 }
 
-class _CategoryChip extends StatelessWidget {
-  final String label;
 
-  const _CategoryChip({
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0EA5A4).withOpacity(0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF0EA5A4).withOpacity(0.2),
-        ),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Color(0xFF0EA5A4),
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
 
 class _SpecialistCard extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -226,6 +187,8 @@ class _SpecialistCard extends StatelessWidget {
     final image = data["image_url"] ?? "";
 
     final calendly = data["calendly_url"] ?? "";
+
+    final availability = data["availability_info"]?.toString() ?? "Available";
 
     String initials(String input) {
       final parts = input.trim().split(" ");
@@ -335,11 +298,14 @@ class _SpecialistCard extends StatelessWidget {
                     const SizedBox(height: 6),
 
                     Text(
-                      expertise,
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
+  expertise,
+  maxLines: 3,
+  overflow: TextOverflow.ellipsis,
+  style: const TextStyle(
+    fontSize: 16,
+    height: 1.5,
+  ),
+),
                   ],
                 ),
               ),
@@ -347,7 +313,31 @@ class _SpecialistCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 14),
+const SizedBox(height: 14),
 
+Row(
+  children: [
+    const Icon(
+      Icons.calendar_today_outlined,
+      color: AppColors.teal,
+      size: 18,
+    ),
+    const SizedBox(width: 6),
+    Expanded(
+      child: Text(
+        availability,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ),
+  ],
+),
+
+const SizedBox(height: 14),
           Row(
             children: [
               const Icon(
@@ -357,7 +347,7 @@ class _SpecialistCard extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                "GH₵ $fee",
+                "NGN $fee",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -375,12 +365,14 @@ class _SpecialistCard extends StatelessWidget {
 
                 final uri = Uri.parse(calendly);
 
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(
-                    uri,
-                    mode: LaunchMode.externalApplication,
-                  );
-                }
+               Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => CalendlyScreen(
+      calendlyUrl: calendly,
+    ),
+  ),
+);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.teal,
