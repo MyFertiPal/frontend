@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/firestore_period_service.dart';
 
 /// Types of calendar-day markers shown on the calendar grid.
 enum DayType { period, fertile, ovulation, predicted }
@@ -47,6 +48,10 @@ class CalendarTabScreen extends StatefulWidget {
 
 class _CalendarTabScreenState extends State<CalendarTabScreen> {
   List<dynamic> _loggedSymptoms = [];
+  final FirestoreService _firestore = FirestoreService.instance;
+
+int? _userId;
+
   void _buildBackendMarkers(){
 
   _dayMarkers.clear();
@@ -259,6 +264,8 @@ final api = ApiService();
 
 final profile =
 await api.getProfile();
+_userId = profile["user_id"];
+
 
 
 final predictions =
@@ -275,51 +282,31 @@ final prediction = predictions.first;
 if(!mounted) return;
 
 
-setState(() {
 _loggedSymptoms = symptoms;
 
-_cycleLength =
-profile["cycle_length"] ?? 0;
+_cycleLength = profile["cycle_length"] ?? 0;
+_periodLength = profile["period_length"] ?? 0;
 
-
-_periodLength =
-profile["period_length"] ?? 0;
-
-
-
-if(profile["last_period_date"] != null){
-
-_lastPeriod =
-DateTime.parse(
-profile["last_period_date"]
-);
-
+if (profile["last_period_date"] != null) {
+  _lastPeriod = DateTime.parse(profile["last_period_date"]);
 }
 
-
-
-_nextPeriod =
-prediction["next_period"];
-
-
-_ovulationDay =
-prediction["ovulation_day"];
-
-
-_fertileStart =
-prediction["fertile_period_start"];
-
-
-_fertileEnd =
-prediction["fertile_period_end"];
-
-
+_nextPeriod = prediction["next_period"];
+_ovulationDay = prediction["ovulation_day"];
+_fertileStart = prediction["fertile_period_start"];
+_fertileEnd = prediction["fertile_period_end"];
 
 _buildBackendMarkers();
 
+if (_userId != null) {
+  final periods = await _firestore.getPeriodLogs(_userId!);
 
-});
+  for (final date in periods) {
+    _dayMarkers[_normalize(date)] = DayType.period;
+  }
+}
 
+setState(() {});
 
 }
 catch(e){
@@ -532,11 +519,37 @@ Widget _buildLoggedSymptoms() {
               final type = _dayMarkers[_normalize(date)];
     
              return GestureDetector(
-  onTap: () {
+onTap: () async {
+  if (_userId == null) return;
+
+  final key = _normalize(date);
+
+  if (_dayMarkers[key] == DayType.period) {
+
+    await _firestore.deletePeriod(
+      userId: _userId!,
+      date: key,
+    );
+
     setState(() {
-      _selectedDate = date;
+      _dayMarkers.remove(key);
     });
-  },
+
+  } else {
+
+    await _firestore.savePeriod(
+      userId: _userId!,
+      date: key,
+    );
+
+    setState(() {
+      _dayMarkers[key] = DayType.period;
+    });
+  }
+
+  // Refresh predictions after logging
+  await _loadCycle();
+},
   child: _CalendarDayCell(
     day: day,
     isToday: isToday,

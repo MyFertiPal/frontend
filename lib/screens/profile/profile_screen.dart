@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
 import "../../services/api_service.dart";
+import "../profile/profile_setup_screen.dart";
+import "../../services/profile_image_picker.dart";
 
 /// Colors used across the screen.
 class _ProfileColors {
@@ -53,11 +56,7 @@ class ProfileStat {
   });
 }
 
-/// Profile screen: header with avatar and membership badge, a stats
-/// summary row, a settings list, and log-out / delete-account actions.
-///
-/// This widget intentionally does NOT include a bottom nav bar -- wire it
-/// into your existing scaffold/nav shell.
+/// Profile screen
 class ProfileScreen extends StatefulWidget {
   final String name;
   final String avatarUrl;
@@ -129,6 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   'Hausa',
 ];
 final ApiService _apiService = ApiService();
+String? _imagePath;
 String _name = "";
 String _avatarUrl = "";
 String _selectedLanguage = "English";
@@ -208,6 +208,7 @@ String _convertLanguageCode(String code) {
 void initState() {
   super.initState();
   _loadProfile();
+   _loadImage();
 }
 
 Widget _buildLanguageRow() {
@@ -271,6 +272,40 @@ Widget _buildLanguageRow() {
   );
 }
 
+Future<void> _loadImage() async {
+  _imagePath =
+      await ProfileImageService.getImagePath();
+
+  if (mounted) {
+    setState(() {});
+  }
+}
+Future<void> _showPhotoOptions() async {
+  showModalBottomSheet(
+    context: context,
+    builder: (_) => SafeArea(
+      child: Wrap(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text("Choose from Gallery"),
+            onTap: () async {
+              Navigator.pop(context);
+
+              final image = await ProfileImageService.pickFromGallery();
+
+if (image != null) {
+  await _loadImage();
+}
+
+              await _loadImage();
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   Future<void> _openPrivacyPolicy() async {
     final uri = Uri.parse(widget.privacyPolicyUrl);
@@ -324,7 +359,14 @@ context,
           iconColor: const Color(0xFF1F9E75),
           iconBg: const Color(0xFFDCF3E8),
           label: 'Personal Information',
-          onTap: widget.onPersonalInformationTap,
+           onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ProfileSetupScreen(),
+      ),
+    );
+  },
         ),
         _SettingsItemData(
           icon: Icons.notifications_none,
@@ -342,22 +384,28 @@ context,
           onTap: _openPrivacyPolicy,
         ),
         _SettingsItemData(
-          icon: Icons.help_outline,
-          iconColor: const Color(0xFF1F9E75),
-          iconBg: const Color(0xFFDCF3E8),
-          label: 'Help & Support',
-          onTap: widget.onHelpSupportTap,
-        ),
-        _SettingsItemData(
           icon: Icons.info_outline,
           iconColor: const Color(0xFFCB9A2C),
           iconBg: const Color(0xFFFBEDD2),
           label: 'About MyFertiPal',
-          onTap: widget.onAboutTap,
+          onTap: () {
+  _openUrl(
+    "https://myfertipal.com/about-us",
+  );
+},
         ),
       ];
 
-  @override
+Future<void> _openUrl(String url) async {
+  final uri = Uri.parse(url);
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.inAppBrowserView,
+    );
+  }
+}
   @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -421,37 +469,40 @@ Widget build(BuildContext context) {
             ),
           ),
           const SizedBox(height: 4),
-          Container(
-            width: 104,
-            height: 104,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF3FA98A), width: 3),
-            ),
-            padding: const EdgeInsets.all(3),
-            child: ClipOval(
-              child: _avatarUrl.isNotEmpty
-?
-Image.network(
-  _avatarUrl,
-  fit: BoxFit.cover,
-)
-:
-Image.asset(
-  "assets/images/profile_placeholder.png",
-  fit: BoxFit.cover,
-)
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            _name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          InkWell(
+  onTap: _showPhotoOptions,
+  borderRadius: BorderRadius.circular(60),
+  child: Container(
+    width: 104,
+    height: 104,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(
+        color: const Color(0xFF3FA98A),
+        width: 3,
+      ),
+    ),
+    padding: const EdgeInsets.all(3),
+    child: ClipOval(
+      child: _imagePath != null
+          ? Image.file(
+              File(_imagePath!),
+              fit: BoxFit.cover,
+            )
+          : _avatarUrl.isNotEmpty
+              ? Image.network(
+                  _avatarUrl,
+                  fit: BoxFit.cover,
+                )
+              : Image.asset(
+                  "assets/images/profile_placeholder.png",
+                  fit: BoxFit.cover,
+                ),
+    ),
+  ),
+),
+const SizedBox(height: 14),
+          
           if (_isPremium) ...[
             const SizedBox(height: 10),
             Container(
@@ -537,14 +588,6 @@ Image.asset(
 
         _SettingsRow(
           data: items[3],
-          notificationsEnabled: _notificationsEnabled,
-          onToggleChanged: (v) =>
-              setState(() => _notificationsEnabled = v),
-        ),
-        const Divider(height: 1),
-
-        _SettingsRow(
-          data: items[4],
           notificationsEnabled: _notificationsEnabled,
           onToggleChanged: (v) =>
               setState(() => _notificationsEnabled = v),

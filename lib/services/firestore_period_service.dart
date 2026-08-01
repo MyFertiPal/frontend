@@ -1,74 +1,83 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FirestorePeriodService {
-  FirestorePeriodService({
-    required this.userId,
-  });
+class FirestoreService {
+  FirestoreService._();
 
-  final int userId;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  static final FirestoreService instance = FirestoreService._();
 
-  CollectionReference<Map<String, dynamic>> get _collection => _db
-      .collection('users')
-      .doc(userId.toString())
-      .collection('period_logs');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String _dateId(DateTime day) {
-    final normalized = DateTime(day.year, day.month, day.day);
-
-    return "${normalized.year}-"
-        "${normalized.month.toString().padLeft(2, '0')}-"
-        "${normalized.day.toString().padLeft(2, '0')}";
+  CollectionReference<Map<String, dynamic>> _periodLogs(int userId) {
+    return _firestore
+        .collection("users")
+        .doc(userId.toString())
+        .collection("period_logs");
   }
 
-  Future<void> savePeriodDay(DateTime day) async {
-    final normalized = DateTime(day.year, day.month, day.day);
+  DateTime _normalize(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
 
-    await _collection.doc(_dateId(normalized)).set({
-      "date": Timestamp.fromDate(normalized),
-      "createdAt": FieldValue.serverTimestamp(),
+  String _docId(DateTime date) {
+    final d = _normalize(date);
+
+    return "${d.year}-"
+        "${d.month.toString().padLeft(2, '0')}-"
+        "${d.day.toString().padLeft(2, '0')}";
+  }
+
+  /// Save or overwrite a logged period day
+  Future<void> savePeriod({
+    required int userId,
+    required DateTime date,
+  }) async {
+    final d = _normalize(date);
+
+    await _periodLogs(userId).doc(_docId(d)).set({
+      "date": Timestamp.fromDate(d),
+      "logged": true,
+      "created_at": FieldValue.serverTimestamp(),
+      "updated_at": FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
+  /// Remove a logged period day
+  Future<void> deletePeriod({
+    required int userId,
+    required DateTime date,
+  }) async {
+    await _periodLogs(userId).doc(_docId(date)).delete();
+  }
+
+  /// Returns true if the day has been logged
+  Future<bool> isPeriodDay({
+    required int userId,
+    required DateTime date,
+  }) async {
+    final doc = await _periodLogs(userId).doc(_docId(date)).get();
+
+    return doc.exists;
+  }
+
+  /// Get all logged period dates
+  Future<List<DateTime>> getPeriodLogs(int userId) async {
+    final snapshot =
+        await _periodLogs(userId).orderBy("date").get();
+
+    return snapshot.docs.map((doc) {
+      return (doc.data()["date"] as Timestamp).toDate();
+    }).toList();
+  }
+
+  /// Real-time updates
+  Stream<List<DateTime>> periodLogsStream(int userId) {
+    return _periodLogs(userId)
+        .orderBy("date")
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return (doc.data()["date"] as Timestamp).toDate();
+      }).toList();
     });
-  }
-
-  Future<void> savePeriodDays(List<DateTime> days) async {
-    final batch = _db.batch();
-
-    for (final day in days) {
-      final normalized = DateTime(day.year, day.month, day.day);
-
-      batch.set(
-        _collection.doc(_dateId(normalized)),
-        {
-          "date": Timestamp.fromDate(normalized),
-          "createdAt": FieldValue.serverTimestamp(),
-        },
-      );
-    }
-
-    await batch.commit();
-  }
-
-  Future<void> deletePeriodDay(DateTime day) async {
-    await _collection.doc(_dateId(day)).delete();
-  }
-
-  Future<List<DateTime>> loadPeriodDays() async {
-    final snapshot = await _collection.get();
-
-    return snapshot.docs
-        .map((doc) => (doc.data()['date'] as Timestamp).toDate())
-        .toList();
-  }
-
-  Future<void> clearAll() async {
-    final snapshot = await _collection.get();
-
-    final batch = _db.batch();
-
-    for (final doc in snapshot.docs) {
-      batch.delete(doc.reference);
-    }
-
-    await batch.commit();
   }
 }
