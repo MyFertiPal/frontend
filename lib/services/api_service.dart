@@ -409,7 +409,7 @@ Future<Map<String, dynamic>> getSpecialist(int specialistId) async {
   final token = await getStoredToken();
 
   final response = await http.get(
-    Uri.parse('$baseUrl/symptoms'),
+    Uri.parse('$baseUrl/user/symptoms'),
     headers: {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
