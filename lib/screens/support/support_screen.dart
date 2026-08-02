@@ -272,13 +272,14 @@ class _ConnectWithOthersSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         _ConnectCard(
-          emoji: '👥',
-          iconBg: const Color(0xFFDDEEE5),
-          title: 'Community Forum',
-          subtitle: 'Ask questions, share experiences and get support.',
-          linkText: 'Join the conversation',
-          linkColor: AppColors.textPrimary,
-        ),
+  emoji: '👥',
+  iconBg: const Color(0xFFDDEEE5),
+  title: 'WhatsApp Community',
+  subtitle: 'Connect with women, share experiences and get fertility support.',
+  linkText: 'Join the community',
+  linkColor: AppColors.textPrimary,
+  onTap: _openWhatsAppCommunity,
+),
         const SizedBox(height: 12),
         _ConnectCard(
           emoji: '💜',
@@ -287,6 +288,7 @@ class _ConnectWithOthersSection extends StatelessWidget {
           subtitle: 'Real stories from women who stayed hopeful and never gave up.',
           linkText: 'Be inspired',
           linkColor: const Color(0xFF8E5FD1),
+          onTap: (){},
         ),
         const SizedBox(height: 12),
         _ConnectCard(
@@ -296,6 +298,7 @@ class _ConnectWithOthersSection extends StatelessWidget {
           subtitle: 'Faith-based support and daily encouragement for your journey.',
           linkText: 'Get encouraged',
           linkColor: const Color(0xFFCB8A2C),
+          onTap: (){},
         ),
       ],
     );
@@ -313,6 +316,18 @@ Future<void> _openPodcast() async {
     );
   }
 }
+Future<void> _openWhatsAppCommunity() async {
+  final uri = Uri.parse(
+    "https://chat.whatsapp.com/G5bwLptRQXEAIRlfORKOmT?mode=gi_t",
+  );
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+  }
+}
 
 class _ConnectCard extends StatelessWidget {
   final String emoji;
@@ -321,6 +336,7 @@ class _ConnectCard extends StatelessWidget {
   final String subtitle;
   final String linkText;
   final Color linkColor;
+  final VoidCallback onTap;
 
   const _ConnectCard({
     required this.emoji,
@@ -329,6 +345,7 @@ class _ConnectCard extends StatelessWidget {
     required this.subtitle,
     required this.linkText,
     required this.linkColor,
+    required this.onTap,
   });
 
   @override
