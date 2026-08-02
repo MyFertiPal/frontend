@@ -52,16 +52,15 @@ class LocalNotificationService {
   }) async {
     await initialize();
 
-    const androidDetails = AndroidNotificationDetails(
-      'fertility_reminders',
-      'Fertility Reminders',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-      enableVibration: true,
-      enableLights: true,
-      ledColor: Color(0xFF2E683D),
-    );
+   const androidDetails = AndroidNotificationDetails(
+  'fertility_reminders',
+  'Fertility Reminders',
+  importance: Importance.max,
+  priority: Priority.high,
+  showWhen: true,
+  enableVibration: true,
+  enableLights: true,
+);
 
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -93,16 +92,15 @@ class LocalNotificationService {
   }) async {
     await initialize();
 
-    const androidDetails = AndroidNotificationDetails(
-      'fertility_reminders',
-      'Fertility Reminders',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-      enableVibration: true,
-      enableLights: true,
-      ledColor: Color(0xFF2E683D),
-    );
+   const androidDetails = AndroidNotificationDetails(
+  'fertility_reminders',
+  'Fertility Reminders',
+  importance: Importance.high,
+  priority: Priority.high,
+  showWhen: true,
+  enableVibration: true,
+  enableLights: true,
+);
 
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
