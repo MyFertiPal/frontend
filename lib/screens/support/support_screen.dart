@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import "../../theme/app_colors.dart";
 
 class SupportScreen extends StatelessWidget {
@@ -20,7 +21,7 @@ class SupportScreen extends StatelessWidget {
                 children: [
                   _Header(),
                   const SizedBox(height: 20),
-                  const _SpecialistAndLiveSessionCard(),
+                  const _PodcastCard(),
                   const SizedBox(height: 32),
                   _ConnectWithOthersSection(),
                   const SizedBox(height: 24),
@@ -90,8 +91,8 @@ class _Header extends StatelessWidget {
 
 // ---------------- Live Session ----------------
 
-class _SpecialistAndLiveSessionCard extends StatelessWidget {
-  const _SpecialistAndLiveSessionCard();
+class _PodcastCard extends StatelessWidget {
+  const _PodcastCard();
 
   @override
   Widget build(BuildContext context) {
@@ -104,9 +105,9 @@ class _SpecialistAndLiveSessionCard extends StatelessWidget {
           children: [
             /// Background image
             Image.asset(
-              "assets/images/live_session.jpg",
-              fit: BoxFit.cover,
-            ),
+  "assets/images/podcast_banner.jpg",
+  fit: BoxFit.cover,
+),
 
             /// Dark overlay
             Container(
@@ -130,64 +131,74 @@ class _SpecialistAndLiveSessionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Text(
-                      "LIVE",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ),
+  padding: const EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 6,
+  ),
+  decoration: BoxDecoration(
+    color: const Color(0xFF1DB954), // Spotify green
+    borderRadius: BorderRadius.circular(30),
+  ),
+  child: const Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(
+        Icons.headphones,
+        color: Colors.white,
+        size: 14,
+      ),
+      SizedBox(width: 6),
+      Text(
+        "PODCAST",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1,
+          fontSize: 11,
+        ),
+      ),
+    ],
+  ),
+),
 
                   const Spacer(),
 
                   const Text(
-                    "Understanding Ovulation\nand Your Fertile Window",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      height: 1.2,
-                    ),
-                  ),
+  "MyFertiPal\nPodcast",
+  style: TextStyle(
+    color: Colors.white,
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+    height: 1.2,
+  ),
+),
 
                   const SizedBox(height: 12),
 
                   Row(
-                    children: const [
-                      Icon(
-                        Icons.schedule,
-                        color: Colors.white70,
-                        size: 18,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "Saturday • 7:00 PM",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-
+  children: const [
+    Icon(
+      Icons.music_note,
+      color: Colors.white70,
+      size: 18,
+    ),
+    SizedBox(width: 8),
+    Text(
+      "New episodes available anytime",
+      style: TextStyle(
+        color: Colors.white70,
+        fontSize: 15,
+      ),
+    ),
+  ],
+),
                   const SizedBox(height: 22),
 
                   SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _openPodcast,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: AppColors.primaryDark,
@@ -197,19 +208,19 @@ class _SpecialistAndLiveSessionCard extends StatelessWidget {
                         ),
                       ),
                       child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Register for Session",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward),
-                        ],
-                      ),
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    Icon(Icons.headphones),
+    SizedBox(width: 8),
+    Text(
+      "Listen on Spotify",
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+      ),
+    ),
+  ],
+),
                     ),
                   ),
                 ],
@@ -287,6 +298,18 @@ class _ConnectWithOthersSection extends StatelessWidget {
           linkColor: const Color(0xFFCB8A2C),
         ),
       ],
+    );
+  }
+}
+Future<void> _openPodcast() async {
+  final uri = Uri.parse(
+    "https://open.spotify.com/show/YOUR_SHOW_ID",
+  );
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
     );
   }
 }
