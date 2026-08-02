@@ -14,7 +14,7 @@ class GenderPredictionScreen extends StatefulWidget {
 class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   GenderExpectation? _selected;
 
-  static const Color kBlue = Color(0xFF1565C0);
+  
 
   void _selectOption(GenderExpectation option) {
     setState(() => _selected = option);
@@ -69,7 +69,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ],
@@ -158,7 +158,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryDark,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -194,7 +194,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                       title: 'Boy',
                       subtitle: "I'm hoping for a baby boy",
                       emoji: '👦',
-                      accentColor: kBlue,
+                      accentColor: AppColors.teal,
                       backgroundColor: const Color(0xFFE3EBFB),
                       iconBackgroundColor: const Color(0xFFBBD6F8),
                       selected: _selected == GenderExpectation.boy,

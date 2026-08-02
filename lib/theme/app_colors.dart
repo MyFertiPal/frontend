@@ -22,4 +22,7 @@ class AppColors {
   static const Color textPrimary =
       Color(0xFF040404);
 
+  //accents
+  static const Color blueAccent = Color(0xFF1565C0);
+
 }

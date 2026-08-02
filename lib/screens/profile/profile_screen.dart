@@ -157,7 +157,7 @@ Future<void> _loadProfile() async {
       // Account data
       _name =
           "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}".trim();
-
+      _avatarUrl = user["profile_image"] ?? "";
 
       _selectedLanguage =
           _convertLanguageCode(
@@ -280,32 +280,7 @@ Future<void> _loadImage() async {
     setState(() {});
   }
 }
-Future<void> _showPhotoOptions() async {
-  showModalBottomSheet(
-    context: context,
-    builder: (_) => SafeArea(
-      child: Wrap(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.photo_library),
-            title: const Text("Choose from Gallery"),
-            onTap: () async {
-              Navigator.pop(context);
 
-              final image = await ProfileImageService.pickFromGallery();
-
-if (image != null) {
-  await _loadImage();
-}
-
-              await _loadImage();
-            },
-          ),
-        ],
-      ),
-    ),
-  );
-}
 
   Future<void> _openPrivacyPolicy() async {
     final uri = Uri.parse(widget.privacyPolicyUrl);
@@ -470,7 +445,15 @@ Widget build(BuildContext context) {
           ),
           const SizedBox(height: 4),
           InkWell(
-  onTap: _showPhotoOptions,
+  onTap: () async {
+  final image = await ProfileImageService.pickFromGallery();
+
+  if (image != null) {
+    setState(() {
+      _imagePath = image.path;
+    });
+  }
+},
   borderRadius: BorderRadius.circular(60),
   child: Container(
     width: 104,
@@ -484,7 +467,7 @@ Widget build(BuildContext context) {
     ),
     padding: const EdgeInsets.all(3),
     child: ClipOval(
-      child: _imagePath != null
+      child: _imagePath != null && File(_imagePath!).existsSync()
           ? Image.file(
               File(_imagePath!),
               fit: BoxFit.cover,
@@ -495,13 +478,21 @@ Widget build(BuildContext context) {
                   fit: BoxFit.cover,
                 )
               : Image.asset(
-                  "assets/images/profile_placeholder.png",
+                  "assets/images/profile_placeholder.webp",
                   fit: BoxFit.cover,
                 ),
     ),
   ),
 ),
 const SizedBox(height: 14),
+Text(
+  _name.isNotEmpty ? _name : widget.name,
+  style: const TextStyle(
+    color: Colors.white,
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  ),
+),
           
           if (_isPremium) ...[
             const SizedBox(height: 10),
