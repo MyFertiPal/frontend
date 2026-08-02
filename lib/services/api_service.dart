@@ -469,7 +469,62 @@ Future<Map<String, dynamic>> getSpecialist(int specialistId) async {
     rethrow;
   }
 }
+Future<List<dynamic>> getArticles({
+  String lang = "en",
+}) async {
+  try {
+    final response = await http.get(
+      Uri.parse("$baseUrl/articles?lang=$lang"),
+      headers: await getHeaders(includeAuth: true),
+    );
 
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    throw Exception("Failed to load articles");
+  } catch (e) {
+    rethrow;
+  }
+}
+Future<Map<String, dynamic>> getArticleById({
+  required int articleId,
+  String lang = "en",
+}) async {
+  try {
+    final response = await http.get(
+      Uri.parse("$baseUrl/articles/$articleId?lang=$lang"),
+      headers: await getHeaders(includeAuth: true),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    throw Exception("Article not found");
+  } catch (e) {
+    rethrow;
+  }
+}
+Future<Map<String, dynamic>> getArticleBySlug({
+  required String slug,
+  String lang = "en",
+}) async {
+  try {
+    final response = await http.get(
+      Uri.parse("$baseUrl/articles/slug/$slug?lang=$lang"),
+      headers: await getHeaders(includeAuth: true),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    throw Exception("Article not found");
+  } catch (e) {
+    rethrow;
+  }
+}
   // Logout
   Future<void> logout() async {
     try {

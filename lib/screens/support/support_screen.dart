@@ -311,7 +311,7 @@ void _openPodcast(BuildContext context) {
     context,
     MaterialPageRoute(
       builder: (_) => WebViewScreen(
-        title: "MyFertiPal Podcast",
+        title: "Ferti",
         url:
         "https://open.spotify.com/show/033Zg8LRmNhoSs58enrdGi?si=xe4U0RoVR3WXw1yLyZtzxA",
       ),

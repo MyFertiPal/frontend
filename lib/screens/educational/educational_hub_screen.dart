@@ -1,10 +1,37 @@
 import 'package:flutter/material.dart';
 import '/theme/app_colors.dart';
+import '../../services/api_service.dart';
+import "../educational/reading_screen.dart";
 
 
-class EducationHubScreen extends StatelessWidget {
-
+class EducationHubScreen extends StatefulWidget {
   const EducationHubScreen({super.key});
+
+  @override
+  State<EducationHubScreen> createState() =>
+      _EducationHubScreenState();
+}
+
+class _EducationHubScreenState
+    extends State<EducationHubScreen> {
+      final ApiService _api = ApiService();
+
+List<dynamic> _articles = [];
+
+Map<String, dynamic>? _featuredArticle;
+
+bool _loading = true;
+
+final TextEditingController _searchController =
+    TextEditingController();
+
+String _language = "en";
+
+@override
+void initState() {
+  super.initState();
+  _loadArticles();
+}
 
 
   @override
@@ -86,75 +113,21 @@ horizontal: MediaQuery.of(context).size.width < 360 ? 15 : 20,
 
               _buildArticleHeader(),
 
-
-
-              const SizedBox(height:20),
-
-
-
-              _buildArticleCard(
-                context,
-              
-
-                image:
-                "assets/images/cycle.png",
-
-                category:
-                "MENSTRUAL HEALTH",
-
-                title:
-                "Understanding Your Cycle Phases",
-
-                duration:
-                "6 min read",
-
-              ),
-
-
-
-              const SizedBox(height:18),
-
-
-
-              _buildArticleCard(
-                 context,
-
-                image:
-                "assets/images/pregnancy.png",
-
-                category:
-                "MENSTRUAL HEALTH",
-
-                title:
-                "Understanding Your Cycle Phases",
-
-                duration:
-                "6 min read",
-
-              ),
-
-
-
-              const SizedBox(height:18),
-
-
-
-              _buildArticleCard(
-                context,
-
-                image:
-                "assets/images/nutrition.png",
-
-                category:
-                "NUTRITION",
-
-                title:
-                "Foods That Support Fertility",
-
-                duration:
-                "4 min read",
-
-              ),
+              if (_loading)
+  const Center(
+    child: CircularProgressIndicator(),
+  )
+else
+  ..._articles.map(
+    (article) => Padding(
+      padding:
+          const EdgeInsets.only(bottom: 18),
+      child: _buildArticleCard(
+        context,
+        article: article,
+      ),
+    ),
+  ),
 
 
               const SizedBox(height:100),
@@ -201,12 +174,19 @@ Colors.black.withOpacity(.08),
 ),
 
 
-child:TextField(
+child: TextField(
+  controller: _searchController,
+  textInputAction: TextInputAction.search,
+  onSubmitted: (_) => _searchArticle(),
 
 decoration:InputDecoration(
+  suffixIcon: IconButton(
+  icon: const Icon(Icons.arrow_forward),
+  onPressed: _searchArticle,
+),
 
 hintText:
-"Search articles, topics, videos...",
+"Search articles..",
 
 
 hintStyle:
@@ -245,6 +225,45 @@ vertical:18,
 
 );
 
+}
+Future<void> _loadArticles() async {
+  try {
+    final articles =
+        await _api.getArticles(lang: _language);
+
+    setState(() {
+      _articles = articles;
+
+      if (articles.isNotEmpty) {
+        _featuredArticle = articles.first;
+      }
+
+      _loading = false;
+    });
+  } catch (e) {
+    setState(() {
+      _loading = false;
+    });
+  }
+}
+Future<void> _searchArticle() async {
+  if (_searchController.text.trim().isEmpty) return;
+
+  try {
+    final article = await _api.getArticleBySlug(
+      slug: _searchController.text.trim(),
+      lang: _language,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReadingScreen(
+          articleId: article["id"],
+        ),
+      ),
+    );
+  } catch (_) {}
 }
 
 Widget _buildFeatured(context){
@@ -325,7 +344,7 @@ const SizedBox(height:12),
 
 Text(
 
-"Pregnancy",
+_featuredArticle?["title"] ?? "",
 
 maxLines:1,
 
@@ -355,7 +374,7 @@ const SizedBox(height:8),
 
 Text(
 
-"Expert-backed guides\non fertility,\ncycles & wellness.",
+_featuredArticle?["summary"] ?? "",
 
 
 maxLines:3,
@@ -412,7 +431,18 @@ BorderRadius.circular(25),
 
 
 
-onPressed:(){},
+onPressed: () {
+  if (_featuredArticle == null) return;
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ReadingScreen(
+        articleId: _featuredArticle!["id"],
+      ),
+    ),
+  );
+},
 
 
 
@@ -472,14 +502,10 @@ scale:
 screenWidth < 380 ? 1.15 : 1.3,
 
 
-child:Image.asset(
-
-"assets/images/pregnancy_fetus.png",
-
-fit:
-BoxFit.contain,
-
-),
+child:Image.network(
+  _featuredArticle?["cover_image_url"] ?? "",
+  fit: BoxFit.contain,
+)
 
 ),
 
@@ -500,83 +526,37 @@ BoxFit.contain,
 
 Widget _buildArticleHeader(){
 
-return Row(
-
-mainAxisAlignment:
-MainAxisAlignment.spaceBetween,
-
-children:[
-
-
-const Text(
-
-"Articles",
-
-style:
-TextStyle(
-
-fontSize:24,
-
-fontWeight:
-FontWeight.bold,
-
-color:
-AppColors.primaryDark,
-
-),
-
-),
-
-
-
-TextButton(
-
-onPressed:(){
-
-},
-
-
-child:
-const Text(
-
-"See all",
-
-style:
-TextStyle(
-
-color:
-Color(0xff16A6A6),
-
-fontWeight:
-FontWeight.bold,
-
-),
-
-),
-
-)
-
-],
-
+return const Text(
+  "Articles",
+  style: TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: AppColors.primaryDark,
+  ),
 );
 
 }
 Widget _buildArticleCard(
-BuildContext context, {
-
-required String image,
-required String category,
-required String title,
-required String duration,
-
+BuildContext context,{
+required Map<String,dynamic> article,
 }){
 
 
 final width =
 MediaQuery.of(context).size.width;
 
-
-return Container(
+return GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReadingScreen(
+          articleId: article["id"],
+        ),
+      ),
+    );
+  },
+  child: Container(
 
 height: width < 380 ? 130 : 145,
 
@@ -633,12 +613,10 @@ borderRadius:
 BorderRadius.circular(18),
 
 
-child:Image.asset(
-
-image,
-
-fit:
-BoxFit.cover,
+child:Image.network(
+article["cover_image_url"] ?? "",
+ fit: BoxFit.cover,
+  errorBuilder: (_, __, ___) => const Icon(Icons.image),
 
 ),
 
@@ -674,7 +652,7 @@ children:[
 
 Text(
 
-category,
+article["language"].toUpperCase(),
 
 maxLines:1,
 
@@ -707,12 +685,12 @@ const SizedBox(height:6),
 
 Text(
 
-title,
+article["title"] ?? "",
 
 maxLines:2,
+overflow: TextOverflow.ellipsis,
 
-overflow:
-TextOverflow.ellipsis,
+
 
 
 style:
@@ -740,7 +718,10 @@ const SizedBox(height:6),
 
 Text(
 
-duration,
+article["summary"] ?? "",
+
+maxLines:2,
+overflow: TextOverflow.ellipsis,
 
 style:
 const TextStyle(
@@ -769,6 +750,7 @@ fontSize:13,
 ),
 
 
+)
 );
 
 }
