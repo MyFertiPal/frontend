@@ -303,7 +303,7 @@ class _ConnectWithOthersSection extends StatelessWidget {
 }
 Future<void> _openPodcast() async {
   final uri = Uri.parse(
-    "https://open.spotify.com/show/YOUR_SHOW_ID",
+    "https://open.spotify.com/show/033Zg8LRmNhoSs58enrdGi?si=xe4U0RoVR3WXw1yLyZtzxA",
   );
 
   if (await canLaunchUrl(uri)) {
