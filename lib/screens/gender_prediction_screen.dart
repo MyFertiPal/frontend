@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "../../theme/app_colors.dart";
 
 enum GenderExpectation { girl, boy, noPreference }
 
@@ -13,8 +14,6 @@ class GenderPredictionScreen extends StatefulWidget {
 class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
   GenderExpectation? _selected;
 
-  static const Color kDarkGreen = Color(0xFF0B6E4F);
-  static const Color kPink = Color(0xFFE91E63);
   static const Color kBlue = Color(0xFF1565C0);
 
   void _selectOption(GenderExpectation option) {
@@ -61,7 +60,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.arrow_back, color: kDarkGreen),
+                      child: const Icon(Icons.arrow_back, color: AppColors.primaryDark),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -70,7 +69,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: kDarkGreen,
+                      color: AppColors.primaryDark,
                     ),
                   ),
                 ],
@@ -159,7 +158,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: kDarkGreen,
+                                  color: AppColors.primaryDark,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -184,7 +183,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                       title: 'Girl',
                       subtitle: "I'm hoping for a baby girl",
                       emoji: '👧',
-                      accentColor: kPink,
+                      accentColor: AppColors.pinkAccent,
                       backgroundColor: const Color(0xFFFCE4EC),
                       iconBackgroundColor: const Color(0xFFF8BBD0),
                       selected: _selected == GenderExpectation.girl,
@@ -206,7 +205,7 @@ class _GenderPredictionScreenState extends State<GenderPredictionScreen> {
                       title: 'No Preference',
                       subtitle: "I'm open to either",
                       emoji: '💚',
-                      accentColor: kDarkGreen,
+                      accentColor: AppColors.primaryDark,
                       backgroundColor: const Color(0xFFE3F1EA),
                       iconBackgroundColor: const Color(0xFFBFE0CD),
                       selected: _selected == GenderExpectation.noPreference,

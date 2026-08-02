@@ -91,8 +91,14 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
     final qualification = specialist!["qualification"] ?? "";
     final expertise = specialist!["area_of_expertise"] ?? "";
     final fee = specialist!["consultation_fee"]?.toString() ?? "0";
-    final availability =
-        specialist!["availability_info"]?.toString() ?? "Available";
+  final availabilityInfo =
+    specialist!["availability_info"] as Map<String, dynamic>?;
+
+final days =
+    availabilityInfo?["days"] ?? "Not specified";
+
+final hours =
+    availabilityInfo?["hours"] ?? "Not specified";
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f6f7),
@@ -120,10 +126,10 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
             ),
           ),
           
-const SizedBox(height: 20),
+
           SliverToBoxAdapter(
             child: Transform.translate(
-              offset: const Offset(0, -28),
+              offset: const Offset(0, -50),
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
@@ -198,16 +204,52 @@ const _SectionTitle(
 
 Container(
   width: double.infinity,
-  padding: const EdgeInsets.all(16),
+  padding: const EdgeInsets.all(18),
   decoration: BoxDecoration(
     color: Colors.grey.shade100,
     borderRadius: BorderRadius.circular(16),
   ),
-  child: Text(
-    availability,
-    style: const TextStyle(
-      fontSize: 15,
-    ),
+  child: Column(
+    children: [
+      Row(
+        children: [
+          const Icon(
+            Icons.calendar_today,
+            color: AppColors.teal,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              days,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      const SizedBox(height: 12),
+
+      Row(
+        children: [
+          const Icon(
+            Icons.access_time,
+            color: AppColors.teal,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              hours,
+              style: const TextStyle(fontSize: 15),
+            ),
+          ),
+        ],
+      ),
+    ],
   ),
 ),
 
@@ -344,32 +386,78 @@ class _BookButton extends StatelessWidget {
     }
   }
 
+  void _payForConsultation(BuildContext context) {
+    // TODO:
+    // Initialize your Paystack/Flutterwave payment here.
+    // After successful payment, allow booking.
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Initializing payment..."),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SizedBox(
-          height: 56,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: _openCalendar,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.teal,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                onPressed: () => _payForConsultation(context),
+                icon: const Icon(Icons.payment),
+                label: const Text(
+                  "Pay for Consultation",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryDark,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
               ),
             ),
-            child: const Text(
-              "Book Consultation",
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: OutlinedButton.icon(
+                onPressed: _openCalendar,
+                icon: const Icon(Icons.calendar_month),
+                label: const Text(
+                  "Book Consultation",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.teal,
+                  side: const BorderSide(
+                    color: AppColors.teal,
+                    width: 2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
