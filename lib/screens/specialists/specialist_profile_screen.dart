@@ -129,7 +129,7 @@ final hours =
 
           SliverToBoxAdapter(
             child: Transform.translate(
-              offset: const Offset(0, -50),
+              offset: const Offset(0, -10),
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
