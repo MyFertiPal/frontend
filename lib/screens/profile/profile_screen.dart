@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import "../../services/api_service.dart";
 import "../profile/profile_setup_screen.dart";
 import "../../services/profile_image_picker.dart";
+import "../../screens/web/web_view_screen.dart";
 
 /// Colors used across the screen.
 class _ProfileColors {
@@ -282,15 +283,7 @@ Future<void> _loadImage() async {
 }
 
 
-  Future<void> _openPrivacyPolicy() async {
-    final uri = Uri.parse(widget.privacyPolicyUrl);
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Couldn't open ${widget.privacyPolicyUrl}")),
-      );
-    }
-  }
+  
 
   Future<void> _confirmDeleteAccount() async {
     final confirmed = await showDialog<bool>(
@@ -356,30 +349,42 @@ context,
           iconColor: const Color(0xFF7C6FD6),
           iconBg: const Color(0xFFE8E4FA),
           label: 'Privacy & Security',
-          onTap: _openPrivacyPolicy,
+          onTap: () {
+  _openWebPage(
+    "Privacy Policy",
+    widget.privacyPolicyUrl,
+  );
+},
         ),
         _SettingsItemData(
           icon: Icons.info_outline,
           iconColor: const Color(0xFFCB9A2C),
           iconBg: const Color(0xFFFBEDD2),
           label: 'About MyFertiPal',
-          onTap: () {
-  _openUrl(
+         onTap: () {
+  _openWebPage(
+    "About MyFertiPal",
     "https://myfertipal.com/about-us",
   );
 },
         ),
       ];
 
-Future<void> _openUrl(String url) async {
-  final uri = Uri.parse(url);
+void _openWebPage(
+String title,
+String url,
+) {
 
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(
-      uri,
-      mode: LaunchMode.inAppBrowserView,
-    );
-  }
+Navigator.push(
+ context,
+ MaterialPageRoute(
+  builder: (_) => WebViewScreen(
+    title: title,
+    url: url,
+  ),
+ ),
+);
+
 }
   @override
 Widget build(BuildContext context) {

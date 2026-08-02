@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
-import "../../theme/app_colors.dart";
 import 'package:webview_flutter/webview_flutter.dart';
+import '../../theme/app_colors.dart';
 
-class CalendlyScreen extends StatefulWidget {
-  final String calendlyUrl;
+class WebViewScreen extends StatefulWidget {
 
-  const CalendlyScreen({
+  final String title;
+  final String url;
+
+  const WebViewScreen({
     super.key,
-    required this.calendlyUrl,
+    required this.title,
+    required this.url,
   });
 
+
   @override
-  State<CalendlyScreen> createState() => _CalendlyScreenState();
+  State<WebViewScreen> createState() => _WebViewScreenState();
+
 }
 
-class _CalendlyScreenState extends State<CalendlyScreen> {
+
+class _WebViewScreenState extends State<WebViewScreen> {
 
   late final WebViewController controller;
 
-  bool isLoading = true;
+  bool loading = true;
 
 
   @override
@@ -26,20 +32,24 @@ class _CalendlyScreenState extends State<CalendlyScreen> {
     super.initState();
 
     controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+
+      ..setJavaScriptMode(
+        JavaScriptMode.unrestricted,
+      )
 
       ..setNavigationDelegate(
         NavigationDelegate(
 
-          onPageStarted: (url){
+          onPageStarted: (_) {
             setState(() {
-              isLoading = true;
+              loading = true;
             });
           },
 
-          onPageFinished: (url){
+
+          onPageFinished: (_) {
             setState(() {
-              isLoading = false;
+              loading = false;
             });
           },
 
@@ -47,9 +57,11 @@ class _CalendlyScreenState extends State<CalendlyScreen> {
       )
 
       ..loadRequest(
-        Uri.parse(widget.calendlyUrl),
+        Uri.parse(widget.url),
       );
+
   }
+
 
 
   @override
@@ -58,9 +70,7 @@ class _CalendlyScreenState extends State<CalendlyScreen> {
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text(
-          "Book Consultation",
-        ),
+        title: Text(widget.title),
         backgroundColor: AppColors.teal,
         foregroundColor: Colors.white,
       ),
@@ -74,13 +84,15 @@ class _CalendlyScreenState extends State<CalendlyScreen> {
           ),
 
 
-          if(isLoading)
+          if(loading)
             const Center(
               child: CircularProgressIndicator(),
             ),
 
         ],
       ),
+
     );
+
   }
 }

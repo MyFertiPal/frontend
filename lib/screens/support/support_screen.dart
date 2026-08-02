@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import "../../theme/app_colors.dart";
+import "../../screens/web/web_view_screen.dart";
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
@@ -198,7 +199,7 @@ class _PodcastCard extends StatelessWidget {
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: _openPodcast,
+                      onPressed: () => _openPodcast(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: AppColors.primaryDark,
@@ -304,17 +305,19 @@ class _ConnectWithOthersSection extends StatelessWidget {
     );
   }
 }
-Future<void> _openPodcast() async {
-  final uri = Uri.parse(
-    "https://open.spotify.com/show/033Zg8LRmNhoSs58enrdGi?si=xe4U0RoVR3WXw1yLyZtzxA",
+void _openPodcast(BuildContext context) {
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => WebViewScreen(
+        title: "MyFertiPal Podcast",
+        url:
+        "https://open.spotify.com/show/033Zg8LRmNhoSs58enrdGi?si=xe4U0RoVR3WXw1yLyZtzxA",
+      ),
+    ),
   );
 
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
-  }
 }
 Future<void> _openWhatsAppCommunity() async {
   final uri = Uri.parse(

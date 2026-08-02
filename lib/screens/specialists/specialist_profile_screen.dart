@@ -375,17 +375,18 @@ class _BookButton extends StatelessWidget {
     required this.calendlyUrl,
   });
 
-  Future<void> _openCalendar() async {
-    final uri = Uri.parse(calendlyUrl);
+ void _openCalendar(BuildContext context) {
 
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-    }
-  }
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => CalendlyScreen(
+        calendlyUrl: calendlyUrl,
+      ),
+    ),
+  );
 
+}
   void _payForConsultation(BuildContext context) {
     // TODO:
     // Initialize your Paystack/Flutterwave payment here.
@@ -436,7 +437,7 @@ class _BookButton extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: OutlinedButton.icon(
-                onPressed: _openCalendar,
+                onPressed: () => _openCalendar(context),
                 icon: const Icon(Icons.calendar_month),
                 label: const Text(
                   "Book Consultation",
