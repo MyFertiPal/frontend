@@ -59,27 +59,6 @@ class _Header extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 6),
-              RichText(
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.4,
-                    color: Colors.grey[800],
-                  ),
-                  children: const [
-                    TextSpan(text: "You're "),
-                    TextSpan(
-                      text: 'not alone.',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(
-                      text:
-                          ' Get expert support and connect with women like you.',
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
