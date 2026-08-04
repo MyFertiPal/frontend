@@ -165,7 +165,7 @@ class _PodcastCard extends StatelessWidget {
                   const Spacer(),
 
                   const Text(
-  "MyFertiPal\nPodcast",
+  "FertiTalks By MyFertipal",
   style: TextStyle(
     color: Colors.white,
     fontSize: 30,
@@ -233,7 +233,7 @@ class _PodcastCard extends StatelessWidget {
     );
   }
 }
-// ---------------- Connect with others (vertical) ----------------
+// ---------------- Connect with others ----------------
 
 class _ConnectWithOthersSection extends StatelessWidget {
   const _ConnectWithOthersSection();
@@ -254,20 +254,6 @@ class _ConnectWithOthersSection extends StatelessWidget {
                   color: Colors.black87,
                 ),
               ),
-            ),
-            Row(
-              children: const [
-                Text(
-                  'View all',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                ),
-                Icon(Icons.chevron_right,
-                    size: 16, color: AppColors.textPrimary),
-              ],
             ),
           ],
         ),

@@ -532,134 +532,110 @@ return Scaffold(
   }
 
   // ---------- Book Specialist ----------
- Widget _buildBookSpecialistSection(BuildContext context) {
+ // ---------- Book Specialist ----------
+Widget _buildBookSpecialistSection(BuildContext context) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// Left Side
-        Expanded(
-          flex: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Talk to a\nSpecialist",
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  fontStyle: FontStyle.italic,
-                  height: 1.15,
-                ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                "Get expert guidance\nfrom certified fertility\ndoctors, anytime.",
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 15,
-                  height: 1.45,
-                ),
-              ),
-              const SizedBox(height: 24),
-             SizedBox(
-  width: MediaQuery.of(context).size.width * 0.70,
-  height: 54,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryDark,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            const SpecialistSearchScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Book Consultation",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        const Text(
+          "Book Specialist",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
           ),
         ),
 
-        const SizedBox(width: 20),
+        const SizedBox(height: 16),
 
-        /// Right Side
-        Expanded(
-          flex: 6,
-          child: Stack(
-            alignment: Alignment.center,
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFF5A5F), // Pink background
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Row(
             children: [
-              Container(
-                width: 220,
-                height: 220,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF2BD6D1),
-                      Color(0xFF11A8A0),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+              /// Left side
+              Expanded(
+                flex: 6,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Talk to a Specialist",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    const Text(
+                      "Get expert guidance from\ncertified fertility doctors,\nanytime.",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        height: 1.4,
+                      ),
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.primaryDark,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 26),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const SpecialistSearchScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Book Consultation",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              ClipOval(
+              const SizedBox(width: 16),
+
+              /// Right side image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(18),
                 child: Image.asset(
                   "assets/images/doctor.jpeg",
-                  width: 205,
-                  height: 205,
+                  width: 145,
+                  height: 170,
                   fit: BoxFit.cover,
-                ),
-              ),
-
-              Positioned(
-                right: 12,
-                child: Column(
-                  children: [
-                    _carouselButton(Icons.chevron_left),
-                    const SizedBox(height: 8),
-                    _carouselButton(Icons.chevron_right),
-                  ],
                 ),
               ),
             ],
           ),
         ),
       ],
-    ),
-  );
-}
-Widget _carouselButton(IconData icon) {
-  return Container(
-    width: 22,
-    height: 22,
-    decoration: BoxDecoration(
-      color: Colors.black.withOpacity(0.25),
-      borderRadius: BorderRadius.circular(4),
-    ),
-    child: Icon(
-      icon,
-      color: Colors.white,
-      size: 16,
     ),
   );
 }
