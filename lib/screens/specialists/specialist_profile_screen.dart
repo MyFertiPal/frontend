@@ -91,14 +91,16 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
     final qualification = specialist!["qualification"] ?? "";
     final expertise = specialist!["area_of_expertise"] ?? "";
     final fee = specialist!["consultation_fee"]?.toString() ?? "0";
-  final availabilityInfo =
+final availabilityInfo =
     specialist!["availability_info"] as Map<String, dynamic>?;
 
-final days =
-    availabilityInfo?["days"] ?? "Not specified";
+String availability = "Not specified";
 
-final hours =
-    availabilityInfo?["hours"] ?? "Not specified";
+if (availabilityInfo != null && availabilityInfo.isNotEmpty) {
+  availability = availabilityInfo.entries
+      .map((e) => "${e.key}: ${e.value}")
+      .join("\n");
+}
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f6f7),
@@ -221,7 +223,7 @@ Container(
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              days,
+              availability,
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -243,7 +245,7 @@ Container(
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              hours,
+              availabilityInfo?["hours"] ?? "Not specified",
               style: const TextStyle(fontSize: 15),
             ),
           ),

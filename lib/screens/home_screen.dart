@@ -570,7 +570,7 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                     const Text(
                       "Get expert guidance from certified fertility doctors, anytime.",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontSize: 15,
                         height: 1.4,
                       ),
@@ -582,8 +582,8 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                       height: 48,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: AppColors.primaryDark,
+                          backgroundColor: AppColors.pinkAccent,
+                          foregroundColor: AppColors.cardBackground,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
