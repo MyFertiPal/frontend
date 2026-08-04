@@ -564,19 +564,11 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Talk to a Specialist",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
+                
+                    const SizedBox(height: 8),
 
                     const Text(
-                      "Get expert guidance from\ncertified fertility doctors,\nanytime.",
+                      "Get expert guidance from certified fertility doctors,\nanytime.",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
