@@ -203,6 +203,22 @@ String _convertLanguageCode(String code) {
       return "English";
   }
 }
+String _languageCode(String language) {
+  switch (language) {
+    case "English":
+      return "en";
+    case "Yoruba":
+      return "yo";
+    case "Igbo":
+      return "ig";
+    case "Hausa":
+      return "ha";
+    case "Pidgin":
+      return "pcm";
+    default:
+      return "en";
+  }
+}
 
 
 @override
@@ -254,18 +270,51 @@ Widget _buildLanguageRow() {
                 child: Text(language),
               );
             }).toList(),
-            onChanged: (value) async{
-              if (value == null) return;
+          onChanged: (value) async {
+  if (value == null) return;
 
-              setState(() {
- _selectedLanguage=value;
-});
+  final previous = _selectedLanguage;
 
+  setState(() {
+    _selectedLanguage = value;
+  });
 
+try {
+  await _apiService.updateLanguagePreference(
+    _languageCode(value),
+  );
 
+  if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Language updated successfully."),
+      ),
+    );
+  }
+} catch (e) {
+  setState(() {
+    _selectedLanguage = previous;
+  });
 
-              widget.onLanguageTap?.call();
-            },
+  if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Failed to update language."),
+      ),
+    );
+  }
+}
+
+  if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Language updated successfully."),
+      ),
+    );
+  }
+
+  widget.onLanguageTap?.call();
+},
           ),
         ),
       ],
