@@ -438,13 +438,13 @@ return Scaffold(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.white,
-                blurRadius: 10,
-                offset: Offset(0, 3),
-              ),
-            ],
+            boxShadow: [
+  BoxShadow(
+    color: Colors.black.withOpacity(0.06),
+    blurRadius: 10,
+    offset: const Offset(0, 4),
+  ),
+],
           ),
           child: Column(
             children: [
@@ -551,11 +551,25 @@ Widget _buildBookSpecialistSection(BuildContext context) {
         const SizedBox(height: 16),
 
         Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.cardBackground, // Pink background
-            borderRadius: BorderRadius.circular(22),
-          ),
+  padding: const EdgeInsets.all(20),
+  decoration: BoxDecoration(
+    color: Colors.white,
+
+    borderRadius: BorderRadius.circular(22),
+
+    border: Border.all(
+      color: Colors.grey.withOpacity(0.15),
+      width: 1,
+    ),
+
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.08),
+        blurRadius: 12,
+        offset: const Offset(0, 5),
+      ),
+    ],
+  ),
           child: Row(
             children: [
               /// Left side
