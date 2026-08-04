@@ -553,7 +553,7 @@ Widget _buildBookSpecialistSection(BuildContext context) {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFFFF5A5F), // Pink background
+            color: AppColors.cardBackground, // Pink background
             borderRadius: BorderRadius.circular(22),
           ),
           child: Row(
@@ -568,7 +568,7 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                     const SizedBox(height: 8),
 
                     const Text(
-                      "Get expert guidance from certified fertility doctors,\nanytime.",
+                      "Get expert guidance from certified fertility doctors, anytime.",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
