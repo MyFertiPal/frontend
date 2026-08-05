@@ -15,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _insightText =
+    "Your personalized fertility insight will appear here.";
 
   final ApiService _apiService = ApiService();
   String _currentPhase() {
@@ -23,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
     DateTime.now().month,
     DateTime.now().day,
   );
+
+  
 
   bool sameDay(DateTime? date) {
     if (date == null) return false;
@@ -98,6 +102,7 @@ DateTime? _nextPeriod;
 
        final prediction = predictions.first;
 
+      final insights = await _apiService.getInsights();
 
       debugPrint("HOME USER: $user");
       debugPrint("HOME PROFILE: $profile");
@@ -144,6 +149,12 @@ _ovulationDate = DateTime.parse(
 _nextPeriod = DateTime.parse(
   prediction["next_period"],
 );
+
+if (insights.isNotEmpty) {
+  _insightText =
+      insights.first["insight_text"] ??
+      _insightText;
+}
 
 
         _isLoading = false;
@@ -476,60 +487,82 @@ return Scaffold(
   }
 
   // ---------- Insight card ----------
-  Widget _buildInsightCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.teal,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.lightbulb_outline,
-                color: AppColors.teal,
-              ),
-            ),
-            const SizedBox(width: 14),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Insight',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Get expert guidance from certified fertility doctors, anytime.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      height: 1.35,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+ Widget _buildInsightCard() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.teal,
+        borderRadius: BorderRadius.circular(18),
       ),
-    );
-  }
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.lightbulb_outline,
+                  color: AppColors.teal,
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              const Expanded(
+                child: Text(
+                  "Today's Insight",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () {
+                  // TODO: Play TTS audio
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.volume_up_outlined,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          Text(
+            _insightText,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   // ---------- Book Specialist ----------
  // ---------- Book Specialist ----------

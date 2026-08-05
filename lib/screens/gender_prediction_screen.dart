@@ -786,7 +786,65 @@ class _GenderPredictionResultScreenState
 
 
 
+List<DateTime> get suggestedDates {
+  if (insight == null) return [];
 
+  final ovulation = DateTime.parse(
+    insight!["ovulation_day"],
+  );
+
+  switch (widget.selection) {
+    case GenderExpectation.boy:
+      // closer to ovulation
+      return [
+        ovulation.subtract(const Duration(days: 1)),
+        ovulation,
+      ];
+
+    case GenderExpectation.girl:
+      // a few days before ovulation
+      return [
+        ovulation.subtract(const Duration(days: 4)),
+        ovulation.subtract(const Duration(days: 3)),
+        ovulation.subtract(const Duration(days: 2)),
+      ];
+
+    case GenderExpectation.noPreference:
+      return [
+        ovulation.subtract(const Duration(days: 2)),
+        ovulation.subtract(const Duration(days: 1)),
+        ovulation,
+      ];
+  }
+}
+String formatDate(DateTime date) {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+
+  const days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+  ];
+
+  return "${days[date.weekday - 1]}, ${date.day} ${months[date.month - 1]}";
+}
 
 
   @override
@@ -1000,97 +1058,98 @@ Container(
 
 const SizedBox(height: 14),
 // Suggested Timing Container
+const SizedBox(height:20),
 Container(
   padding: const EdgeInsets.all(18),
   decoration: BoxDecoration(
-    color: const Color(0xFFEAF8F5),
+    color: Colors.white,
     borderRadius: BorderRadius.circular(18),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black12,
+        blurRadius: 6,
+        offset: Offset(0,3),
+      )
+    ],
   ),
+
   child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        widget.selection == GenderExpectation.girl
-            ? "👧 Suggested Timing"
-            : widget.selection == GenderExpectation.boy
-                ? "👦 Suggested Timing"
-                : "💚 Best Chance of Pregnancy",
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primaryDark,
-        ),
-      ),
 
-      const SizedBox(height: 12),
-
-      Text(
-        widget.selection == GenderExpectation.girl
-            ? "• Have intercourse 2–4 days before ovulation.\n\nAccording to the Shettles timing theory, earlier timing may favor conceiving a girl."
-            : widget.selection == GenderExpectation.boy
-                ? "• Have intercourse on ovulation day.\n• One day before ovulation.\n\nAccording to the Shettles timing theory, timing closer to ovulation may favor conceiving a boy."
-                : "Have intercourse throughout your fertile window, especially during the days leading up to ovulation, to maximize your chances of conception.",
+      const Text(
+        "Suggested Timing",
         style: TextStyle(
-          fontSize: 15,
-          height: 1.6,
-          color: Colors.grey.shade800,
+          fontSize:18,
+          fontWeight:FontWeight.bold,
+          color:AppColors.primaryDark,
         ),
       ),
+
+      const SizedBox(height:12),
+
+      Text(
+        widget.selection == GenderExpectation.boy
+            ? "Try closer to ovulation:"
+            : widget.selection == GenderExpectation.girl
+                ? "Try a few days before ovulation:"
+                : "Your fertile days:",
+        style: TextStyle(
+          color: Colors.grey[700],
+        ),
+      ),
+
+      const SizedBox(height:12),
+
+      ...suggestedDates.map(
+        (date) => Container(
+          margin: const EdgeInsets.only(bottom:8),
+          padding: const EdgeInsets.all(12),
+
+          decoration: BoxDecoration(
+            color:
+              widget.selection == GenderExpectation.boy
+                  ? Colors.blue.shade50
+                  : widget.selection == GenderExpectation.girl
+                      ? Colors.pink.shade50
+                      : Colors.green.shade50,
+
+            borderRadius:
+              BorderRadius.circular(12),
+          ),
+
+          child: Row(
+            children: [
+
+              Icon(
+                Icons.favorite,
+                color:
+                  widget.selection == GenderExpectation.boy
+                      ? Colors.blue
+                      : widget.selection == GenderExpectation.girl
+                          ? Colors.pink
+                          : Colors.green,
+              ),
+
+              const SizedBox(width:12),
+
+              Text(
+                formatDate(date),
+                style: const TextStyle(
+                  fontWeight:FontWeight.w600,
+                  fontSize:15,
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      ),
+
     ],
   ),
 ),
-
-
-
-
             const SizedBox(height:20),
-
-
-
-
-            Container(
-
-              padding:
-              const EdgeInsets.all(14),
-
-
-              decoration:
-              BoxDecoration(
-
-                color:
-                const Color(
-                    0xFFFDECE3
-                ),
-
-
-                borderRadius:
-                BorderRadius.circular(14),
-
-              ),
-
-
-              child:
-              const Text(
-
-
-                "Note: Gender timing methods are not proven methods for choosing a baby's sex. They are only based on timing theories and should not replace medical guidance.",
-
-
-                style:
-                TextStyle(
-
-                  fontSize:13,
-
-                  height:1.4,
-
-                ),
-
-
-              ),
-
-
-            )
-
 
           ],
 
