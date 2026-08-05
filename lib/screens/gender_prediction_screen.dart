@@ -754,129 +754,7 @@ class _GenderPredictionResultScreenState
 
 
   }
-  String get genderAdvice {
 
-
-    final ovulation =
-        insight?["ovulation_day"]
-            ?.toString()
-            ??
-            "Not available";
-
-
-    final fertileStart =
-        insight?["fertile_period_start"]
-            ?.toString()
-            ??
-            "Not available";
-
-
-    final fertileEnd =
-        insight?["fertile_period_end"]
-            ?.toString()
-            ??
-            "Not available";
-
-
-
-    final fertileWindow =
-        "$fertileStart to $fertileEnd";
-
-
-
-    switch(widget.selection){
-
-
-
-      case GenderExpectation.boy:
-
-
-        return """
-
-Your fertile window:
-
-$fertileWindow
-
-
-Estimated ovulation day:
-
-$ovulation
-
-
-For a baby boy preference 👦
-
-The Shettles method suggests timing intercourse as close as possible to ovulation.
-
-Suggested timing:
-
-• Ovulation day
-• One day before ovulation
-
-
-Remember: This method is not scientifically guaranteed.
-
-""";
-
-
-
-
-      case GenderExpectation.girl:
-
-
-        return """
-
-Your fertile window:
-
-$fertileWindow
-
-
-Estimated ovulation day:
-
-$ovulation
-
-
-For a baby girl preference 👧
-
-The Shettles method suggests timing intercourse a few days before ovulation.
-
-Suggested timing:
-
-• 2–4 days before ovulation
-
-
-Remember: This method is not scientifically guaranteed.
-
-""";
-
-
-
-
-
-      case GenderExpectation.noPreference:
-
-
-        return """
-
-Your fertile window:
-
-$fertileWindow
-
-
-Estimated ovulation day:
-
-$ovulation
-
-
-Your body is most fertile during this window.
-
-Tracking ovulation and timing intercourse during the fertile period may improve your chances of conception.
-
-
-""";
-
-    }
-
-  }
 
 
 
@@ -913,6 +791,16 @@ Tracking ovulation and timing intercourse during the fertile period may improve 
 
   @override
   Widget build(BuildContext context){
+    final ovulation =
+    insight?["ovulation_day"]?.toString() ?? "Not available";
+
+final fertileStart =
+    insight?["fertile_period_start"]?.toString() ?? "Not available";
+
+final fertileEnd =
+    insight?["fertile_period_end"]?.toString() ?? "Not available";
+
+final fertileWindow = "$fertileStart - $fertileEnd";
 
 
     return Scaffold(
@@ -939,26 +827,6 @@ Tracking ovulation and timing intercourse during the fertile period may improve 
 
           color:
           AppColors.primaryDark,
-
-        ),
-
-
-
-        title:
-        const Text(
-
-          "Your Results",
-
-          style:
-          TextStyle(
-
-            color:
-            AppColors.primaryDark,
-
-            fontWeight:
-            FontWeight.bold,
-
-          ),
 
         ),
 
@@ -1004,16 +872,28 @@ Tracking ovulation and timing intercourse during the fertile period may improve 
 
 
 
-            const Icon(
-
-              Icons.favorite,
-
-              size:60,
-
-              color:
-              Colors.pink,
-
-            ),
+            Container(
+  width: 90,
+  height: 90,
+  decoration: BoxDecoration(
+    color: widget.selection == GenderExpectation.girl
+        ? Colors.pink.shade50
+        : widget.selection == GenderExpectation.boy
+            ? Colors.blue.shade50
+            : Colors.green.shade50,
+    shape: BoxShape.circle,
+  ),
+  child: Center(
+    child: Text(
+      widget.selection == GenderExpectation.girl
+          ? "👧"
+          : widget.selection == GenderExpectation.boy
+              ? "👦"
+              : "💚",
+      style: const TextStyle(fontSize: 42),
+    ),
+  ),
+),
 
 
 
@@ -1053,69 +933,112 @@ Tracking ovulation and timing intercourse during the fertile period may improve 
 
 
 
-
+// Fertile Window Container
+            
             Container(
-
-              padding:
-              const EdgeInsets.all(18),
-
-
-              decoration:
-              BoxDecoration(
-
-                color:
-                Colors.white,
-
-
-                borderRadius:
-                BorderRadius.circular(18),
-
-
-                boxShadow:[
-
-
-                  const BoxShadow(
-
-                    color:
-                    Colors.black12,
-
-                    blurRadius:5,
-
-                    offset:
-                    Offset(0,3),
-
-                  )
-
-                ],
-
+  padding: const EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: Colors.green.shade50,
+    borderRadius: BorderRadius.circular(16),
+  ),
+  child: Row(
+    children: [
+      const Icon(
+        Icons.calendar_today,
+        color: Colors.green,
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Fertile Window",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
-
-
-
-              child:
-              Text(
-
-
-                genderAdvice,
-
-
-                style:
-                TextStyle(
-
-                  fontSize:15,
-
-                  height:1.6,
-
-                  color:
-                  Colors.grey[800],
-
-                ),
-
-
-              ),
-
-
             ),
+            Text(fertileWindow),
+          ],
+        ),
+      ),
+    ],
+  ),
+),
+const SizedBox(height: 14),
+// Ovulation Day Container
+Container(
+  padding: const EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: Colors.orange.shade50,
+    borderRadius: BorderRadius.circular(16),
+  ),
+  child: Row(
+    children: [
+      const Icon(
+        Icons.track_changes,
+        color: Colors.orange,
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Estimated Ovulation",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(ovulation),
+          ],
+        ),
+      ),
+    ],
+  ),
+),
+
+const SizedBox(height: 14),
+// Suggested Timing Container
+Container(
+  padding: const EdgeInsets.all(18),
+  decoration: BoxDecoration(
+    color: const Color(0xFFEAF8F5),
+    borderRadius: BorderRadius.circular(18),
+  ),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        widget.selection == GenderExpectation.girl
+            ? "👧 Suggested Timing"
+            : widget.selection == GenderExpectation.boy
+                ? "👦 Suggested Timing"
+                : "💚 Best Chance of Pregnancy",
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: AppColors.primaryDark,
+        ),
+      ),
+
+      const SizedBox(height: 12),
+
+      Text(
+        widget.selection == GenderExpectation.girl
+            ? "• Have intercourse 2–4 days before ovulation.\n\nAccording to the Shettles timing theory, earlier timing may favor conceiving a girl."
+            : widget.selection == GenderExpectation.boy
+                ? "• Have intercourse on ovulation day.\n• One day before ovulation.\n\nAccording to the Shettles timing theory, timing closer to ovulation may favor conceiving a boy."
+                : "Have intercourse throughout your fertile window, especially during the days leading up to ovulation, to maximize your chances of conception.",
+        style: TextStyle(
+          fontSize: 15,
+          height: 1.6,
+          color: Colors.grey.shade800,
+        ),
+      ),
+    ],
+  ),
+),
 
 
 
