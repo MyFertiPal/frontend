@@ -12,733 +12,175 @@ class AppLocalizationsHa extends AppLocalizations {
   String get appTitle => 'MyFertiPal';
 
   @override
-  String get appSubtitle => 'Your Fertility Tracking Journey';
+  String get appSubtitle => 'Tafiyar Kula da Haihuwa Ta Ku';
 
   @override
-  String get welcome => 'Sannu';
-
-  @override
-  String get welcomeToJourney => 'Welcome to Your Journey';
-
-  @override
-  String get register => 'Yi Koyi';
+  String get welcome => 'Barka da zuwa';
 
   @override
   String get login => 'Shiga';
 
   @override
-  String get signUp => 'Sign Up';
+  String get createAccount => 'Ƙirƙiri Asusun';
 
   @override
-  String get createAccount => 'Ƙirƙiri akawu';
+  String get dontHaveAccount => 'Ba ku da asusu?';
 
   @override
-  String get signIn => 'Sign In';
+  String get signInWithGoogle => 'Shiga da Google';
 
   @override
-  String get forgotPassword => 'Forgot Password?';
+  String get register => 'Yi Rajista';
 
   @override
-  String get resetPassword => 'Sake Sada Kalmar Sirri';
+  String get email => 'Adireshin Imel';
 
   @override
-  String get dontHaveAccount => 'Ba ku da akaụnt? ';
+  String get forgotPassword => 'Kun manta kalmar sirri?';
 
   @override
-  String get alreadyHaveAccount => 'Kin da ni akawu?';
+  String get rememberEmail => 'Tuna Imel';
+
+  @override
+  String get required => 'Ana buƙata';
+
+  @override
+  String googleSignInFailed(Object error) {
+    return 'Shigar Google ya kasa: $error';
+  }
+
+  @override
+  String get logYourSymptoms => 'Rubuta Alamomin Ku 📝';
+
+  @override
+  String get symptomReminderBody =>
+      'Yaya kuke ji yau? Ƙara alamominku don samun ingantaccen bayani game da haihuwa.';
 
   @override
   String get fullName => 'Cikakken Suna';
 
   @override
-  String get email => 'Iméèlì';
-
-  @override
-  String get emailHint => 'Enter your email';
-
-  @override
-  String get username => 'Suna Mai Amfani';
-
-  @override
-  String get usernameHint => 'Choose a unique username';
-
-  @override
-  String get password => 'Kalmar Sirri';
-
-  @override
-  String get passwordHint => 'Create a strong password';
+  String get username => 'Sunan Mai Amfani';
 
   @override
   String get confirmPassword => 'Tabbatar da Kalmar Sirri';
 
   @override
-  String get phoneNumber => 'Nomban Wayar';
+  String get phoneNumber => 'Lambar Waya';
 
   @override
-  String get phoneHint => 'Enter phone number';
+  String get signUpWith => 'Yi rajista da';
 
   @override
-  String fieldRequired(Object field) {
-    return '$field is required';
-  }
+  String get alreadyHaveAccount => 'Kun riga kuna da asusu?';
 
   @override
-  String get enterValidEmail => 'Enter a valid email address';
+  String get cancel => 'Soke';
 
   @override
-  String get passwordMinLength => 'Password must be at least 8 characters';
+  String get submit => 'Aika';
 
   @override
-  String get passwordStrength =>
-      'Password must contain uppercase, lowercase, and number';
+  String get pleaseCorrectErrors =>
+      'Da fatan za a gyara kurakuran da aka nuna kafin ci gaba.';
 
   @override
-  String get passwordsMismatch => 'Passwords do not match';
+  String get unexpectedError =>
+      'An sami kuskuren da ba a zata ba. Da fatan a sake gwadawa.';
 
   @override
-  String get firstAndLastName => 'Please enter first and last name';
+  String get invalidEmail => 'Imel ba daidai ba';
 
   @override
-  String get usernameMinLength => 'Username must be at least 3 characters';
+  String get usernameTooShort => 'Sunan mai amfani ya yi gajarta';
 
   @override
-  String get validPhoneNumber => 'Enter a valid phone number';
+  String get sendingVerificationCode => 'Ana aika lambar tabbatarwa';
 
   @override
-  String get cycleSummary => 'Cycle Summary';
+  String get verifyYourAccount => 'Tabbatar da Asusunku';
 
   @override
-  String get fertileWindow => 'Lokacin haihuwa';
+  String get verificationCodeSent =>
+      'An aika lambar tabbatarwa zuwa imel ɗinku.';
 
   @override
-  String get ovulationDay => 'Ranar Haifuwa';
+  String get resendingOtp => 'Ana sake aika OTP...';
 
   @override
-  String get fertilityCountdown => 'Lanƙwan Haihuwa';
+  String get verificationCodeResent =>
+      'An sake aika lambar tabbatarwa cikin nasara';
 
   @override
-  String daysUntilFertile(Object days) {
-    return '$days kwanaki har zuwa lokacin haihuwa';
-  }
+  String get unableToResendOtp =>
+      'Ba za a iya sake aika OTP ba. Da fatan a sake gwadawa.';
 
   @override
-  String dayUntilFertile(Object day) {
-    return '$day kwana har zuwa lokacin haihuwa';
-  }
+  String get incorrectVerificationCode =>
+      'Lambar tabbatarwa ba daidai ba ce. Da fatan a sake gwadawa.';
 
   @override
-  String get inFertileWindow => '🌟 Kin iko a lokacin haihuwa yanzu!';
+  String get pleaseEnterCompleteOtp =>
+      'Da fatan a shigar da cikakkiyar lambar OTP';
 
   @override
-  String get logCycleSee => 'Bi da agogo don ganin lanƙwa';
-
-  @override
-  String get fertilityStatus => 'Fertility Status';
-
-  @override
-  String get home => 'Gida';
-
-  @override
-  String get calendar => 'Kalanda';
-
-  @override
-  String get educational => 'Karatu';
-
-  @override
-  String get support => 'goyon baya';
-
-  @override
-  String get profile => 'Bayani';
-
-  @override
-  String get settings => 'Saita';
-
-  @override
-  String get logOut => 'Log out';
-
-  @override
-  String get logSymptoms => 'Rubuta Alamomi';
-
-  @override
-  String get trackCycle => 'Bi da Lokaci';
-
-  @override
-  String get viewInsights => 'View Insights';
-
-  @override
-  String get readArticles => 'Read Articles';
-
-  @override
-  String get getSupport => 'Get Support';
-
-  @override
-  String get educationalHub => 'Educational Hub';
-
-  @override
-  String get article => 'Article';
-
-  @override
-  String get listen => 'Listen';
-
-  @override
-  String get english => 'English';
-
-  @override
-  String get readArticle => 'Read Article';
-
-  @override
-  String get playAudio => 'Play Audio';
-
-  @override
-  String get fertilityBasics => 'Ainihin Asara Jiya';
-
-  @override
-  String get mythsAndFacts => 'Myths & Facts';
-
-  @override
-  String get playbackSpeed => 'Playback Speed';
-
-  @override
-  String get loadingAudio => 'Loading audio...';
-
-  @override
-  String get failedLoadAudio => 'Failed to load audio. Please try again.';
-
-  @override
-  String get playbackError => 'Playback error. Please try again.';
-
-  @override
-  String get howToUse => 'How to Use';
-
-  @override
-  String get contact => 'Contact Us';
-
-  @override
-  String get help => 'Taimako';
-
-  @override
-  String aboutApp(Object appName) {
-    return 'About $appName';
-  }
-
-  @override
-  String get success => 'Nasara';
-
-  @override
-  String get error => 'Kuskure';
-
-  @override
-  String get warning => 'Warning';
-
-  @override
-  String get info => 'Information';
-
-  @override
-  String get loading => 'Ana charge';
-
-  @override
-  String get noData => 'No data available';
-
-  @override
-  String get tryAgain => 'Sake ƙoƙari';
-
-  @override
-  String get cancel => 'Soki';
-
-  @override
-  String get submit => 'Kashe';
-
-  @override
-  String get save => 'Ajiya';
-
-  @override
-  String get delete => 'Gida';
-
-  @override
-  String get edit => 'Gyara';
-
-  @override
-  String get close => 'Close';
-
-  @override
-  String get selectLanguage => 'Select Language';
-
-  @override
-  String get languageSelected => 'Language selected';
-
-  @override
-  String get setupProfile => 'Set Up Profile';
-
-  @override
-  String get nextStep => 'Next Step';
+  String get verify => 'Tabbatar';
 
   @override
   String get skip => 'Tsallake';
 
   @override
-  String get finish => 'Finish';
+  String get next => 'Na gaba';
 
   @override
-  String get myProfile => 'My Profile';
-
-  @override
-  String get editProfile => 'Edit Profile';
-
-  @override
-  String get personalInfo => 'Personal Information';
-
-  @override
-  String get cycleInfo => 'Bayani lokaci';
-
-  @override
-  String get dateOfBirth => 'Rana haifa';
-
-  @override
-  String get cycleLength => 'Cycle Length ';
-
-  @override
-  String get periodLength => 'Period Length';
-
-  @override
-  String get ttcHistory => 'TTC History';
-
-  @override
-  String get supportFeedback => 'Support Feedback';
-
-  @override
-  String get sendFeedback => 'Aika fahimta';
-
-  @override
-  String get reportIssue => 'Baje matsala';
-
-  @override
-  String get contactSupport => 'Tunada da taimako';
-
-  @override
-  String get contactSupportMessage =>
-      'Kuna buƙatar taimako ko kuna da tambayoyi? Aika mana da imel kuma za mu mayar da ku da wuri.';
-
-  @override
-  String get faqTitle => 'Frequently Asked Questions';
-
-  @override
-  String get calendarTab => 'Calendar';
-
-  @override
-  String get periodDay => 'Period Day';
-
-  @override
-  String get logPeriod => 'Log Period';
-
-  @override
-  String get selectDates => 'Select dates';
-
-  @override
-  String get clearSelection => 'Clear Selection';
-
-  @override
-  String get minsRead => '5 mins read';
-
-  @override
-  String get genderPredictions => 'Hasashen Jinsi';
-
-  @override
-  String get findSpecialist => 'Nemo Ƙwararre';
-
-  @override
-  String get chatWithSpecialist => 'Yi Hira da Ƙwararre';
-
-  @override
-  String get profileSettings => 'Profile & Settings';
-
-  @override
-  String get notSet => 'Not set';
-
-  @override
-  String get faithPreference => 'Faith Preference';
-
-  @override
-  String get lastPeriodDate => 'Last Period Date';
-
-  @override
-  String get days => 'days';
-
-  @override
-  String get preference => 'Preference';
-
-  @override
-  String get language => 'Harshe';
-
-  @override
-  String get privacySecurity => 'Privacy & Security';
-
-  @override
-  String get dataPrivacyPolicy => 'Data Privacy Policy';
-
-  @override
-  String get manageDataPermissions => 'Manage Data & Permissions';
-
-  @override
-  String get exploreMyData => 'Explore my Data';
-
-  @override
-  String get deleteAccount => 'Delete Account';
-
-  @override
-  String get deleteAccountWarning =>
-      'Once you delete your account, there is no going back. This action is permanent and cannot be undone.';
-
-  @override
-  String get deleteAccountConfirmation =>
-      'Are you sure you want to delete your account? This action cannot be undone.';
-
-  @override
-  String get accountDeletedSuccess => 'Account deleted successfully.';
-
-  @override
-  String get deleteAccountFailed => 'Failed to delete account';
-
-  @override
-  String get supportHub => 'Cibiyar Taimako';
-
-  @override
-  String get supportHubSubtitle =>
-      'Taimakon lafiya ta hankali da ƙarfafawa na yau da kullum';
-
-  @override
-  String get dailyAffirmation => 'Ƙarfafawa ta yau da kullum';
-
-  @override
-  String get audioEncouragement => 'Ƙarfafawa ta sauti';
-
-  @override
-  String get audioTitle => '\'Yar Uwata, Dauke kai sama';
-
-  @override
-  String get culturalGuidance => 'Jagora na Al\'ada';
-
-  @override
-  String get culturalGuidanceDescription =>
-      'Yadda za ku jimre wa matsin iyali da samun kwanciyar hankali a cikin goyon bayan al\'umma. Duba karatun da muka bayar da haɗuwa da ƙungiyoyi.';
-
-  @override
-  String get communityGroups => 'Ƙungiyoyin al\'umma';
-
-  @override
-  String get create => 'Ƙirƙira';
-
-  @override
-  String get fertilityCircle => 'Taron Haihuwa';
-
-  @override
-  String get generalSupport => 'Taimako na Gabaɗaya';
-
-  @override
-  String get members => 'mambobi';
-
-  @override
-  String get latestMessage => 'Sarah: Na gode wa ku duka don goyon baya!';
-
-  @override
-  String get exploreCommunityGroups => 'Bincika Ƙungiyoyin Al\'umma';
-
-  @override
-  String get groupChatComingSoon =>
-      'Tattaunawar ƙungiyar tana zuwa nan ba da jimawa ba';
-
-  @override
-  String get howToUseFertipath => 'Yadda Ake Amfani da MyFertiPal';
-
-  @override
-  String get welcomeToFertipath => 'Maraba zuwa MyFertiPal!';
-
-  @override
-  String get guideIntro =>
-      'Bi waɗannan matakai don samun sakamako mafi kyau daga fasalin bin haihuwa.';
-
-  @override
-  String get step1Title => 'Kammala Bayanan Ku';
-
-  @override
-  String get step1Description =>
-      'Je zuwa Profile → Settings don shigar da tsawon zagayowar ku, tsawon lokacin al\'ada, da zaɓin bangaskiya. Bayanan daidai suna taimaka mana mu ba da hasashen da suka fi kyau.';
-
-  @override
-  String get step2Title => 'Bi Lokacin Al\'ada';
-
-  @override
-  String get step2Description =>
-      'Danna shafin Kalanda kuma zaɓi kwanakin da kuke cikin al\'ada. Wannan yana taimaka mana mu hasashe zagayowar ku na gaba, lokacin haihuwa, da ranar fitarwar kwai.';
-
-  @override
-  String get step3Title => 'Rubuta Alamomi na Yau da Kullum';
-
-  @override
-  String get step3Description =>
-      'Yi amfani da maɓallin \"Rubuta Alamomi\" don rikodin yanayin rai, gamshewar mahaifa, zafin jiki na ƙasa, da sauran alamomi. Wannan yana inganta daidaiton hasashe.';
-
-  @override
-  String get step4Title => 'Duba Fahimtar Ku';
-
-  @override
-  String get step4Description =>
-      'Shafin gida yana nuna fahimtar haihuwa na yau da kullum bisa bayanan ku. Duba kwanakin haihuwa, hasashen fitarwar kwai, da taƙaitaccen zagayowar.';
-
-  @override
-  String get step5Title => 'Saurari Abun Ciki na Audio';
-
-  @override
-  String get step5Description =>
-      'Bincika Educational Hub don labarai da darussa na audio. Yi amfani da sarrafa sauri (0.75x - 2x) don daidaita kunna zuwa abin da kuke so.';
-
-  @override
-  String get step6Title => 'Samun Goyon Bayan Lafiyar Hankali';
-
-  @override
-  String get step6Description =>
-      'Ziyarci shafin Support don ƙarfafawa da tushen bangaskiya da kayayyaki. Zaɓi zaɓin bangaskiya a cikin saiti don abun ciki na musamman.';
-
-  @override
-  String get step7Title => 'Duba Hasashe';
-
-  @override
-  String get step7Description =>
-      'Kalandar ku yana alamta kwanakin al\'ada na gaba da aka hasashe da da\'irori masu launi ja. Al\'adu da suka gabata suna bayyana a matsayin da\'irori ja cike.';
-
-  @override
-  String get proTips => 'Shawarwarin Ƙwararru';
-
-  @override
-  String get proTipsContent =>
-      '• Rubuta alamomi yau da kullum na zagayoyi 2-3 don samun hasashe mafi daidai\n\n• Sabunta kwanakin al\'ada ku da zarar zagayowar ku ta fara\n\n• Duba lokacin haihuwa ku don shirya ko guje wa ciki\n\n• Yi amfani da abun ciki na audio a 1.25x ko 1.5x sauri don koyo da sauri\n\n• Kunna sanarwa don samun tunatarwa don rubuta alamomi';
-
-  @override
-  String get needHelp => 'Kuna Buƙatar Taimako?';
-
-  @override
-  String get needHelpContent =>
-      'Idan kuna da tambayoyi ko kuna fuskantar matsaloli, ziyarci shafin Support ko duba Educational Hub don cikakkun jagororin bin haihuwa.';
-
-  @override
-  String get loggedSymptoms => 'Alamomi da Aka Rubuta';
-
-  @override
-  String get clear => 'Goge';
-
-  @override
-  String get noSymptomsLogged => 'Ba a rubuta alamomi ba tukuna.';
-
-  @override
-  String get calendarCleared => 'An goge kalanda da kwanakin al\'ada na gaba.';
-
-  @override
-  String get failedToClearCalendar => 'An kasa goge kwanakin kalanda';
-
-  @override
-  String get mood => 'Kamar yadda kake';
-
-  @override
-  String get bleeding => 'Jiya lokaci';
-
-  @override
-  String get cervicalMucus => 'Mucus Jiya';
-
-  @override
-  String get sexualActivity => 'Lokaci Na Jima';
-
-  @override
-  String get pain => 'Zafi';
-
-  @override
-  String get happy => 'Farinciki';
-
-  @override
-  String get calm => 'Lahani';
-
-  @override
-  String get confident => 'Tsanani';
-
-  @override
-  String get focused => 'Mai da hankali';
-
-  @override
-  String get irritable => 'Fushi';
-
-  @override
-  String get anxious => 'Damuwa';
-
-  @override
-  String get sad => 'Baƙin ciki';
-
-  @override
-  String get emotional => 'Jin kai';
-
-  @override
-  String get neutral => 'Matsakaici';
-
-  @override
-  String get none => 'Babu';
-
-  @override
-  String get clots => 'Kwayoyin jini';
-
-  @override
-  String get highLibido => 'Sha\'awa mai ƙarfi';
-
-  @override
-  String get lowLibido => 'Sha\'awa mai rauni';
-
-  @override
-  String get lowerBackPain => 'Ciwon Kafan Baya';
-
-  @override
-  String get pelvicPain => 'Ciwo a Pelvis';
-
-  @override
-  String get headache => 'Ciwon Kai';
-
-  @override
-  String get breastTenderness => 'Jin Jinƙan Nonuwa';
-
-  @override
-  String get ovulationPain => 'Ciwo Lokacin Fitar Kwai';
-
-  @override
-  String get abdominalCramps => 'Zafi Cikin Jiya';
-
-  @override
-  String get nextPeriodDate => 'Next Period Date';
-
-  @override
-  String get light => 'Kadan';
-
-  @override
-  String get medium => 'Tsaka-tsaki';
-
-  @override
-  String get heavy => 'Yawa';
-
-  @override
-  String get spotting => 'Kadan Kadan';
-
-  @override
-  String get dry => 'Bushewa';
-
-  @override
-  String get sticky => 'Damshi';
-
-  @override
-  String get creamy => 'Krimu';
-
-  @override
-  String get watery => 'Ruwa';
-
-  @override
-  String get eggWhite => 'Farin Kwai';
-
-  @override
-  String get protected => 'Tare da Kariya';
-
-  @override
-  String get unprotected => 'Ba tare da Kariya ba';
-
-  @override
-  String get mild => 'Kadan';
-
-  @override
-  String get moderate => 'Tsaka-tsaki';
-
-  @override
-  String get severe => 'Sosai';
-
-  @override
-  String get selectSymptom => 'Zabar Alamomi';
-
-  @override
-  String get selectAtLeastOneSymptom => 'Biko zabar aƙalla ɗaya';
-
-  @override
-  String get symptomsLoggedSuccessfully => 'Alamomi an rubuta su fa!';
-
-  @override
-  String get failedToSaveSymptoms => 'Alamomi ba a rubutu su ba';
-
-  @override
-  String get noSymptomsSelected => 'Babu alamomi da aka zabar a yanzu.';
-
-  @override
-  String get selectPreferredLanguage => 'Zaɓi Harshen Da Kuke So';
-
-  @override
-  String get pleaseSelectLanguage => 'Don Allah zaɓi harshe';
-
-  @override
-  String get next => 'Gaba';
-
-  @override
-  String get trackYourCycle => 'Bi Zagayowar Ku';
+  String get trackYourCycle => 'Bibiyi Zagayen Ku';
 
   @override
   String get trackYourCycleDesc =>
-      'Lura da zagayowar ku cikin sauƙi kuma samun bayanan da suka dace';
+      'Kula da zagayen ku cikin sauƙi kuma ku sami shawarwari na musamman';
 
   @override
-  String get learnInYourLanguage => 'Koyi cikin yaren ku';
+  String get learnInYourLanguage => 'Koyi da harshen ku';
 
   @override
   String get learnInYourLanguageDesc =>
-      'Samun ilimin haihuwa da kayayyaki cikin yaren da kuka fahimta mafi kyau';
+      'Samun ilimin haihuwa da bayanai cikin harshen da kuka fi fahimta';
 
   @override
-  String get feelSupported => 'Ku ji goyon baya';
+  String get feelSupported => 'Samun Taimako';
 
   @override
   String get feelSupportedDesc =>
-      'Shiga cikin al\'umma mai kulawa kuma samun goyon bayan da kuke buƙata a tafiyar ku';
+      'Kasance cikin al\'umma mai tallafi kuma ku sami taimakon da kuke buƙata';
 
   @override
-  String get signInWithGoogle => 'Shiga Da Google';
-
-  @override
-  String get signInWithFacebook => 'Shiga Da Facebook';
-
-  @override
-  String get registerTitle => 'Yi Koyi';
-
-  @override
-  String get passwordsDoNotMatch => 'Kalmomin sirri ba su dace ba';
-
-  @override
-  String get sendingVerificationCode => 'Aika lambar tabbatar...';
-
-  @override
-  String get failedToSendVerificationCode => 'An kasa aika lambar tabbatar';
-
-  @override
-  String get sendPasswordResetLink => 'Aika hanyar sake sada kalmar sirri';
+  String get sendPasswordResetLink => 'Aika hanyar sake saita kalmar sirri';
 
   @override
   String get enterYourAccountEmail =>
-      'Shigar da iméèlì akaũntin ka kuma aika ka goɗi ɗin sada kalmar sirri.';
+      'Shigar da imel ɗin asusunka, za mu aika maka da hanyar sake saita kalmar sirri.';
 
   @override
-  String get sendLink => 'Aika Goɗi';
+  String get sendLink => 'Aika Hanya';
 
   @override
-  String get checkYourEmail => 'Duba Iméèlì Nka';
+  String get checkYourEmail => 'Duba Imel ɗinka';
 
   @override
   String get resetLinkSent =>
-      'Mun aika maka goɗi sada kalmar sirri. Buga bọ̀tin a cikin iméèlì don sada kalmar sirri.';
+      'Mun aika maka da hanyar sake saita kalmar sirri. Danna maɓallin da ke cikin imel ɗin don sake saita kalmar sirri.';
 
   @override
-  String get checkSpamFolder => '📧 Kada manta dubawa folder spam nka';
+  String get checkSpamFolder => '📧 Kar ka manta ka duba babban fayil ɗin spam';
 
   @override
-  String get didntReceiveEmail => 'Ba ka karbo iméèlì ba? Aika sake';
+  String get didntReceiveEmail => 'Ba ka sami imel ɗin ba? Sake aikawa';
 
   @override
-  String get backToLogin => 'Koma Shiga';
+  String get backToLogin => 'Koma Shafin Shiga';
+
+  @override
+  String get resetPassword => 'Sake Saita Kalmar Sirri';
 
   @override
   String get newPassword => 'Sabuwar Kalmar Sirri';
@@ -747,210 +189,302 @@ class AppLocalizationsHa extends AppLocalizations {
   String get enterNewPassword => 'Shigar da sabuwar kalmar sirri';
 
   @override
-  String get passwordAtLeast6 => 'Kalmar sirri dole taba kene 6 k\'ara';
+  String get passwordAtLeast6 =>
+      'Kalmar sirri dole ta kasance aƙalla haruffa 6';
 
   @override
-  String get invalidOrMissingToken => 'Token ba shi da kyau ko ba shi.';
+  String get invalidOrMissingToken =>
+      'Alamar izini ba ta da inganci ko ta ɓace.';
 
   @override
-  String get failedToResetPassword => 'An kasa sake sada kalmar sirri.';
+  String get failedToResetPassword => 'An kasa sake saita kalmar sirri.';
 
   @override
-  String get passwordUpdated => 'Kalmar Sirri Ta Sake Sada';
+  String get passwordUpdated => 'An Sabunta Kalmar Sirri';
 
   @override
   String get passwordSuccessfully =>
-      'Kalmar sirri nka ta sake sada cikin nasara. Kina iya shiga da sabuwar kalmar sirri nka.';
+      'An sabunta kalmar sirrinka cikin nasara. Yanzu za ka iya shiga da sabbin bayananka.';
 
   @override
-  String get mythsFacts => 'Jita & Gaskiyar';
+  String get emailHint => 'misali@example.com';
 
   @override
-  String get article1Title =>
-      'Kamar Yadda Saura Ta Faru: Karanta Sakaci na Amfani da Saura';
+  String get pleaseEnterValidEmail =>
+      'Da fatan za ka shigar da imel mai inganci don ci gaba.';
 
   @override
-  String get article1Excerpt =>
-      'Saura ta faru lokacin da sperm ya tsunduma kwai kuma embryo ya shiga inuwa. Koyi lokacin da wazi furewa kuma kamar yadda lafiya, koli, da jiya sai da TTC.';
+  String resetLinkSentMessage(Object email) {
+    return 'Mun aika maka da amintacciyar hanyar sake saita kalmar sirri zuwa $email.';
+  }
 
   @override
-  String get article1Content =>
-      'Ciki na faruwa ne lokacin da maniyyi ya hadu da ƙwai kuma ƙwan da aka haifa ya sami nasarar sake shiga mahaifa. Fahimtar wannan na taimakawa wajen ƙara yiwuwar samun ciki.\n\nFahimtar lokacin samun ciki\nMafi yawan yiwuwar samun ciki yana faruwa a lokacin da jikin mace ke da heɗin haihuwa: ranakun da suka kai ga ovulation har ciki ɗaya (kimanin kwanaki 14 kafin lokacin haila na gaba a wani tsarin yau da kullum). Domin maniyyi na iya rayuwa a jikin mace na kwanaki da dama, ciki na iya faruwa idan maniyyi ya kasance a wannan lokacin.\n\nLafiyayyen jiki, ƙarin yiwuwar samun ciki\nLafiya gaba ɗaya tana tallafawa samun ciki. Ci abinci mai daidaito, shan ruwa isasshe, sarrafa damuwa, yin barci mai kyau, da kuma gujewa shan taba da giya. Riƙe nauyi mai kyau yana da muhimmanci, domin kasancewa da ƙasa ko sama da nauyi zai iya shafar ovulation.\n\nBi diddigin ovulation\n- Kulawa da zagayowar haila (ana haɗa wannan a cikin manhajar Fertilpath)\n- Kula da canje-canjen danshin mahaifa\n- Amfani da kayan hasashen ovulation\n\nWadannan kayan aikin na taimakawa wajen sanin ranakun da aka fi samun haihuwa.\n\nDuba lafiyar likita yana da muhimmanci\nKafin kokarin daukar ciki, je wurin ganin likita. Zasu iya ba da shawara kan sinadaran bitamin na ciki kamar folic acid, duba kowanne yanayin lafiya, kuma su jagorance ka zuwa cikin uwa mai lafiya.\n\nHakuri abu ne na al\'ada\nKo da lokacin yayi daidai, zai iya ɗaukar watanni kafin ciki ya samu. Wannan al\'ada ne kuma ba koyaushe yana nufin wani abu ba ne. Yi la\'akari da ganin likita idan kun yi ƙoƙari na watanni 12 (ko kuma kafin idan kuna da shekaru sama da 35).';
+  String get unableToSendLink =>
+      'Ba za a iya aika hanyar ba. Ka sake gwadawa daga baya.';
 
   @override
-  String get article2Title => 'Yaya Tsunduma Kwai Ya Zama?';
+  String get enterNewPasswordDescription =>
+      'Shigar da sabuwar kalmar sirrinka a ƙasa don kare asusunka.';
 
   @override
-  String get article2Excerpt =>
-      'Tsunduma kwai shine kolin kadan (12-24 awar), sai da sperm zai iya zama har zuwa kwanaki biyar. Fahimtar wazi yana taimaka maka tsara ko dakatar da saura.';
+  String get tokenRequired => 'Ana buƙatar alamar izini.';
 
   @override
-  String get article2Content =>
-      'Ovulsiyon shine lokacin da ovarin ya saki ƙwai da ya girma. Ƙwai yana rayuwa kimanin awanni 12 zuwa 24, kuma ana iya shafewa ne kawai a cikin wannan ɗan gajeren lokaci.\n\nTagar haihuwa\nKo da yake ovulsiyon tana ɗan gajere, maniyyi na iya rayuwa a cikin hanyoyin haihuwa na har zuwa kwana biyar. Ciki na iya faruwa idan maniyyi yana nan a kwanakin kafin ovulsiyon ko a ranar ovulsiyon kanta.\n\nLokacin da ovulsiyon ke faruwa\nA cikin zagaye na yau da kullum, ovulsiyon yana kusan kwanaki 14 kafin al\'ada ta gaba, amma lokaci yana bambanta bisa ga mutum da kuma zagayen.\n\nAlamun ovulsiyon\nWasu mutane suna lura da ɗan ciwo a ƙasa na ciki ko canje-canje a cikin ruwan farji kusa da lokacin ovulsiyon. Wadannan alamun na iya taimakawa gano ranakun da ake da haihuwa, amma suna bambanta ga kowa.\n\nDalilin da yake da mahimmanci\nSanin tsawon lokacin ovulsiyon da tsawon lokacin da maniyyi ke rayuwa na iya jagorantar lokacin don samun juna biyu, shirye-shiryen iyali, ko kawai fahimtar jikinka.';
+  String get passwordMinimumLength =>
+      'Kalmar sirri dole ta kasance aƙalla haruffa 8.';
 
   @override
-  String get article3Title => 'Rashin Saura Ba Sata Ba Ne';
+  String get passwordsDoNotMatch => 'Kalmomin sirri ba su yi daidai ba.';
 
   @override
-  String get article3Excerpt =>
-      'A cikin yawancin jamaat na Nigeria da Afirka, matsi na saura ya yi. Rashin saura shine jiya, ba sata ba ko gazawa.';
+  String get unableToResetPassword =>
+      'Ba za a iya sake saita kalmar sirri ba. Ka sake gwadawa daga baya.';
 
   @override
-  String get article3Content =>
-      'KIdan kana ƙoƙarin yin ciki kuma hakan bai faru ba tukuna, ka tuna wannan: rashin iya haihuwa ba la\'ana ce ko hukunci ba.\n\nA cikin al\'ummomin Najeriya da na Afirka da dama, mahaifiyanci yana da alaƙa sosai da asali, kuma jinkiri na iya haifar da matsin lamba mai nauyi. Kalmar kamar \"ba haihuwa\" ko \"yana jiran Allah\" na iya haifar da raunukan zuciya, amma wahalar yin ciki matsala ce ta likita da ta halitta, ba hukuncin ruhaniya ba.\n\nRashin haihuwa na da dalilai da dama: rashin daidaiton kwayoyin halitta, kamuwa da cuta, ciwace-ciwace, toshewar bututu, shekaru, damuwa, ko matsalolin namiji. Maza da mata suna fuskantar matsalar kusan daidai, duk da haka galibi mata ne kawai suke ɗaukar laifi.\n\nKina da hakkin kulawa, ba kunya ba. Neman taimakon likita ba yana nufin ba ki da imani ba. Mata da yawa suna samun ciki bayan cikakken ganewar lafiya, magani, canje-canjen salon rayuwa, ko taimakon likita. Kuma ko da tafiyar na da tsawo, rayuwarki tana da ma\'ana da manufa fiye da mahaifiyancia kasance mai tausayi ga kanka.\n\nKare lafiyar kwakwalwa da ta motsin rai. Ka kewaye kanka da mutanen da ke goyon bayanka, ka yi tambayoyi, ka nemi shawarar likita mai inganci, kuma ka ba kanka izinin yin fata—ba tare da zargin kanka ba. Jikinka ba abokin gaba bane, kuma labarinka bai ƙare ba.';
-
-  @override
-  String get christianAffirmation1 =>
-      '\"Zan iya yin duk abubuwa ta wurin Kristi wanda yake ba ni ƙarfi.\"\n- Filipiyawa 4:13';
-
-  @override
-  String get christianAffirmation2 =>
-      '\"Domin na san shirye-shiryen da nake da su dominka, in ji Ubangiji, shirye-shiryen alheri ne, ba na sharri ba, don in ba ku bege da nan gaba.\"\n- Irmiya 29:11';
-
-  @override
-  String get christianAffirmation3 =>
-      '\"Ubangiji shi ne makiyayina; ba zan rasa kome ba.\"\n- Zabura 23:1';
-
-  @override
-  String get muslimAffirmation1 =>
-      '\"Saboda haka, lalle, tare da wahala, akwai sauƙi.\"\n- Alƙur\'ani 94:6';
-
-  @override
-  String get muslimAffirmation2 =>
-      '\"Ya kuma same ka a ɓace ya kuma shirya ka.\"\n- Alƙur\'ani 93:7';
-
-  @override
-  String get muslimAffirmation3 =>
-      '\"Lalle ne, Allah yana tare da masu haƙuri.\"\n- Alƙur\'ani 2:153';
-
-  @override
-  String get traditionalistAffirmation1 =>
-      'Kakanninka sun bi ta cikin hadari suka sami hanyarsu. Kana ɗauke da ƙarfinsu a cikinka.';
-
-  @override
-  String get traditionalistAffirmation2 =>
-      'Ƙasa tana bayarwa a lokacinta. Ka dogara ga yanayin halitta na rayuwa da jikinka.';
-
-  @override
-  String get traditionalistAffirmation3 =>
-      'Al\'umma da danginka su ne ginshiƙanka. Ka ɗauki ƙarfi daga waɗanda suke ƙaunarka suna tafiya tare da kai.';
-
-  @override
-  String get traditionalistAffirmation4 =>
-      'Kamar itacen baobab wanda yake lankwasawa amma ba ya karyewa, kana da juriya a kowane lokaci.';
-
-  @override
-  String get traditionalistAffirmation5 =>
-      'Kogi yana gudu a kusa da cikas, ba ta wurinsu ba. Ka ba wa kanka alheri da haƙuri a wannan tafiya.';
-
-  @override
-  String get neutralAffirmation1 =>
-      'Kana da juriya kuma kana iya shawo kan kowace ƙalubale.';
-
-  @override
-  String get neutralAffirmation2 =>
-      'Kowace rana wani farko ne. Ka karɓa shi da bege da ƙarfin hali.';
-
-  @override
-  String get neutralAffirmation3 =>
-      'Kai isashe ne, kamar yadda kake. Ka yi imani da tafiyarka.';
-
-  @override
-  String get genderPredictionTitle => 'Hasashen Jinsi';
-
-  @override
-  String get genderPredictionDisclaimer =>
-      'Ìkéde: Wannan sifa ta yi amfani da AI don ba da shawarar hasashen jinsi. Wa\'annan bashashewaye ba su tabbace tsaye kuma ba sa kamata su maye gurbin shawara ta likita. Jiya gida ga likita mai gida don tunanin kula da lafiya.';
-
-  @override
-  String get selectGenderExpectation => 'Zabar jinsi wanda kake bukatan:';
-
-  @override
-  String get male => 'Namiji';
-
-  @override
-  String get female => 'Mace';
-
-  @override
-  String get noPreference => 'Babu za\'a';
-
-  @override
-  String get fertileWindowLabel => 'Lokacin saura';
-
-  @override
-  String get ovulationDayLabel => 'Ranar tsunduma kwai';
-
-  @override
-  String get adviceForTiming => 'Shawarar lokacin jima\'i:';
-
-  @override
-  String get bestChanceForMale => 'Mafi kyau saurar namiji.';
-
-  @override
-  String get lowerChanceForMale => 'Watarain saurar namiji.';
-
-  @override
-  String get bestChanceForFemale => 'Mafi kyau saurar mace.';
-
-  @override
-  String get lowerChanceForFemale => 'Watarain saurar mace.';
-
-  @override
-  String get generalAdviceForConception =>
-      'Shawarar gaba\'aya don saurar jiya.';
-
-  @override
-  String get noPredictionDataAvailable =>
-      'Babu bashashewa na saura a yanzu. Zabar jinsi kuma tabbatar da cewa bayananin agogo nka daidai.';
-
-  @override
-  String get readAffirmationAloud => 'Karanta imani a jarir';
-
-  @override
-  String get failedPlayAffirmation => 'An kasa bugawa imani. Jiya yi sau.';
-
-  @override
-  String get failedPlayAudio => 'An kasa bugawa sauti. Jiya yi sau.';
-
-  @override
-  String get formErrorText => 'Please correct the highlighted fields';
-
-  @override
-  String get failedToVerify => 'Failed to send verification code';
-
-  @override
-  String get rememberEmail => 'Remember Email';
-
-  @override
-  String get verifyAccount => 'Verify Your Account';
-
-  @override
-  String get verificationCodeSent =>
-      'A verification code has been sent to your email. Please enter it to continue.';
-
-  @override
-  String get otpInfoText =>
-      'Not seeing the email? Check your spam/junk folder.';
-
-  @override
-  String get resendCode => 'Resend';
-
-  @override
-  String get verify => 'Verify';
-
-  @override
-  String get profileSetup => ' Complete Your Profile';
+  String get profileSetup => 'Kammala Bayanan Ka';
 
   @override
   String get profileSetupInfo =>
-      'This will help us personalize your cycle guide';
+      'Wannan zai taimaka mana mu tsara jagorar zagayowarka';
 
   @override
-  String get ageInfoText => 'Select your age';
+  String get completeYourProfile => 'Mu kammala bayananka';
 
   @override
-  String get age => 'Shekara';
+  String get age => 'Shekaru';
 
   @override
-  String get selectCycleLength => 'Select cycle length';
+  String get ageInfoText => 'Zaɓi shekarunka';
+
+  @override
+  String get cycleLength => 'Tsawon Zagaye';
+
+  @override
+  String get selectCycleLength => 'Zaɓi tsawon zagaye';
+
+  @override
+  String days(int count) {
+    return '$count Kwanaki';
+  }
+
+  @override
+  String get averageCycleDays =>
+      'Matsakaicin kwanakin da ke tsakanin al\'adunka';
+
+  @override
+  String get periodLength => 'Tsawon Al\'ada';
+
+  @override
+  String get selectPeriodLength => 'Zaɓi tsawon lokacin al\'ada';
+
+  @override
+  String get typicalPeriodDays => 'Adadin kwanakin da al\'adarka ke ɗauka';
+
+  @override
+  String get lastPeriodDate => 'Ranar Ƙarshe ta Al\'ada';
+
+  @override
+  String get selectLastPeriodDate => 'Zaɓi ranar da al\'adarka ta fara';
+
+  @override
+  String get lastPeriodStartedInfo => 'Lokacin da jinin al\'adarka ya fara';
+
+  @override
+  String get ttcHistory => 'Tarihin Neman Haihuwa';
+
+  @override
+  String get selectTtcHistory => 'Zaɓi tarihin neman haihuwa';
+
+  @override
+  String get tryingToConceive => 'Ina ƙoƙarin samun ciki';
+
+  @override
+  String get tryingToConceiveDefault => 'Ƙoƙarin samun ciki - tsoho';
+
+  @override
+  String get preparingToConceive => 'Ina shirin samun ciki';
+
+  @override
+  String get justTrackingCycle => 'Ina bin zagayowata kawai';
+
+  @override
+  String get ttcSixMonths => 'Neman ciki fiye da watanni 6';
+
+  @override
+  String get ttcTwelveMonths => 'Neman ciki fiye da watanni 12';
+
+  @override
+  String get usingFertilityTreatment => 'Ina amfani da maganin haihuwa';
+
+  @override
+  String get preferNotToSay => 'Ban so in faɗa';
+
+  @override
+  String get faithPreference => 'Zaɓin Addini';
+
+  @override
+  String get selectFaithPreference => 'Zaɓi addininka';
+
+  @override
+  String get christian => 'Kirista';
+
+  @override
+  String get muslim => 'Musulmi';
+
+  @override
+  String get traditionalist => 'Mai bin al\'adun gargajiya';
+
+  @override
+  String get neutral => 'Ba tare da fifiko ba';
+
+  @override
+  String get audioGuidance => 'Jagorar Murya';
+
+  @override
+  String get enableAudioGuidance => 'Kunna jagorar murya';
+
+  @override
+  String get termsAndConditionsAgreement =>
+      'Na yarda da Sharuɗɗa da Ka\'idoji da Dokar Sirri';
+
+  @override
+  String get continueButton => 'Ci gaba';
+
+  @override
+  String get profileSetupComplete => 'An kammala bayanan martaba!';
+
+  @override
+  String get goodMorning => 'Barka da safiya,';
+
+  @override
+  String get goodAfternoon => 'Barka da rana,';
+
+  @override
+  String get goodEvening => 'Barka da yamma,';
+
+  @override
+  String get cycle => 'Zagaye';
+
+  @override
+  String get fertileWindow => 'Lokacin Haihuwa';
+
+  @override
+  String get ovulation => 'Fitar Kwai';
+
+  @override
+  String get period => 'Al\'ada';
+
+  @override
+  String day(int count) {
+    return 'Rana ta $count';
+  }
+
+  @override
+  String get quickActions => 'Ayyuka Masu Sauri';
+
+  @override
+  String get logSymptoms => 'Rubuta\nAlamomi';
+
+  @override
+  String get genderPrediction => 'Hasashen\nJinsi';
+
+  @override
+  String get calendar => 'Kalanda';
+
+  @override
+  String get todaysInsight => 'Shawarar Yau';
+
+  @override
+  String get defaultInsight =>
+      'Shawarwarinka na musamman game da haihuwa zai bayyana a nan.';
+
+  @override
+  String get bookSpecialist => 'Nemi Likita';
+
+  @override
+  String get expertGuidance =>
+      'Samu taimako daga ƙwararrun likitocin haihuwa a kowane lokaci.';
+
+  @override
+  String get bookConsultation => 'Tsara Ganawa';
+
+  @override
+  String get profileSettings => 'Saituna';
+
+  @override
+  String get logOut => 'Fita';
+
+  @override
+  String get deleteAccount => 'Goge Asusun';
+
+  @override
+  String get personalInformation => 'Bayanan Kai';
+
+  @override
+  String get notifications => 'Sanarwa';
+
+  @override
+  String get privacySecurity => 'Sirri da Tsaro';
+
+  @override
+  String get aboutMyFertiPal => 'Game da MyFertiPal';
+
+  @override
+  String get premiumMember => 'Mamba na Premium';
+
+  @override
+  String get language => 'Harshe';
+
+  @override
+  String get languageUpdated => 'An sabunta harshe cikin nasara.';
+
+  @override
+  String get languageUpdateFailed => 'An kasa sabunta harshe.';
+
+  @override
+  String get deleteAccountMessage =>
+      'Wannan zai goge asusunka da duk bayanan da aka adana. Ba za a iya dawo da shi ba.';
+
+  @override
+  String get delete => 'Goge';
+
+  @override
+  String get cyclesTracked => 'Zagayen da Aka Bi';
+
+  @override
+  String get symptomsLogged => 'Alamomin da Aka Rubuta';
+
+  @override
+  String get consultations => 'Ganawar Likita';
+
+  @override
+  String get password => 'Kalmar Sirri';
+
+  @override
+  String get passwordMinLength =>
+      'Kalmar sirri dole ta kasance aƙalla haruffa 8';
+
+  @override
+  String fieldRequired(String field) {
+    return '$field ana buƙata';
+  }
+
+  @override
+  String get otpInfoText =>
+      'Shigar da lambar tabbatarwa da aka aika zuwa imel ɗinka.';
+
+  @override
+  String get resendCode => 'Sake Aika Lamba';
+
+  @override
+  String get settings => 'Saituna';
+
+  @override
+  String get pleaseSelectLanguage => 'Da fatan zaɓi harshen da kake so';
+
+  @override
+  String get languageSelected => 'An zaɓi harshe cikin nasara';
+
+  @override
+  String get selectPreferredLanguage => 'Zaɓi harshen da kake so';
 }

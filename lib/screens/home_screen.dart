@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../generated/l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../services/api_service.dart';
 import '../screens/specialists/specialist_search_screen.dart';
@@ -15,11 +16,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String _insightText =
-    "Your personalized fertility insight will appear here.";
+  String _insightText = "";
 
   final ApiService _apiService = ApiService();
-  String _currentPhase() {
+  String _currentPhase(BuildContext context) {
   final today = DateTime(
     DateTime.now().year,
     DateTime.now().month,
@@ -40,11 +40,11 @@ class _HomeScreenState extends State<HomeScreen> {
       _fertileEnd != null &&
       !today.isBefore(_fertileStart!) &&
       !today.isAfter(_fertileEnd!)) {
-    return "Fertile Window";
+    return AppLocalizations.of(context).fertileWindow;
   }
 
   if (sameDay(_ovulationDate)) {
-    return "Ovulation";
+    return AppLocalizations.of(context).ovulation;
   }
 
   if (_nextPeriod != null &&
@@ -52,10 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
       today.isBefore(
         _nextPeriod!.add(Duration(days: _periodLength)),
       )) {
-    return "Period";
+    return AppLocalizations.of(context).period;
   }
 
-  return "Cycle";
+  return AppLocalizations.of(context).cycle;
 }
 
   String _name = "User";
@@ -205,7 +205,7 @@ return Scaffold(
               const SizedBox(height: 28),
               _buildQuickActions(context),
               const SizedBox(height: 20),
-              _buildInsightCard(),
+              _buildInsightCard(context),
               const SizedBox(height: 28),
               _buildBookSpecialistSection(context),
             ],
@@ -335,7 +335,7 @@ return Scaffold(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Day $cycleDay",
+                   AppLocalizations.of(context).day(cycleDay),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -347,7 +347,7 @@ return Scaffold(
 
                   Center(
                     child: Text(
-                      _currentPhase(),
+                      _currentPhase(context),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
@@ -375,8 +375,8 @@ return Scaffold(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Quick Actions',
+          Text(
+            AppLocalizations.of(context).quickActions,
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 24,
@@ -390,7 +390,7 @@ return Scaffold(
                 child: _quickActionCard(
                   icon: Icons.add,
                   iconBg: AppColors.pinkAccent,
-                  label: 'Log\nSymptoms',
+                  label: AppLocalizations.of(context).logSymptoms,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -404,7 +404,7 @@ return Scaffold(
                 child: _quickActionCard(
                   icon: Icons.male,
                   iconBg: AppColors.teal,
-                  label: 'Gender\nPrediction',
+                  label: AppLocalizations.of(context).genderPrediction,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -419,7 +419,7 @@ return Scaffold(
                   icon: Icons.calendar_today_outlined,
                   iconBg: Color(0XFFA8E4B7),
                   iconColor: AppColors.primaryDark,
-                  label: 'Calendar',
+                  label: AppLocalizations.of(context).calendar,
                  onTap: () {
   RootScreen.of(context)?.changeTab(1);
 },
@@ -487,7 +487,9 @@ return Scaffold(
   }
 
   // ---------- Insight card ----------
- Widget _buildInsightCard() {
+ Widget _buildInsightCard(BuildContext context) {
+   _insightText =
+      AppLocalizations.of(context).defaultInsight;
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20),
     child: Container(
@@ -516,9 +518,9 @@ return Scaffold(
 
               const SizedBox(width: 12),
 
-              const Expanded(
+              Expanded(
                 child: Text(
-                  "Today's Insight",
+                  AppLocalizations.of(context).todaysInsight,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -572,8 +574,8 @@ Widget _buildBookSpecialistSection(BuildContext context) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Book Specialist",
+         Text(
+          AppLocalizations.of(context).bookSpecialist,
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 24,
@@ -614,8 +616,8 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                 
                     const SizedBox(height: 8),
 
-                    const Text(
-                      "Get expert guidance from certified fertility doctors, anytime.",
+                    Text(
+                      AppLocalizations.of(context).expertGuidance,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 15,
@@ -646,8 +648,8 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                             ),
                           );
                         },
-                        child: const Text(
-                          "Book Consultation",
+                        child: Text(
+                          AppLocalizations.of(context).bookConsultation,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 10,

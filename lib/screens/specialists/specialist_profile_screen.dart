@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import "calendly_screen.dart";
+import '../../generated/l10n/app_localizations.dart';
 
 
 import '../../services/api_service.dart';
@@ -406,8 +407,8 @@ class _BookButton extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => _openCalendar(context),
                 icon: const Icon(Icons.calendar_month),
-                label: const Text(
-                  "Book Consultation",
+                label:  Text(
+                  AppLocalizations.of(context).bookConsultation,
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,

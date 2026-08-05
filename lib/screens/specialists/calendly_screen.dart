@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "../../theme/app_colors.dart";
 import 'package:webview_flutter/webview_flutter.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class CalendlyScreen extends StatefulWidget {
   final String calendlyUrl;
@@ -58,8 +59,8 @@ class _CalendlyScreenState extends State<CalendlyScreen> {
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text(
-          "Book Consultation",
+        title:  Text(
+          AppLocalizations.of(context).bookConsultation,
         ),
         backgroundColor: AppColors.teal,
         foregroundColor: Colors.white,

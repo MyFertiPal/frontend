@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:url_launcher/url_launcher.dart';
 import "../../services/api_service.dart";
 import "../profile/profile_setup_screen.dart";
+import '../../generated/l10n/app_localizations.dart';
 import "../../services/profile_image_picker.dart";
 import "../../screens/web/web_view_screen.dart";
 
@@ -134,7 +134,7 @@ String _name = "";
 String _avatarUrl = "";
 String _selectedLanguage = "English";
 
-bool _isPremium = false;
+late bool _isPremium;
 bool _notificationsEnabled = true;
 
 int _cyclesTracked = 0;
@@ -224,8 +224,11 @@ String _languageCode(String language) {
 @override
 void initState() {
   super.initState();
+
+  _isPremium = widget.isPremiumMember;
+
   _loadProfile();
-   _loadImage();
+  _loadImage();
 }
 
 Widget _buildLanguageRow() {
@@ -248,9 +251,9 @@ Widget _buildLanguageRow() {
         ),
         const SizedBox(width: 14),
 
-        const Expanded(
+         Expanded(
           child: Text(
-            "Language",
+            AppLocalizations.of(context).language,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -286,8 +289,10 @@ try {
 
   if (mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Language updated successfully."),
+       SnackBar(
+        content: Text(
+  AppLocalizations.of(context).languageUpdated,
+),
       ),
     );
   }
@@ -298,20 +303,16 @@ try {
 
   if (mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Failed to update language."),
+       SnackBar(
+        content: Text(
+  AppLocalizations.of(context).languageUpdateFailed,
+),
       ),
     );
   }
 }
 
-  if (mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Language updated successfully."),
-      ),
-    );
-  }
+ 
 
   widget.onLanguageTap?.call();
 },
@@ -338,19 +339,19 @@ Future<void> _loadImage() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete account'),
-        content: const Text(
-          "This permanently deletes your account and all tracked data. This can't be undone.",
+        title: Text(AppLocalizations.of(context).deleteAccount),
+        content: Text(
+          AppLocalizations.of(context).deleteAccountMessage,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text( AppLocalizations.of(context).cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: _ProfileColors.danger),
-            child: const Text('Delete'),
+            child:  Text( AppLocalizations.of(context).delete),
           ),
         ],
       ),
@@ -370,12 +371,12 @@ context,
     }
   }
 
-  List<_SettingsItemData> get _settingsItems => [
+  List<_SettingsItemData> _settingsItems(BuildContext context) => [
         _SettingsItemData(
           icon: Icons.person_outline,
           iconColor: const Color(0xFF1F9E75),
           iconBg: const Color(0xFFDCF3E8),
-          label: 'Personal Information',
+          label: AppLocalizations.of(context).personalInformation,
            onTap: () {
     Navigator.push(
       context,
@@ -389,7 +390,7 @@ context,
           icon: Icons.notifications_none,
           iconColor: const Color(0xFFCB9A2C),
           iconBg: const Color(0xFFFBEDD2),
-          label: 'Notifications',
+        label: AppLocalizations.of(context).notifications,
           isToggle: true,
         ),
         
@@ -397,10 +398,10 @@ context,
           icon: Icons.shield_outlined,
           iconColor: const Color(0xFF7C6FD6),
           iconBg: const Color(0xFFE8E4FA),
-          label: 'Privacy & Security',
+          label: AppLocalizations.of(context).privacySecurity,
           onTap: () {
   _openWebPage(
-    "Privacy Policy",
+    AppLocalizations.of(context).privacySecurity,
     widget.privacyPolicyUrl,
   );
 },
@@ -409,7 +410,7 @@ context,
           icon: Icons.info_outline,
           iconColor: const Color(0xFFCB9A2C),
           iconBg: const Color(0xFFFBEDD2),
-          label: 'About MyFertiPal',
+          label: AppLocalizations.of(context).aboutMyFertiPal,
          onTap: () {
   _openWebPage(
     "About MyFertiPal",
@@ -454,7 +455,7 @@ Widget build(BuildContext context) {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
               child: Text(
-                'Settings',
+                AppLocalizations.of(context).settings,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -562,7 +563,7 @@ Text(
                   Icon(Icons.workspace_premium, size: 16, color: _ProfileColors.gold),
                   const SizedBox(width: 6),
                   Text(
-                    'Premium Member',
+                    AppLocalizations.of(context).premiumMember,
                     style: TextStyle(
                       color: _ProfileColors.gold,
                       fontSize: 13,
@@ -594,7 +595,7 @@ Text(
   // ---- Settings card ------------------------------------------------------------
 
   Widget _buildSettingsCard() {
-  final items = _settingsItems;
+  final items = _settingsItems(context);
 
   return Container(
     decoration: BoxDecoration(
@@ -660,7 +661,7 @@ context,
 
 },
       icon: const Icon(Icons.logout, size: 18, color: Colors.black87),
-      label: const Text('Log Out',
+      label:  Text(AppLocalizations.of(context).logOut,
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
       style: OutlinedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -680,8 +681,8 @@ context,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
-      child: const Text(
-        'Delete Account',
+      child: Text(
+        AppLocalizations.of(context).deleteAccount,
         style: TextStyle(color: _ProfileColors.danger, fontWeight: FontWeight.w600),
       ),
     );

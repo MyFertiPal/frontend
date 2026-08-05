@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 /// Colors used across the screen.
 class _LogColors {
@@ -413,7 +414,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
             child: OutlinedButton.icon(
               onPressed: widget.onCancel ?? () => Navigator.of(context).maybePop(),
               icon: const Icon(Icons.close, size: 18, color: _LogColors.primary),
-              label: const Text('Cancel',
+              label: Text( AppLocalizations.of(context).cancel,
                   style: TextStyle(color: _LogColors.primary, fontWeight: FontWeight.w600)),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: _LogColors.cardBorder),

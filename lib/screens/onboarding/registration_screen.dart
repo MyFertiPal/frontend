@@ -243,7 +243,7 @@ Future<void> _signInWithGoogle() async {
 
                   // Register Title
                   Text(
-                    AppLocalizations.of(context).registerTitle,
+                    AppLocalizations.of(context).register,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w600,
