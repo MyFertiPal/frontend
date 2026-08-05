@@ -616,8 +616,8 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                         child: const Text(
                           "Book Consultation",
                           style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10,
                           ),
                         ),
                       ),

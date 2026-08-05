@@ -181,51 +181,52 @@ class _GenderPredictionScreenState
 
 
 
-                    Container(
-
-                      padding:
-                      const EdgeInsets.all(16),
-
-
-                      decoration:
-                      BoxDecoration(
-
-                        color:
-                        const Color(
-                            0xFFFDECE3
-                        ),
-
-                        borderRadius:
-                        BorderRadius.circular(
-                            16
-                        ),
-
-                      ),
-
-
-                      child:
-                      const Text(
-
-                        "Important Disclaimer\n\n"
-                            "This feature uses fertility timing "
-                            "information to provide gender "
-                            "prediction guidance. It is not "
-                            "scientifically guaranteed and should "
-                            "not replace medical advice.",
-
-
-                        style:TextStyle(
-
-                          fontSize:14,
-
-                          height:1.4,
-
-                        ),
-
-                      ),
-
-                    ),
-
+                   Container(
+  padding: const EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: const Color(0xFFFFF5F5),
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(
+      color: Colors.red,
+      width: 1,
+    ),
+  ),
+  child: Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Icon(
+        Icons.info_outline,
+        color: Colors.red,
+        size: 24,
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              "Important Disclaimer",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              "This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
+),
 
 
                     const SizedBox(height:24),

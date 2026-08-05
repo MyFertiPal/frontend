@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 import "calendly_screen.dart";
 
 
@@ -52,20 +52,6 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
     }
   }
 
-  Future<void> _bookConsultation() async {
-    final url = specialist?["calendly_url"];
-
-    if (url == null || url.toString().isEmpty) return;
-
-    final uri = Uri.parse(url);
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +80,10 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
 final availabilityInfo =
     specialist!["availability_info"] as Map<String, dynamic>?;
 
-String availability = "Not specified";
+String availability = "";
 
 if (availabilityInfo != null && availabilityInfo.isNotEmpty) {
-  availability = availabilityInfo.entries
-      .map((e) => "${e.key}: ${e.value}")
-      .join("\n");
+  availability = availabilityInfo.values.join(", ");
 }
 
     return Scaffold(
@@ -228,25 +212,6 @@ Container(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
-            ),
-          ),
-        ],
-      ),
-
-      const SizedBox(height: 12),
-
-      Row(
-        children: [
-          const Icon(
-            Icons.access_time,
-            color: AppColors.teal,
-            size: 20,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              availabilityInfo?["hours"] ?? "Not specified",
-              style: const TextStyle(fontSize: 15),
             ),
           ),
         ],

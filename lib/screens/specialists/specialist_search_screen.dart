@@ -180,7 +180,7 @@ class _SpecialistCard extends StatelessWidget {
 
     final qualification = data["qualification"] ?? "";
 
-    final expertise = data["area_of_expertise"] ?? "";
+  
 
     final fee = data["consultation_fee"].toString();
 
@@ -193,9 +193,7 @@ class _SpecialistCard extends StatelessWidget {
 String availabilityText = "Not specified";
 
 if (availabilityInfo is Map && availabilityInfo.isNotEmpty) {
-  availabilityText = availabilityInfo.entries
-      .map((entry) => "${entry.key}: ${entry.value}")
-      .join("\n");
+  availabilityText = availabilityInfo.values.join(", ");
 }
 
     String initials(String input) {
@@ -311,18 +309,6 @@ if (availabilityInfo is Map && availabilityInfo.isNotEmpty) {
 
         const SizedBox(height: 6),
 
-        Text(
-          expertise,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 15,
-            height: 1.4,
-          ),
-        ),
-
-        const SizedBox(height: 8),
-
         Row(
           children: [
             const Icon(
@@ -332,12 +318,15 @@ if (availabilityInfo is Map && availabilityInfo.isNotEmpty) {
             ),
             const SizedBox(width: 5),
             Expanded(
-              child: Text(
-                availabilityText,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+  child: Text(
+    "Available: $availabilityText",
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: const TextStyle(
+      fontWeight: FontWeight.w500,
+    ),
+  ),
+),
           ],
         ),
 
