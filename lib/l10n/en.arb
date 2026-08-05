@@ -6,8 +6,7 @@
   "@@section_auth": "Authentication",
   "welcome": "Welcome",
   "welcomeToJourney": "Welcome to Your Journey",
-  "register": "Register",
-  "login": "Login",
+
   "signUp": "Sign Up",
   "createAccount": "Create Account",
   "signIn": "Sign In",
@@ -267,8 +266,8 @@
   
   "@@section_login": "Login Screen",
   "login": "Login",
-  "email": "Email",
-  "password": "Password",
+
+  
   "dontHaveAccount": "Don't have an account? ",
   "register": "Register",
   "signInWithGoogle": "Sign In with Google",
@@ -276,7 +275,7 @@
   
   "@@section_registration": "Registration Screen",
   "registerTitle": "Register",
-  "fullName": "Full Name",
+  
   "username": "Username",
   "phoneNumber": "Phone Number",
   "confirmPassword": "Confirm Password",
