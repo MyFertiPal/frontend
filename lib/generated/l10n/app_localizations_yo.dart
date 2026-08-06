@@ -346,59 +346,58 @@ class AppLocalizationsYo extends AppLocalizations {
   String get profileSetupComplete => 'A ti parí ìṣètò àkọọlẹ!';
 
   @override
-  String get goodMorning => 'Good Morning,';
+  String get goodMorning => 'Ẹ káàárọ̀';
 
   @override
-  String get goodAfternoon => 'Good Afternoon,';
+  String get goodAfternoon => 'Ẹ káàsán';
 
   @override
-  String get goodEvening => 'Good Evening,';
+  String get goodEvening => 'Ẹ káalẹ́';
 
   @override
-  String get cycle => 'Cycle';
+  String get cycle => 'Àyípadà oṣù';
 
   @override
-  String get fertileWindow => 'Fertile Window';
+  String get fertileWindow => 'Àkókò ìbímọ̀';
 
   @override
-  String get ovulation => 'Ovulation';
+  String get ovulation => 'Ìtújáde ẹyin';
 
   @override
-  String get period => 'Period';
+  String get period => 'Oṣù';
 
   @override
   String day(int count) {
-    return 'Day $count';
+    return 'Ọjọ́';
   }
 
   @override
-  String get quickActions => 'Quick Actions';
+  String get quickActions => 'Àwọn iṣẹ́ kíákíá';
 
   @override
-  String get logSymptoms => 'Log\nSymptoms';
+  String get logSymptoms => 'Ṣàkọsílẹ̀ àwọn àmì';
 
   @override
-  String get genderPrediction => 'Gender\nPrediction';
+  String get genderPrediction => 'Àsọtẹ́lẹ̀ akọ tàbí abo ọmọ';
 
   @override
-  String get calendar => 'Calendar';
+  String get calendar => 'Kàlẹ́ńdà';
 
   @override
-  String get todaysInsight => 'Today\'s Insight';
+  String get todaysInsight => 'Ìmọ̀ràn òní';
 
   @override
   String get defaultInsight =>
-      'Your personalized fertility insight will appear here.';
+      'Ìmọ̀ràn pàtàkì nípa ìlera ìbímọ rẹ yóò hàn níbí.';
 
   @override
   String get bookSpecialist => 'Ba amọ̀ja sọ̀rọ̀';
 
   @override
-  String get expertGuidance =>
-      'Get expert guidance from certified fertility doctors, anytime.';
+  String get expertGuidance => 'Ìtọ́sọ́nà láti ọ̀dọ̀ amòye';
 
   @override
-  String get bookConsultation => 'Book Consultation';
+  String get bookConsultation => 'Pàṣẹ ìjíròrò pẹ̀lú amòye';
 
   @override
   String get profileSettings => 'Ètò';
