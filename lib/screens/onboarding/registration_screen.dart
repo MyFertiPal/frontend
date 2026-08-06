@@ -375,8 +375,8 @@ Future<void> _signInWithGoogle() async {
                   const SizedBox(height: 24),
 
                   // Sign up with text
-                  const Text(
-                    'Sign up with',
+                   Text(
+                    AppLocalizations.of(context).signUpWith,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -445,8 +445,8 @@ Future<void> _signInWithGoogle() async {
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
-                      child: const Text(
-                        "Submit",
+                      child:  Text(
+                        AppLocalizations.of(context).submit,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -774,8 +774,8 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                       color: Color(0xFF064B23),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      "Verify Your Account",
+                     Text(
+                      AppLocalizations.of(context).verifyYourAccount,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w600,
@@ -929,8 +929,8 @@ class _VerifyModalContentState extends State<_VerifyModalContent> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                         ),
-                        child: const Text(
-                          "Verify",
+                        child:  Text(
+                          AppLocalizations.of(context).verify,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
