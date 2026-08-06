@@ -534,4 +534,11 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get articles => 'Edemede';
+
+  @override
+  String get specialists => 'Chọta Ọkachamara';
+
+  @override
+  String get searchSpecialists =>
+      'Chọọ ndị ọkachamara site n\'aha ma ọ bụ ngalaba ha';
 }

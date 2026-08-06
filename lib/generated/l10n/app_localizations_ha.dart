@@ -545,4 +545,10 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get articles => 'Makaloli';
+
+  @override
+  String get specialists => 'Nemo ƙwararre';
+
+  @override
+  String get searchSpecialists => 'Nemo ƙwararru da suna ko fannin aiki';
 }

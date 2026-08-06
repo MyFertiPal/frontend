@@ -535,4 +535,11 @@ class AppLocalizationsPcm extends AppLocalizations {
 
   @override
   String get articles => 'Articles';
+
+  @override
+  String get specialists => 'Find Specialist';
+
+  @override
+  String get searchSpecialists =>
+      'Search specialists by name or area of expertise';
 }

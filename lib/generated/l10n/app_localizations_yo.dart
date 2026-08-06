@@ -533,4 +533,11 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get articles => 'Àwọn Àpilẹ̀kọ';
+
+  @override
+  String get specialists => 'Wa Ọ̀jọ̀gbọ́n';
+
+  @override
+  String get searchSpecialists =>
+      'Wa àwọn ọ̀jọ̀gbọ́n nípa orúkọ tàbí ẹ̀ka iṣẹ́ wọn';
 }

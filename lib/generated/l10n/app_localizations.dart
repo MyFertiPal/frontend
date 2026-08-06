@@ -1093,6 +1093,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Articles'**
   String get articles;
+
+  /// No description provided for @specialists.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a Specialist'**
+  String get specialists;
+
+  /// No description provided for @searchSpecialists.
+  ///
+  /// In en, this message translates to:
+  /// **'Search specialists by name or specialty'**
+  String get searchSpecialists;
 }
 
 class _AppLocalizationsDelegate
