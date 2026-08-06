@@ -229,8 +229,8 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Symptoms saved successfully"),
+      SnackBar(
+        content: Text( AppLocalizations.of(context).symptomsSaved,),
       ),
     );
 
@@ -262,7 +262,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
                       child: Text(
-                        'Select symptoms to log',
+                        AppLocalizations.of(context).selectSymptomsToLog,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -273,7 +273,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                       child: Text(
-                        'You can choose more than one',
+                        AppLocalizations.of(context).chooseMoreThanOne,
                         style: TextStyle(fontSize: 13, color: _LogColors.textMuted),
                       ),
                     ),
@@ -338,7 +338,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Log Symptoms',
+                    AppLocalizations.of(context).logSymptomsTitle,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -347,7 +347,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Track how you feel. Every detail helps.',
+                    AppLocalizations.of(context).trackHowYouFeel,
                     style: TextStyle(fontSize: 13, color: _LogColors.textMuted),
                   ),
                 ],
@@ -429,7 +429,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
             child: ElevatedButton.icon(
               onPressed: _selectedSymptomIds.isEmpty ? null : _handleSave,
               icon: const Icon(Icons.save_outlined, size: 18, color: Colors.white),
-              label: const Text('Save Symptoms',
+              label:  Text( AppLocalizations.of(context).saveSymptoms,
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _LogColors.primary,
@@ -516,7 +516,7 @@ class _SymptomCard extends StatelessWidget {
             firstChild: Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
               child: symptom.options.isEmpty
-                  ? _buildTextField()
+                  ? _buildTextField(context)
                   : _buildOptionChips(),
             ),
             secondChild: const SizedBox(width: double.infinity),
@@ -526,11 +526,11 @@ class _SymptomCard extends StatelessWidget {
     )
   );}
 
-  Widget _buildTextField() {
+  Widget _buildTextField(BuildContext context) {
     return TextField(
       controller: textController,
       decoration: InputDecoration(
-        hintText: "Describe what you're feeling",
+        hintText: AppLocalizations.of(context).describeFeeling,
         filled: true,
         fillColor: _LogColors.chipBg,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

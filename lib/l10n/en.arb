@@ -238,6 +238,73 @@
 "articles" : "Articles",
 
 "specialists" :"Find a Specialist",
-"searchSpecialists" : "Search specialists by name or specialty"
+"searchSpecialists" : "Search specialists by name or specialty",
+
+ "logSymptomsTitle": "Log Symptoms",
+  "trackHowYouFeel": "Track how you feel. Every detail helps.",
+  "selectSymptomsToLog": "Select symptoms to log",
+  "chooseMoreThanOne": "You can choose more than one",
+
+  "mood": "Mood",
+  "happy": "Happy",
+  "sad": "Sad",
+  "anxious": "Anxious",
+  "irritable": "Irritable",
+  "calm": "Calm",
+  "energetic": "Energetic",
+
+  "bleeding": "Bleeding",
+  "spotting": "Spotting",
+  "light": "Light",
+  "medium": "Medium",
+  "heavy": "Heavy",
+
+  "cervicalMucus": "Cervical Mucus",
+  "dry": "Dry",
+  "sticky": "Sticky",
+  "creamy": "Creamy",
+  "watery": "Watery",
+  "eggWhite": "Egg white",
+
+  "sexualActivity": "Sexual Activity",
+  "protected": "Protected",
+  "unprotected": "Unprotected",
+  "none": "None",
+
+  "pain": "Pain",
+  "headache": "Headache",
+  "backPain": "Back pain",
+  "breastTenderness": "Breast tenderness",
+  "ovulationPain": "Ovulation pain",
+
+  "abdominalCramps": "Abdominal Cramps",
+  "mild": "Mild",
+  "moderate": "Moderate",
+  "severe": "Severe",
+
+  "sleep": "Sleep",
+  "good": "Good",
+  "poor": "Poor",
+  "insomnia": "Insomnia",
+  "oversleeping": "Oversleeping",
+
+  "appetite": "Appetite",
+  "increased": "Increased",
+  "decreased": "Decreased",
+  "normal": "Normal",
+  "cravings": "Cravings",
+
+  "other": "Other",
+  "describeFeeling": "Describe what you're feeling",
+
+  "tip": "Tip",
+  "symptomLoggingTip": "Logging symptoms daily helps us give you more accurate insights.",
+
+  "saveSymptoms": "Save Symptoms",
+  "symptomsSaved": "Symptoms saved successfully",
+  "failedToSaveSymptoms": "Failed to save symptoms: {error}",
+
+  "logSymptoms": "Log Symptoms",
+  "symptoms": "Symptoms"
 
 }

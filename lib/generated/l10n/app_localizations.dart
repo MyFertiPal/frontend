@@ -791,7 +791,7 @@ abstract class AppLocalizations {
   /// No description provided for @logSymptoms.
   ///
   /// In en, this message translates to:
-  /// **'Log\nSymptoms'**
+  /// **'Log Symptoms'**
   String get logSymptoms;
 
   /// No description provided for @genderPrediction.
@@ -1105,6 +1105,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search specialists by name or specialty'**
   String get searchSpecialists;
+
+  /// No description provided for @logSymptomsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Symptoms'**
+  String get logSymptomsTitle;
+
+  /// No description provided for @trackHowYouFeel.
+  ///
+  /// In en, this message translates to:
+  /// **'Track how you feel. Every detail helps.'**
+  String get trackHowYouFeel;
+
+  /// No description provided for @selectSymptomsToLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Select symptoms to log'**
+  String get selectSymptomsToLog;
+
+  /// No description provided for @chooseMoreThanOne.
+  ///
+  /// In en, this message translates to:
+  /// **'You can choose more than one'**
+  String get chooseMoreThanOne;
+
+  /// No description provided for @mood.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood'**
+  String get mood;
+
+  /// No description provided for @happy.
+  ///
+  /// In en, this message translates to:
+  /// **'Happy'**
+  String get happy;
+
+  /// No description provided for @sad.
+  ///
+  /// In en, this message translates to:
+  /// **'Sad'**
+  String get sad;
+
+  /// No description provided for @anxious.
+  ///
+  /// In en, this message translates to:
+  /// **'Anxious'**
+  String get anxious;
+
+  /// No description provided for @irritable.
+  ///
+  /// In en, this message translates to:
+  /// **'Irritable'**
+  String get irritable;
+
+  /// No description provided for @calm.
+  ///
+  /// In en, this message translates to:
+  /// **'Calm'**
+  String get calm;
+
+  /// No description provided for @energetic.
+  ///
+  /// In en, this message translates to:
+  /// **'Energetic'**
+  String get energetic;
+
+  /// No description provided for @bleeding.
+  ///
+  /// In en, this message translates to:
+  /// **'Bleeding'**
+  String get bleeding;
+
+  /// No description provided for @spotting.
+  ///
+  /// In en, this message translates to:
+  /// **'Spotting'**
+  String get spotting;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @heavy.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get heavy;
+
+  /// No description provided for @cervicalMucus.
+  ///
+  /// In en, this message translates to:
+  /// **'Cervical Mucus'**
+  String get cervicalMucus;
+
+  /// No description provided for @dry.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry'**
+  String get dry;
+
+  /// No description provided for @sticky.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticky'**
+  String get sticky;
+
+  /// No description provided for @creamy.
+  ///
+  /// In en, this message translates to:
+  /// **'Creamy'**
+  String get creamy;
+
+  /// No description provided for @watery.
+  ///
+  /// In en, this message translates to:
+  /// **'Watery'**
+  String get watery;
+
+  /// No description provided for @eggWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'Egg white'**
+  String get eggWhite;
+
+  /// No description provided for @sexualActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Sexual Activity'**
+  String get sexualActivity;
+
+  /// No description provided for @protected.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected'**
+  String get protected;
+
+  /// No description provided for @unprotected.
+  ///
+  /// In en, this message translates to:
+  /// **'Unprotected'**
+  String get unprotected;
+
+  /// No description provided for @none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get none;
+
+  /// No description provided for @pain.
+  ///
+  /// In en, this message translates to:
+  /// **'Pain'**
+  String get pain;
+
+  /// No description provided for @headache.
+  ///
+  /// In en, this message translates to:
+  /// **'Headache'**
+  String get headache;
+
+  /// No description provided for @backPain.
+  ///
+  /// In en, this message translates to:
+  /// **'Back pain'**
+  String get backPain;
+
+  /// No description provided for @breastTenderness.
+  ///
+  /// In en, this message translates to:
+  /// **'Breast tenderness'**
+  String get breastTenderness;
+
+  /// No description provided for @ovulationPain.
+  ///
+  /// In en, this message translates to:
+  /// **'Ovulation pain'**
+  String get ovulationPain;
+
+  /// No description provided for @abdominalCramps.
+  ///
+  /// In en, this message translates to:
+  /// **'Abdominal Cramps'**
+  String get abdominalCramps;
+
+  /// No description provided for @mild.
+  ///
+  /// In en, this message translates to:
+  /// **'Mild'**
+  String get mild;
+
+  /// No description provided for @moderate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get moderate;
+
+  /// No description provided for @severe.
+  ///
+  /// In en, this message translates to:
+  /// **'Severe'**
+  String get severe;
+
+  /// No description provided for @sleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep'**
+  String get sleep;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @poor.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor'**
+  String get poor;
+
+  /// No description provided for @insomnia.
+  ///
+  /// In en, this message translates to:
+  /// **'Insomnia'**
+  String get insomnia;
+
+  /// No description provided for @oversleeping.
+  ///
+  /// In en, this message translates to:
+  /// **'Oversleeping'**
+  String get oversleeping;
+
+  /// No description provided for @appetite.
+  ///
+  /// In en, this message translates to:
+  /// **'Appetite'**
+  String get appetite;
+
+  /// No description provided for @increased.
+  ///
+  /// In en, this message translates to:
+  /// **'Increased'**
+  String get increased;
+
+  /// No description provided for @decreased.
+  ///
+  /// In en, this message translates to:
+  /// **'Decreased'**
+  String get decreased;
+
+  /// No description provided for @normal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get normal;
+
+  /// No description provided for @cravings.
+  ///
+  /// In en, this message translates to:
+  /// **'Cravings'**
+  String get cravings;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @describeFeeling.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what you\'re feeling'**
+  String get describeFeeling;
+
+  /// No description provided for @tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip'**
+  String get tip;
+
+  /// No description provided for @symptomLoggingTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging symptoms daily helps us give you more accurate insights.'**
+  String get symptomLoggingTip;
+
+  /// No description provided for @saveSymptoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Symptoms'**
+  String get saveSymptoms;
+
+  /// No description provided for @symptomsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms saved successfully'**
+  String get symptomsSaved;
+
+  /// No description provided for @failedToSaveSymptoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save symptoms: {error}'**
+  String failedToSaveSymptoms(Object error);
+
+  /// No description provided for @symptoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms'**
+  String get symptoms;
 }
 
 class _AppLocalizationsDelegate

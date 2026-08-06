@@ -376,7 +376,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActions => 'Quick Actions';
 
   @override
-  String get logSymptoms => 'Log\nSymptoms';
+  String get logSymptoms => 'Log Symptoms';
 
   @override
   String get genderPrediction => 'Gender\nPrediction';
@@ -541,4 +541,166 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchSpecialists => 'Search specialists by name or specialty';
+
+  @override
+  String get logSymptomsTitle => 'Log Symptoms';
+
+  @override
+  String get trackHowYouFeel => 'Track how you feel. Every detail helps.';
+
+  @override
+  String get selectSymptomsToLog => 'Select symptoms to log';
+
+  @override
+  String get chooseMoreThanOne => 'You can choose more than one';
+
+  @override
+  String get mood => 'Mood';
+
+  @override
+  String get happy => 'Happy';
+
+  @override
+  String get sad => 'Sad';
+
+  @override
+  String get anxious => 'Anxious';
+
+  @override
+  String get irritable => 'Irritable';
+
+  @override
+  String get calm => 'Calm';
+
+  @override
+  String get energetic => 'Energetic';
+
+  @override
+  String get bleeding => 'Bleeding';
+
+  @override
+  String get spotting => 'Spotting';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get heavy => 'Heavy';
+
+  @override
+  String get cervicalMucus => 'Cervical Mucus';
+
+  @override
+  String get dry => 'Dry';
+
+  @override
+  String get sticky => 'Sticky';
+
+  @override
+  String get creamy => 'Creamy';
+
+  @override
+  String get watery => 'Watery';
+
+  @override
+  String get eggWhite => 'Egg white';
+
+  @override
+  String get sexualActivity => 'Sexual Activity';
+
+  @override
+  String get protected => 'Protected';
+
+  @override
+  String get unprotected => 'Unprotected';
+
+  @override
+  String get none => 'None';
+
+  @override
+  String get pain => 'Pain';
+
+  @override
+  String get headache => 'Headache';
+
+  @override
+  String get backPain => 'Back pain';
+
+  @override
+  String get breastTenderness => 'Breast tenderness';
+
+  @override
+  String get ovulationPain => 'Ovulation pain';
+
+  @override
+  String get abdominalCramps => 'Abdominal Cramps';
+
+  @override
+  String get mild => 'Mild';
+
+  @override
+  String get moderate => 'Moderate';
+
+  @override
+  String get severe => 'Severe';
+
+  @override
+  String get sleep => 'Sleep';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get poor => 'Poor';
+
+  @override
+  String get insomnia => 'Insomnia';
+
+  @override
+  String get oversleeping => 'Oversleeping';
+
+  @override
+  String get appetite => 'Appetite';
+
+  @override
+  String get increased => 'Increased';
+
+  @override
+  String get decreased => 'Decreased';
+
+  @override
+  String get normal => 'Normal';
+
+  @override
+  String get cravings => 'Cravings';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get describeFeeling => 'Describe what you\'re feeling';
+
+  @override
+  String get tip => 'Tip';
+
+  @override
+  String get symptomLoggingTip =>
+      'Logging symptoms daily helps us give you more accurate insights.';
+
+  @override
+  String get saveSymptoms => 'Save Symptoms';
+
+  @override
+  String get symptomsSaved => 'Symptoms saved successfully';
+
+  @override
+  String failedToSaveSymptoms(Object error) {
+    return 'Failed to save symptoms: $error';
+  }
+
+  @override
+  String get symptoms => 'Symptoms';
 }
