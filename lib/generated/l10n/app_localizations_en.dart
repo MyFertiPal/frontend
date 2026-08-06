@@ -392,7 +392,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your personalized fertility insight will appear here.';
 
   @override
-  String get bookSpecialist => 'Book Specialist';
+  String get bookSpecialist => 'Talk to a specialist';
 
   @override
   String get expertGuidance =>

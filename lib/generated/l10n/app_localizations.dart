@@ -821,7 +821,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookSpecialist.
   ///
   /// In en, this message translates to:
-  /// **'Book Specialist'**
+  /// **'Talk to a specialist'**
   String get bookSpecialist;
 
   /// No description provided for @expertGuidance.
