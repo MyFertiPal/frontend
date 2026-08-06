@@ -391,7 +391,7 @@ class AppLocalizationsYo extends AppLocalizations {
       'Your personalized fertility insight will appear here.';
 
   @override
-  String get bookSpecialist => 'Talk to a specialist';
+  String get bookSpecialist => 'Ba amọ̀ja sọ̀rọ̀';
 
   @override
   String get expertGuidance =>

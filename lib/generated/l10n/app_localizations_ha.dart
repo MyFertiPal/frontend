@@ -399,7 +399,7 @@ class AppLocalizationsHa extends AppLocalizations {
       'Shawarwarinka na musamman game da haihuwa zai bayyana a nan.';
 
   @override
-  String get bookSpecialist => 'Nemi Likita';
+  String get bookSpecialist => 'Yi magana da ƙwararre';
 
   @override
   String get expertGuidance =>

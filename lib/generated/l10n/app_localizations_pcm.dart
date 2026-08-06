@@ -390,7 +390,7 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get defaultInsight => 'Your personal fertility insight go show here.';
 
   @override
-  String get bookSpecialist => 'Book Specialist';
+  String get bookSpecialist => 'Talk to Doctor';
 
   @override
   String get expertGuidance =>

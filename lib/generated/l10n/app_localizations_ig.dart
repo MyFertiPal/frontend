@@ -390,7 +390,7 @@ class AppLocalizationsIg extends AppLocalizations {
   String get defaultInsight => 'Nghọta gbasara ọmụmụ gị ga-apụta ebe a.';
 
   @override
-  String get bookSpecialist => 'Kpọọ Ọkachamara';
+  String get bookSpecialist => 'Gwa ọkachamara okwu';
 
   @override
   String get expertGuidance =>
