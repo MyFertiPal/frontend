@@ -204,5 +204,27 @@
 
   "pleaseSelectLanguage": "Da fatan zaɓi harshen da kake so",
   "languageSelected": "An zaɓi harshe cikin nasara",
-  "selectPreferredLanguage": "Zaɓi harshen da kake so"
+  "selectPreferredLanguage": "Zaɓi harshen da kake so",
+
+   "connect": "Haɗu",
+
+  "podcast": "PODCAST",
+  "fertiTalks": "FertiTalks na MyFertiPal",
+  "newEpisodesAvailable": "Sabbin shirye-shirye suna samuwa a kowane lokaci",
+  "listenOnSpotify": "Saurara a Spotify",
+
+  "connectWithOthers": "Haɗu da wasu",
+
+  "whatsAppCommunity": "Ƙungiyar WhatsApp",
+  "whatsAppCommunityDescription": "Haɗu da mata, raba abubuwan da kika fuskanta kuma ki sami tallafi kan haihuwa.",
+  "joinCommunity": "Shiga ƙungiyar",
+
+  "successStories": "Labaran Nasara",
+  "successStoriesDescription": "Labarai na gaskiya daga mata waɗanda suka ci gaba da bege kuma ba su daina ba.",
+  "beInspired": "Sami ƙwarin gwiwa",
+
+  "faithEncouragement": "Imani da Ƙarfafawa",
+  "faithEncouragementDescription": "Tallafin da ya dogara da addini da ƙarfafawa na yau da kullum don tafiyarki.",
+  "getEncouraged": "Sami ƙarfafawa"
+
 }

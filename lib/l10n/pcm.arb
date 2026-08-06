@@ -189,5 +189,26 @@
 
   "pleaseSelectLanguage": "Please select the language wey you prefer",
   "languageSelected": "Language don select successfully",
-  "selectPreferredLanguage": "Select your preferred language"
+  "selectPreferredLanguage": "Select your preferred language",
+
+   "connect": "Connect",
+
+  "podcast": "PODCAST",
+  "fertiTalks": "FertiTalks by MyFertiPal",
+  "newEpisodesAvailable": "New episodes dey available anytime",
+  "listenOnSpotify": "Listen for Spotify",
+
+  "connectWithOthers": "Connect with others",
+
+  "whatsAppCommunity": "WhatsApp Community",
+  "whatsAppCommunityDescription": "Connect with women, share your experience and get fertility support.",
+  "joinCommunity": "Join the community",
+
+  "successStories": "Success Stories",
+  "successStoriesDescription": "Real stories from women wey keep hope alive and never give up.",
+  "beInspired": "Make e inspire you",
+
+  "faithEncouragement": "Faith & Encouragement",
+  "faithEncouragementDescription": "Faith-based support and daily encouragement for your journey.",
+  "getEncouraged": "Get encouraged"
 }

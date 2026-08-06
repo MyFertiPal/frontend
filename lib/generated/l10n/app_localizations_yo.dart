@@ -477,4 +477,52 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get selectPreferredLanguage => 'Yan èdè tí o fẹ́ lo';
+
+  @override
+  String get connect => 'Sopọ';
+
+  @override
+  String get podcast => 'PODCAST';
+
+  @override
+  String get fertiTalks => 'FertiTalks nipasẹ MyFertiPal';
+
+  @override
+  String get newEpisodesAvailable => 'Àwọn ìṣẹ̀lẹ̀ tuntun wà ní gbogbo ìgbà';
+
+  @override
+  String get listenOnSpotify => 'Tẹ́tí sí Spotify';
+
+  @override
+  String get connectWithOthers => 'Sopọ pẹlu àwọn míì';
+
+  @override
+  String get whatsAppCommunity => 'Àwùjọ WhatsApp';
+
+  @override
+  String get whatsAppCommunityDescription =>
+      'Sopọ pẹlu àwọn obìnrin, pín ìrírí rẹ, kí o sì gba ìtìlẹ́yìn nípa ìbímọ.';
+
+  @override
+  String get joinCommunity => 'Darapọ mọ àwùjọ';
+
+  @override
+  String get successStories => 'Àwọn Ìtàn Àṣeyọrí';
+
+  @override
+  String get successStoriesDescription =>
+      'Ìtàn gidi láti ọdọ àwọn obìnrin tí wọ́n ní ìrètí tí wọ́n kò sì fi ọwọ́ sílẹ̀.';
+
+  @override
+  String get beInspired => 'Ní ìmísí';
+
+  @override
+  String get faithEncouragement => 'Ìgbàgbọ́ àti Ìtìlẹ́yìn';
+
+  @override
+  String get faithEncouragementDescription =>
+      'Ìtìlẹ́yìn tó dá lórí ìgbàgbọ́ àti ìmísí ojoojúmọ́ fún ìrìnàjò rẹ.';
+
+  @override
+  String get getEncouraged => 'Gba ìtìlẹ́yìn';
 }

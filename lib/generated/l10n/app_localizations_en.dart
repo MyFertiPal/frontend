@@ -478,4 +478,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectPreferredLanguage => 'Select your preferred language';
+
+  @override
+  String get connect => 'Connect';
+
+  @override
+  String get podcast => 'PODCAST';
+
+  @override
+  String get fertiTalks => 'FertiTalks By MyFertiPal';
+
+  @override
+  String get newEpisodesAvailable => 'New episodes available anytime';
+
+  @override
+  String get listenOnSpotify => 'Listen on Spotify';
+
+  @override
+  String get connectWithOthers => 'Connect with others';
+
+  @override
+  String get whatsAppCommunity => 'WhatsApp Community';
+
+  @override
+  String get whatsAppCommunityDescription =>
+      'Connect with women, share experiences and get fertility support.';
+
+  @override
+  String get joinCommunity => 'Join the community';
+
+  @override
+  String get successStories => 'Success Stories';
+
+  @override
+  String get successStoriesDescription =>
+      'Real stories from women who stayed hopeful and never gave up.';
+
+  @override
+  String get beInspired => 'Be inspired';
+
+  @override
+  String get faithEncouragement => 'Faith & Encouragement';
+
+  @override
+  String get faithEncouragementDescription =>
+      'Faith-based support and daily encouragement for your journey.';
+
+  @override
+  String get getEncouraged => 'Get encouraged';
 }

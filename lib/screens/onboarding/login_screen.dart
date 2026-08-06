@@ -223,8 +223,8 @@ Future<void> _loadSavedEmail() async {
   activeColor: const Color(0xFF0EA5A4),   // checked box color
   checkColor: Colors.white,               // tick color
 
-  title: const Text(
-    "Remember Email",
+  title: Text(
+    AppLocalizations.of(context).rememberEmail,
     style: TextStyle(
       fontSize: 14,
       fontFamily: 'Poppins',

@@ -477,4 +477,52 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get selectPreferredLanguage => 'Họrọ asụsụ ịchọrọ';
+
+  @override
+  String get connect => 'Jikọọ';
+
+  @override
+  String get podcast => 'PODCAST';
+
+  @override
+  String get fertiTalks => 'FertiTalks nke MyFertiPal';
+
+  @override
+  String get newEpisodesAvailable => 'A na-enwe akụkụ ọhụrụ mgbe niile';
+
+  @override
+  String get listenOnSpotify => 'Gee na Spotify';
+
+  @override
+  String get connectWithOthers => 'Jikọọ na ndị ọzọ';
+
+  @override
+  String get whatsAppCommunity => 'Obodo WhatsApp';
+
+  @override
+  String get whatsAppCommunityDescription =>
+      'Jikọọ na ụmụ nwanyị, kesaa ahụmịhe gị ma nweta nkwado gbasara ọmụmụ.';
+
+  @override
+  String get joinCommunity => 'Soro obodo ahụ';
+
+  @override
+  String get successStories => 'Akụkọ Ịga nke Ọma';
+
+  @override
+  String get successStoriesDescription =>
+      'Akụkọ ndị nwanyị n\'ezie bụ ndị nọgidere nwee olileanya ma ghara ịda mba.';
+
+  @override
+  String get beInspired => 'Nweta mkpali';
+
+  @override
+  String get faithEncouragement => 'Okwukwe na Nkwado';
+
+  @override
+  String get faithEncouragementDescription =>
+      'Nkwado dabere n\'okwukwe na mkpali kwa ụbọchị maka njem gị.';
+
+  @override
+  String get getEncouraged => 'Nweta mkpali';
 }

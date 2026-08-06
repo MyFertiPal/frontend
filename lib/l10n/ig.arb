@@ -178,5 +178,26 @@
   "settings": "Ntọala",
   "pleaseSelectLanguage": "Biko họrọ asụsụ ịchọrọ",
   "languageSelected": "Ahọrọla asụsụ nke ọma",
-  "selectPreferredLanguage": "Họrọ asụsụ ịchọrọ"
+  "selectPreferredLanguage": "Họrọ asụsụ ịchọrọ",
+
+   "connect": "Jikọọ",
+
+  "podcast": "PODCAST",
+  "fertiTalks": "FertiTalks nke MyFertiPal",
+  "newEpisodesAvailable": "A na-enwe akụkụ ọhụrụ mgbe niile",
+  "listenOnSpotify": "Gee na Spotify",
+
+  "connectWithOthers": "Jikọọ na ndị ọzọ",
+
+  "whatsAppCommunity": "Obodo WhatsApp",
+  "whatsAppCommunityDescription": "Jikọọ na ụmụ nwanyị, kesaa ahụmịhe gị ma nweta nkwado gbasara ọmụmụ.",
+  "joinCommunity": "Soro obodo ahụ",
+
+  "successStories": "Akụkọ Ịga nke Ọma",
+  "successStoriesDescription": "Akụkọ ndị nwanyị n'ezie bụ ndị nọgidere nwee olileanya ma ghara ịda mba.",
+  "beInspired": "Nweta mkpali",
+
+  "faithEncouragement": "Okwukwe na Nkwado",
+  "faithEncouragementDescription": "Nkwado dabere n'okwukwe na mkpali kwa ụbọchị maka njem gị.",
+  "getEncouraged": "Nweta mkpali"
 }

@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import "../../theme/app_colors.dart";
+import '../../generated/l10n/app_localizations.dart';
 
 
 class SupportScreen extends StatelessWidget {
@@ -51,8 +52,8 @@ class _Header extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Connect',
+              Text(
+                AppLocalizations.of(context).connect,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class _PodcastCard extends StatelessWidget {
     color: const Color(0xFF1DB954), // Spotify green
     borderRadius: BorderRadius.circular(30),
   ),
-  child: const Row(
+  child:  Row(
     mainAxisSize: MainAxisSize.min,
     children: [
       Icon(
@@ -129,7 +130,7 @@ class _PodcastCard extends StatelessWidget {
       ),
       SizedBox(width: 6),
       Text(
-        "PODCAST",
+        AppLocalizations.of(context).podcast,
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
@@ -143,8 +144,8 @@ class _PodcastCard extends StatelessWidget {
 
                   const Spacer(),
 
-                  const Text(
-  "FertiTalks By MyFertipal",
+                  Text(
+  AppLocalizations.of(context).fertiTalks,
   style: TextStyle(
     color: Colors.white,
     fontSize: 30,
@@ -156,7 +157,7 @@ class _PodcastCard extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   Row(
-  children: const [
+  children: [
     Icon(
       Icons.music_note,
       color: Colors.white70,
@@ -164,7 +165,7 @@ class _PodcastCard extends StatelessWidget {
     ),
     SizedBox(width: 8),
     Text(
-      "New episodes available anytime",
+      AppLocalizations.of(context).newEpisodesAvailable,
       style: TextStyle(
         color: Colors.white70,
         fontSize: 15,
@@ -178,7 +179,9 @@ class _PodcastCard extends StatelessWidget {
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: () => _openPodcast,
+                    onPressed: () async {
+  await _openPodcast();
+},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: AppColors.primaryDark,
@@ -187,13 +190,13 @@ class _PodcastCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Row(
+                      child:  Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
     Icon(Icons.headphones),
     SizedBox(width: 8),
     Text(
-      "Listen on Spotify",
+      AppLocalizations.of(context).listenOnSpotify,
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16,
@@ -224,9 +227,10 @@ class _ConnectWithOthersSection extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Expanded(
+             Expanded(
               child: Text(
-                'Connect with others',
+              
+  AppLocalizations.of(context).connectWithOthers,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -240,9 +244,9 @@ class _ConnectWithOthersSection extends StatelessWidget {
         _ConnectCard(
   emoji: '👥',
   iconBg: const Color(0xFFDDEEE5),
-  title: 'WhatsApp Community',
-  subtitle: 'Connect with women, share experiences and get fertility support.',
-  linkText: 'Join the community',
+ title: AppLocalizations.of(context).whatsAppCommunity,
+subtitle: AppLocalizations.of(context).whatsAppCommunityDescription,
+linkText: AppLocalizations.of(context).joinCommunity,
   linkColor: AppColors.textPrimary,
   onTap: _openWhatsAppCommunity,
 ),
@@ -250,9 +254,9 @@ class _ConnectWithOthersSection extends StatelessWidget {
         _ConnectCard(
           emoji: '💜',
           iconBg: const Color(0xFFEAE1F7),
-          title: 'Success Stories',
-          subtitle: 'Real stories from women who stayed hopeful and never gave up.',
-          linkText: 'Be inspired',
+         title: AppLocalizations.of(context).successStories,
+subtitle: AppLocalizations.of(context).successStoriesDescription,
+linkText: AppLocalizations.of(context).beInspired,
           linkColor: const Color(0xFF8E5FD1),
           onTap: (){},
         ),
@@ -260,9 +264,9 @@ class _ConnectWithOthersSection extends StatelessWidget {
         _ConnectCard(
           emoji: '🙏',
           iconBg: const Color(0xFFFBEAD2),
-          title: 'Faith & Encouragement',
-          subtitle: 'Faith-based support and daily encouragement for your journey.',
-          linkText: 'Get encouraged',
+         title: AppLocalizations.of(context).faithEncouragement,
+subtitle: AppLocalizations.of(context).faithEncouragementDescription,
+linkText: AppLocalizations.of(context).getEncouraged,
           linkColor: const Color(0xFFCB8A2C),
           onTap: (){},
         ),
@@ -320,7 +324,7 @@ class _ConnectCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: _openWhatsAppCommunity,
+        onTap: onTap,
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(

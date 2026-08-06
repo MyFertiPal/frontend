@@ -487,4 +487,53 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get selectPreferredLanguage => 'Zaɓi harshen da kake so';
+
+  @override
+  String get connect => 'Haɗu';
+
+  @override
+  String get podcast => 'PODCAST';
+
+  @override
+  String get fertiTalks => 'FertiTalks na MyFertiPal';
+
+  @override
+  String get newEpisodesAvailable =>
+      'Sabbin shirye-shirye suna samuwa a kowane lokaci';
+
+  @override
+  String get listenOnSpotify => 'Saurara a Spotify';
+
+  @override
+  String get connectWithOthers => 'Haɗu da wasu';
+
+  @override
+  String get whatsAppCommunity => 'Ƙungiyar WhatsApp';
+
+  @override
+  String get whatsAppCommunityDescription =>
+      'Haɗu da mata, raba abubuwan da kika fuskanta kuma ki sami tallafi kan haihuwa.';
+
+  @override
+  String get joinCommunity => 'Shiga ƙungiyar';
+
+  @override
+  String get successStories => 'Labaran Nasara';
+
+  @override
+  String get successStoriesDescription =>
+      'Labarai na gaskiya daga mata waɗanda suka ci gaba da bege kuma ba su daina ba.';
+
+  @override
+  String get beInspired => 'Sami ƙwarin gwiwa';
+
+  @override
+  String get faithEncouragement => 'Imani da Ƙarfafawa';
+
+  @override
+  String get faithEncouragementDescription =>
+      'Tallafin da ya dogara da addini da ƙarfafawa na yau da kullum don tafiyarki.';
+
+  @override
+  String get getEncouraged => 'Sami ƙarfafawa';
 }

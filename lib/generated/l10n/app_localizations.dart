@@ -985,6 +985,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select your preferred language'**
   String get selectPreferredLanguage;
+
+  /// No description provided for @connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get connect;
+
+  /// No description provided for @podcast.
+  ///
+  /// In en, this message translates to:
+  /// **'PODCAST'**
+  String get podcast;
+
+  /// No description provided for @fertiTalks.
+  ///
+  /// In en, this message translates to:
+  /// **'FertiTalks By MyFertiPal'**
+  String get fertiTalks;
+
+  /// No description provided for @newEpisodesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'New episodes available anytime'**
+  String get newEpisodesAvailable;
+
+  /// No description provided for @listenOnSpotify.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen on Spotify'**
+  String get listenOnSpotify;
+
+  /// No description provided for @connectWithOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with others'**
+  String get connectWithOthers;
+
+  /// No description provided for @whatsAppCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Community'**
+  String get whatsAppCommunity;
+
+  /// No description provided for @whatsAppCommunityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with women, share experiences and get fertility support.'**
+  String get whatsAppCommunityDescription;
+
+  /// No description provided for @joinCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the community'**
+  String get joinCommunity;
+
+  /// No description provided for @successStories.
+  ///
+  /// In en, this message translates to:
+  /// **'Success Stories'**
+  String get successStories;
+
+  /// No description provided for @successStoriesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Real stories from women who stayed hopeful and never gave up.'**
+  String get successStoriesDescription;
+
+  /// No description provided for @beInspired.
+  ///
+  /// In en, this message translates to:
+  /// **'Be inspired'**
+  String get beInspired;
+
+  /// No description provided for @faithEncouragement.
+  ///
+  /// In en, this message translates to:
+  /// **'Faith & Encouragement'**
+  String get faithEncouragement;
+
+  /// No description provided for @faithEncouragementDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Faith-based support and daily encouragement for your journey.'**
+  String get faithEncouragementDescription;
+
+  /// No description provided for @getEncouraged.
+  ///
+  /// In en, this message translates to:
+  /// **'Get encouraged'**
+  String get getEncouraged;
 }
 
 class _AppLocalizationsDelegate

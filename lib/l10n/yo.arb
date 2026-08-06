@@ -177,5 +177,26 @@
   "pleaseSelectLanguage": "Jọ̀wọ́ yan èdè tí o fẹ́",
   "languageSelected": "A ti yan èdè dáadáa",
   "selectPreferredLanguage": "Yan èdè tí o fẹ́ lo",
-  "bookSpecialist": "Ba amọ̀ja sọ̀rọ̀"
+  "bookSpecialist": "Ba amọ̀ja sọ̀rọ̀",
+
+   "connect": "Sopọ",
+
+  "podcast": "PODCAST",
+  "fertiTalks": "FertiTalks nipasẹ MyFertiPal",
+  "newEpisodesAvailable": "Àwọn ìṣẹ̀lẹ̀ tuntun wà ní gbogbo ìgbà",
+  "listenOnSpotify": "Tẹ́tí sí Spotify",
+
+  "connectWithOthers": "Sopọ pẹlu àwọn míì",
+
+  "whatsAppCommunity": "Àwùjọ WhatsApp",
+  "whatsAppCommunityDescription": "Sopọ pẹlu àwọn obìnrin, pín ìrírí rẹ, kí o sì gba ìtìlẹ́yìn nípa ìbímọ.",
+  "joinCommunity": "Darapọ mọ àwùjọ",
+
+  "successStories": "Àwọn Ìtàn Àṣeyọrí",
+  "successStoriesDescription": "Ìtàn gidi láti ọdọ àwọn obìnrin tí wọ́n ní ìrètí tí wọ́n kò sì fi ọwọ́ sílẹ̀.",
+  "beInspired": "Ní ìmísí",
+
+  "faithEncouragement": "Ìgbàgbọ́ àti Ìtìlẹ́yìn",
+  "faithEncouragementDescription": "Ìtìlẹ́yìn tó dá lórí ìgbàgbọ́ àti ìmísí ojoojúmọ́ fún ìrìnàjò rẹ.",
+  "getEncouraged": "Gba ìtìlẹ́yìn"
 }

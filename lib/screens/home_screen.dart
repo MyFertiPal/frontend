@@ -651,8 +651,8 @@ Widget _buildBookSpecialistSection(BuildContext context) {
                         child: Text(
                           AppLocalizations.of(context).bookConsultation,
                           style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
                           ),
                         ),
                       ),
