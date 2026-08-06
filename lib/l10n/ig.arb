@@ -199,5 +199,9 @@
 
   "faithEncouragement": "Okwukwe na Nkwado",
   "faithEncouragementDescription": "Nkwado dabere n'okwukwe na mkpali kwa ụbọchị maka njem gị.",
-  "getEncouraged": "Nweta mkpali"
+  "getEncouraged": "Nweta mkpali",
+
+   "explore": "Nyochaa & Mụta",
+  "searchArticles": "Chọọ edemede...",
+  "articles": "Edemede"
 }

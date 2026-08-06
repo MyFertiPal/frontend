@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '/theme/app_colors.dart';
 import '../../services/api_service.dart';
 import "../educational/reading_screen.dart";
+import '../../generated/l10n/app_localizations.dart';
 
 
 class EducationHubScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ String _language = "en";
 @override
 void initState() {
   super.initState();
-  _loadArticles();
+  _initialize();
 }
 
 
@@ -71,7 +72,7 @@ horizontal: MediaQuery.of(context).size.width < 360 ? 15 : 20,
 
                 child:Text(
 
-                  "Explore & Learn",
+                  AppLocalizations.of(context).explore,
 
                   style:TextStyle(
 
@@ -179,7 +180,7 @@ decoration:InputDecoration(
 ),
 
 hintText:
-"Search articles..",
+AppLocalizations.of(context).searchArticles,
 
 
 hintStyle:
@@ -219,6 +220,24 @@ vertical:18,
 );
 
 }
+Future<void> _loadUserLanguage() async {
+  try {
+    final user = await _api.getUser();
+
+    _language =
+        (user["language_preference"] as String?)?.toLowerCase() ?? "en";
+
+    debugPrint("Using language: $_language");
+  } catch (e) {
+    debugPrint("Failed to load language: $e");
+    _language = "en";
+  }
+}
+Future<void> _initialize() async {
+  await _loadUserLanguage();
+  await _loadArticles();
+}
+
 Future<void> _loadArticles() async {
   try {
     final articles =
@@ -262,8 +281,8 @@ Future<void> _searchArticle() async {
 
 Widget _buildArticleHeader(){
 
-return const Text(
-  "Articles",
+return Text(
+  AppLocalizations.of(context).articles,
   style: TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,

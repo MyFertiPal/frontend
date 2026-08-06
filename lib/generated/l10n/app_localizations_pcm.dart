@@ -526,4 +526,13 @@ class AppLocalizationsPcm extends AppLocalizations {
 
   @override
   String get getEncouraged => 'Get encouraged';
+
+  @override
+  String get explore => 'Explore & Learn';
+
+  @override
+  String get searchArticles => 'Find articles...';
+
+  @override
+  String get articles => 'Articles';
 }

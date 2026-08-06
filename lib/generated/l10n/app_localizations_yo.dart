@@ -525,4 +525,13 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get getEncouraged => 'Gba ìtìlẹ́yìn';
+
+  @override
+  String get explore => 'Ṣàwárí & Kọ́';
+
+  @override
+  String get searchArticles => 'Wa àwọn àpilẹ̀kọ...';
+
+  @override
+  String get articles => 'Àwọn Àpilẹ̀kọ';
 }

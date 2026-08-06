@@ -1075,6 +1075,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get encouraged'**
   String get getEncouraged;
+
+  /// No description provided for @explore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore & Learn'**
+  String get explore;
+
+  /// No description provided for @searchArticles.
+  ///
+  /// In en, this message translates to:
+  /// **'Search articles..'**
+  String get searchArticles;
+
+  /// No description provided for @articles.
+  ///
+  /// In en, this message translates to:
+  /// **'Articles'**
+  String get articles;
 }
 
 class _AppLocalizationsDelegate

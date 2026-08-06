@@ -525,4 +525,13 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get getEncouraged => 'Nweta mkpali';
+
+  @override
+  String get explore => 'Nyochaa & Mụta';
+
+  @override
+  String get searchArticles => 'Chọọ edemede...';
+
+  @override
+  String get articles => 'Edemede';
 }

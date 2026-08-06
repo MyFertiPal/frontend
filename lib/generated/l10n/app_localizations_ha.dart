@@ -536,4 +536,13 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get getEncouraged => 'Sami ƙarfafawa';
+
+  @override
+  String get explore => 'Bincika & Koya';
+
+  @override
+  String get searchArticles => 'Nemo makaloli...';
+
+  @override
+  String get articles => 'Makaloli';
 }

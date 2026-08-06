@@ -225,6 +225,10 @@
 
   "faithEncouragement": "Imani da Ƙarfafawa",
   "faithEncouragementDescription": "Tallafin da ya dogara da addini da ƙarfafawa na yau da kullum don tafiyarki.",
-  "getEncouraged": "Sami ƙarfafawa"
+  "getEncouraged": "Sami ƙarfafawa",
+
+   "explore": "Bincika & Koya",
+  "searchArticles": "Nemo makaloli...",
+  "articles": "Makaloli"
 
 }

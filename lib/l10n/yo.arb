@@ -198,5 +198,9 @@
 
   "faithEncouragement": "Ìgbàgbọ́ àti Ìtìlẹ́yìn",
   "faithEncouragementDescription": "Ìtìlẹ́yìn tó dá lórí ìgbàgbọ́ àti ìmísí ojoojúmọ́ fún ìrìnàjò rẹ.",
-  "getEncouraged": "Gba ìtìlẹ́yìn"
+  "getEncouraged": "Gba ìtìlẹ́yìn",
+
+  "explore": "Ṣàwárí & Kọ́",
+  "searchArticles": "Wa àwọn àpilẹ̀kọ...",
+  "articles": "Àwọn Àpilẹ̀kọ"
 }

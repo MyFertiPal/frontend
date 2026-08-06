@@ -526,4 +526,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get getEncouraged => 'Get encouraged';
+
+  @override
+  String get explore => 'Explore & Learn';
+
+  @override
+  String get searchArticles => 'Search articles..';
+
+  @override
+  String get articles => 'Articles';
 }

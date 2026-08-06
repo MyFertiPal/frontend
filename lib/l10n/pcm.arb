@@ -210,5 +210,9 @@
 
   "faithEncouragement": "Faith & Encouragement",
   "faithEncouragementDescription": "Faith-based support and daily encouragement for your journey.",
-  "getEncouraged": "Get encouraged"
+  "getEncouraged": "Get encouraged",
+
+    "explore": "Explore & Learn",
+  "searchArticles": "Find articles...",
+  "articles": "Articles"
 }
