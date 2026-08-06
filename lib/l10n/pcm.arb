@@ -214,5 +214,8 @@
 
     "explore": "Explore & Learn",
   "searchArticles": "Find articles...",
-  "articles": "Articles"
+  "articles": "Articles",
+
+   "specialists": "Find Specialist",
+  "searchSpecialists": "Search specialists by name or area of expertise"
 }

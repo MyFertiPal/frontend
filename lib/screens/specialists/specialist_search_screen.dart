@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import "calendly_screen.dart";
 import '../../theme/app_colors.dart';
 import 'specialist_profile_screen.dart';
 import '../../services/api_service.dart';
 import '../payment/payment_screen.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class SpecialistSearchScreen extends StatefulWidget {
   const SpecialistSearchScreen({super.key});
@@ -101,7 +100,7 @@ void initState() {
    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Find a Specialist'),
+        title:  Text(AppLocalizations.of(context).specialists),
         backgroundColor: AppColors.teal,
       ),
       backgroundColor: const Color(0xFFF5F5F0),
@@ -113,7 +112,7 @@ void initState() {
               TextField(
                 readOnly: true,
                 decoration: InputDecoration(
-                  hintText: 'Search specialists by name or specialty',
+                  hintText: AppLocalizations.of(context).searchSpecialists,
                   filled: true,
                   fillColor: Colors.grey.shade200,
                   prefixIcon: const Icon(
