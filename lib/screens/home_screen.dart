@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../generated/l10n/app_localizations.dart';
+import '../services/audio_service.dart';
 import '../theme/app_colors.dart';
 import '../services/api_service.dart';
 import '../screens/specialists/specialist_search_screen.dart';
@@ -78,18 +80,17 @@ DateTime? _nextPeriod;
     super.initState();
     _loadHomeData();
   }
-  String _greeting() {
+  String _greeting(BuildContext context) {
   final hour = DateTime.now().hour;
 
   if (hour < 12) {
-    return "Good Morning,";
+    return AppLocalizations.of(context).goodMorning;
   } else if (hour < 17) {
-    return "Good Afternoon,";
+    return AppLocalizations.of(context).goodAfternoon;
   } else {
-    return "Good Evening,";
+    return AppLocalizations.of(context).goodEvening;
   }
 }
-
 
   Future<void> _loadHomeData() async {
 
@@ -237,7 +238,7 @@ return Scaffold(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-  _greeting(),
+  _greeting(context),
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 15,
@@ -488,8 +489,7 @@ return Scaffold(
 
   // ---------- Insight card ----------
  Widget _buildInsightCard(BuildContext context) {
-   _insightText =
-      AppLocalizations.of(context).defaultInsight;
+  
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20),
     child: Container(
@@ -531,9 +531,19 @@ return Scaffold(
 
               InkWell(
                 borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  // TODO: Play TTS audio
-                },
+               onTap: () {
+
+  final language =
+      Localizations.localeOf(context).languageCode;
+
+  context.read<AudioService>().playTTS(
+    text: _insightText.isEmpty
+        ? AppLocalizations.of(context).defaultInsight
+        : _insightText,
+    languageCode: language,
+  );
+
+},
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -551,15 +561,16 @@ return Scaffold(
           ),
 
           const SizedBox(height: 16),
-
-          Text(
-            _insightText,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              height: 1.5,
-            ),
-          ),
+Text(
+  _insightText.isEmpty
+      ? AppLocalizations.of(context).defaultInsight
+      : _insightText,
+  style: const TextStyle(
+    color: Colors.white,
+    fontSize: 15,
+    height: 1.5,
+  ),
+),
         ],
       ),
     ),

@@ -1,9 +1,13 @@
 ﻿import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
+import 'api_service.dart';
+
 
 class AudioService with ChangeNotifier {
+
   final AudioPlayer _player = AudioPlayer();
+  final ApiService _api = ApiService();
   String? _currentArticleId;
   bool _isPlaying = false;
   double _playbackSpeed = 1.0;
@@ -57,6 +61,46 @@ class AudioService with ChangeNotifier {
     _isPlaying = false;
     notifyListeners();
   }
+
+  Future<void> playTTS({
+  required String text,
+  required String languageCode,
+}) async {
+
+  try {
+
+    final response = await _api.generateTTS(
+      text: text,
+      voice: "Idera",
+      language: languageCode,
+    );
+
+
+    final audioUrl = response["audio_url"];
+
+
+    if(audioUrl != null){
+
+      await _player.setUrl(audioUrl);
+
+      await _player.play();
+
+      _isPlaying = true;
+
+      notifyListeners();
+
+    }
+
+
+  } catch(e){
+
+    if(kDebugMode){
+      print("TTS playback error: $e");
+    }
+
+  }
+
+}
 
   Future<void> stop() async {
     await _player.stop();

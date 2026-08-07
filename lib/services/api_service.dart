@@ -487,6 +487,33 @@ Future<List<dynamic>> getArticles({
     rethrow;
   }
 }
+Future<Map<String, dynamic>> generateTTS({
+  required String text,
+  required String voice,
+  required String language,
+}) async {
+
+  final response = await http.post(
+    Uri.parse(
+      "$baseUrl/user/api/v1/audio/generate-tts",
+    ),
+    headers: await getHeaders(includeAuth: true),
+    body: jsonEncode({
+      "text": text,
+      "voice": voice,
+      "language": language,
+    }),
+  );
+
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception(
+      "Failed to generate audio: ${response.body}",
+    );
+  }
+}
 Future<Map<String, dynamic>> getArticleById({
   required int articleId,
   String lang = "en",
