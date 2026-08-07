@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../services/firestore_period_service.dart';
+import '../services/period_service.dart';
 
 /// Types of calendar-day markers shown on the calendar grid.
 enum DayType { period, fertile, ovulation, predicted }
@@ -48,9 +48,8 @@ class CalendarTabScreen extends StatefulWidget {
 
 class _CalendarTabScreenState extends State<CalendarTabScreen> {
   List<dynamic> _loggedSymptoms = [];
-  final FirestoreService _firestore = FirestoreService.instance;
-
-int? _userId;
+  final LocalPeriodService _localPeriod =
+    LocalPeriodService();
 
   void _buildBackendMarkers(){
 
@@ -264,7 +263,16 @@ final api = ApiService();
 
 final profile =
 await api.getProfile();
-_userId = profile["user_id"];
+final periods =
+    await _localPeriod.getPeriodLogs();
+
+
+for(final date in periods){
+
+  _dayMarkers[_normalize(date)] =
+      DayType.period;
+
+}
 
 
 
@@ -298,13 +306,7 @@ _fertileEnd = prediction["fertile_period_end"];
 
 _buildBackendMarkers();
 
-if (_userId != null) {
-  final periods = await _firestore.getPeriodLogs(_userId!);
-
-  for (final date in periods) {
-    _dayMarkers[_normalize(date)] = DayType.period;
-  }
-}
+ 
 
 setState(() {});
 
@@ -520,35 +522,37 @@ Widget _buildLoggedSymptoms() {
     
              return GestureDetector(
 onTap: () async {
-  if (_userId == null) return;
 
-  final key = _normalize(date);
+final key = _normalize(date);
 
-  if (_dayMarkers[key] == DayType.period) {
 
-    await _firestore.deletePeriod(
-      userId: _userId!,
-      date: key,
-    );
+if(_dayMarkers[key] == DayType.period){
 
-    setState(() {
-      _dayMarkers.remove(key);
-    });
 
-  } else {
+ await _localPeriod.deletePeriod(key);
 
-    await _firestore.savePeriod(
-      userId: _userId!,
-      date: key,
-    );
 
-    setState(() {
-      _dayMarkers[key] = DayType.period;
-    });
-  }
+ setState(() {
+   _dayMarkers.remove(key);
+ });
 
-  // Refresh predictions after logging
-  await _loadCycle();
+
+}else{
+
+
+ await _localPeriod.savePeriod(key);
+
+
+ setState(() {
+
+   _dayMarkers[key] =
+       DayType.period;
+
+ });
+
+}
+
+
 },
   child: _CalendarDayCell(
     day: day,

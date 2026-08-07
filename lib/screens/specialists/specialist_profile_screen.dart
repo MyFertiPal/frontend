@@ -175,33 +175,6 @@ Row(
   ],
 ),
 
-const SizedBox(height: 28),
-
-
-Container(
-  width: double.infinity,
-  padding: const EdgeInsets.all(18),
-  decoration: BoxDecoration(
-    color: Colors.grey.shade100,
-    borderRadius: BorderRadius.circular(16),
-  ),
-  child: Column(
-    children: [
-      Row(
-        children: [
-          const Icon(
-            Icons.calendar_today,
-            color: AppColors.teal,
-            size: 20,
-          ),
-          const SizedBox(width: 10),
-         
-        ],
-      ),
-    ],
-  ),
-),
-
 const SizedBox(height: 30),
 
 const _SectionTitle(
