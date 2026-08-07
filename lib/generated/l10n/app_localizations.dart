@@ -734,6 +734,12 @@ abstract class AppLocalizations {
   /// **'Profile setup complete!'**
   String get profileSetupComplete;
 
+  /// No description provided for @updateProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Profile'**
+  String get updateProfile;
+
   /// No description provided for @goodMorning.
   ///
   /// In en, this message translates to:
@@ -797,7 +803,7 @@ abstract class AppLocalizations {
   /// No description provided for @genderPrediction.
   ///
   /// In en, this message translates to:
-  /// **'Gender\nPrediction'**
+  /// **'Gender Prediction'**
   String get genderPrediction;
 
   /// No description provided for @calendar.
@@ -1423,6 +1429,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Symptoms'**
   String get symptoms;
+
+  /// No description provided for @importantDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Important Disclaimer'**
+  String get importantDisclaimer;
+
+  /// No description provided for @genderPredictionDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.'**
+  String get genderPredictionDisclaimer;
+
+  /// No description provided for @selectGenderExpectation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your gender expectation'**
+  String get selectGenderExpectation;
+
+  /// No description provided for @girl.
+  ///
+  /// In en, this message translates to:
+  /// **'Girl'**
+  String get girl;
+
+  /// No description provided for @hopingForGirl.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m hoping for a baby girl'**
+  String get hopingForGirl;
+
+  /// No description provided for @boy.
+  ///
+  /// In en, this message translates to:
+  /// **'Boy'**
+  String get boy;
+
+  /// No description provided for @hopingForBoy.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m hoping for a baby boy'**
+  String get hopingForBoy;
+
+  /// No description provided for @noPreference.
+  ///
+  /// In en, this message translates to:
+  /// **'No Preference'**
+  String get noPreference;
+
+  /// No description provided for @openToEither.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m open to either'**
+  String get openToEither;
+
+  /// Shows selected gender prediction
+  ///
+  /// In en, this message translates to:
+  /// **'Prediction for: {gender}'**
+  String predictionFor(String gender);
+
+  /// No description provided for @estimatedOvulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Ovulation'**
+  String get estimatedOvulation;
+
+  /// No description provided for @suggestedTiming.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Timing'**
+  String get suggestedTiming;
+
+  /// No description provided for @tryCloserToOvulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Try closer to ovulation:'**
+  String get tryCloserToOvulation;
+
+  /// No description provided for @tryBeforeOvulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a few days before ovulation:'**
+  String get tryBeforeOvulation;
+
+  /// No description provided for @yourFertileDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Your fertile days:'**
+  String get yourFertileDays;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get notAvailable;
+
+  /// No description provided for @jan.
+  ///
+  /// In en, this message translates to:
+  /// **'Jan'**
+  String get jan;
+
+  /// No description provided for @feb.
+  ///
+  /// In en, this message translates to:
+  /// **'Feb'**
+  String get feb;
+
+  /// No description provided for @mar.
+  ///
+  /// In en, this message translates to:
+  /// **'Mar'**
+  String get mar;
+
+  /// No description provided for @apr.
+  ///
+  /// In en, this message translates to:
+  /// **'Apr'**
+  String get apr;
+
+  /// No description provided for @may.
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get may;
+
+  /// No description provided for @jun.
+  ///
+  /// In en, this message translates to:
+  /// **'Jun'**
+  String get jun;
+
+  /// No description provided for @jul.
+  ///
+  /// In en, this message translates to:
+  /// **'Jul'**
+  String get jul;
+
+  /// No description provided for @aug.
+  ///
+  /// In en, this message translates to:
+  /// **'Aug'**
+  String get aug;
+
+  /// No description provided for @sep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sep'**
+  String get sep;
+
+  /// No description provided for @oct.
+  ///
+  /// In en, this message translates to:
+  /// **'Oct'**
+  String get oct;
+
+  /// No description provided for @nov.
+  ///
+  /// In en, this message translates to:
+  /// **'Nov'**
+  String get nov;
+
+  /// No description provided for @dec.
+  ///
+  /// In en, this message translates to:
+  /// **'Dec'**
+  String get dec;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
 }
 
 class _AppLocalizationsDelegate

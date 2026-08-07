@@ -354,6 +354,9 @@ class AppLocalizationsHa extends AppLocalizations {
   String get profileSetupComplete => 'An kammala bayanan martaba!';
 
   @override
+  String get updateProfile => 'Sabunta Bayanan Bayani';
+
+  @override
   String get goodMorning => 'Barka da safiya,';
 
   @override
@@ -714,4 +717,112 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get symptoms => 'Alamomi';
+
+  @override
+  String get importantDisclaimer => 'Important Disclaimer';
+
+  @override
+  String get genderPredictionDisclaimer =>
+      'This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.';
+
+  @override
+  String get selectGenderExpectation => 'Select your gender expectation';
+
+  @override
+  String get girl => 'Girl';
+
+  @override
+  String get hopingForGirl => 'I\'m hoping for a baby girl';
+
+  @override
+  String get boy => 'Boy';
+
+  @override
+  String get hopingForBoy => 'I\'m hoping for a baby boy';
+
+  @override
+  String get noPreference => 'No Preference';
+
+  @override
+  String get openToEither => 'I\'m open to either';
+
+  @override
+  String predictionFor(String gender) {
+    return 'Prediction for: $gender';
+  }
+
+  @override
+  String get estimatedOvulation => 'Estimated Ovulation';
+
+  @override
+  String get suggestedTiming => 'Suggested Timing';
+
+  @override
+  String get tryCloserToOvulation => 'Try closer to ovulation:';
+
+  @override
+  String get tryBeforeOvulation => 'Try a few days before ovulation:';
+
+  @override
+  String get yourFertileDays => 'Your fertile days:';
+
+  @override
+  String get notAvailable => 'Not available';
+
+  @override
+  String get jan => 'Jan';
+
+  @override
+  String get feb => 'Feb';
+
+  @override
+  String get mar => 'Mar';
+
+  @override
+  String get apr => 'Apr';
+
+  @override
+  String get may => 'May';
+
+  @override
+  String get jun => 'Jun';
+
+  @override
+  String get jul => 'Jul';
+
+  @override
+  String get aug => 'Aug';
+
+  @override
+  String get sep => 'Sep';
+
+  @override
+  String get oct => 'Oct';
+
+  @override
+  String get nov => 'Nov';
+
+  @override
+  String get dec => 'Dec';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
 }

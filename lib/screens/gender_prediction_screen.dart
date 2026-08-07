@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "../../theme/app_colors.dart";
 import "../../services/api_service.dart";
+import '../../generated/l10n/app_localizations.dart';
 
 
 enum GenderExpectation {
@@ -135,9 +136,9 @@ class _GenderPredictionScreenState
                   const SizedBox(width:16),
 
 
-                  const Text(
+                   Text(
 
-                    "Gender Prediction",
+                    AppLocalizations.of(context).genderPrediction,
 
                     style:TextStyle(
 
@@ -203,9 +204,9 @@ class _GenderPredictionScreenState
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
-              "Important Disclaimer",
+              AppLocalizations.of(context).importantDisclaimer,
               style: TextStyle(
                 color: Colors.red,
                 fontSize: 15,
@@ -214,7 +215,7 @@ class _GenderPredictionScreenState
             ),
             SizedBox(height: 6),
             Text(
-              "This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.",
+              AppLocalizations.of(context).genderPredictionDisclaimer,
               style: TextStyle(
                 color: Colors.red,
                 fontSize: 14,
@@ -233,9 +234,9 @@ class _GenderPredictionScreenState
 
 
 
-                    const Text(
+                     Text(
 
-                      "Select your gender expectation",
+                      AppLocalizations.of(context).selectGenderExpectation,
 
                       style:TextStyle(
 
@@ -255,10 +256,10 @@ class _GenderPredictionScreenState
 
                     _OptionCard(
 
-                      title:"Girl",
+                      title:AppLocalizations.of(context).girl,
 
                       subtitle:
-                      "I'm hoping for a baby girl",
+                      AppLocalizations.of(context).hopingForGirl,
 
                       emoji:"👧",
 
@@ -288,10 +289,10 @@ class _GenderPredictionScreenState
 
                     _OptionCard(
 
-                      title:"Boy",
+                      title:AppLocalizations.of(context).boy,
 
                       subtitle:
-                      "I'm hoping for a baby boy",
+                      AppLocalizations.of(context).hopingForBoy,
 
                       emoji:"👦",
 
@@ -321,10 +322,10 @@ class _GenderPredictionScreenState
 
                     _OptionCard(
 
-                      title:"No Preference",
+                      title:AppLocalizations.of(context).noPreference,
 
                       subtitle:
-                      "I'm open to either",
+                      AppLocalizations.of(context).openToEither,
 
                       emoji:"💚",
 
@@ -962,7 +963,7 @@ final fertileWindow = "$fertileStart - $fertileEnd";
 
             Text(
 
-              "Prediction for: $selectedLabel",
+             AppLocalizations.of(context).predictionFor(selectedLabel),
 
 
               textAlign:
@@ -1010,8 +1011,8 @@ final fertileWindow = "$fertileStart - $fertileEnd";
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Fertile Window",
+             Text(
+              AppLocalizations.of(context).fertileWindow,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -1042,8 +1043,8 @@ Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Estimated Ovulation",
+             Text(
+              AppLocalizations.of(context).estimatedOvulation,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -1077,8 +1078,8 @@ Container(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
 
-      const Text(
-        "Suggested Timing",
+     Text(
+        AppLocalizations.of(context).suggestedTiming,
         style: TextStyle(
           fontSize:18,
           fontWeight:FontWeight.bold,
@@ -1090,10 +1091,10 @@ Container(
 
       Text(
         widget.selection == GenderExpectation.boy
-            ? "Try closer to ovulation:"
+            ? AppLocalizations.of(context).tryCloserToOvulation
             : widget.selection == GenderExpectation.girl
-                ? "Try a few days before ovulation:"
-                : "Your fertile days:",
+                ? AppLocalizations.of(context).tryBeforeOvulation
+                : AppLocalizations.of(context).yourFertileDays,
         style: TextStyle(
           color: Colors.grey[700],
         ),

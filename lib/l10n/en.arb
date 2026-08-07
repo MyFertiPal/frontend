@@ -137,6 +137,8 @@
   "continueButton": "Continue",
   "profileSetupComplete": "Profile setup complete!",
 
+  "updateProfile": "Update Profile",
+
 
   "goodMorning": "Good Morning,",
   "goodAfternoon": "Good Afternoon,",
@@ -305,6 +307,63 @@
   "failedToSaveSymptoms": "Failed to save symptoms: {error}",
 
   "logSymptoms": "Log Symptoms",
-  "symptoms": "Symptoms"
+  "symptoms": "Symptoms",
+
+   "genderPrediction": "Gender Prediction",
+  "importantDisclaimer": "Important Disclaimer",
+  "genderPredictionDisclaimer": "This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.",
+
+  "selectGenderExpectation": "Select your gender expectation",
+
+  "girl": "Girl",
+  "hopingForGirl": "I'm hoping for a baby girl",
+
+  "boy": "Boy",
+  "hopingForBoy": "I'm hoping for a baby boy",
+
+  "noPreference": "No Preference",
+  "openToEither": "I'm open to either",
+
+  "predictionFor": "Prediction for: {gender}",
+
+  "@predictionFor": {
+    "description": "Shows selected gender prediction",
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  },
+
+  "fertileWindow": "Fertile Window",
+  "estimatedOvulation": "Estimated Ovulation",
+
+  "suggestedTiming": "Suggested Timing",
+  "tryCloserToOvulation": "Try closer to ovulation:",
+  "tryBeforeOvulation": "Try a few days before ovulation:",
+  "yourFertileDays": "Your fertile days:",
+
+  "notAvailable": "Not available",
+
+  "jan": "Jan",
+  "feb": "Feb",
+  "mar": "Mar",
+  "apr": "Apr",
+  "may": "May",
+  "jun": "Jun",
+  "jul": "Jul",
+  "aug": "Aug",
+  "sep": "Sep",
+  "oct": "Oct",
+  "nov": "Nov",
+  "dec": "Dec",
+
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday"
 
 }

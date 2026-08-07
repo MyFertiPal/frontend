@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
 import '../../services/analytics_service.dart';
@@ -98,7 +99,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         ),
         centerTitle: true,
         title: Text(
-          'Update Profile',
+          AppLocalizations.of(context).profileSetup,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -114,8 +115,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Title
-              const Text(
-                'Update your profile',
+              Text(
+               AppLocalizations.of(context).updateProfile,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -166,7 +167,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Average number of days between your periods',
+                AppLocalizations.of(context).averageCycleDays,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
@@ -175,7 +176,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // Period Length
-              _buildFieldLabel('Period Length'),
+              _buildFieldLabel(AppLocalizations.of(context).periodLength),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
@@ -199,7 +200,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Typical number of days your period lasts',
+                AppLocalizations.of(context).typicalPeriodDays,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
@@ -208,7 +209,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // Last Period Date
-              _buildFieldLabel('Last Period Date'),
+             _buildFieldLabel(AppLocalizations.of(context).lastPeriodDate),
               GestureDetector(
                 onTap: _selectDate,
                 child: Container(
@@ -228,7 +229,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       Expanded(
                         child: Text(
                           _lastPeriodDate == null
-                              ? 'Select date'
+                              ? AppLocalizations.of(context).selectLastPeriodDate
                               : '${_lastPeriodDate!.day}, ${_getMonthName(_lastPeriodDate!.month)} ${_lastPeriodDate!.year}',
                           style: TextStyle(
                             fontSize: 16,
@@ -244,7 +245,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'When your last menstrual bleeding started',
+                AppLocalizations.of(context).lastPeriodStartedInfo,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
@@ -253,7 +254,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // TTC History
-              _buildFieldLabel('TTC History'),
+              _buildFieldLabel(AppLocalizations.of(context).ttcHistory),
               _buildDropdown(
                 value: _ttcHistory.isNotEmpty ? _ttcHistory.first : null,
                 items: _ttcHistories,
@@ -263,7 +264,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // Faith Preference
-              _buildFieldLabel('Faith Preference'),
+              _buildFieldLabel(AppLocalizations.of(context).faithPreference),
               _buildDropdown(
                 value: _faithPreference,
                 items: _faithPreferences,
@@ -272,7 +273,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // Language
-              _buildFieldLabel('Language'),
+              _buildFieldLabel(AppLocalizations.of(context).language),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
@@ -300,7 +301,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // Audio Guidance
-              _buildFieldLabel('Audio Guidance'),
+              _buildFieldLabel(AppLocalizations.of(context).audioGuidance),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -312,7 +313,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Enable audio guidance',
+                        AppLocalizations.of(context).enableAudioGuidance,
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey.shade800,
@@ -357,8 +358,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             ),
                           ),
                         )
-                      : const Text(
-                          'Update Profile',
+                      : Text(
+                          AppLocalizations.of(context).updateProfile,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
