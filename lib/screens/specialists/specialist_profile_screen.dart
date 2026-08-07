@@ -78,14 +78,6 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
     final qualification = specialist!["qualification"] ?? "";
     final expertise = specialist!["area_of_expertise"] ?? "";
     final fee = specialist!["consultation_fee"]?.toString() ?? "0";
-final availabilityInfo =
-    specialist!["availability_info"] as Map<String, dynamic>?;
-
-String availability = "";
-
-if (availabilityInfo != null && availabilityInfo.isNotEmpty) {
-  availability = availabilityInfo.values.join(", ");
-}
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f6f7),
@@ -185,9 +177,6 @@ Row(
 
 const SizedBox(height: 28),
 
-const _SectionTitle(
-  title: "Availability",
-),
 
 Container(
   width: double.infinity,
@@ -206,15 +195,7 @@ Container(
             size: 20,
           ),
           const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              availability,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+         
         ],
       ),
     ],

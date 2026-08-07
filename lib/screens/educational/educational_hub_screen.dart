@@ -31,7 +31,17 @@ String _language = "en";
 @override
 void initState() {
   super.initState();
-  _initialize();
+}
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+
+  final language = Localizations.localeOf(context).languageCode;
+
+  if (language != _language) {
+    _language = language;
+    _loadArticles();
+  }
 }
 
 
@@ -220,39 +230,26 @@ vertical:18,
 );
 
 }
-Future<void> _loadUserLanguage() async {
-  try {
-    final user = await _api.getUser();
-
-    _language =
-        (user["language_preference"] as String?)?.toLowerCase() ?? "en";
-
-    debugPrint("Using language: $_language");
-  } catch (e) {
-    debugPrint("Failed to load language: $e");
-    _language = "en";
-  }
-}
-Future<void> _initialize() async {
-  await _loadUserLanguage();
-  await _loadArticles();
-}
 
 Future<void> _loadArticles() async {
+  setState(() {
+    _loading = true;
+  });
+
   try {
-    final articles =
-        await _api.getArticles(lang: _language);
+    final articles = await _api.getArticles(lang: _language);
+
+    if (!mounted) return;
 
     setState(() {
       _articles = articles;
-
-      if (articles.isNotEmpty) {
-        _featuredArticle = articles.first;
-      }
-
+      _featuredArticle =
+          articles.isNotEmpty ? articles.first : null;
       _loading = false;
     });
   } catch (e) {
+    if (!mounted) return;
+
     setState(() {
       _loading = false;
     });

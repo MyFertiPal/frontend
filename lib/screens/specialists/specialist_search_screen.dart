@@ -187,13 +187,6 @@ class _SpecialistCard extends StatelessWidget {
 
     final calendly = data["calendly_url"] ?? "";
 
-   final availabilityInfo = data["availability_info"];
-
-String availabilityText = "Not specified";
-
-if (availabilityInfo is Map && availabilityInfo.isNotEmpty) {
-  availabilityText = availabilityInfo.values.join(", ");
-}
 
     String initials(String input) {
       final parts = input.trim().split(" ");
@@ -316,16 +309,6 @@ if (availabilityInfo is Map && availabilityInfo.isNotEmpty) {
               size: 16,
             ),
             const SizedBox(width: 5),
-            Expanded(
-  child: Text(
-    "Available: $availabilityText",
-    maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-    style: const TextStyle(
-      fontWeight: FontWeight.w500,
-    ),
-  ),
-),
           ],
         ),
 
