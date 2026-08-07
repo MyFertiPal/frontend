@@ -1,37 +1,65 @@
 ﻿import 'package:flutter/material.dart';
+
 import '../services/api_service.dart';
 import '../services/period_service.dart';
 
-/// Types of calendar-day markers shown on the calendar grid.
-enum DayType { period, fertile, ovulation, predicted }
 
-/// Colors used across the screen. Pulled out so they're easy to retheme.
+/// Calendar marker types
+enum DayType {
+  period,
+  fertile,
+  ovulation,
+  predicted,
+}
+
+
+/// Theme colors
 class _TrackingColors {
+
   static const header = Color(0xFFF98080);
-  
+
   static const teal = Color(0xFF0F6B5C);
+
   static const tealDark = Color(0xFF0B4A40);
+
   static const period = Color(0xFFF98080);
+
   static const fertile = Color(0xFFD9F2E6);
+
   static const fertileText = Color(0xFF1F7A5C);
+
   static const predictedBorder = Color(0xFFF6B4B4);
+
   static const cardBorder = Color(0xFFF6C9C9);
+
   static const bg = Color(0xFFFAFAFA);
+
   static const textMuted = Color(0xFF8A8F98);
+
 }
 
-/// A single stat shown in the horizontally-scrollable summary row.
+
+
 class SummaryStat {
+
   final String value;
+
   final String label;
-  const SummaryStat({required this.value, required this.label});
+
+
+  const SummaryStat({
+    required this.value,
+    required this.label,
+  });
+
 }
 
-/// Cycle tracking screen: hero week strip, a month calendar with markers, and a summary row of stats.
+
+
+
+
 class CalendarTabScreen extends StatefulWidget {
-
   final DateTime today;
-
   final Map<DateTime, DayType>? dayMarkers;
 
   CalendarTabScreen({
@@ -40,538 +68,1442 @@ class CalendarTabScreen extends StatefulWidget {
     this.dayMarkers,
   }) : today = today ?? DateTime.now();
 
-
   @override
   State<CalendarTabScreen> createState() =>
       _CalendarTabScreenState();
 }
 
-class _CalendarTabScreenState extends State<CalendarTabScreen> {
-  List<dynamic> _loggedSymptoms = [];
+
+
+
+
+class _CalendarTabScreenState
+    extends State<CalendarTabScreen> {
+
+
+
+  final ApiService _api = ApiService();
+
+
   final LocalPeriodService _localPeriod =
-    LocalPeriodService();
+      LocalPeriodService();
 
-  void _buildBackendMarkers(){
+      List<String> _extractSymptomNames() {
+  final names = <String>[];
 
-  _dayMarkers.clear();
+  for (final item in _loggedSymptoms) {
+    if (item is! Map) continue;
+
+    final symptoms = item["symptoms"];
+
+    if (symptoms is List) {
+      for (final symptom in symptoms) {
+        if (symptom != null) {
+          final value = symptom.toString().trim();
+
+          if (value.isNotEmpty && !names.contains(value)) {
+            names.add(value);
+          }
+        }
+      }
+    } else if (symptoms != null) {
+      final value = symptoms.toString().trim();
+
+      if (value.isNotEmpty && !names.contains(value)) {
+        names.add(value);
+      }
+    }
+  }
+
+  return names;
+}
+Future<void> _refreshInsights() async {
+  try {
+    final profile = await _api.getProfile();
+    final symptoms = await _api.getSymptoms();
+
+    if (!mounted) return;
+
+    _loggedSymptoms = symptoms;
+
+    final cycleLength =
+        (profile["cycle_length"] as num?)?.toInt() ?? 28;
+
+    final periodLength =
+        (profile["period_length"] as num?)?.toInt() ?? 5;
+
+    final lastPeriodDate =
+        profile["last_period_date"]?.toString();
+
+    if (lastPeriodDate == null || lastPeriodDate.isEmpty) {
+      debugPrint(
+        "Cannot generate insights: last_period_date is missing",
+      );
+      return;
+    }
+
+    _cycleLength = cycleLength;
+    _periodLength = periodLength;
+
+    _lastPeriod = DateTime.tryParse(lastPeriodDate);
+
+    final symptomNames = _extractSymptomNames();
+
+    debugPrint(
+      "Generating insights with:"
+      "\ncycle_length: $cycleLength"
+      "\nlast_period_date: $lastPeriodDate"
+      "\nperiod_length: $periodLength"
+      "\nsymptoms: $symptomNames",
+    );
+
+    final insights = await _api.generateInsights(
+      cycleLength: cycleLength,
+      lastPeriodDate: lastPeriodDate,
+      periodLength: periodLength,
+      symptoms: symptomNames,
+    );
+
+    debugPrint("GENERATE INSIGHTS RESPONSE: $insights");
+
+    if (!mounted) return;
+
+    if (insights.isNotEmpty) {
+      final data = insights.first;
+
+      if (data is Map) {
+        _nextPeriod =
+            data["next_period"]?.toString();
+
+        _ovulationDay =
+            data["ovulation_day"]?.toString();
+
+        _fertileStart =
+            data["fertile_period_start"]?.toString();
+
+        _fertileEnd =
+            data["fertile_period_end"]?.toString();
+      }
+    }
+
+    // Rebuild calculated calendar markers.
+    _buildBackendMarkers();
+
+    setState(() {});
+  } catch (e) {
+    debugPrint("Refresh insights error: $e");
+  }
+}
+void _buildBackendMarkers() {
+  // Remove only calculated markers.
+  // Keep locally logged period days.
+  _dayMarkers.removeWhere(
+    (_, type) =>
+        type == DayType.fertile ||
+        type == DayType.ovulation ||
+        type == DayType.predicted,
+  );
+
+  // -------------------------
+  // Ovulation
+  // -------------------------
+  if (_ovulationDay != null) {
+    final date = DateTime.tryParse(_ovulationDay!);
+
+    if (date != null) {
+      _dayMarkers[_normalize(date)] = DayType.ovulation;
+    }
+  }
+
+  // -------------------------
+  // Fertile window
+  // -------------------------
+  if (_fertileStart != null && _fertileEnd != null) {
+    final start = DateTime.tryParse(_fertileStart!);
+    final end = DateTime.tryParse(_fertileEnd!);
+
+    if (start != null && end != null) {
+      var current = _normalize(start);
+      final last = _normalize(end);
+
+      while (!current.isAfter(last)) {
+        // Don't overwrite an actual period day.
+        if (_dayMarkers[_normalize(current)] != DayType.period) {
+          _dayMarkers[_normalize(current)] = DayType.fertile;
+        }
+
+        current = current.add(
+          const Duration(days: 1),
+        );
+      }
+    }
+  }
+
+  // -------------------------
+  // Predicted next period
+  // -------------------------
+  if (_nextPeriod != null) {
+    final date = DateTime.tryParse(_nextPeriod!);
+
+    if (date != null) {
+      for (int i = 0; i < _periodLength; i++) {
+        final predictedDate = date.add(
+          Duration(days: i),
+        );
+
+        final key = _normalize(predictedDate);
+
+        // Don't overwrite actual period days.
+        if (_dayMarkers[key] != DayType.period) {
+          _dayMarkers[key] = DayType.predicted;
+        }
+      }
+    }
+  }
+}
 
 
-  // Period
-  if(_lastPeriod != null){
+  bool _isSyncingPeriod = false;
 
-    for(int i=0;i<_periodLength;i++){
+
+
+  List<dynamic> _loggedSymptoms = [];
+
+
+
+  DateTime? _selectedDate;
+
+
+
+  DateTime? _lastPeriod;
+
+
+
+  int _cycleLength = 28;
+
+
+  int _periodLength = 5;
+
+
+
+
+  String? _nextPeriod;
+
+
+  String? _ovulationDay;
+
+
+  String? _fertileStart;
+
+
+  String? _fertileEnd;
+
+
+
+
+
+  late DateTime _visibleMonth;
+
+
+
+  Map<DateTime, DayType> _dayMarkers = {};
+
+
+
+
+
+  static DateTime _normalize(DateTime date) {
+
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+
+  }
+
+
+
+
+
+  @override
+  void initState() {
+
+    super.initState();
+
+
+    _visibleMonth = DateTime(
+      widget.today.year,
+      widget.today.month,
+      1,
+    );
+
+
+    if(widget.dayMarkers != null){
+
+      _dayMarkers =
+          Map.from(widget.dayMarkers!);
+
+    }
+
+
+    _loadCycle();
+
+  }
+
+
+
+
+
+
+  Future<void> _loadCycle() async {
+
+
+    try {
+
+
+      final periods =
+          await _localPeriod.getPeriodLogs();
+
+
+
+      _dayMarkers.clear();
+
+
+
+      for(final date in periods){
+
+        _dayMarkers[
+          _normalize(date)
+        ] = DayType.period;
+
+      }
+
+
+
+      await _refreshCycleData();
+
+
+
+    }catch(e){
+
+      debugPrint(
+        "Calendar load error: $e",
+      );
+
+    }
+
+
+  }
+
+
+
+
+
+
+  /// Generates fertility insight from backend.
+  ///
+  /// POST:
+  /// /insights/insights
+  ///
+  /// Payload:
+  /// {
+  /// cycle_length,
+  /// last_period_date,
+  /// period_length,
+  /// symptoms
+  /// }
+
+
+  Future<void> _refreshCycleData() async {
+
+
+    try {
+
+
+      final profile =
+          await _api.getProfile();
+
+
+
+      final symptoms =
+          await _api.getSymptoms();
+
+
+
+
+      _cycleLength =
+          profile["cycle_length"] ?? 28;
+
+
+
+      _periodLength =
+          profile["period_length"] ?? 5;
+
+
+
+
+      if(profile["last_period_date"] != null){
+
+        _lastPeriod =
+            DateTime.parse(
+              profile["last_period_date"],
+            );
+
+      }
+
+
+
+
+
+      final symptomList = <String>[];
+
+
+
+      for(final item in symptoms){
+
+        if(item["symptoms"] != null){
+
+          symptomList.addAll(
+            List<String>.from(
+              item["symptoms"],
+            ),
+          );
+
+        }
+
+      }
+
+
+
+
+      final insights =
+          await _api.generateInsights(
+
+
+            cycleLength:
+                _cycleLength,
+
+
+            lastPeriodDate:
+                _lastPeriod != null
+                    ? _lastPeriod!
+                        .toIso8601String()
+                        .substring(0,10)
+
+                    : DateTime.now()
+                        .toIso8601String()
+                        .substring(0,10),
+
+
+
+            periodLength:
+                _periodLength,
+
+
+            symptoms:
+                symptomList,
+
+
+          );
+
+
+
+
+
+
+      _loggedSymptoms =
+          symptoms;
+
+
+
+
+
+
+      if(insights.isNotEmpty){
+
+
+        final prediction =
+            insights.first;
+
+
+
+        _nextPeriod =
+            prediction["next_period"];
+
+
+
+        _ovulationDay =
+            prediction["ovulation_day"];
+
+
+
+        _fertileStart =
+            prediction["fertile_period_start"];
+
+
+
+        _fertileEnd =
+            prediction["fertile_period_end"];
+
+
+
+      }
+
+
+
+
+
+
+      _rebuildMarkers();
+
+
+
+
+      if(!mounted)return;
+
+
+
+      setState((){});
+
+
+
+
+    }catch(e){
+
+
+      debugPrint(
+        "Refresh cycle error: $e",
+      );
+
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+  void _rebuildMarkers(){
+
+
+
+    _dayMarkers.removeWhere(
+      (_, type) =>
+          type != DayType.period,
+    );
+
+
+
+
+    // Logged periods
+
+    if(_lastPeriod != null){
+
+
+      for(int i=0;
+          i<_periodLength;
+          i++){
+
+
+        final date =
+            _lastPeriod!
+                .add(
+                  Duration(
+                    days:i,
+                  ),
+                );
+
+
+
+        _dayMarkers[
+          _normalize(date)
+        ] = DayType.period;
+
+
+      }
+
+
+    }
+
+
+
+
+
+    // Ovulation
+
+    if(_ovulationDay != null){
+
 
       final date =
-      _lastPeriod!.add(
-        Duration(days:i)
-      );
+          DateTime.parse(
+            _ovulationDay!,
+          );
+
+
 
       _dayMarkers[
         _normalize(date)
-      ] = DayType.period;
+      ] = DayType.ovulation;
+
 
     }
 
-  }
-
-
-  // Ovulation
-
-  if(_ovulationDay != null){
-
-    final date =
-    DateTime.parse(_ovulationDay!);
-
-
-    _dayMarkers[
-      _normalize(date)
-    ] = DayType.ovulation;
-
-  }
 
 
 
-  // Fertile window
-
-  if(
-  _fertileStart != null &&
-  _fertileEnd != null
-  ){
-
-    DateTime start =
-    DateTime.parse(_fertileStart!);
-
-    DateTime end =
-    DateTime.parse(_fertileEnd!);
 
 
-    while(
-      start.isBefore(end) ||
-      start.isAtSameMomentAs(end)
-    ){
 
-      _dayMarkers[
-        _normalize(start)
-      ] = DayType.fertile;
+    // Fertile window
+
+    if(_fertileStart != null &&
+       _fertileEnd != null){
 
 
-      start =
-      start.add(
-        const Duration(days:1)
-      );
+
+      DateTime start =
+          DateTime.parse(
+            _fertileStart!,
+          );
+
+
+
+      final end =
+          DateTime.parse(
+            _fertileEnd!,
+          );
+
+
+
+
+      while(
+        start.isBefore(end) ||
+        start.isAtSameMomentAs(end)
+
+      ){
+
+
+        _dayMarkers[
+          _normalize(start)
+        ] = DayType.fertile;
+
+
+
+        start =
+            start.add(
+              const Duration(
+                days:1,
+              ),
+            );
+
+
+      }
+
 
     }
 
-  }
 
 
 
-  // Next period
 
-  if(_nextPeriod != null){
+    // Predicted period
 
-    final date =
-    DateTime.parse(_nextPeriod!);
+    if(_nextPeriod != null){
 
 
-    for(int i=0;i<_periodLength;i++){
+      final date =
+          DateTime.parse(
+            _nextPeriod!,
+          );
 
-      _dayMarkers[
-      _normalize(
-        date.add(Duration(days:i))
-      )
-      ] = DayType.predicted;
+
+
+      for(int i=0;
+          i<_periodLength;
+          i++){
+
+
+        _dayMarkers[
+          _normalize(
+            date.add(
+              Duration(days:i),
+            ),
+          )
+        ] = DayType.predicted;
+
+
+      }
+
 
     }
 
+
   }
 
+  Future<void> _togglePeriodDay(DateTime date) async {
+  if (_isSyncingPeriod) return;
+
+  final key = _normalize(date);
+  final wasPeriod = _dayMarkers[key] == DayType.period;
+
+  setState(() {
+    _isSyncingPeriod = true;
+
+    if (wasPeriod) {
+      _dayMarkers.remove(key);
+    } else {
+      _dayMarkers[key] = DayType.period;
+    }
+  });
+
+  try {
+    if (wasPeriod) {
+      // Local storage only
+      await _localPeriod.deletePeriod(key);
+    } else {
+      // Local storage only
+      await _localPeriod.savePeriod(key);
+    }
+
+    // Re-read the locally stored period dates
+    final periods = await _localPeriod.getPeriodLogs();
+
+    if (periods.isEmpty) {
+      throw Exception("No period date available for insight generation");
+    }
+
+    // Use the latest/most recent logged period
+    periods.sort((a, b) => a.compareTo(b));
+
+    final latestPeriod = _normalize(periods.last);
+
+    // Generate fresh backend insights/predictions
+    await _api.generateInsights(
+      cycleLength: _cycleLength,
+      lastPeriodDate:
+          latestPeriod.toIso8601String().split('T').first,
+      periodLength: _periodLength,
+      symptoms: _extractSymptomNames(),
+    );
+
+    // GET the newly generated prediction/insight data
+    
+  } catch (e) {
+    debugPrint("Period update error: $e");
+
+    // Roll back local UI if something failed
+    if (mounted) {
+      setState(() {
+        if (wasPeriod) {
+          _dayMarkers[key] = DayType.period;
+        } else {
+          _dayMarkers.remove(key);
+        }
+      });
+    }
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isSyncingPeriod = false;
+      });
+    }
+  }
 }
-  DateTime? _selectedDate;
-  DateTime? _lastPeriod;
-int _cycleLength = 0;
-int _periodLength = 0;
-
-String? _nextPeriod;
-String? _ovulationDay;
-String? _fertileStart;
-String? _fertileEnd;
-
-List<SummaryStat> get summaryStats => [
-
-SummaryStat(
- value: "$_cycleLength days",
- label: "Cycle Length",
-),
-
-SummaryStat(
- value: "$_periodLength days",
- label: "Period Length",
-),
-
-SummaryStat(
- value:
- _fertileStart == null
- ? "--"
- : "${_fertileStart!.substring(5)} - ${_fertileEnd!.substring(5)}",
- label: "Fertile Window",
-),
-
-];
-
-  late DateTime _visibleMonth; // first day of the currently shown month
-  Map<DateTime, DayType> _dayMarkers = {};
-
-  static DateTime _normalize(DateTime d) => DateTime(d.year, d.month, d.day);
 
 
-  @override
-void initState() {
-  super.initState();
 
-  _visibleMonth = DateTime(
-    widget.today.year,
-    widget.today.month,
-    1,
-  );
 
-  _loadCycle();
-}
+  void _goPreviousMonth(){
 
-  // Sample marker set, only used when the caller doesn't supply real data.
-  
+    setState((){
 
-  void _goToPreviousMonth() {
-    setState(() {
-      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month - 1, 1);
+
+      _visibleMonth =
+          DateTime(
+            _visibleMonth.year,
+            _visibleMonth.month - 1,
+            1,
+          );
+
+
     });
+
   }
 
-  void _goToNextMonth() {
-    setState(() {
-      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + 1, 1);
+
+
+
+
+
+  void _goNextMonth(){
+
+
+    setState((){
+
+
+      _visibleMonth =
+          DateTime(
+            _visibleMonth.year,
+            _visibleMonth.month + 1,
+            1,
+          );
+
+
     });
+
+
   }
 
-  static const _monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-  ];
 
-  static const _weekdayShort = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  int _daysInMonth(DateTime month) =>
-      DateTime(month.year, month.month + 1, 0).day;
+
+
+  int _daysInMonth(DateTime month){
+
+
+    return DateTime(
+      month.year,
+      month.month + 1,
+      0,
+    ).day;
+
+
+  }
+
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
+
+
     return Container(
-      color: _TrackingColors.bg,
-      child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+
+
+      color:_TrackingColors.bg,
+
+
+      child:SafeArea(
+
+
+        child:SingleChildScrollView(
+
+
+          child:Column(
+
+
+            crossAxisAlignment:
+                CrossAxisAlignment.stretch,
+
+
+            children:[
+
+
+
               _buildHero(),
 
-Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 16),
-  child: _buildCalendarCard(),
-),
+
+
+              Padding(
+
+                padding:
+                    const EdgeInsets.symmetric(
+                      horizontal:16,
+                    ),
+
+
+                child:
+                    _buildCalendarCard(),
+
+
+              ),
+
+
+
+
               _buildLegend(),
-              const SizedBox(height: 8),
+
+
+
+
+              const SizedBox(height:10),
+
+
+
               _buildSummaryRow(),
-const SizedBox(height: 24),
 
-_buildLoggedSymptoms(),
 
-const SizedBox(height: 20),
+
+
+              const SizedBox(height:25),
+
+
+
+
+              _buildLoggedSymptoms(),
+
+
+
             ],
+
+
           ),
+
+
         ),
+
+
       ),
+
+
     );
+
+
   }
 
-  // ---- Hero header + week strip ------------------------------------------
-
-Future<void> _loadCycle() async {
-
-try {
-
-final api = ApiService();
-
-final profile =
-await api.getProfile();
-final periods =
-    await _localPeriod.getPeriodLogs();
-
-
-for(final date in periods){
-
-  _dayMarkers[_normalize(date)] =
-      DayType.period;
-
-}
 
 
 
-final predictions =
-await api.getCyclePrediction();
-
-final symptoms =
-await api.getSymptoms();
 
 
-if (predictions.isEmpty) return;
-
-final prediction = predictions.first;
-
-if(!mounted) return;
 
 
-_loggedSymptoms = symptoms;
+  Widget _buildHero(){
 
-_cycleLength = profile["cycle_length"] ?? 0;
-_periodLength = profile["period_length"] ?? 0;
 
-if (profile["last_period_date"] != null) {
-  _lastPeriod = DateTime.parse(profile["last_period_date"]);
-}
 
-_nextPeriod = prediction["next_period"];
-_ovulationDay = prediction["ovulation_day"];
-_fertileStart = prediction["fertile_period_start"];
-_fertileEnd = prediction["fertile_period_end"];
+    final todayLabel =
 
-_buildBackendMarkers();
+        '${_fullWeekday(widget.today.weekday)}, '
 
- 
+        '${_monthNames[widget.today.month-1]} '
 
-setState(() {});
+        '${widget.today.day}';
 
-}
-catch(e){
 
-debugPrint(
-"Calendar error: $e"
-);
 
-}
 
-}
-Widget _buildLoggedSymptoms() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
-        const Text(
-          "Logged Symptoms",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        if (_loggedSymptoms.isEmpty)
-          const Center(
-            child: Text("No symptoms logged yet"),
-          ),
-
-        ..._loggedSymptoms.map((item) {
-          return Card(
-            child: ListTile(
-              title: Text(
-                item["symptoms"].join(", "),
-              ),
-              subtitle: Text(item["created_at"]),
-            ),
-          );
-        }),
-      ],
-    ),
-  );
-}
- Widget _buildHero() {
-  final todayLabel =
-      '${_fullWeekday(widget.today.weekday)}, '
-      '${_monthNames[widget.today.month - 1]} ${widget.today.day}';
-
-  final days = List.generate(
-    5,
-    (i) => widget.today.add(Duration(days: i - 2)),
-  );
-
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-    child: Container(
-      padding: const EdgeInsets.fromLTRB(22, 22, 22, 26),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(.05),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-
-          const Text(
-            "Today",
-            style: TextStyle(
-              fontSize: 16,
-              color: Color(0xFF0B5D4D),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-
-          const SizedBox(height: 4),
-
-          Text(
-            todayLabel,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF0B5D4D),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: days.map((date) {
-              final isToday =
-                  _normalize(date) == _normalize(widget.today);
-
-              return _WeekDateItem(
-                weekday: _shortWeekday(date.weekday),
-                day: date.day,
-                isToday: isToday,
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-  String _fullWeekday(int weekday) {
-    const names = [
-      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-    ];
-    return names[weekday - 1];
-  }
-
-  String _shortWeekday(int weekday) {
-    const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return names[weekday - 1];
-  }
-
-  // ---- Calendar card -------------------------------------------------------
-
-  Widget _buildCalendarCard() {
-    final daysInMonth = _daysInMonth(_visibleMonth);
-    // Dart weekday: Mon=1..Sun=7. We want a Sun-first grid (S M T W T F S).
-    final firstWeekdayOffset = _visibleMonth.weekday % 7; // Sun=0..Sat=6
-
-    final cells = <int?>[
-      ...List.filled(firstWeekdayOffset, null),
-      for (var d = 1; d <= daysInMonth; d++) d,
-    ];
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: _goToPreviousMonth,
-                icon: const Icon(Icons.chevron_left),
-                color: _TrackingColors.textMuted,
-                tooltip: 'Previous month',
-              ),
-              Text(
-                '${_monthNames[_visibleMonth.month - 1]} ${_visibleMonth.year}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+    final days =
+        List.generate(
+          5,
+          (i)=>
+              widget.today.add(
+                Duration(
+                  days:i-2,
                 ),
               ),
-              IconButton(
-                onPressed: _goToNextMonth,
-                icon: const Icon(Icons.chevron_right),
-                color: _TrackingColors.textMuted,
-                tooltip: 'Next month',
-              ),
-            ],
+        );
+
+
+
+
+
+    return Padding(
+
+
+      padding:
+          const EdgeInsets.fromLTRB(
+            16,
+            20,
+            16,
+            16,
           ),
-          const SizedBox(height: 8),
-          GridView.count(
-            crossAxisCount: 7,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: _weekdayShort
-                .map((w) => Center(
-                      child: Text(
-                        w,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: _TrackingColors.textMuted,
-                        ),
+
+
+
+      child:Container(
+
+
+        padding:
+            const EdgeInsets.all(22),
+
+
+
+        decoration:
+            BoxDecoration(
+
+
+              color:Colors.white,
+
+
+
+              borderRadius:
+                  BorderRadius.circular(
+                    28,
+                  ),
+
+
+
+              boxShadow:[
+
+                BoxShadow(
+
+                  color:
+                      Colors.black
+                      .withOpacity(.05),
+
+                  blurRadius:18,
+
+                  offset:
+                      const Offset(
+                        0,
+                        6,
                       ),
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 4),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: cells.length,
-            gridDelegate: const SliceGridDelegate(crossAxisCount: 7),
-            itemBuilder: (context, i) {
-              final day = cells[i];
-              if (day == null) return const SizedBox.shrink();
-              final date = DateTime(_visibleMonth.year, _visibleMonth.month, day);
-              final isToday = _normalize(date) == _normalize(widget.today);
-              final type = _dayMarkers[_normalize(date)];
-    
-             return GestureDetector(
-onTap: () async {
 
-final key = _normalize(date);
+                ),
+
+              ],
 
 
-if(_dayMarkers[key] == DayType.period){
+            ),
 
 
- await _localPeriod.deletePeriod(key);
+
+        child:Column(
 
 
- setState(() {
-   _dayMarkers.remove(key);
- });
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
 
 
-}else{
+
+          children:[
 
 
- await _localPeriod.savePeriod(key);
+            const Text(
+
+              "Today",
+
+              style:TextStyle(
+
+                fontSize:16,
+
+                color:
+                    _TrackingColors.tealDark,
+
+                fontWeight:
+                    FontWeight.w500,
+
+              ),
+
+            ),
 
 
- setState(() {
-
-   _dayMarkers[key] =
-       DayType.period;
-
- });
-
-}
 
 
-},
-  child: _CalendarDayCell(
-    day: day,
-    isToday: isToday,
-    type: type,
-    isSelected: DateUtils.isSameDay(
-      _selectedDate,
-      date,
-    ),
-  ),
-);
-            },
-          ),
-        ],
+            const SizedBox(height:5),
+
+
+
+
+            Text(
+
+              todayLabel,
+
+              style:const TextStyle(
+
+                fontSize:18,
+
+                fontWeight:
+                    FontWeight.w800,
+
+                color:
+                    _TrackingColors.tealDark,
+
+              ),
+
+            ),
+
+
+
+
+            const SizedBox(height:24),
+
+
+
+
+
+            Row(
+
+
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+
+
+
+              children:
+
+              days.map((date){
+
+
+
+                final today =
+                    _normalize(date)
+                    ==
+                    _normalize(
+                      widget.today,
+                    );
+
+
+
+                return _WeekDateItem(
+
+                  weekday:
+                      _shortWeekday(
+                        date.weekday,
+                      ),
+
+
+                  day:
+                      date.day,
+
+
+                  isToday:
+                      today,
+
+                );
+
+
+              }).toList(),
+
+
+            ),
+
+
+          ],
+
+
+        ),
+
+
       ),
+
+
     );
+
+
   }
 
-  // ---- Legend ---------------------------------------------------------------
+
+
+
+
+
+
+  Widget _buildCalendarCard(){
+
+
+
+    final days =
+        _daysInMonth(
+          _visibleMonth,
+        );
+
+
+
+    final offset =
+        _visibleMonth.weekday % 7;
+
+
+
+    final cells=<int?>[
+
+      ...List.filled(
+        offset,
+        null,
+      ),
+
+
+      for(int i=1;i<=days;i++)
+        i,
+
+
+    ];
+
+
+
+
+
+    return Container(
+
+
+      padding:
+          const EdgeInsets.all(16),
+
+
+
+      decoration:
+          BoxDecoration(
+
+
+            color:Colors.white,
+
+
+            borderRadius:
+                BorderRadius.circular(
+                  24,
+                ),
+
+
+          ),
+
+
+
+      child:Column(
+
+
+        children:[
+
+
+
+          Row(
+
+
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+
+
+
+            children:[
+
+
+
+              IconButton(
+
+                onPressed:
+                    _goPreviousMonth,
+
+
+                icon:
+                    const Icon(
+                      Icons.chevron_left,
+                    ),
+
+              ),
+
+
+
+
+
+              Text(
+
+
+                "${_monthNames[_visibleMonth.month-1]} ${_visibleMonth.year}",
+
+
+                style:
+                    const TextStyle(
+
+                      fontWeight:
+                          FontWeight.w600,
+
+                    ),
+
+              ),
+
+
+
+
+
+              IconButton(
+
+                onPressed:
+                    _goNextMonth,
+
+
+                icon:
+                    const Icon(
+                      Icons.chevron_right,
+                    ),
+
+              ),
+
+
+
+            ],
+
+
+          ),
+
+
+
+
+          GridView.count(
+
+
+            crossAxisCount:7,
+
+
+            shrinkWrap:true,
+
+
+            physics:
+                const NeverScrollableScrollPhysics(),
+
+
+
+            children:
+
+            _weekdayShort.map((e)=>Center(
+
+              child:Text(
+
+                e,
+
+                style:
+                    const TextStyle(
+
+                      color:
+                          _TrackingColors.textMuted,
+
+                    ),
+
+              ),
+
+            )).toList(),
+
+
+
+          ),
+
+
+
+
+
+
+          GridView.builder(
+
+
+            shrinkWrap:true,
+
+
+            physics:
+                const NeverScrollableScrollPhysics(),
+
+
+
+            itemCount:
+                cells.length,
+
+
+
+            gridDelegate:
+                const SliceGridDelegate(
+
+                  crossAxisCount:7,
+
+                ),
+
+
+
+
+            itemBuilder:(context,index){
+
+
+
+              final day =
+                  cells[index];
+
+
+
+              if(day==null){
+
+                return const SizedBox();
+
+              }
+
+
+
+
+              final date =
+                  DateTime(
+
+                    _visibleMonth.year,
+
+                    _visibleMonth.month,
+
+                    day,
+
+                  );
+
+
+
+
+
+              return GestureDetector(
+
+
+                onTap:
+                  _isSyncingPeriod
+                  ? null
+                  :
+                  ()=>_togglePeriodDay(
+                    date,
+                  ),
+
+
+
+                child:
+                    _CalendarDayCell(
+
+                      day:day,
+
+
+                      isToday:
+                          DateUtils.isSameDay(
+                            widget.today,
+                            date,
+                          ),
+
+
+                      type:
+                          _dayMarkers[
+                            _normalize(date)
+                          ],
+
+
+                      isSelected:
+                          DateUtils.isSameDay(
+                            _selectedDate,
+                            date,
+                          ),
+
+                    ),
+
+
+              );
+
+
+            },
+
+
+
+          ),
+
+
+
+        ],
+
+
+      ),
+
+
+    );
+
+
+
+  }
+    // ---------------------------------------------------------------------------
+  // LEGEND
+  // ---------------------------------------------------------------------------
 
   Widget _buildLegend() {
     return Padding(
@@ -580,32 +1512,56 @@ if(_dayMarkers[key] == DayType.period){
         spacing: 20,
         runSpacing: 8,
         children: [
-          _legendItem(_TrackingColors.period, 'Period'),
-          _legendItem(_TrackingColors.fertile, 'Fertile Window'),
-          _legendItem(_TrackingColors.tealDark, 'Ovulation'),
-          _legendOutlineItem('Predicted'),
+          _legendItem(
+            _TrackingColors.period,
+            'Period',
+          ),
+          _legendItem(
+            _TrackingColors.fertile,
+            'Fertile Window',
+          ),
+          _legendItem(
+            _TrackingColors.tealDark,
+            'Ovulation',
+          ),
+          _legendOutlineItem(
+            'Predicted',
+          ),
         ],
       ),
     );
   }
 
-  Widget _legendItem(Color color, String label) {
+  Widget _legendItem(
+    Color color,
+    String label,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
         ),
         const SizedBox(width: 6),
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: _TrackingColors.textMuted)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: _TrackingColors.textMuted,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _legendOutlineItem(String label) {
+  Widget _legendOutlineItem(
+    String label,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -614,40 +1570,262 @@ if(_dayMarkers[key] == DayType.period){
           height: 12,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: _TrackingColors.predictedBorder, width: 2),
+            border: Border.all(
+              color: _TrackingColors.predictedBorder,
+              width: 2,
+            ),
           ),
         ),
         const SizedBox(width: 6),
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: _TrackingColors.textMuted)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: _TrackingColors.textMuted,
+          ),
+        ),
       ],
     );
   }
 
-  // ---- Summary cards (horizontally scrollable) ------------------------------
+  // ---------------------------------------------------------------------------
+  // SUMMARY
+  // ---------------------------------------------------------------------------
+
+  List<SummaryStat> get summaryStats => [
+        SummaryStat(
+          value: "$_cycleLength days",
+          label: "Cycle Length",
+        ),
+        SummaryStat(
+          value: "$_periodLength days",
+          label: "Period Length",
+        ),
+        SummaryStat(
+          value: _fertileStart == null ||
+                  _fertileEnd == null
+              ? "--"
+              : "${_fertileStart!.substring(5)} - "
+                  "${_fertileEnd!.substring(5)}",
+          label: "Fertile Window",
+        ),
+      ];
 
   Widget _buildSummaryRow() {
     return SizedBox(
       height: 96,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ),
         itemCount: summaryStats.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, i) {
-          final stat = summaryStats[i];
-          return _SummaryCard(value: stat.value, label: stat.label);
+        separatorBuilder: (_, __) =>
+            const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final stat =
+              summaryStats[index];
+
+          return _SummaryCard(
+            value: stat.value,
+            label: stat.label,
+          );
         },
       ),
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // LOGGED SYMPTOMS
+  // ---------------------------------------------------------------------------
+
+  Widget _buildLoggedSymptoms() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Logged Symptoms",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: _TrackingColors.tealDark,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          if (_loggedSymptoms.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 12,
+              ),
+              child: Center(
+                child: Text(
+                  "No symptoms logged yet",
+                  style: TextStyle(
+                    color:
+                        _TrackingColors.textMuted,
+                  ),
+                ),
+              ),
+            ),
+
+          ..._loggedSymptoms.map(
+            (item) {
+              final rawSymptoms =
+                  item["symptoms"];
+
+              final symptoms =
+                  rawSymptoms is List
+                      ? rawSymptoms
+                          .map(
+                            (e) => e.toString(),
+                          )
+                          .join(", ")
+                      : rawSymptoms
+                              ?.toString() ??
+                          "";
+
+              final createdAt =
+                  item["created_at"]
+                          ?.toString() ??
+                      "";
+
+              return Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(
+                  bottom: 10,
+                ),
+                padding:
+                    const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                      BorderRadius.circular(16),
+                  border: Border.all(
+                    color:
+                        _TrackingColors.cardBorder,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      symptoms.isEmpty
+                          ? "Symptoms logged"
+                          : symptoms,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight:
+                            FontWeight.w600,
+                        color:
+                            _TrackingColors.tealDark,
+                      ),
+                    ),
+
+                    if (createdAt.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        createdAt,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color:
+                              _TrackingColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // DATE HELPERS
+  // ---------------------------------------------------------------------------
+
+  static const List<String> _monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  static const List<String> _weekdayShort = [
+    'S',
+    'M',
+    'T',
+    'W',
+    'T',
+    'F',
+    'S',
+  ];
+
+  String _fullWeekday(int weekday) {
+    const names = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
+
+    return names[weekday - 1];
+  }
+
+  String _shortWeekday(int weekday) {
+    const names = [
+      'Mon',
+      'Tue',
+      'Wed',
+      'Thu',
+      'Fri',
+      'Sat',
+      'Sun',
+    ];
+
+    return names[weekday - 1];
+  }
 }
 
-/// Simple 7-column grid delegate with a fixed 1:1 cell aspect ratio.
-class SliceGridDelegate extends SliverGridDelegateWithFixedCrossAxisCount {
-  const SliceGridDelegate({required super.crossAxisCount})
-      : super(childAspectRatio: 1);
+
+// -----------------------------------------------------------------------------
+// GRID DELEGATE
+// -----------------------------------------------------------------------------
+
+class SliceGridDelegate
+    extends SliverGridDelegateWithFixedCrossAxisCount {
+  const SliceGridDelegate({
+    required super.crossAxisCount,
+  }) : super(
+          childAspectRatio: 1,
+        );
 }
+
+
+// -----------------------------------------------------------------------------
+// WEEK DATE ITEM
+// -----------------------------------------------------------------------------
 
 class _WeekDateItem extends StatelessWidget {
   final String weekday;
@@ -671,7 +1849,8 @@ class _WeekDateItem extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment:
+              MainAxisAlignment.center,
           children: [
             Text(
               weekday,
@@ -709,7 +1888,7 @@ class _WeekDateItem extends StatelessWidget {
           Text(
             "$day",
             style: const TextStyle(
-              color: Color(0xFF0B5D4D),
+              color: _TrackingColors.tealDark,
               fontSize: 26,
               fontWeight: FontWeight.w600,
             ),
@@ -720,44 +1899,93 @@ class _WeekDateItem extends StatelessWidget {
   }
 }
 
-class _CalendarDayCell extends StatelessWidget {
+
+// -----------------------------------------------------------------------------
+// CALENDAR DAY CELL
+// -----------------------------------------------------------------------------
+
+class _CalendarDayCell
+    extends StatelessWidget {
   final int day;
   final bool isToday;
   final DayType? type;
   final bool isSelected;
 
   const _CalendarDayCell({
-  required this.day,
-  required this.isToday,
-  required this.type,
-  this.isSelected = false,
-});
+    required this.day,
+    required this.isToday,
+    required this.type,
+    this.isSelected = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Color? bg;
+    Color? background;
     Color textColor = Colors.black87;
-    Border? border;
-    FontWeight weight = FontWeight.normal;
 
+    Border? border;
+
+    FontWeight weight =
+        FontWeight.normal;
+
+
+    // Actual period
     if (type == DayType.period) {
-  bg = _TrackingColors.period;
-  textColor = Colors.white;
-} else if (isToday || type == DayType.ovulation) {
-  bg = _TrackingColors.tealDark;
-  textColor = Colors.white;
-  weight = FontWeight.w600;
-} else if (type == DayType.fertile) {
-  bg = _TrackingColors.fertile;
-  textColor = _TrackingColors.fertileText;
-} else if (type == DayType.predicted) {
-  border = Border.all(
-    color: _TrackingColors.predictedBorder,
-    width: 2,
-  );
-  textColor = _TrackingColors.period;
-}
- 
+      background =
+          _TrackingColors.period;
+
+      textColor = Colors.white;
+
+      weight = FontWeight.w600;
+    }
+
+    // Ovulation
+    else if (
+      type == DayType.ovulation
+    ) {
+      background =
+          _TrackingColors.tealDark;
+
+      textColor = Colors.white;
+
+      weight = FontWeight.w600;
+    }
+
+    // Today
+    else if (isToday) {
+      background =
+          _TrackingColors.tealDark;
+
+      textColor = Colors.white;
+
+      weight = FontWeight.w600;
+    }
+
+    // Fertile window
+    else if (
+      type == DayType.fertile
+    ) {
+      background =
+          _TrackingColors.fertile;
+
+      textColor =
+          _TrackingColors.fertileText;
+    }
+
+    // Predicted period
+    else if (
+      type == DayType.predicted
+    ) {
+      border = Border.all(
+        color:
+            _TrackingColors.predictedBorder,
+        width: 2,
+      );
+
+      textColor =
+          _TrackingColors.period;
+    }
+
 
     return Center(
       child: Container(
@@ -765,47 +1993,77 @@ class _CalendarDayCell extends StatelessWidget {
         height: 34,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: bg,
+          color: background,
           shape: BoxShape.circle,
           border: border,
         ),
         child: Text(
           '$day',
-          style: TextStyle(fontSize: 13, color: textColor, fontWeight: weight),
+          style: TextStyle(
+            fontSize: 13,
+            color: textColor,
+            fontWeight: weight,
+          ),
         ),
       ),
     );
   }
 }
 
-class _SummaryCard extends StatelessWidget {
+
+// -----------------------------------------------------------------------------
+// SUMMARY CARD
+// -----------------------------------------------------------------------------
+
+class _SummaryCard
+    extends StatelessWidget {
   final String value;
   final String label;
 
-  const _SummaryCard({required this.value, required this.label});
+  const _SummaryCard({
+    required this.value,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 148,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding:
+          const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 14,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _TrackingColors.cardBorder),
+        borderRadius:
+            BorderRadius.circular(18),
+        border: Border.all(
+          color:
+              _TrackingColors.cardBorder,
+        ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        mainAxisAlignment:
+            MainAxisAlignment.center,
         children: [
           Text(
             value,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: _TrackingColors.textMuted),
+            style: const TextStyle(
+              fontSize: 12,
+              color:
+                  _TrackingColors.textMuted,
+            ),
           ),
         ],
       ),

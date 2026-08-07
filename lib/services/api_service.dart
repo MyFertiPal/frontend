@@ -128,7 +128,61 @@ throw Exception(
   );
 
 }
+Future<List<dynamic>> generateInsights({
+  required int cycleLength,
+  required String lastPeriodDate,
+  required int periodLength,
+  required List<String> symptoms,
+}) async {
+  try {
+    final headers = await getHeaders(includeAuth: true);
 
+    final body = {
+      "cycle_length": cycleLength,
+      "last_period_date": lastPeriodDate,
+      "period_length": periodLength,
+      "symptoms": symptoms,
+    };
+
+    debugPrint("GENERATE INSIGHTS BODY: $body");
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/insights/insights"),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    debugPrint(
+      "Generate Insights Response: ${response.statusCode}",
+    );
+    debugPrint(
+      "Generate Insights Body: ${response.body}",
+    );
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      final data = jsonDecode(response.body);
+
+      if (data is List) {
+        return data;
+      }
+
+      if (data is Map<String, dynamic>) {
+        return [data];
+      }
+
+      return [];
+    }
+
+    throw ApiException(
+      statusCode: response.statusCode,
+      message: _extractErrorMessage(response),
+    );
+  } catch (e) {
+    debugPrint("Generate Insights error: $e");
+    rethrow;
+  }
+}
   // Clear token
   Future<void> clearToken() async {
     _accessToken = null;
