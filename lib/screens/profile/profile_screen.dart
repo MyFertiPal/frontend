@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 import "../../services/api_service.dart";
 import "../profile/profile_setup_screen.dart";
 import '../../generated/l10n/app_localizations.dart';
 import "../../services/profile_image_picker.dart";
 import "../../screens/web/web_view_screen.dart";
+import '../../providers/language_provider.dart';
 
 /// Colors used across the screen.
 class _ProfileColors {
@@ -273,7 +275,7 @@ Widget _buildLanguageRow() {
                 child: Text(language),
               );
             }).toList(),
-          onChanged: (value) async {
+            onChanged: (value) async {
   if (value == null) return;
 
   final previous = _selectedLanguage;
@@ -282,39 +284,40 @@ Widget _buildLanguageRow() {
     _selectedLanguage = value;
   });
 
-try {
-  await _apiService.updateLanguagePreference(
-    _languageCode(value),
-  );
+  try {
+    final code = _languageCode(value);
 
-  if (mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(
-        content: Text(
-  AppLocalizations.of(context).languageUpdated,
-),
-      ),
-    );
+    await _apiService.updateLanguagePreference(code);
+
+    if (mounted) {
+      // THIS IS THE IMPORTANT LINE
+      await context.read<LanguageProvider>().setLanguage(code);
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).languageUpdated,
+          ),
+        ),
+      );
+    }
+  } catch (e) {
+    setState(() {
+      _selectedLanguage = previous;
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).languageUpdateFailed,
+          ),
+        ),
+      );
+    }
   }
-} catch (e) {
-  setState(() {
-    _selectedLanguage = previous;
-  });
-
-  if (mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(
-        content: Text(
-  AppLocalizations.of(context).languageUpdateFailed,
-),
-      ),
-    );
-  }
-}
-
- 
-
-  widget.onLanguageTap?.call();
 },
           ),
         ),

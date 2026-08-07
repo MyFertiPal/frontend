@@ -667,7 +667,7 @@ Widget _buildBookSpecialistSection(BuildContext context) {
               ClipRRect(
                 borderRadius: BorderRadius.circular(18),
                 child: Image.asset(
-                  "assets/images/doctor.jpeg",
+                  "assets/images/doctor_placeholder.png",
                   width: 145,
                   height: 170,
                   fit: BoxFit.cover,
