@@ -180,7 +180,7 @@
   "notifications": "Sanarwa",
   "privacySecurity": "Sirri da Tsaro",
   "aboutMyFertiPal": "Game da MyFertiPal",
-  "premiumMember": "Mamba na Premium",
+ "basicMember": "Mamba na Asali",
 
   "language": "Harshe",
   "languageUpdated": "An sabunta harshe cikin nasara.",
@@ -232,6 +232,74 @@
   "articles": "Makaloli",
 
   "specialists": "Nemo ƙwararre",
-  "searchSpecialists": "Nemo ƙwararru da suna ko fannin aiki"
+  "searchSpecialists": "Nemo ƙwararru da suna ko fannin aiki",
+
+   "logSymptomsTitle": "Rubuta Alamomin Jiki",
+  "trackHowYouFeel": "Bibiyi yadda kike ji. Kowane bayani yana da muhimmanci.",
+  "selectSymptomsToLog": "Zaɓi alamomin da za ki rubuta",
+  "chooseMoreThanOne": "Za ki iya zaɓar fiye da ɗaya",
+
+  "mood": "Yanayin zuciya",
+  "happy": "Farin ciki",
+  "sad": "Baƙin ciki",
+  "anxious": "Damuwa",
+  "irritable": "Fushi cikin sauƙi",
+  "calm": "Natsuwa",
+  "energetic": "Cike da kuzari",
+
+  "bleeding": "Zubar jini",
+  "spotting": "Ƙaramin tabon jini",
+  "light": "Kaɗan",
+  "medium": "Matsakaici",
+  "heavy": "Mai yawa",
+
+  "cervicalMucus": "Ruwan mahaifa",
+  "dry": "Bushe",
+  "sticky": "Mai ɗanko",
+  "creamy": "Kamar kirim",
+  "watery": "Kamar ruwa",
+  "eggWhite": "Kamar farin ƙwai",
+
+  "sexualActivity": "Ayyukan jima'i",
+  "protected": "Tare da kariya",
+  "unprotected": "Ba tare da kariya ba",
+  "none": "Babu",
+
+  "pain": "Ciwo",
+  "headache": "Ciwon kai",
+  "backPain": "Ciwon baya",
+  "breastTenderness": "Raɗaɗin nono",
+  "ovulationPain": "Ciwon lokacin fitar ƙwai",
+
+  "abdominalCramps": "Ciwon mara",
+  "mild": "Mai sauƙi",
+  "moderate": "Matsakaici",
+  "severe": "Mai tsanani",
+
+  "sleep": "Barci",
+  "good": "Mai kyau",
+  "poor": "Mara kyau",
+  "insomnia": "Rashin samun barci",
+  "oversleeping": "Yawan yin barci",
+
+  "appetite": "Sha'awar abinci",
+  "increased": "Ya ƙaru",
+  "decreased": "Ya ragu",
+  "normal": "Na al'ada",
+  "cravings": "Son wani abinci na musamman",
+
+  "other": "Wani",
+  "describeFeeling": "Bayyana abin da kike ji",
+
+
+  "tip": "Shawara",
+  "symptomLoggingTip": "Rubuta alamomin ki a kowace rana yana taimaka mana mu ba ki ingantattun bayanai game da lafiyar haihuwa.",
+
+  "saveSymptoms": "Ajiye Alamomi",
+  "symptomsSaved": "An ajiye alamomin cikin nasara",
+  "failedToSaveSymptoms": "An kasa ajiye alamomi: {error}",
+
+  "logSymptoms": "Rubuta Alamomi",
+  "symptoms": "Alamomi"
 
 }

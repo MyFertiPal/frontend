@@ -423,7 +423,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutMyFertiPal => 'About MyFertiPal';
 
   @override
-  String get premiumMember => 'Premium Member';
+  String get basicMember => 'Basic Member';
 
   @override
   String get language => 'Language';

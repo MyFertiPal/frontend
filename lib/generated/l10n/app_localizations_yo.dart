@@ -375,7 +375,7 @@ class AppLocalizationsYo extends AppLocalizations {
   String get quickActions => 'Àwọn iṣẹ́ kíákíá';
 
   @override
-  String get logSymptoms => 'Ṣàkọsílẹ̀ àwọn àmì';
+  String get logSymptoms => 'Kọ Àwọn Àmì Sílẹ̀';
 
   @override
   String get genderPrediction => 'Àsọtẹ́lẹ̀ akọ tàbí abo ọmọ';
@@ -421,7 +421,7 @@ class AppLocalizationsYo extends AppLocalizations {
   String get aboutMyFertiPal => 'Nípa MyFertiPal';
 
   @override
-  String get premiumMember => 'Ọmọ Ẹgbẹ́ Premium';
+  String get basicMember => 'Ọmọ Ẹgbẹ́ Ìpilẹ̀';
 
   @override
   String get language => 'Èdè';
@@ -542,164 +542,165 @@ class AppLocalizationsYo extends AppLocalizations {
       'Wa àwọn ọ̀jọ̀gbọ́n nípa orúkọ tàbí ẹ̀ka iṣẹ́ wọn';
 
   @override
-  String get logSymptomsTitle => 'Log Symptoms';
+  String get logSymptomsTitle => 'Ṣe Àkọsílẹ̀ Àwọn Àmì';
 
   @override
-  String get trackHowYouFeel => 'Track how you feel. Every detail helps.';
+  String get trackHowYouFeel =>
+      'Tẹ̀lé bí o ṣe ń rí lára. Gbogbo àlàyé ṣe pàtàkì.';
 
   @override
-  String get selectSymptomsToLog => 'Select symptoms to log';
+  String get selectSymptomsToLog => 'Yan àwọn àmì tí o fẹ́ kọ sílẹ̀';
 
   @override
-  String get chooseMoreThanOne => 'You can choose more than one';
+  String get chooseMoreThanOne => 'O lè yan ju ọ̀kan lọ';
 
   @override
-  String get mood => 'Mood';
+  String get mood => 'Ìmọ̀lára';
 
   @override
-  String get happy => 'Happy';
+  String get happy => 'Ayọ̀';
 
   @override
-  String get sad => 'Sad';
+  String get sad => 'Ìbànújẹ́';
 
   @override
-  String get anxious => 'Anxious';
+  String get anxious => 'Ìdààmú ọkàn';
 
   @override
-  String get irritable => 'Irritable';
+  String get irritable => 'Ìbínú rọrùn';
 
   @override
-  String get calm => 'Calm';
+  String get calm => 'Ìfarabalẹ̀';
 
   @override
-  String get energetic => 'Energetic';
+  String get energetic => 'Agbara kún fún';
 
   @override
-  String get bleeding => 'Bleeding';
+  String get bleeding => 'Ẹ̀jẹ̀ jáde';
 
   @override
-  String get spotting => 'Spotting';
+  String get spotting => 'Àmì ẹ̀jẹ̀ kékeré';
 
   @override
-  String get light => 'Light';
+  String get light => 'Kéré';
 
   @override
-  String get medium => 'Medium';
+  String get medium => 'Díẹ̀';
 
   @override
-  String get heavy => 'Heavy';
+  String get heavy => 'Púpọ̀';
 
   @override
-  String get cervicalMucus => 'Cervical Mucus';
+  String get cervicalMucus => 'Omi inú ọ̀nà ilé-ọmọ';
 
   @override
-  String get dry => 'Dry';
+  String get dry => 'Gbígbẹ';
 
   @override
-  String get sticky => 'Sticky';
+  String get sticky => 'Alárà';
 
   @override
-  String get creamy => 'Creamy';
+  String get creamy => 'Bí kíríímù';
 
   @override
-  String get watery => 'Watery';
+  String get watery => 'Bí omi';
 
   @override
-  String get eggWhite => 'Egg white';
+  String get eggWhite => 'Bí funfun ẹyin';
 
   @override
-  String get sexualActivity => 'Sexual Activity';
+  String get sexualActivity => 'Ìbálòpọ̀';
 
   @override
-  String get protected => 'Protected';
+  String get protected => 'Pẹ̀lú ààbò';
 
   @override
-  String get unprotected => 'Unprotected';
+  String get unprotected => 'Láìsí ààbò';
 
   @override
-  String get none => 'None';
+  String get none => 'Kò sí';
 
   @override
-  String get pain => 'Pain';
+  String get pain => 'Ìrora';
 
   @override
-  String get headache => 'Headache';
+  String get headache => 'Orí ọ̀fọ̀';
 
   @override
-  String get backPain => 'Back pain';
+  String get backPain => 'Ìrora ẹ̀hìn';
 
   @override
-  String get breastTenderness => 'Breast tenderness';
+  String get breastTenderness => 'Ìrora ọmú';
 
   @override
-  String get ovulationPain => 'Ovulation pain';
+  String get ovulationPain => 'Ìrora ìtusilẹ̀ ẹyin';
 
   @override
-  String get abdominalCramps => 'Abdominal Cramps';
+  String get abdominalCramps => 'Ìrora inú';
 
   @override
-  String get mild => 'Mild';
+  String get mild => 'Díẹ̀';
 
   @override
-  String get moderate => 'Moderate';
+  String get moderate => 'Àárín';
 
   @override
-  String get severe => 'Severe';
+  String get severe => 'Líle';
 
   @override
-  String get sleep => 'Sleep';
+  String get sleep => 'Oorun';
 
   @override
-  String get good => 'Good';
+  String get good => 'Dára';
 
   @override
-  String get poor => 'Poor';
+  String get poor => 'Kò dára';
 
   @override
-  String get insomnia => 'Insomnia';
+  String get insomnia => 'Àìsun oorun';
 
   @override
-  String get oversleeping => 'Oversleeping';
+  String get oversleeping => 'Sísùn ju bó yẹ lọ';
 
   @override
-  String get appetite => 'Appetite';
+  String get appetite => 'Ìfẹ́ oúnjẹ';
 
   @override
-  String get increased => 'Increased';
+  String get increased => 'Ti pọ̀ sí i';
 
   @override
-  String get decreased => 'Decreased';
+  String get decreased => 'Ti dín kù';
 
   @override
-  String get normal => 'Normal';
+  String get normal => 'Déédéé';
 
   @override
-  String get cravings => 'Cravings';
+  String get cravings => 'Ìfẹ́ pàtàkì sí oúnjẹ kan';
 
   @override
-  String get other => 'Other';
+  String get other => 'Miíràn';
 
   @override
-  String get describeFeeling => 'Describe what you\'re feeling';
+  String get describeFeeling => 'Ṣàlàyé ohun tí o ń ní ìrírí rẹ';
 
   @override
-  String get tip => 'Tip';
+  String get tip => 'Ìmọ̀ràn';
 
   @override
   String get symptomLoggingTip =>
-      'Logging symptoms daily helps us give you more accurate insights.';
+      'Kíkó àwọn àmì rẹ sílẹ̀ lojoojúmọ́ ń ràn wá lọ́wọ́ láti fún ọ ní ìmọ̀ràn tó péye sí i nípa ìbímọ.';
 
   @override
-  String get saveSymptoms => 'Save Symptoms';
+  String get saveSymptoms => 'Fipamọ́ Àwọn Àmì';
 
   @override
-  String get symptomsSaved => 'Symptoms saved successfully';
+  String get symptomsSaved => 'A ti fipamọ́ àwọn àmì rẹ dáadáa';
 
   @override
   String failedToSaveSymptoms(Object error) {
-    return 'Failed to save symptoms: $error';
+    return 'A kò lè fipamọ́ àwọn àmì: $error';
   }
 
   @override
-  String get symptoms => 'Symptoms';
+  String get symptoms => 'Àwọn Àmì';
 }

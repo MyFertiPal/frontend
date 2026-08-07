@@ -878,11 +878,11 @@ abstract class AppLocalizations {
   /// **'About MyFertiPal'**
   String get aboutMyFertiPal;
 
-  /// No description provided for @premiumMember.
+  /// No description provided for @basicMember.
   ///
   /// In en, this message translates to:
-  /// **'Premium Member'**
-  String get premiumMember;
+  /// **'Basic Member'**
+  String get basicMember;
 
   /// No description provided for @language.
   ///

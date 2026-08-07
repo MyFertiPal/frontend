@@ -155,7 +155,7 @@
   "notifications": "Ọkwa",
   "privacySecurity": "Nzuzo na Nchekwa",
   "aboutMyFertiPal": "Banyere MyFertiPal",
-  "premiumMember": "Onye otu Premium",
+ "basicMember": "Onye Otu Nkịtị",
 
   "language": "Asụsụ",
   "languageUpdated": "Emelitela asụsụ nke ọma.",
@@ -206,5 +206,73 @@
   "articles": "Edemede",
 
   "specialists": "Chọta Ọkachamara",
-  "searchSpecialists": "Chọọ ndị ọkachamara site n'aha ma ọ bụ ngalaba ha"
+  "searchSpecialists": "Chọọ ndị ọkachamara site n'aha ma ọ bụ ngalaba ha",
+
+   "logSymptomsTitle": "Detuo Mgbaàmà",
+  "trackHowYouFeel": "Soro otú ị na-adị. Ihe ọ bụla dị mkpa.",
+  "selectSymptomsToLog": "Họrọ mgbaàmà ị chọrọ idekọ",
+  "chooseMoreThanOne": "Ị nwere ike ịhọrọ karịa otu",
+
+  "mood": "Ọnọdụ uche",
+  "happy": "Obi ụtọ",
+  "sad": "Mwute",
+  "anxious": "Nchekasị",
+  "irritable": "Iwe ngwa ngwa",
+  "calm": "Udo",
+  "energetic": "Ike zuru oke",
+
+  "bleeding": "Ọbara ọpụpụ",
+  "spotting": "Obere ntụpọ ọbara",
+  "light": "Obere",
+  "medium": "Ọkara",
+  "heavy": "Ọtụtụ",
+
+  "cervicalMucus": "Mmiri dị n'ọnụ akpa nwa",
+  "dry": "Akọrọ",
+  "sticky": "Na-arapara",
+  "creamy": "Dị ka ude",
+  "watery": "Dị ka mmiri",
+  "eggWhite": "Dị ka akwa ọcha",
+
+  "sexualActivity": "Mmekọahụ",
+  "protected": "Echekwara",
+  "unprotected": "Enweghị nchebe",
+  "none": "Ọ dịghị",
+
+  "pain": "Mgbu",
+  "headache": "Isi ọwụwa",
+  "backPain": "Mgbu azụ",
+  "breastTenderness": "Mgbu ara",
+  "ovulationPain": "Mgbu mgbe akwa na-apụta",
+
+  "abdominalCramps": "Mgbu afọ",
+  "mild": "Dị nro",
+  "moderate": "Ọkara",
+  "severe": "Siri ike",
+
+  "sleep": "Ụra",
+  "good": "Ọma",
+  "poor": "Adịghị mma",
+  "insomnia": "Enweghị ike ihi ụra",
+  "oversleeping": "Ihi ụra nke ukwuu",
+
+  "appetite": "Agụụ nri",
+  "increased": "Abawanyela",
+  "decreased": "Belatala",
+  "normal": "Nkịtị",
+  "cravings": "Ọchịchọ iri nri ụfọdụ",
+
+  "other": "Ndị ọzọ",
+  "describeFeeling": "Kọwaa ihe ị na-enwe",
+
+  "tip": "Ndụmọdụ",
+  "symptomLoggingTip": "Idekekọ mgbaàmà kwa ụbọchị na-enyere anyị inye gị nghọta ziri ezi gbasara ọmụmụ nwa gị.",
+
+  "saveSymptoms": "Chekwaa Mgbaàmà",
+  "symptomsSaved": "E chekwala mgbaàmà nke ọma",
+  "failedToSaveSymptoms": "Ọ gaghị ekwe omume ichekwa mgbaàmà: {error}",
+
+  "logSymptoms": "Detuo Mgbaàmà",
+  "symptoms": "Mgbaàmà"
+
 }

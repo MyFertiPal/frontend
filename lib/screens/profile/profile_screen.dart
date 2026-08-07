@@ -566,7 +566,7 @@ Text(
                   Icon(Icons.workspace_premium, size: 16, color: _ProfileColors.gold),
                   const SizedBox(width: 6),
                   Text(
-                    AppLocalizations.of(context).premiumMember,
+                    AppLocalizations.of(context).basicMember,
                     style: TextStyle(
                       color: _ProfileColors.gold,
                       fontSize: 13,

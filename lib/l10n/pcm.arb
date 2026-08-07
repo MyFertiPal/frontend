@@ -165,7 +165,7 @@
   "privacySecurity": "Privacy & Security",
   "aboutMyFertiPal": "About MyFertiPal",
 
-  "premiumMember": "Premium Member",
+"basicMember": "Basic Member",
 
   "language": "Language",
   "languageUpdated": "Language don update successfully.",
@@ -217,5 +217,72 @@
   "articles": "Articles",
 
    "specialists": "Find Specialist",
-  "searchSpecialists": "Search specialists by name or area of expertise"
+  "searchSpecialists": "Search specialists by name or area of expertise",
+
+   "logSymptomsTitle": "Write Symptoms",
+  "trackHowYouFeel": "Follow how you dey feel. Every detail dey important.",
+  "selectSymptomsToLog": "Choose symptoms wey you wan record",
+  "chooseMoreThanOne": "You fit choose more than one",
+
+  "mood": "How you dey feel",
+  "happy": "Happy",
+  "sad": "Sad",
+  "anxious": "Worried",
+  "irritable": "Quick to vex",
+  "calm": "Calm",
+  "energetic": "Full of energy",
+
+  "bleeding": "Bleeding",
+  "spotting": "Small blood spot",
+  "light": "Small",
+  "medium": "Medium",
+  "heavy": "Plenty",
+
+  "cervicalMucus": "Cervical mucus",
+  "dry": "Dry",
+  "sticky": "Sticky",
+  "creamy": "Creamy",
+  "watery": "Like water",
+  "eggWhite": "Like egg white",
+
+  "sexualActivity": "Sexual activity",
+  "protected": "With protection",
+  "unprotected": "Without protection",
+  "none": "None",
+
+  "pain": "Pain",
+  "headache": "Headache",
+  "backPain": "Back pain",
+  "breastTenderness": "Breast tenderness",
+  "ovulationPain": "Ovulation pain",
+
+  "abdominalCramps": "Stomach cramps",
+  "mild": "Small",
+  "moderate": "Medium",
+  "severe": "Serious",
+
+  "sleep": "Sleep",
+  "good": "Good",
+  "poor": "Poor",
+  "insomnia": "Cannot sleep",
+  "oversleeping": "Sleeping too much",
+
+  "appetite": "Appetite",
+  "increased": "Increase",
+  "decreased": "Decrease",
+  "normal": "Normal",
+  "cravings": "Strong desire for some food",
+
+  "other": "Other",
+  "describeFeeling": "Explain wetin you dey feel",
+
+  "tip": "Tip",
+  "symptomLoggingTip": "If you dey record your symptoms every day, e go help us give you better fertility information.",
+
+  "saveSymptoms": "Save Symptoms",
+  "symptomsSaved": "Symptoms don save successfully",
+  "failedToSaveSymptoms": "We no fit save symptoms: {error}",
+
+  "logSymptoms": "Log Symptoms",
+  "symptoms": "Symptoms"
 }

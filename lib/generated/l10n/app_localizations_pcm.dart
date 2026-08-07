@@ -375,7 +375,7 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get quickActions => 'Quick Actions';
 
   @override
-  String get logSymptoms => 'Log\nSymptoms';
+  String get logSymptoms => 'Log Symptoms';
 
   @override
   String get genderPrediction => 'Gender\nPrediction';
@@ -421,7 +421,7 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get aboutMyFertiPal => 'About MyFertiPal';
 
   @override
-  String get premiumMember => 'Premium Member';
+  String get basicMember => 'Basic Member';
 
   @override
   String get language => 'Language';
@@ -544,19 +544,20 @@ class AppLocalizationsPcm extends AppLocalizations {
       'Search specialists by name or area of expertise';
 
   @override
-  String get logSymptomsTitle => 'Log Symptoms';
+  String get logSymptomsTitle => 'Write Symptoms';
 
   @override
-  String get trackHowYouFeel => 'Track how you feel. Every detail helps.';
+  String get trackHowYouFeel =>
+      'Follow how you dey feel. Every detail dey important.';
 
   @override
-  String get selectSymptomsToLog => 'Select symptoms to log';
+  String get selectSymptomsToLog => 'Choose symptoms wey you wan record';
 
   @override
-  String get chooseMoreThanOne => 'You can choose more than one';
+  String get chooseMoreThanOne => 'You fit choose more than one';
 
   @override
-  String get mood => 'Mood';
+  String get mood => 'How you dey feel';
 
   @override
   String get happy => 'Happy';
@@ -565,34 +566,34 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get sad => 'Sad';
 
   @override
-  String get anxious => 'Anxious';
+  String get anxious => 'Worried';
 
   @override
-  String get irritable => 'Irritable';
+  String get irritable => 'Quick to vex';
 
   @override
   String get calm => 'Calm';
 
   @override
-  String get energetic => 'Energetic';
+  String get energetic => 'Full of energy';
 
   @override
   String get bleeding => 'Bleeding';
 
   @override
-  String get spotting => 'Spotting';
+  String get spotting => 'Small blood spot';
 
   @override
-  String get light => 'Light';
+  String get light => 'Small';
 
   @override
   String get medium => 'Medium';
 
   @override
-  String get heavy => 'Heavy';
+  String get heavy => 'Plenty';
 
   @override
-  String get cervicalMucus => 'Cervical Mucus';
+  String get cervicalMucus => 'Cervical mucus';
 
   @override
   String get dry => 'Dry';
@@ -604,19 +605,19 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get creamy => 'Creamy';
 
   @override
-  String get watery => 'Watery';
+  String get watery => 'Like water';
 
   @override
-  String get eggWhite => 'Egg white';
+  String get eggWhite => 'Like egg white';
 
   @override
-  String get sexualActivity => 'Sexual Activity';
+  String get sexualActivity => 'Sexual activity';
 
   @override
-  String get protected => 'Protected';
+  String get protected => 'With protection';
 
   @override
-  String get unprotected => 'Unprotected';
+  String get unprotected => 'Without protection';
 
   @override
   String get none => 'None';
@@ -637,16 +638,16 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get ovulationPain => 'Ovulation pain';
 
   @override
-  String get abdominalCramps => 'Abdominal Cramps';
+  String get abdominalCramps => 'Stomach cramps';
 
   @override
-  String get mild => 'Mild';
+  String get mild => 'Small';
 
   @override
-  String get moderate => 'Moderate';
+  String get moderate => 'Medium';
 
   @override
-  String get severe => 'Severe';
+  String get severe => 'Serious';
 
   @override
   String get sleep => 'Sleep';
@@ -658,48 +659,48 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get poor => 'Poor';
 
   @override
-  String get insomnia => 'Insomnia';
+  String get insomnia => 'Cannot sleep';
 
   @override
-  String get oversleeping => 'Oversleeping';
+  String get oversleeping => 'Sleeping too much';
 
   @override
   String get appetite => 'Appetite';
 
   @override
-  String get increased => 'Increased';
+  String get increased => 'Increase';
 
   @override
-  String get decreased => 'Decreased';
+  String get decreased => 'Decrease';
 
   @override
   String get normal => 'Normal';
 
   @override
-  String get cravings => 'Cravings';
+  String get cravings => 'Strong desire for some food';
 
   @override
   String get other => 'Other';
 
   @override
-  String get describeFeeling => 'Describe what you\'re feeling';
+  String get describeFeeling => 'Explain wetin you dey feel';
 
   @override
   String get tip => 'Tip';
 
   @override
   String get symptomLoggingTip =>
-      'Logging symptoms daily helps us give you more accurate insights.';
+      'If you dey record your symptoms every day, e go help us give you better fertility information.';
 
   @override
   String get saveSymptoms => 'Save Symptoms';
 
   @override
-  String get symptomsSaved => 'Symptoms saved successfully';
+  String get symptomsSaved => 'Symptoms don save successfully';
 
   @override
   String failedToSaveSymptoms(Object error) {
-    return 'Failed to save symptoms: $error';
+    return 'We no fit save symptoms: $error';
   }
 
   @override

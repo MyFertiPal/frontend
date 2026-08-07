@@ -383,7 +383,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get quickActions => 'Ayyuka Masu Sauri';
 
   @override
-  String get logSymptoms => 'Rubuta\nAlamomi';
+  String get logSymptoms => 'Rubuta Alamomi';
 
   @override
   String get genderPrediction => 'Hasashen\nJinsi';
@@ -430,7 +430,7 @@ class AppLocalizationsHa extends AppLocalizations {
   String get aboutMyFertiPal => 'Game da MyFertiPal';
 
   @override
-  String get premiumMember => 'Mamba na Premium';
+  String get basicMember => 'Mamba na Asali';
 
   @override
   String get language => 'Harshe';
@@ -553,164 +553,165 @@ class AppLocalizationsHa extends AppLocalizations {
   String get searchSpecialists => 'Nemo ƙwararru da suna ko fannin aiki';
 
   @override
-  String get logSymptomsTitle => 'Log Symptoms';
+  String get logSymptomsTitle => 'Rubuta Alamomin Jiki';
 
   @override
-  String get trackHowYouFeel => 'Track how you feel. Every detail helps.';
+  String get trackHowYouFeel =>
+      'Bibiyi yadda kike ji. Kowane bayani yana da muhimmanci.';
 
   @override
-  String get selectSymptomsToLog => 'Select symptoms to log';
+  String get selectSymptomsToLog => 'Zaɓi alamomin da za ki rubuta';
 
   @override
-  String get chooseMoreThanOne => 'You can choose more than one';
+  String get chooseMoreThanOne => 'Za ki iya zaɓar fiye da ɗaya';
 
   @override
-  String get mood => 'Mood';
+  String get mood => 'Yanayin zuciya';
 
   @override
-  String get happy => 'Happy';
+  String get happy => 'Farin ciki';
 
   @override
-  String get sad => 'Sad';
+  String get sad => 'Baƙin ciki';
 
   @override
-  String get anxious => 'Anxious';
+  String get anxious => 'Damuwa';
 
   @override
-  String get irritable => 'Irritable';
+  String get irritable => 'Fushi cikin sauƙi';
 
   @override
-  String get calm => 'Calm';
+  String get calm => 'Natsuwa';
 
   @override
-  String get energetic => 'Energetic';
+  String get energetic => 'Cike da kuzari';
 
   @override
-  String get bleeding => 'Bleeding';
+  String get bleeding => 'Zubar jini';
 
   @override
-  String get spotting => 'Spotting';
+  String get spotting => 'Ƙaramin tabon jini';
 
   @override
-  String get light => 'Light';
+  String get light => 'Kaɗan';
 
   @override
-  String get medium => 'Medium';
+  String get medium => 'Matsakaici';
 
   @override
-  String get heavy => 'Heavy';
+  String get heavy => 'Mai yawa';
 
   @override
-  String get cervicalMucus => 'Cervical Mucus';
+  String get cervicalMucus => 'Ruwan mahaifa';
 
   @override
-  String get dry => 'Dry';
+  String get dry => 'Bushe';
 
   @override
-  String get sticky => 'Sticky';
+  String get sticky => 'Mai ɗanko';
 
   @override
-  String get creamy => 'Creamy';
+  String get creamy => 'Kamar kirim';
 
   @override
-  String get watery => 'Watery';
+  String get watery => 'Kamar ruwa';
 
   @override
-  String get eggWhite => 'Egg white';
+  String get eggWhite => 'Kamar farin ƙwai';
 
   @override
-  String get sexualActivity => 'Sexual Activity';
+  String get sexualActivity => 'Ayyukan jima\'i';
 
   @override
-  String get protected => 'Protected';
+  String get protected => 'Tare da kariya';
 
   @override
-  String get unprotected => 'Unprotected';
+  String get unprotected => 'Ba tare da kariya ba';
 
   @override
-  String get none => 'None';
+  String get none => 'Babu';
 
   @override
-  String get pain => 'Pain';
+  String get pain => 'Ciwo';
 
   @override
-  String get headache => 'Headache';
+  String get headache => 'Ciwon kai';
 
   @override
-  String get backPain => 'Back pain';
+  String get backPain => 'Ciwon baya';
 
   @override
-  String get breastTenderness => 'Breast tenderness';
+  String get breastTenderness => 'Raɗaɗin nono';
 
   @override
-  String get ovulationPain => 'Ovulation pain';
+  String get ovulationPain => 'Ciwon lokacin fitar ƙwai';
 
   @override
-  String get abdominalCramps => 'Abdominal Cramps';
+  String get abdominalCramps => 'Ciwon mara';
 
   @override
-  String get mild => 'Mild';
+  String get mild => 'Mai sauƙi';
 
   @override
-  String get moderate => 'Moderate';
+  String get moderate => 'Matsakaici';
 
   @override
-  String get severe => 'Severe';
+  String get severe => 'Mai tsanani';
 
   @override
-  String get sleep => 'Sleep';
+  String get sleep => 'Barci';
 
   @override
-  String get good => 'Good';
+  String get good => 'Mai kyau';
 
   @override
-  String get poor => 'Poor';
+  String get poor => 'Mara kyau';
 
   @override
-  String get insomnia => 'Insomnia';
+  String get insomnia => 'Rashin samun barci';
 
   @override
-  String get oversleeping => 'Oversleeping';
+  String get oversleeping => 'Yawan yin barci';
 
   @override
-  String get appetite => 'Appetite';
+  String get appetite => 'Sha\'awar abinci';
 
   @override
-  String get increased => 'Increased';
+  String get increased => 'Ya ƙaru';
 
   @override
-  String get decreased => 'Decreased';
+  String get decreased => 'Ya ragu';
 
   @override
-  String get normal => 'Normal';
+  String get normal => 'Na al\'ada';
 
   @override
-  String get cravings => 'Cravings';
+  String get cravings => 'Son wani abinci na musamman';
 
   @override
-  String get other => 'Other';
+  String get other => 'Wani';
 
   @override
-  String get describeFeeling => 'Describe what you\'re feeling';
+  String get describeFeeling => 'Bayyana abin da kike ji';
 
   @override
-  String get tip => 'Tip';
+  String get tip => 'Shawara';
 
   @override
   String get symptomLoggingTip =>
-      'Logging symptoms daily helps us give you more accurate insights.';
+      'Rubuta alamomin ki a kowace rana yana taimaka mana mu ba ki ingantattun bayanai game da lafiyar haihuwa.';
 
   @override
-  String get saveSymptoms => 'Save Symptoms';
+  String get saveSymptoms => 'Ajiye Alamomi';
 
   @override
-  String get symptomsSaved => 'Symptoms saved successfully';
+  String get symptomsSaved => 'An ajiye alamomin cikin nasara';
 
   @override
   String failedToSaveSymptoms(Object error) {
-    return 'Failed to save symptoms: $error';
+    return 'An kasa ajiye alamomi: $error';
   }
 
   @override
-  String get symptoms => 'Symptoms';
+  String get symptoms => 'Alamomi';
 }

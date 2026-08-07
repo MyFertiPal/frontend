@@ -142,7 +142,7 @@
   "privacySecurity": "Àṣírí àti Aabo",
   "aboutMyFertiPal": "Nípa MyFertiPal",
 
-  "premiumMember": "Ọmọ Ẹgbẹ́ Premium",
+ "basicMember": "Ọmọ Ẹgbẹ́ Ìpilẹ̀",
 
   "language": "Èdè",
   "languageUpdated": "A ti yí èdè padà dáadáa.",
@@ -222,5 +222,72 @@
   "bookConsultation": "Pàṣẹ ìjíròrò pẹ̀lú amòye",
 
    "specialists": "Wa Ọ̀jọ̀gbọ́n",
-  "searchSpecialists": "Wa àwọn ọ̀jọ̀gbọ́n nípa orúkọ tàbí ẹ̀ka iṣẹ́ wọn"
+  "searchSpecialists": "Wa àwọn ọ̀jọ̀gbọ́n nípa orúkọ tàbí ẹ̀ka iṣẹ́ wọn",
+
+     "logSymptomsTitle": "Ṣe Àkọsílẹ̀ Àwọn Àmì",
+  "trackHowYouFeel": "Tẹ̀lé bí o ṣe ń rí lára. Gbogbo àlàyé ṣe pàtàkì.",
+  "selectSymptomsToLog": "Yan àwọn àmì tí o fẹ́ kọ sílẹ̀",
+  "chooseMoreThanOne": "O lè yan ju ọ̀kan lọ",
+
+  "mood": "Ìmọ̀lára",
+  "happy": "Ayọ̀",
+  "sad": "Ìbànújẹ́",
+  "anxious": "Ìdààmú ọkàn",
+  "irritable": "Ìbínú rọrùn",
+  "calm": "Ìfarabalẹ̀",
+  "energetic": "Agbara kún fún",
+
+  "bleeding": "Ẹ̀jẹ̀ jáde",
+  "spotting": "Àmì ẹ̀jẹ̀ kékeré",
+  "light": "Kéré",
+  "medium": "Díẹ̀",
+  "heavy": "Púpọ̀",
+
+  "cervicalMucus": "Omi inú ọ̀nà ilé-ọmọ",
+  "dry": "Gbígbẹ",
+  "sticky": "Alárà",
+  "creamy": "Bí kíríímù",
+  "watery": "Bí omi",
+  "eggWhite": "Bí funfun ẹyin",
+
+  "sexualActivity": "Ìbálòpọ̀",
+  "protected": "Pẹ̀lú ààbò",
+  "unprotected": "Láìsí ààbò",
+  "none": "Kò sí",
+
+  "pain": "Ìrora",
+  "headache": "Orí ọ̀fọ̀",
+  "backPain": "Ìrora ẹ̀hìn",
+  "breastTenderness": "Ìrora ọmú",
+  "ovulationPain": "Ìrora ìtusilẹ̀ ẹyin",
+
+  "abdominalCramps": "Ìrora inú",
+  "mild": "Díẹ̀",
+  "moderate": "Àárín",
+  "severe": "Líle",
+
+  "sleep": "Oorun",
+  "good": "Dára",
+  "poor": "Kò dára",
+  "insomnia": "Àìsun oorun",
+  "oversleeping": "Sísùn ju bó yẹ lọ",
+
+  "appetite": "Ìfẹ́ oúnjẹ",
+  "increased": "Ti pọ̀ sí i",
+  "decreased": "Ti dín kù",
+  "normal": "Déédéé",
+  "cravings": "Ìfẹ́ pàtàkì sí oúnjẹ kan",
+
+  "other": "Miíràn",
+  "describeFeeling": "Ṣàlàyé ohun tí o ń ní ìrírí rẹ",
+
+  "tip": "Ìmọ̀ràn",
+  "symptomLoggingTip": "Kíkó àwọn àmì rẹ sílẹ̀ lojoojúmọ́ ń ràn wá lọ́wọ́ láti fún ọ ní ìmọ̀ràn tó péye sí i nípa ìbímọ.",
+
+  "saveSymptoms": "Fipamọ́ Àwọn Àmì",
+  "symptomsSaved": "A ti fipamọ́ àwọn àmì rẹ dáadáa",
+  "failedToSaveSymptoms": "A kò lè fipamọ́ àwọn àmì: {error}",
+
+  "logSymptoms": "Kọ Àwọn Àmì Sílẹ̀",
+  "symptoms": "Àwọn Àmì"
 }
