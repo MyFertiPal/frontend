@@ -1,63 +1,71 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalPeriodService {
+  static const String _key = 'tapped_days';
 
-  static const String _key = "flutter.tapped_days";
+  // ------------------------------------------------------------
+  // DATE ONLY
+  // ------------------------------------------------------------
 
+  String _dateOnly(DateTime date) {
+    final normalized = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+
+    return normalized.toIso8601String().split('T').first;
+  }
+
+  DateTime _parseDate(String value) {
+    return DateTime.parse(value);
+  }
+
+  // ------------------------------------------------------------
+  // GET PERIOD LOGS
+  // ------------------------------------------------------------
 
   Future<List<DateTime>> getPeriodLogs() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final days = prefs.getStringList(_key) ?? [];
+    final values = prefs.getStringList(_key) ?? [];
 
-    return days
-        .map((e) => DateTime.parse(e))
-        .toList();
-  }
+    final dates = <DateTime>[];
 
-
-  Future<void> savePeriod(DateTime date) async {
-
-    final prefs = await SharedPreferences.getInstance();
-
-    final existing = prefs.getStringList(_key) ?? [];
-
-    final normalized = DateTime(
-      date.year,
-      date.month,
-      date.day,
-    );
-
-
-    if(!existing.contains(normalized.toIso8601String())) {
-      existing.add(normalized.toIso8601String());
+    for (final value in values) {
+      try {
+        dates.add(
+          _parseDate(value),
+        );
+      } catch (e) {
+        // Ignore invalid stored dates.
+      }
     }
 
-
-    await prefs.setStringList(
-      _key,
-      existing,
+    dates.sort(
+      (a, b) => a.compareTo(b),
     );
+
+    return dates;
   }
 
+  // ------------------------------------------------------------
+  // SAVE PERIOD
+  // ------------------------------------------------------------
 
-
-  Future<void> deletePeriod(DateTime date) async {
-
+  Future<void> savePeriod(DateTime date) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final existing = prefs.getStringList(_key) ?? [];
+    final existing =
+        prefs.getStringList(_key) ?? [];
 
+    final value = _dateOnly(date);
 
-    final normalized = DateTime(
-      date.year,
-      date.month,
-      date.day,
-    );
+    if (!existing.contains(value)) {
+      existing.add(value);
+    }
 
-
-    existing.remove(normalized.toIso8601String());
-
+    existing.sort();
 
     await prefs.setStringList(
       _key,
@@ -65,4 +73,23 @@ class LocalPeriodService {
     );
   }
 
+  // ------------------------------------------------------------
+  // DELETE PERIOD
+  // ------------------------------------------------------------
+
+  Future<void> deletePeriod(DateTime date) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final existing =
+        prefs.getStringList(_key) ?? [];
+
+    final value = _dateOnly(date);
+
+    existing.remove(value);
+
+    await prefs.setStringList(
+      _key,
+      existing,
+    );
+  }
 }

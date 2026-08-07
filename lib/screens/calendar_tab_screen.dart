@@ -171,41 +171,151 @@ class _CalendarTabScreenState
   // INITIAL CALENDAR LOAD
   // ------------------------------------------------------------
 
-  Future<void> _loadCycle() async {
-    try {
-      final periods =
-          await _localPeriod.getPeriodLogs();
+ Future<void> _loadCycle() async {
+  try {
+    // ----------------------------------------------------------
+    // 1. LOAD PROFILE FIRST
+    // ----------------------------------------------------------
 
-      final localMarkers =
-          <DateTime, DayType>{};
+    final profile = await _api.getProfile();
 
-      for (final date in periods) {
-        localMarkers[
-          _normalize(date)
-        ] = DayType.period;
+    final cycleLength =
+        (profile["cycle_length"] as num?)?.toInt() ?? 28;
+
+    final periodLength =
+        (profile["period_length"] as num?)?.toInt() ?? 5;
+
+    final lastPeriodString =
+        profile["last_period_date"]?.toString();
+
+    _cycleLength = cycleLength;
+    _periodLength = periodLength;
+
+    if (lastPeriodString != null &&
+        lastPeriodString.isNotEmpty) {
+      _lastPeriod = DateTime.tryParse(
+        lastPeriodString,
+      );
+
+      if (_lastPeriod != null) {
+        _lastPeriod = _normalize(_lastPeriod!);
       }
-
-      if (!mounted) return;
-
-      // IMPORTANT:
-      // Show local calendar data immediately.
-      setState(() {
-        _dayMarkers = localMarkers;
-      });
-
-      // Backend predictions load afterward.
-      await _refreshCycleData();
-    } catch (e, stackTrace) {
-      debugPrint(
-        "Calendar load error: $e",
-      );
-
-      debugPrint(
-        "$stackTrace",
-      );
     }
-  }
 
+    // ----------------------------------------------------------
+    // 2. LOAD SYMPTOMS
+    // ----------------------------------------------------------
+
+    final symptoms = await _api.getSymptoms();
+
+    _loggedSymptoms = symptoms;
+
+    // ----------------------------------------------------------
+    // 3. LOAD LOCALLY TAPPED ACTUAL PERIOD DAYS
+    // ----------------------------------------------------------
+
+    final periods =
+        await _localPeriod.getPeriodLogs();
+
+    // ----------------------------------------------------------
+    // 4. IF PROFILE HAS LAST PERIOD, USE IT
+    // ----------------------------------------------------------
+
+    if (_lastPeriod != null) {
+      _rebuildMarkers();
+    }
+
+    // ----------------------------------------------------------
+    // 5. ADD LOCALLY TAPPED ACTUAL DAYS
+    // ----------------------------------------------------------
+
+    for (final date in periods) {
+      _dayMarkers[_normalize(date)] =
+          DayType.period;
+    }
+
+    if (!mounted) return;
+
+    setState(() {});
+
+    // ----------------------------------------------------------
+    // 6. GENERATE FRESH INSIGHTS
+    // ----------------------------------------------------------
+
+    if (_lastPeriod != null) {
+      await _generateFreshInsights();
+    }
+  } catch (e, stackTrace) {
+    debugPrint(
+      "Calendar load error: $e",
+    );
+
+    debugPrint(
+      "$stackTrace",
+    );
+  }
+}
+Future<void> _generateFreshInsights() async {
+  if (_lastPeriod == null) return;
+
+  try {
+    final lastPeriodDate =
+        _normalize(_lastPeriod!)
+            .toIso8601String()
+            .split('T')
+            .first;
+
+    final insights =
+        await _api.generateInsights(
+      cycleLength: _cycleLength,
+      lastPeriodDate: lastPeriodDate,
+      periodLength: _periodLength,
+      symptoms: _extractSymptomNames(),
+    );
+
+    if (!mounted) return;
+
+    debugPrint(
+      "CALENDAR INSIGHTS RESPONSE: $insights",
+    );
+
+    if (insights.isNotEmpty &&
+        insights.first is Map) {
+      final data =
+          Map<String, dynamic>.from(
+        insights.first as Map,
+      );
+
+      _nextPeriod =
+          data["next_period"]?.toString();
+
+      _ovulationDay =
+          data["ovulation_day"]?.toString();
+
+      _fertileStart =
+          data["fertile_period_start"]?.toString();
+
+      _fertileEnd =
+          data["fertile_period_end"]?.toString();
+    }
+
+    // IMPORTANT:
+    // Rebuild colors AFTER insights arrive.
+    _rebuildMarkers();
+
+    if (mounted) {
+      setState(() {});
+    }
+  } catch (e, stackTrace) {
+    debugPrint(
+      "Insight generation error: $e",
+    );
+
+    debugPrint(
+      "$stackTrace",
+    );
+  }
+}
   // ------------------------------------------------------------
   // REFRESH PROFILE + SYMPTOMS + INSIGHTS
   // ------------------------------------------------------------
@@ -354,150 +464,112 @@ symptoms: $symptomNames
   // REBUILD ALL CALENDAR MARKERS
   // ------------------------------------------------------------
 
-  void _rebuildMarkers() {
-    final periodDates = <DateTime>{};
+ void _rebuildMarkers() {
+  final markers = <DateTime, DayType>{};
 
-    // Preserve locally logged period days.
-    for (final entry
-        in _dayMarkers.entries) {
-      if (entry.value ==
-          DayType.period) {
-        periodDates.add(
-          _normalize(entry.key),
+  // ============================================================
+  // ACTUAL PERIOD
+  // ============================================================
+
+  if (_lastPeriod != null) {
+    final start = _normalize(_lastPeriod!);
+
+    for (int i = 0; i < _periodLength; i++) {
+      final date = _normalize(
+        start.add(
+          Duration(days: i),
+        ),
+      );
+
+      markers[date] = DayType.period;
+    }
+  }
+
+  // ============================================================
+  // FERTILE WINDOW
+  // ============================================================
+
+  if (_fertileStart != null &&
+      _fertileEnd != null) {
+    final start = DateTime.tryParse(
+      _fertileStart!,
+    );
+
+    final end = DateTime.tryParse(
+      _fertileEnd!,
+    );
+
+    if (start != null && end != null) {
+      var current = _normalize(start);
+      final last = _normalize(end);
+
+      while (!current.isAfter(last)) {
+        if (markers[current] != DayType.period) {
+          markers[current] = DayType.fertile;
+        }
+
+        current = current.add(
+          const Duration(days: 1),
         );
       }
     }
+  }
 
-    final markers =
-        <DateTime, DayType>{};
+  // ============================================================
+  // OVULATION
+  // ============================================================
 
-    // ----------------------------------------------------------
-    // ACTUAL PERIOD DAYS HAVE HIGHEST PRIORITY
-    // ----------------------------------------------------------
+  if (_ovulationDay != null) {
+    final date = DateTime.tryParse(
+      _ovulationDay!,
+    );
 
-    for (final date in periodDates) {
-      markers[date] =
-          DayType.period;
+    if (date != null) {
+      final key = _normalize(date);
+
+      if (markers[key] != DayType.period) {
+        markers[key] = DayType.ovulation;
+      }
     }
+  }
 
-    // ----------------------------------------------------------
-    // LAST PERIOD FROM PROFILE
-    // ----------------------------------------------------------
+  // ============================================================
+  // NEXT PREDICTED PERIOD
+  // ============================================================
 
-    if (_lastPeriod != null) {
-      for (int i = 0;
-          i < _periodLength;
-          i++) {
-        final date =
-            _normalize(
-          _lastPeriod!.add(
+  if (_nextPeriod != null) {
+    final date = DateTime.tryParse(
+      _nextPeriod!,
+    );
+
+    if (date != null) {
+      final start = _normalize(date);
+
+      for (int i = 0; i < _periodLength; i++) {
+        final key = _normalize(
+          start.add(
             Duration(days: i),
           ),
         );
 
-        markers[date] =
-            DayType.period;
-      }
-    }
-
-    // ----------------------------------------------------------
-    // FERTILE WINDOW
-    // ----------------------------------------------------------
-
-    if (_fertileStart != null &&
-        _fertileEnd != null) {
-      final start =
-          DateTime.tryParse(
-        _fertileStart!,
-      );
-
-      final end =
-          DateTime.tryParse(
-        _fertileEnd!,
-      );
-
-      if (start != null &&
-          end != null) {
-        var current =
-            _normalize(start);
-
-        final last =
-            _normalize(end);
-
-        while (!current.isAfter(last)) {
-          // Never overwrite actual period.
-          if (markers[current] !=
-              DayType.period) {
-            markers[current] =
-                DayType.fertile;
-          }
-
-          current = current.add(
-            const Duration(days: 1),
-          );
+        if (markers[key] != DayType.period &&
+            markers[key] != DayType.ovulation) {
+          markers[key] = DayType.predicted;
         }
       }
     }
-
-    // ----------------------------------------------------------
-    // OVULATION
-    // ----------------------------------------------------------
-
-    if (_ovulationDay != null) {
-      final date =
-          DateTime.tryParse(
-        _ovulationDay!,
-      );
-
-      if (date != null) {
-        final key =
-            _normalize(date);
-
-        // Period always wins.
-        if (markers[key] !=
-            DayType.period) {
-          markers[key] =
-              DayType.ovulation;
-        }
-      }
-    }
-
-    // ----------------------------------------------------------
-    // PREDICTED PERIOD
-    // ----------------------------------------------------------
-
-    if (_nextPeriod != null) {
-      final date =
-          DateTime.tryParse(
-        _nextPeriod!,
-      );
-
-      if (date != null) {
-        for (int i = 0;
-            i < _periodLength;
-            i++) {
-          final key =
-              _normalize(
-            date.add(
-              Duration(days: i),
-            ),
-          );
-
-          // Never overwrite actual period.
-          // Never overwrite ovulation.
-          if (markers[key] !=
-                  DayType.period &&
-              markers[key] !=
-                  DayType.ovulation) {
-            markers[key] =
-                DayType.predicted;
-          }
-        }
-      }
-    }
-
-    _dayMarkers = markers;
   }
+
+  // ============================================================
+  // APPLY
+  // ============================================================
+
+  _dayMarkers = markers;
+
+  debugPrint(
+    "CALENDAR MARKERS: $_dayMarkers",
+  );
+}
 
   // ------------------------------------------------------------
   // TOGGLE PERIOD DAY
