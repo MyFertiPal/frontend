@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+
+import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/period_service.dart';
 
@@ -109,12 +111,14 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     setState(() {
       _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month - 1, 1);
     });
+    unawaited(_loadSymptomsForVisibleMonth());
   }
 
   void _goToNextMonth() {
     setState(() {
       _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + 1, 1);
     });
+    unawaited(_loadSymptomsForVisibleMonth());
   }
 
   static const _monthNames = [
@@ -157,43 +161,80 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
   // ---- Data loading ---------------------------------------------------------
 
   Future<void> _loadCycle() async {
+    final api = ApiService();
+
+    Map<String, dynamic>? profile;
+    List<dynamic> insights = [];
+
+    // Each call is isolated - a failure in one must never prevent the
+    // others from being applied and markers from being built.
     try {
-      final api = ApiService();
+      profile = await api.getProfile();
+    } catch (e) {
+      debugPrint("getProfile error: $e");
+    }
 
-      final profile = await api.getProfile();
-      final insights = await api.getInsights();
-      final symptoms = await api.getSymptoms();
+    try {
+      insights = await api.getInsights();
+    } catch (e) {
+      debugPrint("getInsights error: $e");
+    }
 
-      if (!mounted) return;
+    if (!mounted) return;
 
-      _loggedSymptoms = symptoms;
-
+    if (profile != null) {
       _cycleLength = profile["cycle_length"] ?? 0;
       _periodLength = profile["period_length"] ?? 0;
 
       if (profile["last_period_date"] != null) {
         _lastPeriod = DateTime.parse(profile["last_period_date"]);
       }
-
-      if (insights.isNotEmpty) {
-        final latestInsight = insights.first as Map<String, dynamic>;
-        // NOTE: adjust this key if your backend's insights payload uses a
-        // different field name for the predicted next period date.
-        _nextPeriod =
-            latestInsight["next_period_date"] ?? latestInsight["next_period"];
-        _ovulationDay = latestInsight["ovulation_day"];
-        _fertileStart = latestInsight["fertile_period_start"];
-        _fertileEnd = latestInsight["fertile_period_end"];
-      }
-
-      await _loadLocalPeriods();
-      _buildBackendMarkers();
-      _rebuildMergedMarkers();
-
-      setState(() {});
-    } catch (e) {
-      debugPrint("Calendar error: $e");
     }
+
+    if (insights.isNotEmpty) {
+      final latestInsight = insights.first as Map<String, dynamic>;
+      // NOTE: adjust this key if your backend's insights payload uses a
+      // different field name for the predicted next period date.
+      _nextPeriod =
+          latestInsight["next_period_date"] ?? latestInsight["next_period"];
+      _ovulationDay = latestInsight["ovulation_day"];
+      _fertileStart = latestInsight["fertile_period_start"];
+      _fertileEnd = latestInsight["fertile_period_end"];
+    }
+
+    await _loadLocalPeriods();
+    _buildBackendMarkers();
+    _rebuildMergedMarkers();
+
+    setState(() {});
+
+    // Symptoms are scoped to whatever month is currently visible.
+    unawaited(_loadSymptomsForVisibleMonth());
+  }
+
+  /// Fetches symptoms for the currently visible month. Failure here never
+  /// affects period/fertile/ovulation/predicted markers, which are handled
+  /// entirely by _loadCycle above.
+  Future<void> _loadSymptomsForVisibleMonth() async {
+    final api = ApiService();
+
+    final start = DateTime(_visibleMonth.year, _visibleMonth.month, 1);
+    final end = DateTime(_visibleMonth.year, _visibleMonth.month,
+        _daysInMonth(_visibleMonth));
+
+    List<dynamic> symptoms = [];
+
+    try {
+      symptoms = await api.getSymptoms(startDate: start, endDate: end);
+    } catch (e) {
+      debugPrint("getSymptoms error: $e");
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _loggedSymptoms = symptoms;
+    });
   }
 
   Future<void> _loadLocalPeriods() async {

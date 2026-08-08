@@ -458,36 +458,55 @@ Future<Map<String, dynamic>> getSpecialist(int specialistId) async {
 
   throw Exception("Failed to load specialist");
 }
-  Future<List<dynamic>> getSymptoms() async {
+ 
+Future<List<dynamic>> getSymptoms({
+  required DateTime startDate,
+  required DateTime endDate,
+}) async {
   final token = await getStoredToken();
-
+ 
+  final uri = Uri.parse('$baseUrl/user/symptoms').replace(
+    queryParameters: {
+      'start_date': _formatDate(startDate),
+      'end_date': _formatDate(endDate),
+    },
+  );
+ 
   final response = await http.get(
-    Uri.parse('$baseUrl/user/symptoms'),
+    uri,
     headers: {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     },
   );
-
+ 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-
+ 
     // If API returns:
     // [ {...}, {...} ]
     if (data is List) {
       return data;
     }
-
+ 
     // If API returns:
     // { "data": [ ... ] }
     if (data is Map && data["data"] != null) {
       return data["data"];
     }
-
+ 
     return [];
   }
-
+ 
   throw Exception("Failed to load symptoms");
+}
+ 
+// Formats a DateTime as yyyy-MM-dd (no time component), which is what the
+// backend's start_date/end_date query params expect.
+String _formatDate(DateTime date) {
+  final month = date.month.toString().padLeft(2, '0');
+  final day = date.day.toString().padLeft(2, '0');
+  return '${date.year}-$month-$day';
 }
   Future<void> saveSymptoms({
   required List<String> symptoms,
