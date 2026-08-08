@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
       final predictions =
-          await _apiService.getCyclePrediction();
+          await _apiService.getInsights();
 
 
 

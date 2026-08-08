@@ -135,7 +135,6 @@ Future<List<dynamic>> generateInsights({
   required List<String> symptoms,
 }) async {
   try {
-    final headers = await getHeaders(includeAuth: true);
 
     final body = {
       "cycle_length": cycleLength,
@@ -148,7 +147,7 @@ Future<List<dynamic>> generateInsights({
 
     final response = await http.post(
       Uri.parse("$baseUrl/insights/insights"),
-      headers: headers,
+      headers: await getHeaders(includeAuth: true),
       body: jsonEncode(body),
     );
 
@@ -750,28 +749,6 @@ Future<Map<String, dynamic>> getArticleBySlug({
       rethrow;
     }
   }
-  Future<List<dynamic>> getCyclePrediction() async {
-
- final response = await http.get(
-   Uri.parse(
-     "$baseUrl/insights/insights"
-   ),
-   headers: await getHeaders(includeAuth: true),
- );
-
-
- if(response.statusCode == 200){
-
-   return jsonDecode(response.body);
-
- }
-
-
- throw Exception(
-   "Prediction failed"
- );
-
-}
 
 
   Future<List<dynamic>> getInsights() async {
