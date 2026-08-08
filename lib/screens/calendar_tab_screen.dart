@@ -611,80 +611,112 @@ class _CalendarTabScreenState extends State<CalendarTabScreen> {
     //
     return true;
   }
+String _formatDateForApi(DateTime date) {
+  final month =
+      date.month.toString().padLeft(2, '0');
 
-  Future<void> _onDayTapped(
-    DateTime date,
-  ) async {
-    final normalized =
-        _normalize(date);
+  final day =
+      date.day.toString().padLeft(2, '0');
 
-    final currentType =
-        _dayMarkers[normalized];
+  return '${date.year}-$month-$day';
+}
+ Future<void> _onDayTapped(DateTime date) async {
+  final normalized = _normalize(date);
 
-    if (!_isTappable(currentType)) {
-      return;
-    }
+  final alreadyLogged =
+      _localPeriodDays.contains(normalized);
 
-    final alreadyLogged =
-        _localPeriodDays.contains(
-      normalized,
-    );
+  // ---------------------------------------------------------
+  // REMOVE EXISTING PERIOD DAY
+  // ---------------------------------------------------------
 
-    // -------------------------------------------------------
-    // Optimistic UI update
-    // -------------------------------------------------------
-
+  if (alreadyLogged) {
     setState(() {
       _selectedDate = normalized;
 
-      if (alreadyLogged) {
-        _localPeriodDays.remove(
-          normalized,
-        );
-      } else {
-        _localPeriodDays.add(
-          normalized,
-        );
-      }
+      _localPeriodDays.remove(normalized);
 
       _rebuildMergedMarkers();
     });
 
-    // -------------------------------------------------------
-    // Persist locally
-    // -------------------------------------------------------
-
     try {
-      if (alreadyLogged) {
-        await _periodService
-            .deletePeriod(normalized);
-      } else {
-        await _periodService
-            .savePeriod(normalized);
-      }
+      await _periodService.deletePeriod(normalized);
     } catch (e) {
       debugPrint(
-        "Period save/delete error: $e",
+        "Delete period error: $e",
       );
-
-      // Roll back UI if storage failed.
-      if (!mounted) return;
-
-      setState(() {
-        if (alreadyLogged) {
-          _localPeriodDays.add(
-            normalized,
-          );
-        } else {
-          _localPeriodDays.remove(
-            normalized,
-          );
-        }
-
-        _rebuildMergedMarkers();
-      });
     }
+
+    return;
   }
+
+  // ---------------------------------------------------------
+  // NEW PERIOD START
+  // ---------------------------------------------------------
+
+  setState(() {
+    _selectedDate = normalized;
+
+    _localPeriodDays.add(normalized);
+
+    _rebuildMergedMarkers();
+  });
+
+  // Save the actual period start locally.
+  try {
+    await _periodService.savePeriod(normalized);
+  } catch (e) {
+    debugPrint(
+      "Save period error: $e",
+    );
+    return;
+  }
+
+  // ---------------------------------------------------------
+  // SEND NEW PERIOD START TO BACKEND
+  // ---------------------------------------------------------
+
+  try {
+    final api = ApiService();
+
+    final lastPeriodDate =
+        _formatDateForApi(normalized);
+
+    debugPrint(
+      "New period started: $lastPeriodDate",
+    );
+
+    final insights =
+        await api.generateInsights(
+      cycleLength: _cycleLength,
+      lastPeriodDate: lastPeriodDate,
+      periodLength: _periodLength,
+      symptoms: const ["none"],
+    );
+
+    debugPrint(
+      "New insights generated: $insights",
+    );
+
+    // -------------------------------------------------------
+    // RELOAD PROFILE + INSIGHTS
+    // -------------------------------------------------------
+
+    await _loadCycle();
+
+    if (!mounted) return;
+
+    await _loadSymptomsForVisibleMonth();
+
+    if (!mounted) return;
+
+    setState(() {});
+  } catch (e) {
+    debugPrint(
+      "Generate insights after period tap error: $e",
+    );
+  }
+}
 
   // ---------------------------------------------------------------------------
   // Symptoms
