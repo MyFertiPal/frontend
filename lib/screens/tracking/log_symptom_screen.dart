@@ -37,101 +37,144 @@ class SymptomData {
   });
 }
 
-const List<SymptomData> defaultSymptoms = [
-  SymptomData(
-    id: 'mood',
-    label: 'Mood',
-    icon: Icons.sentiment_satisfied_alt,
-    iconColor: Color(0xFFD8578A),
-    iconBg: Color(0xFFFBE1EC),
-    options: ['Happy', 'Sad', 'Anxious', 'Irritable', 'Calm', 'Energetic'],
-     allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'bleeding',
-    label: 'Bleeding',
-    icon: Icons.water_drop,
-    iconColor: Color(0xFFD8365A),
-    iconBg: Color(0xFFFBDDE4),
-    options: ['Spotting', 'Light', 'Medium', 'Heavy'],
-     allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'cervical_mucus',
-    label: 'Cervical Mucus',
-    icon: Icons.water_drop_outlined,
-    iconColor: Color(0xFF6E7BC7),
-    iconBg: Color(0xFFE7E9F8),
-    options: ['Dry', 'Sticky', 'Creamy', 'Watery', 'Egg white'],
-     allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'sexual_activity',
-    label: 'Sexual Activity',
-    icon: Icons.favorite_border,
-    iconColor: Color(0xFFD8578A),
-    iconBg: Color(0xFFFBE1EC),
-    options: ['Protected', 'Unprotected', 'None'],
-     allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'pain',
-    label: 'Pain',
-    icon: Icons.bolt,
-    iconColor: Color(0xFFCB8A2C),
-    iconBg: Color(0xFFFBEDD2),
-    options: ['Headache', 'Back pain', 'Breast tenderness', 'Ovulation pain'],
-    allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'abdominal_cramps',
-    label: 'Abdominal Cramps',
-    icon: Icons.waves,
-    iconColor: Color(0xFFCB8A2C),
-    iconBg: Color(0xFFFBEDD2),
-    options: ['Mild', 'Moderate', 'Severe'],
-     allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'sleep',
-    label: 'Sleep',
-    icon: Icons.bedtime_outlined,
-    iconColor: Color(0xFF3B8AD8),
-    iconBg: Color(0xFFDCEBFB),
-    options: ['Good', 'Poor', 'Insomnia', 'Oversleeping'],
-     allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'appetite',
-    label: 'Appetite',
-    icon: Icons.eco_outlined,
-    iconColor: Color(0xFF1F9E75),
-    iconBg: Color(0xFFDCF3E8),
-    options: ['Increased', 'Decreased', 'Normal', 'Cravings'],
-     allowMultipleOptions: true,
-  ),
-  SymptomData(
-    id: 'other',
-    label: 'Other',
-    icon: Icons.more_horiz,
-    iconColor: Color(0xFF1F9E75),
-    iconBg: Color(0xFFDCF3E8),
-  ),
-];
+List<SymptomData> localizedSymptoms(BuildContext context) {
+  final l10n = AppLocalizations.of(context);
+
+  return [
+    SymptomData(
+      id: 'mood',
+      label: l10n.mood,
+      icon: Icons.sentiment_satisfied_alt,
+      iconColor: const Color(0xFFD8578A),
+      iconBg: const Color(0xFFFBE1EC),
+      options: [
+        l10n.happy,
+        l10n.sad,
+        l10n.anxious,
+        l10n.irritable,
+        l10n.calm,
+        l10n.energetic,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'bleeding',
+      label: l10n.bleeding,
+      icon: Icons.water_drop,
+      iconColor: const Color(0xFFD8365A),
+      iconBg: const Color(0xFFFBDDE4),
+      options: [
+        l10n.spotting,
+        l10n.light,
+        l10n.medium,
+        l10n.heavy,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'cervical_mucus',
+      label: l10n.cervicalMucus,
+      icon: Icons.water_drop_outlined,
+      iconColor: const Color(0xFF6E7BC7),
+      iconBg: const Color(0xFFE7E9F8),
+      options: [
+        l10n.dry,
+        l10n.sticky,
+        l10n.creamy,
+        l10n.watery,
+        l10n.eggWhite,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'sexual_activity',
+      label: l10n.sexualActivity,
+      icon: Icons.favorite_border,
+      iconColor: const Color(0xFFD8578A),
+      iconBg: const Color(0xFFFBE1EC),
+      options: [
+        l10n.protected,
+        l10n.unprotected,
+        l10n.none,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'pain',
+      label: l10n.pain,
+      icon: Icons.bolt,
+      iconColor: const Color(0xFFCB8A2C),
+      iconBg: const Color(0xFFFBEDD2),
+      options: [
+        l10n.headache,
+        l10n.backPain,
+        l10n.breastTenderness,
+        l10n.ovulationPain,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'abdominal_cramps',
+      label: l10n.abdominalCramps,
+      icon: Icons.waves,
+      iconColor: const Color(0xFFCB8A2C),
+      iconBg: const Color(0xFFFBEDD2),
+      options: [
+        l10n.mild,
+        l10n.moderate,
+        l10n.severe,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'sleep',
+      label: l10n.sleep,
+      icon: Icons.bedtime_outlined,
+      iconColor: const Color(0xFF3B8AD8),
+      iconBg: const Color(0xFFDCEBFB),
+      options: [
+        l10n.good,
+        l10n.poor,
+        l10n.insomnia,
+        l10n.oversleeping,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'appetite',
+      label: l10n.appetite,
+      icon: Icons.eco_outlined,
+      iconColor: const Color(0xFF1F9E75),
+      iconBg: const Color(0xFFDCF3E8),
+      options: [
+        l10n.increased,
+        l10n.decreased,
+        l10n.normal,
+        l10n.cravings,
+      ],
+      allowMultipleOptions: true,
+    ),
+    SymptomData(
+      id: 'other',
+      label: l10n.other,
+      icon: Icons.more_horiz,
+      iconColor: const Color(0xFF1F9E75),
+      iconBg: const Color(0xFFDCF3E8),
+    ),
+  ];
+}
 
 /// Result of logging: symptom id -> selected sub-options (or free text).
 typedef SymptomLogResult = Map<String, Set<String>>;
 
 
 class LogSymptomsScreen extends StatefulWidget {
-  final List<SymptomData> symptoms;
   final ValueChanged<SymptomLogResult>? onSave;
   final VoidCallback? onCancel;
   final VoidCallback? onBack;
 
   const LogSymptomsScreen({
     super.key,
-    this.symptoms = defaultSymptoms,
     this.onSave,
     this.onCancel,
     this.onBack,
@@ -143,9 +186,17 @@ class LogSymptomsScreen extends StatefulWidget {
 
 class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
   final ApiService _apiService = ApiService();
+  late List<SymptomData> _symptoms;
+
   final Set<String> _selectedSymptomIds = {};
   final Map<String, Set<String>> _optionSelections = {};
   final Map<String, TextEditingController> _textControllers = {};
+
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  _symptoms = localizedSymptoms(context);
+}
 
   @override
   void dispose() {
@@ -186,7 +237,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
   final result = <String, Set<String>>{};
 
   for (final id in _selectedSymptomIds) {
-    final symptom = widget.symptoms.firstWhere((s) => s.id == id);
+    final symptom = _symptoms.firstWhere((s) => s.id == id);
 
     if (symptom.options.isEmpty) {
       final text = _controllerFor(id).text.trim();
@@ -281,7 +332,7 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: [
-                          for (final symptom in widget.symptoms) ...[
+                          for (final symptom in _symptoms) ...[
                             _SymptomCard(
                               symptom: symptom,
                               isSelected: _selectedSymptomIds.contains(symptom.id),
@@ -384,8 +435,8 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
             child: RichText(
               text: TextSpan(
                 style: TextStyle(fontSize: 13, color: _LogColors.heading, height: 1.4),
-                children: const [
-                  TextSpan(text: 'Tip: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                children: [
+                  TextSpan(text: AppLocalizations.of(context).tip, style: TextStyle(fontWeight: FontWeight.bold)),
                   TextSpan(
                     text:
                         'Logging symptoms daily helps us give you more accurate insights.',

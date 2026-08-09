@@ -6,10 +6,12 @@ import '../../theme/app_colors.dart';
 
 class ReadingScreen extends StatefulWidget {
   final int articleId;
+  final String language;
 
   const ReadingScreen({
     super.key,
     required this.articleId,
+    required this.language,
   });
 
   @override

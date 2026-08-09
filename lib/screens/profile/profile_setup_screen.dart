@@ -94,7 +94,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         backgroundColor: _primaryTeal,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
@@ -134,7 +134,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 32),
 
               // Age
-              _buildFieldLabel('Age'),
+              _buildFieldLabel(AppLocalizations.of(context).age),
               _buildNumberDropdown(
                 value: _age,
                 items: List.generate(73, (i) => i + 18),
@@ -143,7 +143,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 20),
 
               // Cycle Length
-              _buildFieldLabel('Cycle Length'),
+              _buildFieldLabel(AppLocalizations.of(context).cycleLength),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(

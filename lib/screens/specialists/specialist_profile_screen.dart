@@ -309,53 +309,14 @@ class _BookButton extends StatelessWidget {
   );
 
 }
-  void _payForConsultation(BuildContext context) {
-    // TODO:
-    // Initialize your Paystack/Flutterwave payment here.
-    // After successful payment, allow booking.
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Initializing payment..."),
-      ),
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton.icon(
-                onPressed: () => _payForConsultation(context),
-                icon: const Icon(Icons.payment),
-                label: const Text(
-                  "Pay for Consultation",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryDark,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-              ),
-            ),
 
-            const SizedBox(height: 12),
-
-            SizedBox(
+          return Container(
+        padding: const EdgeInsets.all(16),
+           child : SizedBox(
               width: double.infinity,
               height: 56,
               child: OutlinedButton.icon(
@@ -380,9 +341,7 @@ class _BookButton extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
+          );
+          }
+
 }

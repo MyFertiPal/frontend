@@ -760,30 +760,20 @@ class _GenderPredictionResultScreenState
 
 
 
-  String get selectedLabel {
+ String get selectedLabel {
+  final l10n = AppLocalizations.of(context);
 
+  switch (widget.selection) {
+    case GenderExpectation.boy:
+      return l10n.boy;
 
-    switch(widget.selection){
+    case GenderExpectation.girl:
+      return l10n.girl;
 
-
-      case GenderExpectation.boy:
-
-        return "Boy";
-
-
-      case GenderExpectation.girl:
-
-        return "Girl";
-
-
-      case GenderExpectation.noPreference:
-
-        return "No Preference";
-
-
-    }
-
+    case GenderExpectation.noPreference:
+      return l10n.noPreference;
   }
+}
 
 
 
@@ -819,29 +809,31 @@ List<DateTime> get suggestedDates {
   }
 }
 String formatDate(DateTime date) {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
+  final l10n = AppLocalizations.of(context);
+
+  final months = [
+    l10n.jan,
+    l10n.feb,
+    l10n.mar,
+    l10n.apr,
+    l10n.may,
+    l10n.jun,
+    l10n.jul,
+    l10n.aug,
+    l10n.sep,
+    l10n.oct,
+    l10n.nov,
+    l10n.dec,
   ];
 
-  const days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"
+  final days = [
+    l10n.monday,
+    l10n.tuesday,
+    l10n.wednesday,
+    l10n.thursday,
+    l10n.friday,
+    l10n.saturday,
+    l10n.sunday,
   ];
 
   return "${days[date.weekday - 1]}, ${date.day} ${months[date.month - 1]}";
@@ -850,17 +842,18 @@ String formatDate(DateTime date) {
 
   @override
   Widget build(BuildContext context){
-    final ovulation =
-    insight?["ovulation_day"]?.toString() ?? "Not available";
+    final l10n = AppLocalizations.of(context);
+
+final ovulation =
+    insight?["ovulation_day"]?.toString() ?? l10n.notAvailable;
 
 final fertileStart =
-    insight?["fertile_period_start"]?.toString() ?? "Not available";
+    insight?["fertile_period_start"]?.toString() ?? l10n.notAvailable;
 
 final fertileEnd =
-    insight?["fertile_period_end"]?.toString() ?? "Not available";
+    insight?["fertile_period_end"]?.toString() ?? l10n.notAvailable;
 
 final fertileWindow = "$fertileStart - $fertileEnd";
-
 
     return Scaffold(
 

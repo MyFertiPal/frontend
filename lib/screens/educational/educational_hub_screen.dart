@@ -269,6 +269,7 @@ Future<void> _searchArticle() async {
       MaterialPageRoute(
         builder: (_) => ReadingScreen(
           articleId: article["id"],
+          language: _language,
         ),
       ),
     );
@@ -304,6 +305,7 @@ return GestureDetector(
       MaterialPageRoute(
         builder: (_) => ReadingScreen(
           articleId: article["id"],
+              language: _language,
         ),
       ),
     );
