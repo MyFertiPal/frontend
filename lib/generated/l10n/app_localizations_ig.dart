@@ -708,110 +708,124 @@ class AppLocalizationsIg extends AppLocalizations {
   String get symptoms => 'Mgbaàmà';
 
   @override
-  String get importantDisclaimer => 'Important Disclaimer';
+  String get importantDisclaimer => 'Ozi Dị Mkpa';
 
   @override
   String get genderPredictionDisclaimer =>
-      'This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.';
+      'Amụma gbasara okike nwa a enweghị nkwenye sayensị ma ọ bụ nkwa na ọ ga-abụ okike ahụ. A na-enye ozi a naanị maka mmụta.';
 
   @override
-  String get selectGenderExpectation => 'Select your gender expectation';
+  String get selectGenderExpectation => 'Họrọ okike nwa ị na-atụ anya';
 
   @override
-  String get girl => 'Girl';
+  String get girl => 'Nwa nwanyị';
 
   @override
-  String get hopingForGirl => 'I\'m hoping for a baby girl';
+  String get hopingForGirl => 'Ana m atụ anya nwa nwanyị';
 
   @override
-  String get boy => 'Boy';
+  String get boy => 'Nwa nwoke';
 
   @override
-  String get hopingForBoy => 'I\'m hoping for a baby boy';
+  String get hopingForBoy => 'Ana m atụ anya nwa nwoke';
 
   @override
-  String get noPreference => 'No Preference';
+  String get noPreference => 'Enweghị m mmasị pụrụ iche';
 
   @override
-  String get openToEither => 'I\'m open to either';
+  String get openToEither => 'Anaghị m echegbu onwe m maka nke ọ bụla';
 
   @override
   String predictionFor(String gender) {
-    return 'Prediction for: $gender';
+    return 'Amụma maka: $gender';
   }
 
   @override
-  String get estimatedOvulation => 'Estimated Ovulation';
+  String get estimatedOvulation => 'Ụbọchị ovulation e mere atụmatụ';
 
   @override
-  String get suggestedTiming => 'Suggested Timing';
+  String get suggestedTiming => 'Oge akwadoro';
 
   @override
-  String get tryCloserToOvulation => 'Try closer to ovulation:';
+  String get tryCloserToOvulation =>
+      'Gbalịa inwe mmekọahụ nso n\'ụbọchị ovulation.';
 
   @override
-  String get tryBeforeOvulation => 'Try a few days before ovulation:';
+  String get tryBeforeOvulation =>
+      'Gbalịa inwe mmekọahụ ụbọchị ole na ole tupu ovulation.';
 
   @override
-  String get yourFertileDays => 'Your fertile days:';
+  String get yourFertileDays => 'Jiri ụbọchị ọmụmụ gị.';
 
   @override
-  String get notAvailable => 'Not available';
+  String get notAvailable => 'Ọ dịghị';
 
   @override
-  String get jan => 'Jan';
+  String get jan => 'Jenụwarị';
 
   @override
-  String get feb => 'Feb';
+  String get feb => 'Febụwarị';
 
   @override
-  String get mar => 'Mar';
+  String get mar => 'Maachị';
 
   @override
-  String get apr => 'Apr';
+  String get apr => 'Eprel';
 
   @override
-  String get may => 'May';
+  String get may => 'Mee';
 
   @override
-  String get jun => 'Jun';
+  String get jun => 'Juun';
 
   @override
-  String get jul => 'Jul';
+  String get jul => 'Julaị';
 
   @override
-  String get aug => 'Aug';
+  String get aug => 'Ọgọst';
 
   @override
-  String get sep => 'Sep';
+  String get sep => 'Septemba';
 
   @override
-  String get oct => 'Oct';
+  String get oct => 'Ọktoba';
 
   @override
-  String get nov => 'Nov';
+  String get nov => 'Novemba';
 
   @override
-  String get dec => 'Dec';
+  String get dec => 'Disemba';
 
   @override
-  String get monday => 'Monday';
+  String get monday => 'Mọnde';
 
   @override
-  String get tuesday => 'Tuesday';
+  String get tuesday => 'Tuzdee';
 
   @override
-  String get wednesday => 'Wednesday';
+  String get wednesday => 'Wenezdee';
 
   @override
-  String get thursday => 'Thursday';
+  String get thursday => 'Tọọzdee';
 
   @override
-  String get friday => 'Friday';
+  String get friday => 'Fraịdee';
 
   @override
-  String get saturday => 'Saturday';
+  String get saturday => 'Satọdee';
 
   @override
-  String get sunday => 'Sunday';
+  String get sunday => 'Sọnde';
+
+  @override
+  String get predicted => 'Amụma';
+
+  @override
+  String get today => 'Taa';
+
+  @override
+  String get noSymptomsLogged => 'Ọ dịghị mgbaàmà e dekọrọ ugbu a';
+
+  @override
+  String get loggedSymptoms => 'Mgbaàmà e dekọrọ';
 }

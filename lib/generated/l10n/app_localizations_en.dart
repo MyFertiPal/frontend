@@ -814,4 +814,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sunday => 'Sunday';
+
+  @override
+  String get predicted => 'Predicted';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get noSymptomsLogged => 'No symptoms logged yet';
+
+  @override
+  String get loggedSymptoms => 'Logged Symptoms';
 }

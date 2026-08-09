@@ -364,6 +364,11 @@
   "thursday": "Thursday",
   "friday": "Friday",
   "saturday": "Saturday",
-  "sunday": "Sunday"
+  "sunday": "Sunday",
+
+  "predicted": "Predicted",
+  "today": "Today",
+  "noSymptomsLogged": "No symptoms logged yet",
+  "loggedSymptoms": "Logged Symptoms"
 
 }

@@ -710,32 +710,32 @@ class AppLocalizationsPcm extends AppLocalizations {
   String get symptoms => 'Symptoms';
 
   @override
-  String get importantDisclaimer => 'Important Disclaimer';
+  String get importantDisclaimer => 'Important Information';
 
   @override
   String get genderPredictionDisclaimer =>
-      'This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.';
+      'This gender prediction no get scientific guarantee and e no fit guarantee the baby gender. We dey provide this information for educational purpose only.';
 
   @override
-  String get selectGenderExpectation => 'Select your gender expectation';
+  String get selectGenderExpectation => 'Choose the gender you dey hope for';
 
   @override
-  String get girl => 'Girl';
+  String get girl => 'Baby girl';
 
   @override
-  String get hopingForGirl => 'I\'m hoping for a baby girl';
+  String get hopingForGirl => 'I dey hope for baby girl';
 
   @override
-  String get boy => 'Boy';
+  String get boy => 'Baby boy';
 
   @override
-  String get hopingForBoy => 'I\'m hoping for a baby boy';
+  String get hopingForBoy => 'I dey hope for baby boy';
 
   @override
-  String get noPreference => 'No Preference';
+  String get noPreference => 'I no get preference';
 
   @override
-  String get openToEither => 'I\'m open to either';
+  String get openToEither => 'Any one dey okay for me';
 
   @override
   String predictionFor(String gender) {
@@ -743,77 +743,90 @@ class AppLocalizationsPcm extends AppLocalizations {
   }
 
   @override
-  String get estimatedOvulation => 'Estimated Ovulation';
+  String get estimatedOvulation => 'Estimated ovulation day';
 
   @override
-  String get suggestedTiming => 'Suggested Timing';
+  String get suggestedTiming => 'Suggested timing';
 
   @override
-  String get tryCloserToOvulation => 'Try closer to ovulation:';
+  String get tryCloserToOvulation =>
+      'Try around the time wey ovulation dey happen.';
 
   @override
-  String get tryBeforeOvulation => 'Try a few days before ovulation:';
+  String get tryBeforeOvulation => 'Try a few days before ovulation.';
 
   @override
-  String get yourFertileDays => 'Your fertile days:';
+  String get yourFertileDays => 'Use your fertile days.';
 
   @override
-  String get notAvailable => 'Not available';
+  String get notAvailable => 'No information available';
 
   @override
-  String get jan => 'Jan';
+  String get jan => 'January';
 
   @override
-  String get feb => 'Feb';
+  String get feb => 'February';
 
   @override
-  String get mar => 'Mar';
+  String get mar => 'March';
 
   @override
-  String get apr => 'Apr';
+  String get apr => 'April';
 
   @override
   String get may => 'May';
 
   @override
-  String get jun => 'Jun';
+  String get jun => 'June';
 
   @override
-  String get jul => 'Jul';
+  String get jul => 'July';
 
   @override
-  String get aug => 'Aug';
+  String get aug => 'August';
 
   @override
-  String get sep => 'Sep';
+  String get sep => 'September';
 
   @override
-  String get oct => 'Oct';
+  String get oct => 'October';
 
   @override
-  String get nov => 'Nov';
+  String get nov => 'November';
 
   @override
-  String get dec => 'Dec';
+  String get dec => 'December';
 
   @override
-  String get monday => 'Monday';
+  String get monday => 'Monde';
 
   @override
-  String get tuesday => 'Tuesday';
+  String get tuesday => 'Tiusde';
 
   @override
-  String get wednesday => 'Wednesday';
+  String get wednesday => 'Wenesde';
 
   @override
-  String get thursday => 'Thursday';
+  String get thursday => 'Tursde';
 
   @override
-  String get friday => 'Friday';
+  String get friday => 'Fride';
 
   @override
-  String get saturday => 'Saturday';
+  String get saturday => 'Saturde';
 
   @override
-  String get sunday => 'Sunday';
+  String get sunday => 'Sunde';
+
+  @override
+  String get predicted => 'Predicted';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get noSymptomsLogged => 'You never log any symptom yet';
+
+  @override
+  String get loggedSymptoms => 'Symptoms wey you don log';
 }

@@ -1639,6 +1639,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sunday'**
   String get sunday;
+
+  /// No description provided for @predicted.
+  ///
+  /// In en, this message translates to:
+  /// **'Predicted'**
+  String get predicted;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @noSymptomsLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'No symptoms logged yet'**
+  String get noSymptomsLogged;
+
+  /// No description provided for @loggedSymptoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged Symptoms'**
+  String get loggedSymptoms;
 }
 
 class _AppLocalizationsDelegate

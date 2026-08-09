@@ -719,110 +719,124 @@ class AppLocalizationsHa extends AppLocalizations {
   String get symptoms => 'Alamomi';
 
   @override
-  String get importantDisclaimer => 'Important Disclaimer';
+  String get importantDisclaimer => 'Muhimmin Bayani';
 
   @override
   String get genderPredictionDisclaimer =>
-      'This feature uses fertility timing information to provide gender prediction guidance. It is not scientifically guaranteed and should not replace medical advice.';
+      'Wannan hasashen jinsi ba shi da tabbacin kimiyya kuma ba ya bada tabbacin jinsin jariri. Ana bayar da wannan bayanin ne don ilimi kawai.';
 
   @override
-  String get selectGenderExpectation => 'Select your gender expectation';
+  String get selectGenderExpectation => 'Zaɓi jinsin da kake fata';
 
   @override
-  String get girl => 'Girl';
+  String get girl => 'Yarinya';
 
   @override
-  String get hopingForGirl => 'I\'m hoping for a baby girl';
+  String get hopingForGirl => 'Ina fatan samun yarinya';
 
   @override
-  String get boy => 'Boy';
+  String get boy => 'Yaro';
 
   @override
-  String get hopingForBoy => 'I\'m hoping for a baby boy';
+  String get hopingForBoy => 'Ina fatan samun yaro';
 
   @override
-  String get noPreference => 'No Preference';
+  String get noPreference => 'Ba ni da zaɓi';
 
   @override
-  String get openToEither => 'I\'m open to either';
+  String get openToEither => 'Ina maraba da kowanne';
 
   @override
   String predictionFor(String gender) {
-    return 'Prediction for: $gender';
+    return 'Hasashe na: $gender';
   }
 
   @override
-  String get estimatedOvulation => 'Estimated Ovulation';
+  String get estimatedOvulation => 'Kiyasin ranar fitar ƙwai';
 
   @override
-  String get suggestedTiming => 'Suggested Timing';
+  String get suggestedTiming => 'Lokacin da aka ba da shawara';
 
   @override
-  String get tryCloserToOvulation => 'Try closer to ovulation:';
+  String get tryCloserToOvulation =>
+      'Gwada yin jima\'i kusa da ranar fitar ƙwai.';
 
   @override
-  String get tryBeforeOvulation => 'Try a few days before ovulation:';
+  String get tryBeforeOvulation =>
+      'Gwada yin jima\'i kwanaki kaɗan kafin ranar fitar ƙwai.';
 
   @override
-  String get yourFertileDays => 'Your fertile days:';
+  String get yourFertileDays => 'Yi amfani da kwanakin haihuwa.';
 
   @override
-  String get notAvailable => 'Not available';
+  String get notAvailable => 'Babu bayanai';
 
   @override
-  String get jan => 'Jan';
+  String get jan => 'Janairu';
 
   @override
-  String get feb => 'Feb';
+  String get feb => 'Fabrairu';
 
   @override
-  String get mar => 'Mar';
+  String get mar => 'Maris';
 
   @override
-  String get apr => 'Apr';
+  String get apr => 'Afrilu';
 
   @override
-  String get may => 'May';
+  String get may => 'Mayu';
 
   @override
-  String get jun => 'Jun';
+  String get jun => 'Yuni';
 
   @override
-  String get jul => 'Jul';
+  String get jul => 'Yuli';
 
   @override
-  String get aug => 'Aug';
+  String get aug => 'Agusta';
 
   @override
-  String get sep => 'Sep';
+  String get sep => 'Satumba';
 
   @override
-  String get oct => 'Oct';
+  String get oct => 'Oktoba';
 
   @override
-  String get nov => 'Nov';
+  String get nov => 'Nuwamba';
 
   @override
-  String get dec => 'Dec';
+  String get dec => 'Disamba';
 
   @override
-  String get monday => 'Monday';
+  String get monday => 'Litinin';
 
   @override
-  String get tuesday => 'Tuesday';
+  String get tuesday => 'Talata';
 
   @override
-  String get wednesday => 'Wednesday';
+  String get wednesday => 'Laraba';
 
   @override
-  String get thursday => 'Thursday';
+  String get thursday => 'Alhamis';
 
   @override
-  String get friday => 'Friday';
+  String get friday => 'Jumma\'a';
 
   @override
-  String get saturday => 'Saturday';
+  String get saturday => 'Asabar';
 
   @override
-  String get sunday => 'Sunday';
+  String get sunday => 'Lahadi';
+
+  @override
+  String get predicted => 'Hasashe';
+
+  @override
+  String get today => 'Yau';
+
+  @override
+  String get noSymptomsLogged => 'Ba a rubuta wata alama ba tukuna';
+
+  @override
+  String get loggedSymptoms => 'Alamomin da aka rubuta';
 }

@@ -43,6 +43,7 @@ class _SettingsItemData {
 }
 
 /// A single stat shown in the summary row under the header.
+/// A single stat shown in the summary row under the header.
 class ProfileStat {
   final IconData icon;
   final Color iconColor;
@@ -64,12 +65,13 @@ class ProfileScreen extends StatefulWidget {
   final String name;
   final String avatarUrl;
   final bool isPremiumMember;
-  final List<ProfileStat> stats;
+  final List<ProfileStat>? stats;
 
   /// URL opened when "Privacy & Security" is tapped.
   final String privacyPolicyUrl;
 
   final String language;
+
   final VoidCallback? onPersonalInformationTap;
   final VoidCallback? onLanguageTap;
   final VoidCallback? onHelpSupportTap;
@@ -78,37 +80,15 @@ class ProfileScreen extends StatefulWidget {
   final VoidCallback? onDeleteAccount;
   final VoidCallback? onBack;
 
- ProfileScreen({
+  ProfileScreen({
     super.key,
     required this.name,
-    
     required this.privacyPolicyUrl,
     this.isPremiumMember = true,
-     this.avatarUrl = "assets/images/profile_placeholder.png",
-    this.stats = const [
-      ProfileStat(
-        icon: Icons.donut_large,
-        iconColor: Color(0xFF1F9E75),
-        iconBg: Color(0xFFDCF3E8),
-        value: '14',
-        label: 'Cycles Tracked',
-      ),
-      ProfileStat(
-        icon: Icons.event_note,
-        iconColor: Color(0xFFE8756A),
-        iconBg: Color(0xFFFBE1DE),
-        value: '86',
-        label: 'Symptoms Logged',
-      ),
-      ProfileStat(
-        icon: Icons.videocam,
-        iconColor: Color(0xFF3B8AD8),
-        iconBg: Color(0xFFDCEBFB),
-        value: '5',
-        label: 'Consultations',
-      ),
-    ],
-    this.language = 'English',
+    this.avatarUrl =
+        "assets/images/profile_placeholder.png",
+    this.stats,
+    this.language = 'en',
     this.onPersonalInformationTap,
     this.onLanguageTap,
     this.onHelpSupportTap,
@@ -119,7 +99,8 @@ class ProfileScreen extends StatefulWidget {
   });
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() =>
+      _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -130,6 +111,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
   'Pidgin',
   'Hausa',
 ];
+List<ProfileStat> _localizedStats(
+  BuildContext context,
+) {
+  final l10n = AppLocalizations.of(context);
+
+  return [
+    ProfileStat(
+      icon: Icons.donut_large,
+      iconColor: const Color(0xFF1F9E75),
+      iconBg: const Color(0xFFDCF3E8),
+      value: '14',
+      label: l10n.cyclesTracked,
+    ),
+
+    ProfileStat(
+      icon: Icons.event_note,
+      iconColor: const Color(0xFFE8756A),
+      iconBg: const Color(0xFFFBE1DE),
+      value: '86',
+      label: l10n.symptomsLogged,
+    ),
+
+    ProfileStat(
+      icon: Icons.videocam,
+      iconColor: const Color(0xFF3B8AD8),
+      iconBg: const Color(0xFFDCEBFB),
+      value: '5',
+      label: l10n.consultations,
+    ),
+  ];
+}
 final ApiService _apiService = ApiService();
 String? _imagePath;
 String _name = "";
@@ -584,17 +596,25 @@ Text(
 
   // ---- Stats row --------------------------------------------------------------
 
-  Widget _buildStatsRow() {
-    return Row(
-      children: [
-        for (var i = 0; i < widget.stats.length; i++) ...[
-          if (i > 0) const SizedBox(width: 12),
-          Expanded(child: _StatCard(stat: widget.stats[i])),
-        ],
-      ],
-    );
-  }
+ Widget _buildStatsRow() {
+  final stats =
+      widget.stats ?? _localizedStats(context);
 
+  return Row(
+    children: [
+      for (var i = 0; i < stats.length; i++) ...[
+        if (i > 0)
+          const SizedBox(width: 12),
+
+        Expanded(
+          child: _StatCard(
+            stat: stats[i],
+          ),
+        ),
+      ],
+    ],
+  );
+}
   // ---- Settings card ------------------------------------------------------------
 
   Widget _buildSettingsCard() {
