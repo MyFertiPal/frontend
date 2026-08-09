@@ -25,8 +25,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   bool _loading = true;
 
-  String _language = "en";
-
   @override
   void initState() {
     super.initState();
@@ -35,10 +33,17 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   Future<void> _loadArticle() async {
     try {
+      debugPrint(
+        "Loading article ${widget.articleId} "
+        "with language: ${widget.language}",
+      );
+
       final article = await _api.getArticleById(
         articleId: widget.articleId,
-        lang: _language,
+        lang: widget.language,
       );
+
+      if (!mounted) return;
 
       setState(() {
         _article = article;
@@ -47,12 +52,15 @@ class _ReadingScreenState extends State<ReadingScreen> {
     } catch (e) {
       debugPrint("Error loading article: $e");
 
+      if (!mounted) return;
+
       setState(() {
         _loading = false;
       });
     }
   }
-    @override
+
+  @override
   Widget build(BuildContext context) {
     if (_loading) {
       return const Scaffold(
@@ -133,7 +141,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [                    Text(
+                  children: [
+                    Text(
                       _article!["title"] ?? "",
                       style: const TextStyle(
                         fontSize: 28,

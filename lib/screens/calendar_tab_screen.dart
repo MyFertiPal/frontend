@@ -225,13 +225,13 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
     return [
       SummaryStat(
         value: _cycleLength > 0
-            ? '$_cycleLength ${_l10n.days}'
+            ? '_l10n.days(_cycleLength)'
             : '--',
         label: _l10n.cycleLength,
       ),
       SummaryStat(
         value: _periodLength > 0
-            ? '$_periodLength ${_l10n.days}'
+            ? '_l10n.days(_periodLength)'
             : '--',
         label: _l10n.periodLength,
       ),
