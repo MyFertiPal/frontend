@@ -390,62 +390,81 @@ class _BookButtonState extends State<_BookButton> {
   final ApiService _api = ApiService();
 
   bool _booking = false;
-
-  Future<void> _bookConsultation() async {
+Future<void> _bookConsultation() async {
   if (_booking) return;
 
-  final userId = widget.profile["user_id"];
-
-  if (userId == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          "Unable to determine your user ID.",
-        ),
-      ),
-    );
-    return;
-  }
-
-  final email =
-      widget.user["email"]?.toString() ?? "";
-
-  final firstName =
-      widget.user["first_name"]?.toString() ?? "";
-
-  final lastName =
-      widget.user["last_name"]?.toString() ?? "";
-
-  final username =
-      widget.user["username"]?.toString() ?? "";
-
-  final name =
-      "$firstName $lastName".trim().isNotEmpty
-          ? "$firstName $lastName".trim()
-          : username;
-
-  if (email.isEmpty || name.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          "Unable to get your account details.",
-        ),
-      ),
-    );
-    return;
-  }
-
-  setState(() {
-    _booking = true;
-  });
-
   try {
+    setState(() {
+      _booking = true;
+    });
+
+    // --------------------------------------------------
+    // 1. Get authenticated user
+    // --------------------------------------------------
+
+    final user = await _api.getUser();
+
+    // --------------------------------------------------
+    // 2. Get profile because this contains user_id
+    // --------------------------------------------------
+
+    final profile = await _api.getProfile();
+
+    final userId = profile["user_id"];
+
+    debugPrint("BOOKING USER: $user");
+    debugPrint("BOOKING PROFILE: $profile");
+    debugPrint("BOOKING USER ID: $userId");
+
+    if (userId == null) {
+      throw Exception(
+        "Unable to determine user ID from profile.",
+      );
+    }
+
+    final email =
+        user["email"]?.toString() ?? "";
+
+    final firstName =
+        user["first_name"]?.toString() ?? "";
+
+    final lastName =
+        user["last_name"]?.toString() ?? "";
+
+    final username =
+        user["username"]?.toString() ?? "";
+
+    final name =
+        "$firstName $lastName".trim().isNotEmpty
+            ? "$firstName $lastName".trim()
+            : username;
+
+    if (email.isEmpty || name.isEmpty) {
+      throw Exception(
+        "Unable to get your account details.",
+      );
+    }
+
+    // --------------------------------------------------
+    // 3. Initiate booking
+    // --------------------------------------------------
+
+    debugPrint(
+      "INITIATING BOOKING: "
+      "userId=$userId, "
+      "specialistId=${widget.specialistId}, "
+      "email=$email, "
+      "name=$name",
+    );
+
     final booking = await _api.initiateBooking(
       userId: userId.toString(),
       specialistId: widget.specialistId,
       email: email,
       name: name,
     );
+
+    debugPrint("BOOKING RESPONSE: $booking");
 
     final authorizationUrl =
         booking["authorization_url"]?.toString();
@@ -464,8 +483,11 @@ class _BookButtonState extends State<_BookButton> {
 
     if (!mounted) return;
 
-    final paymentCompleted =
-        await Navigator.push<bool>(
+    // --------------------------------------------------
+    // 4. Open payment
+    // --------------------------------------------------
+
+    final paymentCompleted = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (_) => PaymentScreen(
@@ -484,12 +506,20 @@ class _BookButtonState extends State<_BookButton> {
       _booking = true;
     });
 
+    // --------------------------------------------------
+    // 5. Verify payment
+    // --------------------------------------------------
+
     final verification =
         await _api.verifyBooking(
       reference: reference,
       userId: userId.toString(),
       email: email,
       name: name,
+    );
+
+    debugPrint(
+      "BOOKING VERIFICATION: $verification",
     );
 
     final status =

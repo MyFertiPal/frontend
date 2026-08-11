@@ -351,17 +351,19 @@ Future<void> _pickAndUploadProfilePicture() async {
 
     if (image == null) return;
 
-    final user = await _apiService.getUser();
+    // getProfile() contains user_id
+    final profile = await _apiService.getProfile();
 
-    final userId = user["id"] ?? user["user_id"];
+    final userId = profile["user_id"];
+
+    debugPrint("PROFILE USER ID: $userId");
 
     if (userId == null) {
-      throw Exception("Unable to determine user ID.");
+      throw Exception("Unable to determine user ID from profile.");
     }
 
     if (!mounted) return;
 
-    // Immediately show selected image.
     setState(() {
       _selectedImage = image;
     });
@@ -377,6 +379,8 @@ Future<void> _pickAndUploadProfilePicture() async {
       file: image,
     );
 
+    debugPrint("PROFILE IMAGE UPLOAD RESPONSE: $response");
+
     final data = response["data"] as Map<String, dynamic>?;
 
     final url = data?["url"]?.toString();
@@ -391,8 +395,6 @@ Future<void> _pickAndUploadProfilePicture() async {
 
     setState(() {
       _avatarUrl = url;
-
-      // The backend URL is now the main avatar.
       _selectedImage = null;
     });
 
@@ -404,9 +406,7 @@ Future<void> _pickAndUploadProfilePicture() async {
       ),
     );
   } catch (e) {
-    debugPrint(
-      "Profile picture error: $e",
-    );
+    debugPrint("Profile picture error: $e");
 
     if (!mounted) return;
 
@@ -419,7 +419,6 @@ Future<void> _pickAndUploadProfilePicture() async {
     );
   }
 }
-  
 
   Future<void> _confirmDeleteAccount() async {
     final confirmed = await showDialog<bool>(
