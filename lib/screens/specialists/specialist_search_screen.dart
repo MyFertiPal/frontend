@@ -46,54 +46,7 @@ void initState() {
 
 
 
-  void _showPremiumDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: const Row(
-            children: [
-              Icon(
-                Icons.lock,
-                color: AppColors.primaryDark,
-              ),
-              SizedBox(width: 12),
-              Text('Premium Feature'),
-            ],
-          ),
-          content: const Text(
-            'Upgrade to premium to chat with specialists and get personalized advice.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Maybe Later'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const PaymentScreen(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.teal,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Upgrade Now'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,7 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import "../../services/api_service.dart";
 import "../profile/profile_setup_screen.dart";
 import '../../generated/l10n/app_localizations.dart';
@@ -143,7 +144,7 @@ List<ProfileStat> _localizedStats(
   ];
 }
 final ApiService _apiService = ApiService();
-String? _imagePath;
+XFile? _selectedImage;
 String _name = "";
 String _avatarUrl = "";
 String _selectedLanguage = "English";
@@ -242,7 +243,7 @@ void initState() {
   _isPremium = widget.isPremiumMember;
 
   _loadProfile();
-  _loadImage();
+
 }
 
 Widget _buildLanguageRow() {
@@ -338,16 +339,86 @@ Widget _buildLanguageRow() {
   );
 }
 
-Future<void> _loadImage() async {
-  _imagePath =
-      await ProfileImageService.getImagePath();
 
-  if (mounted) {
-    setState(() {});
+Future<void> _pickAndUploadProfilePicture() async {
+  try {
+    final picker = ImagePicker();
+
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (image == null) return;
+
+    final user = await _apiService.getUser();
+
+    final userId = user["id"] ?? user["user_id"];
+
+    if (userId == null) {
+      throw Exception("Unable to determine user ID.");
+    }
+
+    if (!mounted) return;
+
+    // Immediately show selected image.
+    setState(() {
+      _selectedImage = image;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Uploading profile picture..."),
+      ),
+    );
+
+    final response = await _apiService.uploadProfilePicture(
+      userId: userId.toString(),
+      file: image,
+    );
+
+    final data = response["data"] as Map<String, dynamic>?;
+
+    final url = data?["url"]?.toString();
+
+    if (url == null || url.isEmpty) {
+      throw Exception(
+        "Profile picture URL was not returned.",
+      );
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _avatarUrl = url;
+
+      // The backend URL is now the main avatar.
+      _selectedImage = null;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Profile picture updated successfully.",
+        ),
+      ),
+    );
+  } catch (e) {
+    debugPrint(
+      "Profile picture error: $e",
+    );
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Failed to update profile picture: $e",
+        ),
+      ),
+    );
   }
 }
-
-
   
 
   Future<void> _confirmDeleteAccount() async {
@@ -515,15 +586,7 @@ Widget build(BuildContext context) {
           ),
           const SizedBox(height: 4),
           InkWell(
-  onTap: () async {
-  final image = await ProfileImageService.pickFromGallery();
-
-  if (image != null) {
-    setState(() {
-      _imagePath = image.path;
-    });
-  }
-},
+  onTap: _pickAndUploadProfilePicture,
   borderRadius: BorderRadius.circular(60),
   child: Container(
     width: 104,
@@ -537,20 +600,41 @@ Widget build(BuildContext context) {
     ),
     padding: const EdgeInsets.all(3),
     child: ClipOval(
-      child: _imagePath != null && File(_imagePath!).existsSync()
-          ? Image.file(
-              File(_imagePath!),
+     child: _selectedImage != null
+    ? FutureBuilder<List<int>>(
+        future: _selectedImage!.readAsBytes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            return Image.memory(
+              Uint8List.fromList(snapshot.data!),
               fit: BoxFit.cover,
-            )
-          : _avatarUrl.isNotEmpty
-              ? Image.network(
-                  _avatarUrl,
-                  fit: BoxFit.cover,
-                )
-              : Image.asset(
-                  "assets/images/profile_placeholder.webp",
-                  fit: BoxFit.cover,
-                ),
+            );
+          }
+
+          return const Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Color(0xFF3FA98A),
+            ),
+          );
+        },
+      )
+    : _avatarUrl.isNotEmpty
+        ? Image.network(
+            _avatarUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                "assets/images/profile_placeholder.webp",
+                fit: BoxFit.cover,
+              );
+            },
+          )
+        : Image.asset(
+            "assets/images/profile_placeholder.webp",
+            fit: BoxFit.cover,
+          ),
     ),
   ),
 ),

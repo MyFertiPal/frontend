@@ -1,9 +1,9 @@
+
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import "calendly_screen.dart";
 import '../../generated/l10n/app_localizations.dart';
-
-
 import '../../services/api_service.dart';
 import '../../theme/app_colors.dart';
 
@@ -20,11 +20,14 @@ class SpecialistProfileScreen extends StatefulWidget {
       _SpecialistProfileScreenState();
 }
 
-class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
+class _SpecialistProfileScreenState
+    extends State<SpecialistProfileScreen> {
   final ApiService _api = ApiService();
 
   bool _loading = true;
+
   Map<String, dynamic>? specialist;
+  Map<String, dynamic>? _user;
 
   @override
   void initState() {
@@ -34,12 +37,16 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
 
   Future<void> _loadSpecialist() async {
     try {
-      final data = await _api.getSpecialist(widget.specialistId);
+      final results = await Future.wait([
+        _api.getSpecialist(widget.specialistId),
+        _api.getUser(),
+      ]);
 
       if (!mounted) return;
 
       setState(() {
-        specialist = data;
+        specialist = results[0] as Map<String, dynamic>;
+        _user = results[1] as Map<String, dynamic>;
         _loading = false;
       });
     } catch (e) {
@@ -53,10 +60,9 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
+    if (_loading || _user == null) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -73,17 +79,25 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
       );
     }
 
-    final image = specialist!["image_url"] ?? "";
-    final name = specialist!["name"] ?? "";
-    final qualification = specialist!["qualification"] ?? "";
-    final expertise = specialist!["area_of_expertise"] ?? "";
-    final fee = specialist!["consultation_fee"]?.toString() ?? "0";
+    final image =
+        specialist!["image_url"] ?? "";
+
+    final name =
+        specialist!["name"] ?? "";
+
+    final qualification =
+        specialist!["qualification"] ?? "";
+
+    final expertise =
+        specialist!["area_of_expertise"] ?? "";
+
+    final fee =
+        specialist!["consultation_fee"]?.toString() ?? "0";
 
     return Scaffold(
       backgroundColor: const Color(0xfff5f6f7),
       body: CustomScrollView(
         slivers: [
-
           SliverAppBar(
             expandedHeight: 320,
             pinned: true,
@@ -104,7 +118,6 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
               ),
             ),
           ),
-          
 
           SliverToBoxAdapter(
             child: Transform.translate(
@@ -118,86 +131,96 @@ class _SpecialistProfileScreenState extends State<SpecialistProfileScreen> {
                 ),
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Text(
-  name,
-  style: const TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-  ),
-),
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
 
-const SizedBox(height: 6),
+                    const SizedBox(height: 6),
 
-Text(
-  qualification,
-  style: const TextStyle(
-    color: AppColors.teal,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-  ),
-),
+                    Text(
+                      qualification,
+                      style: const TextStyle(
+                        color: AppColors.teal,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
 
-const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-const _SectionTitle(
-  title: "Area of Expertise",
-),
+                    const _SectionTitle(
+                      title: "Area of Expertise",
+                    ),
 
-Text(
-  expertise,
-  style: const TextStyle(
-    fontSize: 16,
-    height: 1.5,
-  ),
-),
+                    Text(
+                      expertise,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        height: 1.5,
+                      ),
+                    ),
 
-const SizedBox(height: 28),
+                    const SizedBox(height: 28),
 
-const _SectionTitle(
-  title: "Consultation Fee",
-),
+                    const _SectionTitle(
+                      title: "Consultation Fee",
+                    ),
 
-Row(
-  children: [
-    const Icon(
-      Icons.payments,
-      color: AppColors.teal,
-    ),
-    const SizedBox(width: 10),
-    Text(
-      "NGN $fee",
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ],
-),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.payments,
+                          color: AppColors.teal,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "NGN $fee",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
 
-const SizedBox(height: 30),
+                    const SizedBox(height: 30),
 
-const _SectionTitle(
-  title: "Patient Reviews",
-),
+                    const _SectionTitle(
+                      title: "Patient Reviews",
+                    ),
 
-const _ReviewCard(),
+                    const _ReviewCard(),
 
-const SizedBox(height: 80),
-                ],
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
             ),
           ),
-          )
         ],
       ),
+
       bottomNavigationBar: _BookButton(
-        calendlyUrl: specialist?["calendly_url"] ?? "",
+        specialistId: widget.specialistId,
+        user: _user!,
       ),
     );
   }
 }
-                    class _SectionTitle extends StatelessWidget {
+
+
+// ============================================================
+// SECTION TITLE
+// ============================================================
+
+class _SectionTitle extends StatelessWidget {
   final String title;
 
   const _SectionTitle({
@@ -218,6 +241,12 @@ const SizedBox(height: 80),
     );
   }
 }
+
+
+// ============================================================
+// REVIEW CARD
+// ============================================================
+
 class _ReviewCard extends StatelessWidget {
   const _ReviewCard();
 
@@ -239,15 +268,17 @@ class _ReviewCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundImage:
-                AssetImage("assets/images/avatar_placeholder.png"),
+            backgroundImage: AssetImage(
+              "assets/images/avatar_placeholder.png",
+            ),
           ),
 
           SizedBox(width: 12),
 
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 Text(
                   "Anonymous User",
@@ -261,16 +292,31 @@ class _ReviewCard extends StatelessWidget {
 
                 Row(
                   children: [
-                    Icon(Icons.star,
-                        color: Colors.amber, size: 18),
-                    Icon(Icons.star,
-                        color: Colors.amber, size: 18),
-                    Icon(Icons.star,
-                        color: Colors.amber, size: 18),
-                    Icon(Icons.star,
-                        color: Colors.amber, size: 18),
-                    Icon(Icons.star,
-                        color: Colors.amber, size: 18),
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
                   ],
                 ),
 
@@ -290,58 +336,416 @@ class _ReviewCard extends StatelessWidget {
     );
   }
 }
-class _BookButton extends StatelessWidget {
-  final String calendlyUrl;
+
+
+// ============================================================
+// BOOK BUTTON
+// ============================================================
+
+class _BookButton extends StatefulWidget {
+  final int specialistId;
+  final Map<String, dynamic> user;
 
   const _BookButton({
-    required this.calendlyUrl,
+    required this.specialistId,
+    required this.user,
   });
 
- void _openCalendar(BuildContext context) {
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => CalendlyScreen(
-        calendlyUrl: calendlyUrl,
-      ),
-    ),
-  );
-
+  @override
+  State<_BookButton> createState() =>
+      _BookButtonState();
 }
-  
+
+class _BookButtonState extends State<_BookButton> {
+  final ApiService _api = ApiService();
+
+  bool _booking = false;
+
+  Future<void> _bookConsultation() async {
+    if (_booking) return;
+
+    final userId =
+        widget.user["id"] ??
+        widget.user["user_id"];
+
+    final email =
+        widget.user["email"]?.toString() ?? "";
+
+    final firstName =
+        widget.user["first_name"]?.toString() ?? "";
+
+    final lastName =
+        widget.user["last_name"]?.toString() ?? "";
+
+    final username =
+        widget.user["username"]?.toString() ?? "";
+
+    final name =
+        "$firstName $lastName".trim().isNotEmpty
+            ? "$firstName $lastName".trim()
+            : username;
+
+    if (userId == null ||
+        email.isEmpty ||
+        name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Unable to get your account details.",
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _booking = true;
+    });
+
+    try {
+      // ======================================================
+      // 1. INITIATE BOOKING
+      // ======================================================
+
+      final booking =
+          await _api.initiateBooking(
+        userId: userId.toString(),
+        specialistId: widget.specialistId,
+        email: email,
+        name: name,
+      );
+
+      final authorizationUrl =
+          booking["authorization_url"]
+              ?.toString();
+
+      final reference =
+          booking["reference"]?.toString();
+
+      if (authorizationUrl == null ||
+          authorizationUrl.isEmpty ||
+          reference == null ||
+          reference.isEmpty) {
+        throw Exception(
+          "Invalid booking response.",
+        );
+      }
+
+      if (!mounted) return;
+
+      // ======================================================
+      // 2. OPEN PAYMENT WEBVIEW
+      // ======================================================
+
+      final paymentCompleted =
+          await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PaymentScreen(
+            authorizationUrl:
+                authorizationUrl,
+          ),
+        ),
+      );
+
+      // User closed payment without
+      // confirming completion.
+      if (paymentCompleted != true) {
+        return;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _booking = true;
+      });
+
+      // ======================================================
+      // 3. VERIFY PAYMENT
+      // ======================================================
+
+      final verification =
+          await _api.verifyBooking(
+        reference: reference,
+        userId: userId.toString(),
+        email: email,
+        name: name,
+      );
+
+      final status =
+          verification["status"]?.toString();
+
+      debugPrint(
+        "Booking verification status: $status",
+      );
+
+      final calendlyUrl =
+          verification["calendly_url"]
+              ?.toString();
+
+      if (calendlyUrl == null ||
+          calendlyUrl.isEmpty) {
+        throw Exception(
+          "Payment could not be verified or Calendly link was not returned.",
+        );
+      }
+
+      if (!mounted) return;
+
+      // ======================================================
+      // 4. OPEN CALENDLY
+      // ======================================================
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CalendlyScreen(
+            calendlyUrl: calendlyUrl,
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint(
+        "Booking error: $e",
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Unable to complete booking: $e",
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _booking = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-
-          return Container(
-        padding: const EdgeInsets.all(16),
-           child : SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: OutlinedButton.icon(
-                onPressed: () => _openCalendar(context),
-                icon: const Icon(Icons.calendar_month),
-                label:  Text(
-                  AppLocalizations.of(context).bookConsultation,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: OutlinedButton.icon(
+          onPressed:
+              _booking
+                  ? null
+                  : _bookConsultation,
+          icon: _booking
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child:
+                      CircularProgressIndicator(
+                    strokeWidth: 2,
                   ),
+                )
+              : const Icon(
+                  Icons.calendar_month,
                 ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.teal,
-                  side: const BorderSide(
-                    color: AppColors.teal,
-                    width: 2,
+          label: Text(
+            _booking
+                ? "Processing..."
+                : AppLocalizations.of(context)
+                    .bookConsultation,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor:
+                AppColors.teal,
+            side: const BorderSide(
+              color: AppColors.teal,
+              width: 2,
+            ),
+            shape:
+                RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(18),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+// ============================================================
+// PAYMENT SCREEN
+// ============================================================
+
+class PaymentScreen extends StatefulWidget {
+  final String authorizationUrl;
+
+  const PaymentScreen({
+    super.key,
+    required this.authorizationUrl,
+  });
+
+  @override
+  State<PaymentScreen> createState() =>
+      _PaymentScreenState();
+}
+
+class _PaymentScreenState
+    extends State<PaymentScreen> {
+  late final WebViewController _controller;
+
+  bool _pageLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller =
+        WebViewController()
+          ..setJavaScriptMode(
+            JavaScriptMode.unrestricted,
+          )
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onPageStarted: (_) {
+                if (mounted) {
+                  setState(() {
+                    _pageLoading = true;
+                  });
+                }
+              },
+              onPageFinished: (_) {
+                if (mounted) {
+                  setState(() {
+                    _pageLoading = false;
+                  });
+                }
+              },
+              onWebResourceError: (error) {
+                debugPrint(
+                  "Payment WebView error: "
+                  "${error.description}",
+                );
+              },
+            ),
+          )
+          ..loadRequest(
+            Uri.parse(widget.authorizationUrl),
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Payment",
+        ),
+        backgroundColor:
+            AppColors.teal,
+        foregroundColor:
+            Colors.white,
+      ),
+
+      body: Stack(
+        children: [
+          WebViewWidget(
+            controller: _controller,
+          ),
+
+          if (_pageLoading)
+            const LinearProgressIndicator(
+              minHeight: 3,
+            ),
+        ],
+      ),
+
+      bottomNavigationBar:
+          SafeArea(
+        child: Padding(
+          padding:
+              const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize:
+                MainAxisSize.min,
+            children: [
+              const Text(
+                "After completing your payment, "
+                "tap the button below to continue.",
+                textAlign:
+                    TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 13,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      true,
+                    );
+                  },
+                  style:
+                      ElevatedButton.styleFrom(
+                    backgroundColor:
+                        AppColors.teal,
+                    foregroundColor:
+                        Colors.white,
+                    shape:
+                        RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(
+                        16,
+                      ),
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+                  child: const Text(
+                    "I've Completed Payment",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight:
+                          FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-          }
 
+              const SizedBox(height: 8),
+
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      false,
+                    );
+                  },
+                  child: const Text(
+                    "Cancel",
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

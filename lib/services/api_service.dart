@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 class ApiService {
   static const String baseUrl = 'https://myfertipal-backend.onrender.com';
@@ -541,6 +543,59 @@ String _formatDate(DateTime date) {
     rethrow;
   }
 }
+Future<Map<String, dynamic>> uploadProfilePicture({
+  required String userId,
+  required XFile file,
+}) async {
+  final uri = Uri.parse(
+    '$baseUrl/profile_picture/profile_picture/$userId/avatar',
+  );
+
+  final request = http.MultipartRequest(
+    'POST',
+    uri,
+  );
+
+  // Add authentication headers.
+  final headers = await getHeaders(includeAuth: true);
+
+  request.headers.addAll(headers);
+
+  // Read the image as bytes.
+  final bytes = await file.readAsBytes();
+
+  final multipartFile = http.MultipartFile.fromBytes(
+    'file',
+    bytes,
+    filename: file.name,
+  );
+
+  request.files.add(multipartFile);
+
+  final streamedResponse = await request.send();
+
+  final response = await http.Response.fromStream(
+    streamedResponse,
+  );
+
+  debugPrint(
+    'PROFILE IMAGE STATUS: ${response.statusCode}',
+  );
+
+  debugPrint(
+    'PROFILE IMAGE RESPONSE: ${response.body}',
+  );
+
+  if (response.statusCode < 200 ||
+      response.statusCode >= 300) {
+    throw Exception(
+      'Profile picture upload failed: '
+      '${response.statusCode} ${response.body}',
+    );
+  }
+
+  return jsonDecode(response.body) as Map<String, dynamic>;
+}
 Future<List<dynamic>> getArticles({
   String lang = "en",
 }) async {
@@ -605,25 +660,115 @@ Future<Map<String, dynamic>> getArticleById({
     rethrow;
   }
 }
-Future<Map<String, dynamic>> getArticleBySlug({
-  required String slug,
-  String lang = "en",
+Future<Map<String, dynamic>> initiateBooking({
+  required String userId,
+  required int specialistId,
+  required String email,
+  required String name,
 }) async {
   try {
-    final response = await http.get(
-      Uri.parse("$baseUrl/articles/slug/$slug?lang=$lang"),
+    final response = await http.post(
+      Uri.parse("$baseUrl/booking/initiate_booking"),
       headers: await getHeaders(includeAuth: true),
+      body: jsonEncode({
+        "user_id": userId,
+        "specialist_id": specialistId,
+        "email": email,
+        "name": name,
+      }),
     );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      return data;
     }
 
-    throw Exception("Article not found");
+    throw Exception(
+      data["detail"] ??
+          data["message"] ??
+          "Unable to initiate booking",
+    );
   } catch (e) {
     rethrow;
   }
 }
+
+Future<Map<String, dynamic>> verifyBooking({
+  required String reference,
+  required String userId,
+  required String email,
+  required String name,
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse(
+        "$baseUrl/booking/verify_and_get_calendly",
+      ),
+      headers: await getHeaders(includeAuth: true),
+      body: jsonEncode({
+        "reference": reference,
+        "user_id": userId,
+        "email": email,
+        "name": name,
+      }),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      return data;
+    }
+
+    throw Exception(
+      data["detail"] ??
+          data["message"] ??
+          "Unable to verify booking",
+    );
+  } catch (e) {
+    rethrow;
+  }
+}
+
+Future<List<dynamic>> searchArticles({
+  required String query,
+  String lang = "en",
+}) async {
+  try {
+    final uri = Uri.parse(
+      "$baseUrl/articles/search",
+    ).replace(
+      queryParameters: {
+        "q": query,
+        "lang": lang,
+      },
+    );
+
+    final response = await http.get(
+      uri,
+      headers: await getHeaders(includeAuth: true),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      if (data is List) {
+        return data;
+      }
+
+      throw Exception("Invalid article search response");
+    }
+
+    throw Exception(
+      "Article search failed: ${response.statusCode}",
+    );
+  } catch (e) {
+    rethrow;
+  }
+}
+
   // Logout
   Future<void> logout() async {
     try {

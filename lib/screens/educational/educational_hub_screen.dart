@@ -23,6 +23,7 @@ Map<String, dynamic>? _featuredArticle;
 
 bool _loading = true;
 
+
 final TextEditingController _searchController =
     TextEditingController();
 
@@ -255,26 +256,47 @@ Future<void> _loadArticles() async {
     });
   }
 }
+
 Future<void> _searchArticle() async {
-  if (_searchController.text.trim().isEmpty) return;
+  final query = _searchController.text.trim();
+
+  if (query.isEmpty) {
+    await _loadArticles();
+    return;
+  }
+
+  FocusScope.of(context).unfocus();
+
+  setState(() {
+    _loading = true;
+  });
 
   try {
-    final article = await _api.getArticleBySlug(
-      slug: _searchController.text.trim(),
+    final results = await _api.searchArticles(
+      query: query,
       lang: _language,
     );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ReadingScreen(
-          articleId: article["id"],
-          language: _language,
-        ),
-      ),
-    );
-  } catch (_) {}
+    if (!mounted) return;
+
+    setState(() {
+      _articles = results;
+      _featuredArticle =
+          results.isNotEmpty ? results.first : null;
+      _loading = false;
+    });
+  } catch (e) {
+    if (!mounted) return;
+
+    setState(() {
+      _articles = [];
+      _featuredArticle = null;
+      _loading = false;
+    });
+  }
 }
+
+
 
 
 Widget _buildArticleHeader(){
