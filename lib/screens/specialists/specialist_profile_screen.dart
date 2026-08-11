@@ -25,9 +25,16 @@ class _SpecialistProfileScreenState
   final ApiService _api = ApiService();
 
   bool _loading = true;
+  String _name = "User";
+String _firstName = "User";
+String _avatarUrl = "";
+
+int _cycleLength = 28;
+int _periodLength = 5;
 
   Map<String, dynamic>? specialist;
   Map<String, dynamic>? _user;
+  Map<String, dynamic>? _profile;
 
   @override
   void initState() {
@@ -35,30 +42,50 @@ class _SpecialistProfileScreenState
     _loadSpecialist();
   }
 
-  Future<void> _loadSpecialist() async {
-    try {
-      final results = await Future.wait([
-        _api.getSpecialist(widget.specialistId),
-        _api.getUser(),
-      ]);
+ Future<void> _loadSpecialist() async {
+  try {
+    final results = await Future.wait([
+      _api.getSpecialist(widget.specialistId),
+      _api.getUser(),
+      _api.getProfile(),
+    ]);
 
-      if (!mounted) return;
+    if (!mounted) return;
 
-      setState(() {
-        specialist = results[0] as Map<String, dynamic>;
-        _user = results[1] as Map<String, dynamic>;
-        _loading = false;
-      });
-    } catch (e) {
-      debugPrint(e.toString());
+    setState(() {
+      specialist = results[0] as Map<String, dynamic>;
+      _user = results[1] as Map<String, dynamic>;
+      _profile = results[2] as Map<String, dynamic>;
 
-      if (!mounted) return;
+      _firstName =
+          _user?["first_name"]?.toString() ?? "User";
 
-      setState(() {
-        _loading = false;
-      });
-    }
+      _name =
+          "${_user?["first_name"] ?? ""} "
+          "${_user?["last_name"] ?? ""}"
+              .trim();
+
+      _avatarUrl =
+          _user?["profile_image"]?.toString() ?? "";
+
+      _loading = false;
+    });
+
+    debugPrint("SPECIALIST: $specialist");
+    debugPrint("USER: $_user");
+    debugPrint("PROFILE: $_profile");
+    debugPrint("USER ID: ${_profile?["user_id"]}");
+    debugPrint("PROFILE IMAGE: $_avatarUrl");
+  } catch (e) {
+    debugPrint("Specialist profile error: $e");
+
+    if (!mounted) return;
+
+    setState(() {
+      _loading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -208,9 +235,10 @@ class _SpecialistProfileScreenState
       ),
 
       bottomNavigationBar: _BookButton(
-        specialistId: widget.specialistId,
-        user: _user!,
-      ),
+  specialistId: widget.specialistId,
+  user: _user!,
+  profile: _profile!,
+),
     );
   }
 }
@@ -345,10 +373,12 @@ class _ReviewCard extends StatelessWidget {
 class _BookButton extends StatefulWidget {
   final int specialistId;
   final Map<String, dynamic> user;
+  final Map<String, dynamic> profile;
 
   const _BookButton({
     required this.specialistId,
     required this.user,
+    required this.profile,
   });
 
   @override
@@ -362,171 +392,153 @@ class _BookButtonState extends State<_BookButton> {
   bool _booking = false;
 
   Future<void> _bookConsultation() async {
-    if (_booking) return;
+  if (_booking) return;
 
-    final userId =
-        widget.user["id"] ??
-        widget.user["user_id"];
+  final userId = widget.profile["user_id"];
 
-    final email =
-        widget.user["email"]?.toString() ?? "";
-
-    final firstName =
-        widget.user["first_name"]?.toString() ?? "";
-
-    final lastName =
-        widget.user["last_name"]?.toString() ?? "";
-
-    final username =
-        widget.user["username"]?.toString() ?? "";
-
-    final name =
-        "$firstName $lastName".trim().isNotEmpty
-            ? "$firstName $lastName".trim()
-            : username;
-
-    if (userId == null ||
-        email.isEmpty ||
-        name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Unable to get your account details.",
-          ),
+  if (userId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Unable to determine your user ID.",
         ),
+      ),
+    );
+    return;
+  }
+
+  final email =
+      widget.user["email"]?.toString() ?? "";
+
+  final firstName =
+      widget.user["first_name"]?.toString() ?? "";
+
+  final lastName =
+      widget.user["last_name"]?.toString() ?? "";
+
+  final username =
+      widget.user["username"]?.toString() ?? "";
+
+  final name =
+      "$firstName $lastName".trim().isNotEmpty
+          ? "$firstName $lastName".trim()
+          : username;
+
+  if (email.isEmpty || name.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Unable to get your account details.",
+        ),
+      ),
+    );
+    return;
+  }
+
+  setState(() {
+    _booking = true;
+  });
+
+  try {
+    final booking = await _api.initiateBooking(
+      userId: userId.toString(),
+      specialistId: widget.specialistId,
+      email: email,
+      name: name,
+    );
+
+    final authorizationUrl =
+        booking["authorization_url"]?.toString();
+
+    final reference =
+        booking["reference"]?.toString();
+
+    if (authorizationUrl == null ||
+        authorizationUrl.isEmpty ||
+        reference == null ||
+        reference.isEmpty) {
+      throw Exception(
+        "Invalid booking response.",
       );
+    }
+
+    if (!mounted) return;
+
+    final paymentCompleted =
+        await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PaymentScreen(
+          authorizationUrl: authorizationUrl,
+        ),
+      ),
+    );
+
+    if (paymentCompleted != true) {
       return;
     }
+
+    if (!mounted) return;
 
     setState(() {
       _booking = true;
     });
 
-    try {
-      // ======================================================
-      // 1. INITIATE BOOKING
-      // ======================================================
+    final verification =
+        await _api.verifyBooking(
+      reference: reference,
+      userId: userId.toString(),
+      email: email,
+      name: name,
+    );
 
-      final booking =
-          await _api.initiateBooking(
-        userId: userId.toString(),
-        specialistId: widget.specialistId,
-        email: email,
-        name: name,
+    final status =
+        verification["status"]?.toString();
+
+    debugPrint(
+      "Booking verification status: $status",
+    );
+
+    final calendlyUrl =
+        verification["calendly_url"]?.toString();
+
+    if (calendlyUrl == null ||
+        calendlyUrl.isEmpty) {
+      throw Exception(
+        "Payment could not be verified or Calendly link was not returned.",
       );
+    }
 
-      final authorizationUrl =
-          booking["authorization_url"]
-              ?.toString();
+    if (!mounted) return;
 
-      final reference =
-          booking["reference"]?.toString();
-
-      if (authorizationUrl == null ||
-          authorizationUrl.isEmpty ||
-          reference == null ||
-          reference.isEmpty) {
-        throw Exception(
-          "Invalid booking response.",
-        );
-      }
-
-      if (!mounted) return;
-
-      // ======================================================
-      // 2. OPEN PAYMENT WEBVIEW
-      // ======================================================
-
-      final paymentCompleted =
-          await Navigator.push<bool>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PaymentScreen(
-            authorizationUrl:
-                authorizationUrl,
-          ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CalendlyScreen(
+          calendlyUrl: calendlyUrl,
         ),
-      );
+      ),
+    );
+  } catch (e) {
+    debugPrint("Booking error: $e");
 
-      // User closed payment without
-      // confirming completion.
-      if (paymentCompleted != true) {
-        return;
-      }
+    if (!mounted) return;
 
-      if (!mounted) return;
-
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Unable to complete booking: $e",
+        ),
+      ),
+    );
+  } finally {
+    if (mounted) {
       setState(() {
-        _booking = true;
+        _booking = false;
       });
-
-      // ======================================================
-      // 3. VERIFY PAYMENT
-      // ======================================================
-
-      final verification =
-          await _api.verifyBooking(
-        reference: reference,
-        userId: userId.toString(),
-        email: email,
-        name: name,
-      );
-
-      final status =
-          verification["status"]?.toString();
-
-      debugPrint(
-        "Booking verification status: $status",
-      );
-
-      final calendlyUrl =
-          verification["calendly_url"]
-              ?.toString();
-
-      if (calendlyUrl == null ||
-          calendlyUrl.isEmpty) {
-        throw Exception(
-          "Payment could not be verified or Calendly link was not returned.",
-        );
-      }
-
-      if (!mounted) return;
-
-      // ======================================================
-      // 4. OPEN CALENDLY
-      // ======================================================
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CalendlyScreen(
-            calendlyUrl: calendlyUrl,
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint(
-        "Booking error: $e",
-      );
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Unable to complete booking: $e",
-          ),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _booking = false;
-        });
-      }
     }
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Container(

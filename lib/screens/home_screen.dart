@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _name = "User";
   String _firstName = "User";
+  String _avatarUrl = "";
 
 
   int _cycleLength = 28;
@@ -118,7 +119,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
+Future<void> _loadProfile() async {
+  try {
+    final user = await _apiService.getUser();
 
+    if (!mounted) return;
+
+    setState(() {
+      _firstName =
+          user["first_name"]?.toString() ?? "User";
+
+      _name =
+          "${user["first_name"] ?? ""} "
+          "${user["last_name"] ?? ""}"
+              .trim();
+
+      _avatarUrl =
+          user["profile_image"]?.toString() ?? "";
+    });
+
+    debugPrint(
+      "HOME PROFILE IMAGE URL: $_avatarUrl",
+    );
+  } catch (e) {
+    debugPrint(
+      "HOME PROFILE ERROR: $e",
+    );
+  }
+}
 
 
   Future<void> _reloadInsights() async {
@@ -162,150 +190,128 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Future<void> _loadHomeData() async {
+  try {
+    final user = await _apiService.getUser();
 
+    final profile = await _apiService.getProfile();
 
-    try {
+    final predictions = await _apiService.getInsights();
 
-
-      final user =
-          await _apiService.getUser();
-
-
-      final profile =
-          await _apiService.getProfile();
-
-
-
-      final predictions =
-          await _apiService.getInsights();
-
-
-
-      final prediction =
-          predictions.first;
-
-
-
-      final insights =
-          await _apiService.getInsights();
-
-
-
-
+    if (predictions.isEmpty) {
       if (!mounted) return;
 
-
-
       setState(() {
-
-
-
-        _firstName =
-            user["first_name"] ??
-            "User";
-
-
+        _firstName = user["first_name"]?.toString() ?? "User";
 
         _name =
             "${user["first_name"] ?? ""} "
             "${user["last_name"] ?? ""}"
-            .trim();
+                .trim();
 
-
-
+        _avatarUrl =
+            user["profile_image"]?.toString() ?? "";
 
         _cycleLength =
-            profile["cycle_length"] ??
-            28;
-
-
+            profile["cycle_length"] ?? 28;
 
         _periodLength =
-            profile["period_length"] ??
-            5;
+            profile["period_length"] ?? 5;
 
-
-
-        if(profile["last_period_date"] != null){
-
-          _lastPeriodDate =
-              DateTime.parse(
-                profile["last_period_date"],
-              );
-
+        if (profile["last_period_date"] != null) {
+          _lastPeriodDate = DateTime.parse(
+            profile["last_period_date"].toString(),
+          );
         }
-
-
-
-        _fertileStart =
-            DateTime.parse(
-              prediction["fertile_period_start"],
-            );
-
-
-
-        _fertileEnd =
-            DateTime.parse(
-              prediction["fertile_period_end"],
-            );
-
-
-
-        _ovulationDate =
-            DateTime.parse(
-              prediction["ovulation_day"],
-            );
-
-
-
-        _nextPeriod =
-            DateTime.parse(
-              prediction["next_period"],
-            );
-
-
-
-
-        if(insights.isNotEmpty){
-
-          _insightText =
-              insights.first["insight_text"] ??
-              "";
-
-        }
-
-
 
         _isLoading = false;
-
-
       });
 
-
-
-    } catch(e) {
-
-
-      debugPrint(
-        "HOME ERROR: $e",
-      );
-
-
-      if(mounted){
-
-        setState(() {
-
-          _isLoading = false;
-
-        });
-
-      }
-
-
+      return;
     }
 
-  }
+    final prediction = predictions.first;
 
+    if (!mounted) return;
+
+    setState(() {
+      // -----------------------------
+      // USER
+      // -----------------------------
+
+      _firstName =
+          user["first_name"]?.toString() ?? "User";
+
+      _name =
+          "${user["first_name"] ?? ""} "
+          "${user["last_name"] ?? ""}"
+              .trim();
+
+      // IMPORTANT:
+      // This is the URL returned by the backend.
+      _avatarUrl =
+          user["profile_image"]?.toString() ?? "";
+
+      // -----------------------------
+      // PROFILE
+      // -----------------------------
+
+      _cycleLength =
+          profile["cycle_length"] ?? 28;
+
+      _periodLength =
+          profile["period_length"] ?? 5;
+
+      if (profile["last_period_date"] != null) {
+        _lastPeriodDate = DateTime.parse(
+          profile["last_period_date"].toString(),
+        );
+      }
+
+      // -----------------------------
+      // PREDICTIONS
+      // -----------------------------
+
+      if (prediction["fertile_period_start"] != null) {
+        _fertileStart = DateTime.parse(
+          prediction["fertile_period_start"].toString(),
+        );
+      }
+
+      if (prediction["fertile_period_end"] != null) {
+        _fertileEnd = DateTime.parse(
+          prediction["fertile_period_end"].toString(),
+        );
+      }
+
+      if (prediction["ovulation_day"] != null) {
+        _ovulationDate = DateTime.parse(
+          prediction["ovulation_day"].toString(),
+        );
+      }
+
+      if (prediction["next_period"] != null) {
+        _nextPeriod = DateTime.parse(
+          prediction["next_period"].toString(),
+        );
+      }
+
+      _isLoading = false;
+    });
+
+    // Load insight separately.
+    await _reloadInsights();
+
+    debugPrint("HOME PROFILE IMAGE URL: $_avatarUrl");
+  } catch (e) {
+    debugPrint("HOME ERROR: $e");
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+}
 
 
 
@@ -490,27 +496,27 @@ Widget _buildHeader(BuildContext context) {
       children: [
 
 
-        ClipOval(
-
-          child: SizedBox(
-
-            width: 56,
-
-            height: 56,
-
-
-            child: Image.asset(
-
-              "assets/images/profile_placeholder.webp",
-
-              fit: BoxFit.cover,
-
-            ),
-
+     ClipOval(
+  child: SizedBox(
+    width: 56,
+    height: 56,
+    child: _avatarUrl.isNotEmpty
+        ? Image.network(
+            _avatarUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                "assets/images/profile_placeholder.webp",
+                fit: BoxFit.cover,
+              );
+            },
+          )
+        : Image.asset(
+            "assets/images/profile_placeholder.webp",
+            fit: BoxFit.cover,
           ),
-
-        ),
-
+  ),
+),
 
 
         const SizedBox(width:12),
@@ -581,32 +587,21 @@ Widget _buildHeader(BuildContext context) {
               BorderRadius.circular(24),
 
 
-          onTap: () {
+         onTap: () async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ProfileScreen(
+        name: _name,
+        privacyPolicyUrl:
+            'https://myfertipal.com/privacy-policy',
+      ),
+    ),
+  );
 
-
-            Navigator.push(
-
-              context,
-
-              MaterialPageRoute(
-
-                builder: (_) =>
-                    ProfileScreen(
-
-                      name:_name,
-
-                      privacyPolicyUrl:
-                          'https://myfertipal.com/privacy-policy',
-
-                    ),
-
-              ),
-
-            );
-
-
-          },
-
+  // Reload profile after returning.
+  await _loadProfile();
+},
 
 
           child: Container(
