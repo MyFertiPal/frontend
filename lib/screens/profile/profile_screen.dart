@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import "../../services/api_service.dart";
@@ -7,6 +8,7 @@ import "../profile/profile_setup_screen.dart";
 import '../../generated/l10n/app_localizations.dart';
 import "../../services/profile_image_picker.dart";
 import "../../screens/web/web_view_screen.dart";
+import "../subscription/subscription_screen.dart";
 import '../../providers/language_provider.dart';
 
 /// Colors used across the screen.
@@ -105,6 +107,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  static const String _profileImageKey = 'profile_image_url';
   final List<String> _languages = const [
   'English',
   'Yoruba',
@@ -161,44 +164,68 @@ bool _isLoading = true;
 
 Future<void> _loadProfile() async {
   try {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Get the locally saved profile image URL
+    final savedAvatarUrl = prefs.getString(_profileImageKey);
 
     final user = await _apiService.getUser();
     final profile = await _apiService.getProfile();
 
     debugPrint("USER: $user");
     debugPrint("PROFILE: $profile");
+    debugPrint("LOCAL PROFILE IMAGE: $savedAvatarUrl");
+
+    if (!mounted) return;
+
+    // Prefer the URL saved in local storage.
+    // Fall back to the backend URL if nothing is saved locally.
+    final backendAvatarUrl =
+        (user["profile_image"] ?? "").toString();
+
+    final localAvatarUrl =
+        savedAvatarUrl?.trim() ?? "";
+
+    final avatarUrl = localAvatarUrl.isNotEmpty
+        ? localAvatarUrl
+        : backendAvatarUrl;
 
     setState(() {
-
       // Account data
       _name =
           "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}".trim();
-      _avatarUrl = user["profile_image"] ?? "";
 
-      _selectedLanguage =
-          _convertLanguageCode(
-              user["language_preference"] ?? "en"
-          );
+      _avatarUrl = avatarUrl;
 
-
-      // Fertility profile data
-      // available for Personal Information screen later
+      _selectedLanguage = _convertLanguageCode(
+        user["language_preference"] ?? "en",
+      );
 
       _isLoading = false;
-
     });
 
+    // If there was no local URL but the backend has one,
+    // save the backend URL locally for future use.
+    if (localAvatarUrl.isEmpty && backendAvatarUrl.isNotEmpty) {
+      await prefs.setString(
+        _profileImageKey,
+        backendAvatarUrl,
+      );
 
-  } catch(e){
-
+      debugPrint(
+        "BACKEND PROFILE IMAGE SAVED LOCALLY: $backendAvatarUrl",
+      );
+    }
+  } catch (e) {
     debugPrint("Profile loading error: $e");
+
+    if (!mounted) return;
 
     setState(() {
       _name = widget.name;
       _selectedLanguage = widget.language;
       _isLoading = false;
     });
-
   }
 }
 
@@ -351,9 +378,8 @@ Future<void> _pickAndUploadProfilePicture() async {
 
     if (image == null) return;
 
-    // getProfile() contains user_id
+    // Get user ID from profile
     final profile = await _apiService.getProfile();
-
     final userId = profile["user_id"];
 
     debugPrint("PROFILE USER ID: $userId");
@@ -374,6 +400,7 @@ Future<void> _pickAndUploadProfilePicture() async {
       ),
     );
 
+    // Upload image
     final response = await _apiService.uploadProfilePicture(
       userId: userId.toString(),
       file: image,
@@ -381,6 +408,7 @@ Future<void> _pickAndUploadProfilePicture() async {
 
     debugPrint("PROFILE IMAGE UPLOAD RESPONSE: $response");
 
+    // Get URL from POST response
     final data = response["data"] as Map<String, dynamic>?;
 
     final url = data?["url"]?.toString();
@@ -391,8 +419,22 @@ Future<void> _pickAndUploadProfilePicture() async {
       );
     }
 
+    debugPrint("NEW PROFILE IMAGE URL: $url");
+
+    // Save the NEW URL locally.
+    // setString automatically replaces the previous URL.
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(
+      _profileImageKey,
+      url,
+    );
+
+    debugPrint("PROFILE IMAGE URL SAVED LOCALLY: $url");
+
     if (!mounted) return;
 
+    // Immediately display the new URL
     setState(() {
       _avatarUrl = url;
       _selectedImage = null;
@@ -409,6 +451,10 @@ Future<void> _pickAndUploadProfilePicture() async {
     debugPrint("Profile picture error: $e");
 
     if (!mounted) return;
+
+    setState(() {
+      _selectedImage = null;
+    });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -521,6 +567,105 @@ Navigator.push(
 );
 
 }
+Widget _buildUpgradeMembershipCard() {
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const SubscriptionScreen(),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF163B30),
+              Color(0xFF2F5C4A),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE9B44C).withOpacity(0.18),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.workspace_premium,
+                color: Color(0xFFE9B44C),
+                size: 26,
+              ),
+            ),
+
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Upgrade Membership",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    "Unlock more features and get more from MyFertiPal.",
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.78),
+                      fontSize: 12,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white,
+                size: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
   @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -537,6 +682,7 @@ Widget build(BuildContext context) {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: _buildStatsRow(),
             ),
+            _buildUpgradeMembershipCard(),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
               child: Text(
@@ -584,58 +730,97 @@ Widget build(BuildContext context) {
             ),
           ),
           const SizedBox(height: 4),
-          InkWell(
-  onTap: _pickAndUploadProfilePicture,
-  borderRadius: BorderRadius.circular(60),
-  child: Container(
-    width: 104,
-    height: 104,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(
-        color: const Color(0xFF3FA98A),
-        width: 3,
+          Stack(
+  clipBehavior: Clip.none,
+  children: [
+    // Profile image
+    Container(
+      width: 104,
+      height: 104,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: const Color(0xFF3FA98A),
+          width: 3,
+        ),
+      ),
+      padding: const EdgeInsets.all(3),
+      child: ClipOval(
+        child: _selectedImage != null
+            ? FutureBuilder<List<int>>(
+                future: _selectedImage!.readAsBytes(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    return Image.memory(
+                      Uint8List.fromList(snapshot.data!),
+                      fit: BoxFit.cover,
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Color(0xFF3FA98A),
+                    ),
+                  );
+                },
+              )
+            : _avatarUrl.isNotEmpty
+                ? Image.network(
+                    _avatarUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/profile_placeholder.webp",
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  )
+                : Image.asset(
+                    "assets/images/profile_placeholder.webp",
+                    fit: BoxFit.cover,
+                  ),
       ),
     ),
-    padding: const EdgeInsets.all(3),
-    child: ClipOval(
-     child: _selectedImage != null
-    ? FutureBuilder<List<int>>(
-        future: _selectedImage!.readAsBytes(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
-            return Image.memory(
-              Uint8List.fromList(snapshot.data!),
-              fit: BoxFit.cover,
-            );
-          }
 
-          return const Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Color(0xFF3FA98A),
+    // Camera button
+    Positioned(
+      right: -2,
+      bottom: -2,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _pickAndUploadProfilePicture,
+          borderRadius: BorderRadius.circular(22),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1F9E75),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white,
+                width: 3,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.18),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          );
-        },
-      )
-    : _avatarUrl.isNotEmpty
-        ? Image.network(
-            _avatarUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Image.asset(
-                "assets/images/profile_placeholder.webp",
-                fit: BoxFit.cover,
-              );
-            },
-          )
-        : Image.asset(
-            "assets/images/profile_placeholder.webp",
-            fit: BoxFit.cover,
+            child: const Icon(
+              Icons.camera_alt,
+              size: 19,
+              color: Colors.white,
+            ),
           ),
+        ),
+      ),
     ),
-  ),
+  ],
 ),
 const SizedBox(height: 14),
 Text(

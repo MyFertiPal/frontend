@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../generated/l10n/app_localizations.dart';
 import '../services/audio_service.dart';
@@ -121,9 +122,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Future<void> _loadProfile() async {
   try {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Read the profile image URL saved after upload
+    final savedAvatarUrl =
+        prefs.getString('profile_image_url') ?? '';
+
     final user = await _apiService.getUser();
 
     if (!mounted) return;
+
+    final backendAvatarUrl =
+        user["profile_image"]?.toString() ?? "";
+
+    // LocalStorage takes priority
+    final avatarUrl = savedAvatarUrl.isNotEmpty
+        ? savedAvatarUrl
+        : backendAvatarUrl;
 
     setState(() {
       _firstName =
@@ -131,15 +146,22 @@ Future<void> _loadProfile() async {
 
       _name =
           "${user["first_name"] ?? ""} "
-          "${user["last_name"] ?? ""}"
-              .trim();
+          "${user["last_name"] ?? ""}".trim();
 
-      _avatarUrl =
-          user["profile_image"]?.toString() ?? "";
+      _avatarUrl = avatarUrl;
     });
 
+    // If local storage was empty but backend has an image,
+    // save it locally for future use.
+    if (savedAvatarUrl.isEmpty && backendAvatarUrl.isNotEmpty) {
+      await prefs.setString(
+        'profile_image_url',
+        backendAvatarUrl,
+      );
+    }
+
     debugPrint(
-      "HOME PROFILE IMAGE URL: $_avatarUrl",
+      "HOME PROFILE IMAGE FROM LOCAL STORAGE: $_avatarUrl",
     );
   } catch (e) {
     debugPrint(
@@ -147,7 +169,6 @@ Future<void> _loadProfile() async {
     );
   }
 }
-
 
   Future<void> _reloadInsights() async {
 
@@ -191,6 +212,10 @@ Future<void> _loadProfile() async {
 
   Future<void> _loadHomeData() async {
   try {
+    final prefs = await SharedPreferences.getInstance();
+
+final savedAvatarUrl =
+    prefs.getString('profile_image_url') ?? '';
     final user = await _apiService.getUser();
 
     final profile = await _apiService.getProfile();
@@ -208,8 +233,9 @@ Future<void> _loadProfile() async {
             "${user["last_name"] ?? ""}"
                 .trim();
 
-        _avatarUrl =
-            user["profile_image"]?.toString() ?? "";
+     _avatarUrl = savedAvatarUrl.isNotEmpty
+    ? savedAvatarUrl
+    : user["profile_image"]?.toString() ?? "";
 
         _cycleLength =
             profile["cycle_length"] ?? 28;
@@ -248,8 +274,9 @@ Future<void> _loadProfile() async {
 
       // IMPORTANT:
       // This is the URL returned by the backend.
-      _avatarUrl =
-          user["profile_image"]?.toString() ?? "";
+     _avatarUrl = savedAvatarUrl.isNotEmpty
+    ? savedAvatarUrl
+    : user["profile_image"]?.toString() ?? "";
 
       // -----------------------------
       // PROFILE
