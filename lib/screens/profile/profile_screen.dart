@@ -153,6 +153,7 @@ String _selectedLanguage = "English";
 
 late bool _isPremium;
 bool _notificationsEnabled = true;
+bool _isProfileImageLoading = true;
 
 int _cyclesTracked = 0;
 int _symptomsLogged = 0;
@@ -202,29 +203,32 @@ Future<void> _loadProfile() async {
     if (!mounted) return;
 
     setState(() {
-      _name =
-          "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}"
-              .trim();
+  _name =
+      "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}"
+          .trim();
 
-      _avatarUrl = avatarUrl;
+  _avatarUrl = avatarUrl;
 
-      _selectedLanguage = _convertLanguageCode(
-        user["language_preference"] ?? "en",
-      );
+  _selectedLanguage = _convertLanguageCode(
+    user["language_preference"] ?? "en",
+  );
 
-      _isLoading = false;
-    });
+  _isLoading = false;
+  _isProfileImageLoading = false;
+});
   } catch (e) {
     debugPrint("Profile loading error: $e");
 
     if (!mounted) return;
 
-    setState(() {
-      _name = widget.name;
-      _selectedLanguage = widget.language;
-      _avatarUrl = "";
-      _isLoading = false;
-    });
+   setState(() {
+  _name = widget.name;
+  _selectedLanguage = widget.language;
+  _avatarUrl = "";
+
+  _isLoading = false;
+  _isProfileImageLoading = false;
+});
   }
 }
 String _convertLanguageCode(String code) {
@@ -738,43 +742,54 @@ Widget build(BuildContext context) {
   clipBehavior: Clip.none,
   children: [
     // Profile image
-    Container(
-      width: 104,
-      height: 104,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: const Color(0xFF3FA98A),
-          width: 3,
-        ),
-      ),
-      padding: const EdgeInsets.all(3),
-      child: ClipOval(
-        child: _selectedImage != null
-            ? FutureBuilder<List<int>>(
-                future: _selectedImage!.readAsBytes(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasData) {
-                    return Image.memory(
-                      Uint8List.fromList(snapshot.data!),
-                      fit: BoxFit.cover,
-                    );
-                  }
+   Container(
+  width: 104,
+  height: 104,
+  decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    border: Border.all(
+      color: const Color(0xFF3FA98A),
+      width: 3,
+    ),
+  ),
+  padding: const EdgeInsets.all(3),
+  child: ClipOval(
+    child: _selectedImage != null
+        ? FutureBuilder<Uint8List>(
+            future: _selectedImage!.readAsBytes(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Image.memory(
+                  snapshot.data!,
+                  fit: BoxFit.cover,
+                );
+              }
 
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Color(0xFF3FA98A),
-                    ),
-                  );
-                },
-              )
+              return const _ProfileImageSkeleton();
+            },
+          )
+        : _isProfileImageLoading
+            ? const _ProfileImageSkeleton()
             : _avatarUrl.isNotEmpty
                 ? Image.network(
                     _avatarUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
+                    loadingBuilder: (
+                      context,
+                      child,
+                      loadingProgress,
+                    ) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
+
+                      return const _ProfileImageSkeleton();
+                    },
+                    errorBuilder: (
+                      context,
+                      error,
+                      stackTrace,
+                    ) {
                       return Image.asset(
                         "assets/images/profile_placeholder.webp",
                         fit: BoxFit.cover,
@@ -785,8 +800,8 @@ Widget build(BuildContext context) {
                     "assets/images/profile_placeholder.webp",
                     fit: BoxFit.cover,
                   ),
-      ),
-    ),
+  ),
+),
 
     // Camera button
     Positioned(
@@ -983,7 +998,68 @@ context,
     );
   }
 }
+class _ProfileImageSkeleton extends StatefulWidget {
+  const _ProfileImageSkeleton();
 
+  @override
+  State<_ProfileImageSkeleton> createState() =>
+      _ProfileImageSkeletonState();
+}
+
+class _ProfileImageSkeletonState
+    extends State<_ProfileImageSkeleton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return ShaderMask(
+          blendMode: BlendMode.srcATop,
+          shaderCallback: (bounds) {
+            final position = _controller.value * 2 - 1;
+
+            return LinearGradient(
+              begin: Alignment(-1.0 + position, 0),
+              end: Alignment(position + 1.0, 0),
+              colors: const [
+                Color(0xFFBDBDBD),
+                Color(0xFFE0E0E0),
+                Color(0xFFBDBDBD),
+              ],
+              stops: const [
+                0.25,
+                0.5,
+                0.75,
+              ],
+            ).createShader(bounds);
+          },
+          child: Container(
+            color: const Color(0xFFBDBDBD),
+          ),
+        );
+      },
+    );
+  }
+}
 class _StatCard extends StatelessWidget {
   final ProfileStat stat;
 

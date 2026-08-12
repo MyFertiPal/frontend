@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _insightText = "";
 
   String? _currentLanguage;
-
+bool _isLoadingProfileImage = true;
 
   String _name = "User";
   String _firstName = "User";
@@ -124,6 +124,8 @@ Future<void> _loadProfile() async {
   try {
     final user = await _apiService.getUser();
 
+    debugPrint("HOME USER: $user");
+
     final userId = user["user_id"];
 
     if (userId == null) {
@@ -131,20 +133,31 @@ Future<void> _loadProfile() async {
       return;
     }
 
-    final profilePicture =
+    final pictureResponse =
         await _apiService.getProfilePicture(
       userId: userId.toString(),
     );
 
     debugPrint(
-      "HOME PROFILE PICTURE RESPONSE: $profilePicture",
+      "HOME PROFILE PICTURE RESPONSE: $pictureResponse",
     );
 
+    // Backend response:
+    // {
+    //   "data": {
+    //     "url": "https://..."
+    //   }
+    // }
+
+    final data =
+        pictureResponse["data"] as Map<String, dynamic>?;
+
     final avatarUrl =
-        profilePicture["url"]?.toString() ??
-        profilePicture["profile_image"]?.toString() ??
-        profilePicture["image_url"]?.toString() ??
-        "";
+        data?["url"]?.toString() ?? "";
+
+    debugPrint(
+      "HOME PROFILE PICTURE URL: $avatarUrl",
+    );
 
     if (!mounted) return;
 
@@ -158,10 +171,6 @@ Future<void> _loadProfile() async {
 
       _avatarUrl = avatarUrl;
     });
-
-    debugPrint(
-      "HOME PROFILE PICTURE URL: $_avatarUrl",
-    );
   } catch (e) {
     debugPrint(
       "HOME PROFILE ERROR: $e",
@@ -227,15 +236,16 @@ Future<void> _loadProfile() async {
       userId: userId.toString(),
     );
 
-    final avatarUrl =
-        profilePicture["url"]?.toString() ??
-        profilePicture["profile_image"]?.toString() ??
-        profilePicture["image_url"]?.toString() ??
-        "";
+    final data =
+    profilePicture["data"] as Map<String, dynamic>?;
 
-    debugPrint(
-      "HOME PROFILE PICTURE URL: $avatarUrl",
-    );
+final avatarUrl =
+    data?["url"]?.toString() ?? "";
+
+debugPrint(
+  "HOME PROFILE PICTURE URL: $avatarUrl",
+);
+
 
     if (!mounted) return;
 
@@ -485,12 +495,13 @@ Widget _buildHeader(BuildContext context) {
       children: [
 
 
-     ClipOval(
+   ClipOval(
   child: SizedBox(
     width: 56,
     height: 56,
-    child: _avatarUrl.isNotEmpty
-        ? Image.network(
+    child: _avatarUrl.isEmpty
+        ? const _HomeProfileSkeleton()
+        : Image.network(
             _avatarUrl,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
@@ -499,15 +510,9 @@ Widget _buildHeader(BuildContext context) {
                 fit: BoxFit.cover,
               );
             },
-          )
-        : Image.asset(
-            "assets/images/profile_placeholder.webp",
-            fit: BoxFit.cover,
           ),
   ),
 ),
-
-
         const SizedBox(width:12),
 
 
@@ -1826,4 +1831,47 @@ Widget _buildBookSpecialistSection(BuildContext context) {
 
 }
 
+}
+class _HomeProfileSkeleton extends StatefulWidget {
+  const _HomeProfileSkeleton();
+
+  @override
+  State<_HomeProfileSkeleton> createState() =>
+      _HomeProfileSkeletonState();
+}
+
+class _HomeProfileSkeletonState
+    extends State<_HomeProfileSkeleton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final opacity = 0.35 + (_controller.value * 0.35);
+
+        return Container(
+          color: Colors.grey.withOpacity(opacity),
+        );
+      },
+    );
+  }
 }
