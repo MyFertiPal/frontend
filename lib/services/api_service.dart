@@ -548,7 +548,7 @@ Future<Map<String, dynamic>> uploadProfilePicture({
   required XFile file,
 }) async {
   final uri = Uri.parse(
-    '$baseUrl/profile_picture/profile_picture/$userId/avatar',
+    '$baseUrl/profile_picture/$userId/avatar',
   );
 
   final request = http.MultipartRequest(
