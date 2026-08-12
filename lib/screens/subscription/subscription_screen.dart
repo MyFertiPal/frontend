@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../services/analytics_service.dart';
 
-class SubscriptionScreen extends StatelessWidget {
+class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
 
+  @override
+  State<SubscriptionScreen> createState() => _SubscriptionScreenState();
+}
+
+class _SubscriptionScreenState extends State<SubscriptionScreen> {
   static const Color headerBg = Color(0xFF163B30);
   static const Color premiumBg = Color(0xFF2F5C4A);
   static const Color gold = Color(0xFFE9B44C);
@@ -10,10 +16,15 @@ class SubscriptionScreen extends StatelessWidget {
   static const Color textDark = Color(0xFF163B30);
 
   @override
+  void initState() {
+    super.initState();
+    AnalyticsService.logScreenView(screenName: 'SubscriptionScreen');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
-
       appBar: AppBar(
         backgroundColor: headerBg,
         elevation: 0,
@@ -35,7 +46,6 @@ class SubscriptionScreen extends StatelessWidget {
           ),
         ),
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
@@ -50,9 +60,7 @@ class SubscriptionScreen extends StatelessWidget {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               const Text(
                 "Get more from MyFertiPal with Premium membership.",
                 style: TextStyle(
@@ -61,10 +69,7 @@ class SubscriptionScreen extends StatelessWidget {
                   height: 1.5,
                 ),
               ),
-
               const SizedBox(height: 28),
-
-              // Premium Plan Card
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(22),
@@ -89,7 +94,6 @@ class SubscriptionScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Premium badge
                     Row(
                       children: [
                         Container(
@@ -105,9 +109,7 @@ class SubscriptionScreen extends StatelessWidget {
                             size: 25,
                           ),
                         ),
-
                         const SizedBox(width: 12),
-
                         const Text(
                           "Premium",
                           style: TextStyle(
@@ -118,9 +120,7 @@ class SubscriptionScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 26),
-
                     const Text(
                       "₦2,000",
                       style: TextStyle(
@@ -129,9 +129,7 @@ class SubscriptionScreen extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       "Premium membership",
                       style: TextStyle(
@@ -139,36 +137,28 @@ class SubscriptionScreen extends StatelessWidget {
                         fontSize: 13,
                       ),
                     ),
-
                     const SizedBox(height: 24),
-
                     Divider(
                       color: Colors.white.withOpacity(0.15),
                       height: 1,
                     ),
-
                     const SizedBox(height: 20),
-
                     const _PremiumFeature(
                       icon: Icons.check_circle_outline,
                       text: "Premium membership access",
                     ),
-
                     const SizedBox(height: 14),
-
                     const _PremiumFeature(
                       icon: Icons.check_circle_outline,
                       text: "Enhanced MyFertiPal experience",
                     ),
-
                     const SizedBox(height: 28),
-
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Payment/subscription logic will be added here.
+                          AnalyticsService.logPayClicked('premium');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: gold,
@@ -190,9 +180,7 @@ class SubscriptionScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Center(
                 child: Text(
                   "Secure payment • Cancel anytime",
@@ -223,9 +211,9 @@ class _PremiumFeature extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(
-          Icons.check_circle_outline,
-          color: Color(0xFFE9B44C),
+        Icon(
+          icon,
+          color: const Color(0xFFE9B44C),
           size: 20,
         ),
         const SizedBox(width: 10),

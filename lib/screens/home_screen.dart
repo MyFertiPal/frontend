@@ -6,6 +6,7 @@ import '../generated/l10n/app_localizations.dart';
 import '../services/audio_service.dart';
 import '../theme/app_colors.dart';
 import '../services/api_service.dart';
+import '../services/analytics_service.dart';
 
 import '../screens/specialists/specialist_search_screen.dart';
 import "../screens/root_screen.dart";
@@ -56,6 +57,8 @@ bool _isLoadingProfileImage = true;
   @override
   void initState() {
     super.initState();
+
+    AnalyticsService.logScreenView(screenName: 'HomeScreen');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
 

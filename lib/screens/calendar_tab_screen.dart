@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
 import '../services/period_service.dart';
+import '../services/analytics_service.dart';
 import '../generated/l10n/app_localizations.dart';
 
 /// ============================================================
@@ -274,6 +275,9 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   void initState() {
     super.initState();
 
+    AnalyticsService.logScreenView(screenName: 'CalendarTabScreen');
+    AnalyticsService.logCalendarViewed();
+
     _visibleMonth = DateTime(
       widget.today.year,
       widget.today.month,
@@ -408,6 +412,10 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
             _stringValue(
           latest['fertile_period_end'],
         );
+
+        if (_fertileStart != null && _fertileEnd != null) {
+          AnalyticsService.logFertileWindowViewed();
+        }
       } catch (e) {
         debugPrint(
           'Insight parsing error: $e',

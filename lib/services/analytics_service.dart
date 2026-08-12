@@ -50,6 +50,24 @@ class AnalyticsService {
   static const String _eventReminderEnabled =
       'reminder_enabled';
 
+  static const String _eventGenderPredictionSelected =
+      'gender_prediction_selected';
+
+  static const String _eventProfilePictureUpdated =
+      'profile_picture_updated';
+
+  static const String _eventProfileDeleted =
+      'account_deleted';
+
+  static const String _eventArticleSearched =
+      'article_searched';
+
+  static const String _eventSupportCommunityJoined =
+      'support_community_joined';
+
+  static const String _eventSpecialistOpened =
+      'specialist_opened';
+
 
   // User properties
 
@@ -353,7 +371,18 @@ static Future<void> logLogin({
 
   }
 
-
+  static Future<void> logArticleSearched({
+    required String query,
+    required String language,
+  }) async {
+    await _analytics.logEvent(
+      name: _eventArticleSearched,
+      parameters: {
+        'query': query,
+        'language': language,
+      },
+    );
+  }
 
 
 
@@ -487,7 +516,15 @@ static Future<void> logLogin({
 
   }
 
-
+  static Future<void> logSupportCommunityJoined(
+      String source) async {
+    await _analytics.logEvent(
+      name: _eventSupportCommunityJoined,
+      parameters: {
+        'source': source,
+      },
+    );
+  }
 
 
 
@@ -573,7 +610,36 @@ static Future<void> logLogin({
 
   }
 
+  static Future<void> logGenderPredictionSelected(
+      String expectation) async {
+    await _analytics.logEvent(
+      name: _eventGenderPredictionSelected,
+      parameters: {
+        'expectation': expectation,
+      },
+    );
+  }
 
+  static Future<void> logProfilePictureUpdated() async {
+    await _analytics.logEvent(
+      name: _eventProfilePictureUpdated,
+    );
+  }
+
+  static Future<void> logAccountDeleted() async {
+    await _analytics.logEvent(
+      name: _eventProfileDeleted,
+    );
+  }
+
+  static Future<void> logSpecialistOpened(String specialistId) async {
+    await _analytics.logEvent(
+      name: _eventSpecialistOpened,
+      parameters: {
+        'specialist_id': specialistId,
+      },
+    );
+  }
 
 
   static Future<void> setUserId(

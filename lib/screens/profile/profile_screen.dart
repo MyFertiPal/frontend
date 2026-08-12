@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import "../../services/api_service.dart";
+import '../../services/analytics_service.dart';
 import "../profile/profile_setup_screen.dart";
 import '../../generated/l10n/app_localizations.dart';
 
@@ -269,6 +270,8 @@ String _languageCode(String language) {
 void initState() {
   super.initState();
 
+  AnalyticsService.logScreenView(screenName: 'ProfileScreen');
+
   _isPremium = widget.isPremiumMember;
 
   _loadProfile();
@@ -441,6 +444,8 @@ Future<void> _pickAndUploadProfilePicture() async {
 
     if (!mounted) return;
 
+    await AnalyticsService.logProfilePictureUpdated();
+
     setState(() {
       _avatarUrl = url;
       _selectedImage = null;
@@ -496,6 +501,7 @@ Future<void> _pickAndUploadProfilePicture() async {
       ),
     );
     if (confirmed == true) {
+      await AnalyticsService.logAccountDeleted();
       await _apiService.deleteUser();
 
 if(mounted){
@@ -581,6 +587,11 @@ Widget _buildUpgradeMembershipCard() {
     child: InkWell(
       borderRadius: BorderRadius.circular(20),
       onTap: () {
+        AnalyticsService.logCustomEvent(
+          'membership_opened',
+          parameters: {'source': 'profile'},
+        );
+
         Navigator.push(
           context,
           MaterialPageRoute(

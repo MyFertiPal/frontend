@@ -1,12 +1,23 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import "../../theme/app_colors.dart";
+import '../../services/analytics_service.dart';
 import '../../generated/l10n/app_localizations.dart';
 
 
-class SupportScreen extends StatelessWidget {
+class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
 
+  @override
+  State<SupportScreen> createState() => _SupportScreenState();
+}
+
+class _SupportScreenState extends State<SupportScreen> {
+  @override
+  void initState() {
+    super.initState();
+    AnalyticsService.logScreenView(screenName: 'SupportScreen');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -275,6 +286,8 @@ linkText: AppLocalizations.of(context).getEncouraged,
   }
 }
 Future<void> _openPodcast() async {
+  AnalyticsService.logSupportAudioListened('spotify_podcast');
+
   final uri = Uri.parse(
     "https://open.spotify.com/show/033Zg8LRmNhoSs58enrdGi?si=xe4U0RoVR3WXw1yLyZtzxA",
   );
@@ -287,6 +300,8 @@ Future<void> _openPodcast() async {
         
   
 Future<void> _openWhatsAppCommunity() async {
+  AnalyticsService.logSupportCommunityJoined('whatsapp');
+
   final uri = Uri.parse(
     "https://chat.whatsapp.com/G5bwLptRQXEAIRlfORKOmT",
   );

@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
+import '../../services/analytics_service.dart';
 import '../../generated/l10n/app_localizations.dart';
 
 /// Colors used across the screen.
@@ -193,6 +194,12 @@ class _LogSymptomsScreenState extends State<LogSymptomsScreen> {
   final Map<String, TextEditingController> _textControllers = {};
 
   @override
+  void initState() {
+    super.initState();
+    AnalyticsService.logScreenView(screenName: 'LogSymptomsScreen');
+  }
+
+  @override
 void didChangeDependencies() {
   super.didChangeDependencies();
   _symptoms = localizedSymptoms(context);
@@ -273,6 +280,10 @@ void didChangeDependencies() {
       symptoms: symptoms,
       severity: 0,
       notes: notes,
+    );
+
+    await AnalyticsService.logSymptomsLogged(
+      symptomCount: symptoms.length,
     );
 
     widget.onSave?.call(result);

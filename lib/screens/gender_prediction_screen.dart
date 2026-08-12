@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "../../theme/app_colors.dart";
 import "../../services/api_service.dart";
+import '../../services/analytics_service.dart';
 import '../../generated/l10n/app_localizations.dart';
 
 
@@ -36,6 +37,8 @@ class _GenderPredictionScreenState
   void _selectOption(
       GenderExpectation option
       ) {
+
+    AnalyticsService.logGenderPredictionSelected(option.name);
 
     setState(() {
       _selected = option;

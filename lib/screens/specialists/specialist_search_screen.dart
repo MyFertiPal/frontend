@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import 'specialist_profile_screen.dart';
 import '../../services/api_service.dart';
+import '../../services/analytics_service.dart';
 import '../payment/payment_screen.dart';
 import '../../generated/l10n/app_localizations.dart';
 
@@ -41,6 +42,7 @@ Future<void> _loadSpecialists() async {
 @override
 void initState() {
   super.initState();
+  AnalyticsService.logScreenView(screenName: 'SpecialistSearchScreen');
   _loadSpecialists();
 }
 
@@ -159,6 +161,8 @@ class _SpecialistCard extends StatelessWidget {
     final specialistId = data["id"];
 
     if (specialistId == null) return;
+
+    AnalyticsService.logSpecialistOpened(specialistId.toString());
 
     Navigator.push(
       context,
