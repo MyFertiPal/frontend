@@ -694,7 +694,34 @@ Future<Map<String, dynamic>> initiateBooking({
     rethrow;
   }
 }
+Future<Map<String, dynamic>> getProfilePicture({
+  required String userId,
+}) async {
+  final response = await http.get(
+    Uri.parse(
+      "$baseUrl/profile_picture/$userId/avatar",
+    ),
+    headers: await getHeaders(includeAuth: true),
+  );
 
+  debugPrint(
+    "GET PROFILE PICTURE STATUS: ${response.statusCode}",
+  );
+
+  debugPrint(
+    "GET PROFILE PICTURE RESPONSE: ${response.body}",
+  );
+
+  if (response.statusCode < 200 ||
+      response.statusCode >= 300) {
+    throw Exception(
+      "Failed to fetch profile picture: "
+      "${response.statusCode}",
+    );
+  }
+
+  return jsonDecode(response.body);
+}
 Future<Map<String, dynamic>> verifyBooking({
   required String reference,
   required String userId,

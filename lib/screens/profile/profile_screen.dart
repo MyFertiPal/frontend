@@ -1,12 +1,11 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import "../../services/api_service.dart";
 import "../profile/profile_setup_screen.dart";
 import '../../generated/l10n/app_localizations.dart';
-import "../../services/profile_image_picker.dart";
+
 import "../../screens/web/web_view_screen.dart";
 import "../subscription/subscription_screen.dart";
 import '../../providers/language_provider.dart';
@@ -107,7 +106,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  static const String _profileImageKey = 'profile_image_url';
+ 
   final List<String> _languages = const [
   'English',
   'Yoruba',
@@ -164,36 +163,48 @@ bool _isLoading = true;
 
 Future<void> _loadProfile() async {
   try {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Get the locally saved profile image URL
-    final savedAvatarUrl = prefs.getString(_profileImageKey);
-
     final user = await _apiService.getUser();
     final profile = await _apiService.getProfile();
 
     debugPrint("USER: $user");
     debugPrint("PROFILE: $profile");
-    debugPrint("LOCAL PROFILE IMAGE: $savedAvatarUrl");
+
+    final userId = profile["user_id"] ?? user["user_id"];
+
+    String avatarUrl = "";
+
+    if (userId != null) {
+      try {
+        final pictureResponse =
+            await _apiService.getProfilePicture(
+          userId: userId.toString(),
+        );
+
+        debugPrint(
+          "PROFILE PICTURE RESPONSE: $pictureResponse",
+        );
+
+        final data =
+            pictureResponse["data"] as Map<String, dynamic>?;
+
+        avatarUrl = data?["url"]?.toString() ?? "";
+
+        debugPrint(
+          "PROFILE PICTURE URL: $avatarUrl",
+        );
+      } catch (e) {
+        debugPrint(
+          "Profile picture could not be loaded: $e",
+        );
+      }
+    }
 
     if (!mounted) return;
 
-    // Prefer the URL saved in local storage.
-    // Fall back to the backend URL if nothing is saved locally.
-    final backendAvatarUrl =
-        (user["profile_image"] ?? "").toString();
-
-    final localAvatarUrl =
-        savedAvatarUrl?.trim() ?? "";
-
-    final avatarUrl = localAvatarUrl.isNotEmpty
-        ? localAvatarUrl
-        : backendAvatarUrl;
-
     setState(() {
-      // Account data
       _name =
-          "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}".trim();
+          "${user["first_name"] ?? ""} ${user["last_name"] ?? ""}"
+              .trim();
 
       _avatarUrl = avatarUrl;
 
@@ -203,19 +214,6 @@ Future<void> _loadProfile() async {
 
       _isLoading = false;
     });
-
-    // If there was no local URL but the backend has one,
-    // save the backend URL locally for future use.
-    if (localAvatarUrl.isEmpty && backendAvatarUrl.isNotEmpty) {
-      await prefs.setString(
-        _profileImageKey,
-        backendAvatarUrl,
-      );
-
-      debugPrint(
-        "BACKEND PROFILE IMAGE SAVED LOCALLY: $backendAvatarUrl",
-      );
-    }
   } catch (e) {
     debugPrint("Profile loading error: $e");
 
@@ -224,11 +222,11 @@ Future<void> _loadProfile() async {
     setState(() {
       _name = widget.name;
       _selectedLanguage = widget.language;
+      _avatarUrl = "";
       _isLoading = false;
     });
   }
 }
-
 String _convertLanguageCode(String code) {
   switch (code.toLowerCase()) {
     case "en":
@@ -378,14 +376,15 @@ Future<void> _pickAndUploadProfilePicture() async {
 
     if (image == null) return;
 
-    // Get user ID from profile
     final profile = await _apiService.getProfile();
     final userId = profile["user_id"];
 
     debugPrint("PROFILE USER ID: $userId");
 
     if (userId == null) {
-      throw Exception("Unable to determine user ID from profile.");
+      throw Exception(
+        "Unable to determine user ID from profile.",
+      );
     }
 
     if (!mounted) return;
@@ -400,16 +399,29 @@ Future<void> _pickAndUploadProfilePicture() async {
       ),
     );
 
-    // Upload image
-    final response = await _apiService.uploadProfilePicture(
+    // Upload the image
+    final uploadResponse =
+        await _apiService.uploadProfilePicture(
       userId: userId.toString(),
       file: image,
     );
 
-    debugPrint("PROFILE IMAGE UPLOAD RESPONSE: $response");
+    debugPrint(
+      "PROFILE IMAGE UPLOAD RESPONSE: $uploadResponse",
+    );
 
-    // Get URL from POST response
-    final data = response["data"] as Map<String, dynamic>?;
+    // Now fetch the official/current URL from the backend
+    final pictureResponse =
+        await _apiService.getProfilePicture(
+      userId: userId.toString(),
+    );
+
+    debugPrint(
+      "PROFILE IMAGE GET RESPONSE: $pictureResponse",
+    );
+
+    final data =
+        pictureResponse["data"] as Map<String, dynamic>?;
 
     final url = data?["url"]?.toString();
 
@@ -419,22 +431,12 @@ Future<void> _pickAndUploadProfilePicture() async {
       );
     }
 
-    debugPrint("NEW PROFILE IMAGE URL: $url");
-
-    // Save the NEW URL locally.
-    // setString automatically replaces the previous URL.
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-      _profileImageKey,
-      url,
+    debugPrint(
+      "CURRENT PROFILE IMAGE URL: $url",
     );
-
-    debugPrint("PROFILE IMAGE URL SAVED LOCALLY: $url");
 
     if (!mounted) return;
 
-    // Immediately display the new URL
     setState(() {
       _avatarUrl = url;
       _selectedImage = null;
@@ -448,7 +450,9 @@ Future<void> _pickAndUploadProfilePicture() async {
       ),
     );
   } catch (e) {
-    debugPrint("Profile picture error: $e");
+    debugPrint(
+      "Profile picture error: $e",
+    );
 
     if (!mounted) return;
 

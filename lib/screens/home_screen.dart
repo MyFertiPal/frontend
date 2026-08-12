@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 import '../generated/l10n/app_localizations.dart';
 import '../services/audio_service.dart';
@@ -122,23 +122,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Future<void> _loadProfile() async {
   try {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Read the profile image URL saved after upload
-    final savedAvatarUrl =
-        prefs.getString('profile_image_url') ?? '';
-
     final user = await _apiService.getUser();
 
+    final userId = user["user_id"];
+
+    if (userId == null) {
+      debugPrint("HOME: user_id not found");
+      return;
+    }
+
+    final profilePicture =
+        await _apiService.getProfilePicture(
+      userId: userId.toString(),
+    );
+
+    debugPrint(
+      "HOME PROFILE PICTURE RESPONSE: $profilePicture",
+    );
+
+    final avatarUrl =
+        profilePicture["url"]?.toString() ??
+        profilePicture["profile_image"]?.toString() ??
+        profilePicture["image_url"]?.toString() ??
+        "";
+
     if (!mounted) return;
-
-    final backendAvatarUrl =
-        user["profile_image"]?.toString() ?? "";
-
-    // LocalStorage takes priority
-    final avatarUrl = savedAvatarUrl.isNotEmpty
-        ? savedAvatarUrl
-        : backendAvatarUrl;
 
     setState(() {
       _firstName =
@@ -151,17 +159,8 @@ Future<void> _loadProfile() async {
       _avatarUrl = avatarUrl;
     });
 
-    // If local storage was empty but backend has an image,
-    // save it locally for future use.
-    if (savedAvatarUrl.isEmpty && backendAvatarUrl.isNotEmpty) {
-      await prefs.setString(
-        'profile_image_url',
-        backendAvatarUrl,
-      );
-    }
-
     debugPrint(
-      "HOME PROFILE IMAGE FROM LOCAL STORAGE: $_avatarUrl",
+      "HOME PROFILE PICTURE URL: $_avatarUrl",
     );
   } catch (e) {
     debugPrint(
@@ -169,7 +168,6 @@ Future<void> _loadProfile() async {
     );
   }
 }
-
   Future<void> _reloadInsights() async {
 
     try {
@@ -210,77 +208,46 @@ Future<void> _loadProfile() async {
 
 
 
-  Future<void> _loadHomeData() async {
+ Future<void> _loadHomeData() async {
   try {
-    final prefs = await SharedPreferences.getInstance();
-
-final savedAvatarUrl =
-    prefs.getString('profile_image_url') ?? '';
     final user = await _apiService.getUser();
+
+    final userId = user["user_id"];
+
+    if (userId == null) {
+      throw Exception("User ID not found");
+    }
 
     final profile = await _apiService.getProfile();
 
     final predictions = await _apiService.getInsights();
 
-    if (predictions.isEmpty) {
-      if (!mounted) return;
+    final profilePicture =
+        await _apiService.getProfilePicture(
+      userId: userId.toString(),
+    );
 
-      setState(() {
-        _firstName = user["first_name"]?.toString() ?? "User";
+    final avatarUrl =
+        profilePicture["url"]?.toString() ??
+        profilePicture["profile_image"]?.toString() ??
+        profilePicture["image_url"]?.toString() ??
+        "";
 
-        _name =
-            "${user["first_name"] ?? ""} "
-            "${user["last_name"] ?? ""}"
-                .trim();
-
-     _avatarUrl = savedAvatarUrl.isNotEmpty
-    ? savedAvatarUrl
-    : user["profile_image"]?.toString() ?? "";
-
-        _cycleLength =
-            profile["cycle_length"] ?? 28;
-
-        _periodLength =
-            profile["period_length"] ?? 5;
-
-        if (profile["last_period_date"] != null) {
-          _lastPeriodDate = DateTime.parse(
-            profile["last_period_date"].toString(),
-          );
-        }
-
-        _isLoading = false;
-      });
-
-      return;
-    }
-
-    final prediction = predictions.first;
+    debugPrint(
+      "HOME PROFILE PICTURE URL: $avatarUrl",
+    );
 
     if (!mounted) return;
 
     setState(() {
-      // -----------------------------
-      // USER
-      // -----------------------------
-
       _firstName =
           user["first_name"]?.toString() ?? "User";
 
       _name =
           "${user["first_name"] ?? ""} "
-          "${user["last_name"] ?? ""}"
-              .trim();
+          "${user["last_name"] ?? ""}".trim();
 
-      // IMPORTANT:
-      // This is the URL returned by the backend.
-     _avatarUrl = savedAvatarUrl.isNotEmpty
-    ? savedAvatarUrl
-    : user["profile_image"]?.toString() ?? "";
-
-      // -----------------------------
-      // PROFILE
-      // -----------------------------
+      _avatarUrl = avatarUrl;
 
       _cycleLength =
           profile["cycle_length"] ?? 28;
@@ -294,41 +261,38 @@ final savedAvatarUrl =
         );
       }
 
-      // -----------------------------
-      // PREDICTIONS
-      // -----------------------------
+      if (predictions.isNotEmpty) {
+        final prediction = predictions.first;
 
-      if (prediction["fertile_period_start"] != null) {
-        _fertileStart = DateTime.parse(
-          prediction["fertile_period_start"].toString(),
-        );
-      }
+        if (prediction["fertile_period_start"] != null) {
+          _fertileStart = DateTime.parse(
+            prediction["fertile_period_start"].toString(),
+          );
+        }
 
-      if (prediction["fertile_period_end"] != null) {
-        _fertileEnd = DateTime.parse(
-          prediction["fertile_period_end"].toString(),
-        );
-      }
+        if (prediction["fertile_period_end"] != null) {
+          _fertileEnd = DateTime.parse(
+            prediction["fertile_period_end"].toString(),
+          );
+        }
 
-      if (prediction["ovulation_day"] != null) {
-        _ovulationDate = DateTime.parse(
-          prediction["ovulation_day"].toString(),
-        );
-      }
+        if (prediction["ovulation_day"] != null) {
+          _ovulationDate = DateTime.parse(
+            prediction["ovulation_day"].toString(),
+          );
+        }
 
-      if (prediction["next_period"] != null) {
-        _nextPeriod = DateTime.parse(
-          prediction["next_period"].toString(),
-        );
+        if (prediction["next_period"] != null) {
+          _nextPeriod = DateTime.parse(
+            prediction["next_period"].toString(),
+          );
+        }
       }
 
       _isLoading = false;
     });
 
-    // Load insight separately.
     await _reloadInsights();
-
-    debugPrint("HOME PROFILE IMAGE URL: $_avatarUrl");
   } catch (e) {
     debugPrint("HOME ERROR: $e");
 
@@ -339,8 +303,6 @@ final savedAvatarUrl =
     }
   }
 }
-
-
 
   String _currentPhase(BuildContext context) {
 
