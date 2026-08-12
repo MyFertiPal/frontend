@@ -120,63 +120,7 @@ bool _isLoadingProfileImage = true;
 
   }
 
-Future<void> _loadProfile() async {
-  try {
-    final user = await _apiService.getUser();
 
-    debugPrint("HOME USER: $user");
-
-    final userId = user["user_id"];
-
-    if (userId == null) {
-      debugPrint("HOME: user_id not found");
-      return;
-    }
-
-    final pictureResponse =
-        await _apiService.getProfilePicture(
-      userId: userId.toString(),
-    );
-
-    debugPrint(
-      "HOME PROFILE PICTURE RESPONSE: $pictureResponse",
-    );
-
-    // Backend response:
-    // {
-    //   "data": {
-    //     "url": "https://..."
-    //   }
-    // }
-
-    final data =
-        pictureResponse["data"] as Map<String, dynamic>?;
-
-    final avatarUrl =
-        data?["url"]?.toString() ?? "";
-
-    debugPrint(
-      "HOME PROFILE PICTURE URL: $avatarUrl",
-    );
-
-    if (!mounted) return;
-
-    setState(() {
-      _firstName =
-          user["first_name"]?.toString() ?? "User";
-
-      _name =
-          "${user["first_name"] ?? ""} "
-          "${user["last_name"] ?? ""}".trim();
-
-      _avatarUrl = avatarUrl;
-    });
-  } catch (e) {
-    debugPrint(
-      "HOME PROFILE ERROR: $e",
-    );
-  }
-}
   Future<void> _reloadInsights() async {
 
     try {
@@ -220,32 +164,34 @@ Future<void> _loadProfile() async {
  Future<void> _loadHomeData() async {
   try {
     final user = await _apiService.getUser();
-
-    final userId = user["user_id"];
-
-    if (userId == null) {
-      throw Exception("User ID not found");
-    }
-
     final profile = await _apiService.getProfile();
 
-    final predictions = await _apiService.getInsights();
+    debugPrint("HOME USER: $user");
+    debugPrint("HOME PROFILE: $profile");
 
-    final profilePicture =
-        await _apiService.getProfilePicture(
+    final userId = profile["user_id"];
+
+    if (userId == null) {
+      throw Exception("User ID not found in profile");
+    }
+
+    // Load profile picture
+    final profilePicture = await _apiService.getProfilePicture(
       userId: userId.toString(),
     );
 
     final data =
-    profilePicture["data"] as Map<String, dynamic>?;
+        profilePicture["data"] as Map<String, dynamic>?;
 
-final avatarUrl =
-    data?["url"]?.toString() ?? "";
+    final avatarUrl =
+        data?["url"]?.toString() ?? "";
 
-debugPrint(
-  "HOME PROFILE PICTURE URL: $avatarUrl",
-);
+    debugPrint("HOME PROFILE PICTURE URL: $avatarUrl");
 
+    // Load fertility predictions
+    final predictions = await _apiService.getInsights();
+
+    debugPrint("HOME INSIGHTS: $predictions");
 
     if (!mounted) return;
 
@@ -260,51 +206,68 @@ debugPrint(
       _avatarUrl = avatarUrl;
 
       _cycleLength =
-          profile["cycle_length"] ?? 28;
+          int.tryParse(
+                profile["cycle_length"]?.toString() ?? "",
+              ) ??
+              28;
 
       _periodLength =
-          profile["period_length"] ?? 5;
+          int.tryParse(
+                profile["period_length"]?.toString() ?? "",
+              ) ??
+              5;
 
+      // Last period
       if (profile["last_period_date"] != null) {
-        _lastPeriodDate = DateTime.parse(
+        _lastPeriodDate = DateTime.tryParse(
           profile["last_period_date"].toString(),
         );
       }
 
+      // Fertility predictions
       if (predictions.isNotEmpty) {
         final prediction = predictions.first;
 
         if (prediction["fertile_period_start"] != null) {
-          _fertileStart = DateTime.parse(
+          _fertileStart = DateTime.tryParse(
             prediction["fertile_period_start"].toString(),
           );
         }
 
         if (prediction["fertile_period_end"] != null) {
-          _fertileEnd = DateTime.parse(
+          _fertileEnd = DateTime.tryParse(
             prediction["fertile_period_end"].toString(),
           );
         }
 
         if (prediction["ovulation_day"] != null) {
-          _ovulationDate = DateTime.parse(
+          _ovulationDate = DateTime.tryParse(
             prediction["ovulation_day"].toString(),
           );
         }
 
         if (prediction["next_period"] != null) {
-          _nextPeriod = DateTime.parse(
+          _nextPeriod = DateTime.tryParse(
             prediction["next_period"].toString(),
           );
         }
+
+        // Insight text
+        _insightText =
+            prediction["insight_text"]?.toString() ?? "";
       }
 
       _isLoading = false;
     });
 
-    await _reloadInsights();
-  } catch (e) {
+    // Make sure localized/default insight is loaded if backend
+    // didn't provide one.
+    if (_insightText.isEmpty) {
+      await _reloadInsights();
+    }
+  } catch (e, stackTrace) {
     debugPrint("HOME ERROR: $e");
+    debugPrint("$stackTrace");
 
     if (mounted) {
       setState(() {
@@ -313,7 +276,6 @@ debugPrint(
     }
   }
 }
-
   String _currentPhase(BuildContext context) {
 
     final today = DateTime(
@@ -581,7 +543,7 @@ Widget _buildHeader(BuildContext context) {
               BorderRadius.circular(24),
 
 
-         onTap: () async {
+        onTap: () async {
   await Navigator.push(
     context,
     MaterialPageRoute(
@@ -593,8 +555,9 @@ Widget _buildHeader(BuildContext context) {
     ),
   );
 
-  // Reload profile after returning.
-  await _loadProfile();
+  if (!mounted) return;
+
+  await _loadHomeData();
 },
 
 
