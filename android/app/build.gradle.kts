@@ -1,6 +1,26 @@
 import java.io.FileInputStream
 import java.util.Properties
 
+fun autoVersionCode(): Int {
+    return try {
+        val repoRoot = rootDir.parentFile.absolutePath
+        val process = ProcessBuilder("git", "-C", repoRoot, "rev-list", "--count", "HEAD")
+            .redirectErrorStream(true)
+            .start()
+
+        val output = process.inputStream.bufferedReader().readText().trim()
+        val exitCode = process.waitFor()
+
+        if (exitCode == 0 && output.isNotEmpty()) {
+            output.toInt()
+        } else {
+            1
+        }
+    } catch (_: Exception) {
+        1
+    }
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -45,7 +65,7 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
+        versionCode = autoVersionCode()
         versionName = flutter.versionName
     }
 

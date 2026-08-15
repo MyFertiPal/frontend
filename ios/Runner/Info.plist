@@ -30,6 +30,7 @@
 				<key>CFBundleURLSchemes</key>
 				<array>
 					<string>com.googleusercontent.apps.293422244200-tpc624au7p7iprjrdqs975qveka1tlo6</string>
+					<string>myfertipal</string>
 				</array>
 			</dict>
 		</array>

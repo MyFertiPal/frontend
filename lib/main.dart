@@ -32,6 +32,11 @@ import "services/notification_manager.dart";
 import "theme/app_theme.dart";
 import "utils/url_strategy.dart";
 
+const kPaystackCallbackUrl =
+    "https://teamnexuss.netlify.app/booking/payment-callback";
+const kAppCustomScheme = "myfertipal";
+const kPaymentSuccessPath = "/payment/success";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -105,8 +110,52 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  void _showPaymentSuccessDialog() {
+    final context = _navigatorKey.currentContext;
+    if (context == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) {
+          return AlertDialog(
+            title: const Text('Payment successful'),
+            content: const Text(
+              'Your consultation booking has been confirmed. '
+              'You can now continue to your Calendly session.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: const Text('Continue'),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
+
   void _handleIncomingUri(Uri uri) async {
     debugPrint('Incoming URI: $uri');
+
+    final isPaymentCallback =
+        (uri.scheme == 'https' &&
+            uri.host == 'teamnexuss.netlify.app' &&
+            uri.path == '/booking/payment-callback') ||
+        (uri.scheme == kAppCustomScheme &&
+            uri.host == 'payment' &&
+            uri.path == kPaymentSuccessPath);
+
+    if (isPaymentCallback) {
+      _showPaymentSuccessDialog();
+      return;
+    }
 
     // -------------------------
     // OAuth LOGIN FLOW
