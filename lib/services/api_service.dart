@@ -918,14 +918,24 @@ Future<List<dynamic>> searchArticles({
       "$baseUrl/articles/search",
     ).replace(
       queryParameters: {
-        "q": query,
+        "q": query.trim(),
         "lang": lang,
       },
     );
 
+    debugPrint("SEARCH URL: $uri");
+
     final response = await http.get(
       uri,
       headers: await getHeaders(includeAuth: true),
+    );
+
+    debugPrint(
+      "SEARCH STATUS: ${response.statusCode}",
+    );
+
+    debugPrint(
+      "SEARCH RESPONSE: ${response.body}",
     );
 
     if (response.statusCode == 200) {
@@ -935,17 +945,22 @@ Future<List<dynamic>> searchArticles({
         return data;
       }
 
-      throw Exception("Invalid article search response");
+      throw Exception(
+        "Invalid article search response",
+      );
     }
 
     throw Exception(
-      "Article search failed: ${response.statusCode}",
+      "Article search failed: "
+      "${response.statusCode} ${response.body}",
     );
   } catch (e) {
+    debugPrint(
+      "SEARCH ARTICLES ERROR: $e",
+    );
     rethrow;
   }
 }
-
   // Logout
   Future<void> logout() async {
     try {

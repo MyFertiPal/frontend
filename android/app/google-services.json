@@ -14,27 +14,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "293422244200-7k52438ana61b6gas9mq4eu5rnhj9k3i.apps.googleusercontent.com",
+          "client_id": "293422244200-iroshle480th6v9s4eqtfdh3hs3lc5c5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.myfertipall.app",
-            "certificate_hash": "f271175509c60eef238eb421da036b76a00ea500"
+            "certificate_hash": "5a36f29c04b662c11392eb57723596b2d58acf35"
           }
         },
         {
-          "client_id": "293422244200-ciaei8d5275laooko0bp81brhh67ibt2.apps.googleusercontent.com",
+          "client_id": "293422244200-o0llehhm85kj1n54ajmguj5b4sdh5psl.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.myfertipall.app",
-            "certificate_hash": "cc4a3ae7e2da41381a4573ead0d6239a154587f7"
-          }
-        },
-        {
-          "client_id": "293422244200-r50n2hilag0mjkd779n1dgciu0g8rp0p.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.myfertipall.app",
-            "certificate_hash": "1e1d1b3b4f16c9dea1a2ab4fe67e1b2de22df94d"
+            "certificate_hash": "b4acd654a75e58593218de4e42aea8864cb2b2d5"
           }
         },
         {
@@ -55,10 +47,10 @@
               "client_type": 3
             },
             {
-              "client_id": "293422244200-gec3busnh009dacb1oam6bh2emq35jp4.apps.googleusercontent.com",
+              "client_id": "293422244200-tpc624au7p7iprjrdqs975qveka1tlo6.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.nexusFertilityApp"
+                "bundle_id": "com.myfertipall.app"
               }
             }
           ]
