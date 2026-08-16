@@ -382,7 +382,157 @@ Future<List<dynamic>> generateInsights({
       rethrow;
     }
   }
+// ===============================
+// SUBSCRIPTION
+// ===============================
 
+/// Initiate a premium subscription
+/// POST /subscriptions/initiate_subscription
+Future<Map<String, dynamic>> initiateSubscription() async {
+  try {
+    final response = await http.post(
+      Uri.parse("$baseUrl/subscriptions/initiate_subscription"),
+      headers: await getHeaders(includeAuth: true),
+    );
+
+    debugPrint(
+      "INITIATE SUBSCRIPTION STATUS: ${response.statusCode}",
+    );
+
+    debugPrint(
+      "INITIATE SUBSCRIPTION RESPONSE: ${response.body}",
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    }
+
+    throw Exception(
+      "Failed to initiate subscription: "
+      "${response.statusCode} ${response.body}",
+    );
+  } catch (e) {
+    debugPrint("INITIATE SUBSCRIPTION ERROR: $e");
+    rethrow;
+  }
+}
+
+/// Verify a premium subscription
+/// POST /subscriptions/verify_subscription
+Future<Map<String, dynamic>> verifySubscription({
+  required String reference,
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse("$baseUrl/subscriptions/verify_subscription"),
+      headers: await getHeaders(includeAuth: true),
+      body: jsonEncode({
+        "reference": reference,
+      }),
+    );
+
+    debugPrint(
+      "VERIFY SUBSCRIPTION STATUS: ${response.statusCode}",
+    );
+
+    debugPrint(
+      "VERIFY SUBSCRIPTION RESPONSE: ${response.body}",
+    );
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    }
+
+    throw Exception(
+      "Failed to verify subscription: "
+      "${response.statusCode} ${response.body}",
+    );
+  } catch (e) {
+    debugPrint(
+      "VERIFY SUBSCRIPTION ERROR: $e",
+    );
+    rethrow;
+  }
+}
+/// Cancel/end a subscription through webhook
+/// POST /subscriptions/webhook
+/// Requirement: user_id
+Future<Map<String, dynamic>> cancelSubscription({
+  required String userId,
+}) async {
+  try {
+    final response = await http.post(
+      Uri.parse("$baseUrl/subscriptions/webhook"),
+      headers: await getHeaders(includeAuth: true),
+      body: jsonEncode({
+        "user_id": userId,
+      }),
+    );
+
+    debugPrint(
+      "CANCEL SUBSCRIPTION STATUS: ${response.statusCode}",
+    );
+
+    debugPrint(
+      "CANCEL SUBSCRIPTION RESPONSE: ${response.body}",
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    }
+
+    throw Exception(
+      "Failed to cancel subscription: "
+      "${response.statusCode} ${response.body}",
+    );
+  } catch (e) {
+    debugPrint("CANCEL SUBSCRIPTION ERROR: $e");
+    rethrow;
+  }
+}
+Future<Map<String, dynamic>> getTodayInsight({
+  String? lang,
+}) async {
+  try {
+    final uri = Uri.parse(
+      "$baseUrl/today",
+    ).replace(
+      queryParameters: lang != null
+          ? {"lang": lang}
+          : null,
+    );
+
+    final response = await http.get(
+      uri,
+      headers: await getHeaders(includeAuth: true),
+    );
+
+    debugPrint(
+      "TODAY INSIGHT STATUS: ${response.statusCode}",
+    );
+
+    debugPrint(
+      "TODAY INSIGHT RESPONSE: ${response.body}",
+    );
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      return jsonDecode(response.body)
+          as Map<String, dynamic>;
+    }
+
+    throw Exception(
+      "Failed to get today's insight: "
+      "${response.statusCode} ${response.body}",
+    );
+  } catch (e) {
+    debugPrint(
+      "TODAY INSIGHT ERROR: $e",
+    );
+    rethrow;
+  }
+}
   // Login - Primary endpoint only
   Future<Map<String, dynamic>> login({
     required String email,

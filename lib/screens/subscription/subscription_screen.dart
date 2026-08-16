@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/analytics_service.dart';
+import '../../services/api_service.dart';
+import 'subscription_payment_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -14,6 +16,109 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   static const Color gold = Color(0xFFE9B44C);
   static const Color background = Color(0xFFF7F7F5);
   static const Color textDark = Color(0xFF163B30);
+bool _isLoading = false;
+
+  Future<void> _upgradeToPremium() async {
+  if (_isLoading) return;
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  AnalyticsService.logPayClicked('premium');
+
+  try {
+    debugPrint(
+      "STARTING PREMIUM SUBSCRIPTION...",
+    );
+
+    final result =
+        await ApiService().initiateSubscription();
+
+    debugPrint(
+      "INITIATE SUBSCRIPTION RESULT: $result",
+    );
+
+    final paymentUrl =
+        result['authorization_url']?.toString();
+
+    final reference =
+        result['reference']?.toString();
+
+    if (paymentUrl == null || paymentUrl.isEmpty) {
+      throw Exception(
+        'Payment URL was not returned by the server.',
+      );
+    }
+
+    if (reference == null || reference.isEmpty) {
+      throw Exception(
+        'Subscription reference was not returned by the server.',
+      );
+    }
+
+    debugPrint(
+      "PAYMENT URL: $paymentUrl",
+    );
+
+    debugPrint(
+      "PAYMENT REFERENCE: $reference",
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    final paymentCompleted =
+        await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) =>
+            SubscriptionPaymentScreen(
+          paymentUrl: paymentUrl,
+          reference: reference,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    debugPrint(
+      "PAYMENT SCREEN RESULT: $paymentCompleted",
+    );
+
+    if (paymentCompleted == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Welcome to Premium! Your subscription is now active.',
+          ),
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
+  } catch (e) {
+    debugPrint(
+      "START SUBSCRIPTION ERROR: $e",
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Unable to start your subscription. Please try again.',
+        ),
+        duration: Duration(seconds: 4),
+      ),
+    );
+  }
+}
 
   @override
   void initState() {
@@ -157,9 +262,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () {
-                          AnalyticsService.logPayClicked('premium');
-                        },
+                        onPressed: _isLoading
+    ? null
+    : _upgradeToPremium,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: gold,
                           foregroundColor: headerBg,
@@ -168,13 +273,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        child: const Text(
-                          "Upgrade Now",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
+                        child: _isLoading
+    ? const SizedBox(
+        width: 22,
+        height: 22,
+        child: CircularProgressIndicator(
+          strokeWidth: 2.5,
+        ),
+      )
+    : const Text(
+        "Upgrade Now",
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
                       ),
                     ),
                   ],

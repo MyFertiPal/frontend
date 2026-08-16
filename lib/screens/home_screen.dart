@@ -36,6 +36,7 @@ bool _isLoadingProfileImage = true;
   String _name = "User";
   String _firstName = "User";
   String _avatarUrl = "";
+  int _currentCycleDay = 1;
 
 
   int _cycleLength = 28;
@@ -124,41 +125,38 @@ bool _isLoadingProfileImage = true;
   }
 
 
-  Future<void> _reloadInsights() async {
+ Future<void> _reloadInsights() async {
+  try {
+    final language =
+        Localizations.localeOf(context).languageCode;
 
-    try {
+    final todayInsight =
+        await _apiService.getTodayInsight(
+      lang: language,
+    );
 
+    if (!mounted) return;
 
-      final insights =
-          await _apiService.getInsights();
+    setState(() {
+      _currentCycleDay =
+          int.tryParse(
+                todayInsight["current_cycle_day"]
+                    ?.toString() ??
+                    "",
+              ) ??
+              _currentCycleDay;
 
-
-      if (!mounted) return;
-
-
-      setState(() {
-
-        if (insights.isNotEmpty) {
-
-          _insightText =
-              insights.first["insight_text"] ??
-              AppLocalizations.of(context)
-                  .defaultInsight;
-
-        }
-
-      });
-
-
-    } catch(e) {
-
-      debugPrint(
-        "INSIGHT RELOAD ERROR: $e",
-      );
-
-    }
-
+      _insightText =
+          todayInsight["daily_insight"]
+              ?.toString() ??
+          "";
+    });
+  } catch (e) {
+    debugPrint(
+      "TODAY INSIGHT RELOAD ERROR: $e",
+    );
   }
+}
 
 
 
@@ -178,8 +176,12 @@ bool _isLoadingProfileImage = true;
       throw Exception("User ID not found in profile");
     }
 
-    // Load profile picture
-    final profilePicture = await _apiService.getProfilePicture(
+    // -----------------------------
+    // Profile picture
+    // -----------------------------
+
+    final profilePicture =
+        await _apiService.getProfilePicture(
       userId: userId.toString(),
     );
 
@@ -189,16 +191,41 @@ bool _isLoadingProfileImage = true;
     final avatarUrl =
         data?["url"]?.toString() ?? "";
 
-    debugPrint("HOME PROFILE PICTURE URL: $avatarUrl");
+    debugPrint(
+      "HOME PROFILE PICTURE URL: $avatarUrl",
+    );
 
-    // Load fertility predictions
-    final predictions = await _apiService.getInsights();
+    // -----------------------------
+    // Fertility predictions
+    // -----------------------------
 
-    debugPrint("HOME INSIGHTS: $predictions");
+    final predictions =
+        await _apiService.getInsights();
+
+    debugPrint(
+      "HOME INSIGHTS: $predictions",
+    );
+
+    // -----------------------------
+    // Today's cycle information
+    // -----------------------------
+
+    final language =
+        Localizations.localeOf(context).languageCode;
+
+    final todayInsight =
+        await _apiService.getTodayInsight(
+      lang: language,
+    );
+
+    debugPrint(
+      "HOME TODAY INSIGHT: $todayInsight",
+    );
 
     if (!mounted) return;
 
     setState(() {
+      // User
       _firstName =
           user["first_name"]?.toString() ?? "User";
 
@@ -206,8 +233,10 @@ bool _isLoadingProfileImage = true;
           "${user["first_name"] ?? ""} "
           "${user["last_name"] ?? ""}".trim();
 
+      // Avatar
       _avatarUrl = avatarUrl;
 
+      // Profile cycle information
       _cycleLength =
           int.tryParse(
                 profile["cycle_length"]?.toString() ?? "",
@@ -222,52 +251,72 @@ bool _isLoadingProfileImage = true;
 
       // Last period
       if (profile["last_period_date"] != null) {
-        _lastPeriodDate = DateTime.tryParse(
+        _lastPeriodDate =
+            DateTime.tryParse(
           profile["last_period_date"].toString(),
         );
       }
 
+      // -----------------------------
+      // TODAY ENDPOINT
+      // -----------------------------
+
+      _currentCycleDay =
+          int.tryParse(
+                todayInsight["current_cycle_day"]
+                        ?.toString() ??
+                    "",
+              ) ??
+              1;
+
+      _insightText =
+          todayInsight["daily_insight"]
+                  ?.toString() ??
+              "";
+
+      // -----------------------------
       // Fertility predictions
+      // -----------------------------
+
       if (predictions.isNotEmpty) {
         final prediction = predictions.first;
 
         if (prediction["fertile_period_start"] != null) {
-          _fertileStart = DateTime.tryParse(
-            prediction["fertile_period_start"].toString(),
+          _fertileStart =
+              DateTime.tryParse(
+            prediction["fertile_period_start"]
+                .toString(),
           );
         }
 
         if (prediction["fertile_period_end"] != null) {
-          _fertileEnd = DateTime.tryParse(
-            prediction["fertile_period_end"].toString(),
+          _fertileEnd =
+              DateTime.tryParse(
+            prediction["fertile_period_end"]
+                .toString(),
           );
         }
 
         if (prediction["ovulation_day"] != null) {
-          _ovulationDate = DateTime.tryParse(
-            prediction["ovulation_day"].toString(),
+          _ovulationDate =
+              DateTime.tryParse(
+            prediction["ovulation_day"]
+                .toString(),
           );
         }
 
         if (prediction["next_period"] != null) {
-          _nextPeriod = DateTime.tryParse(
-            prediction["next_period"].toString(),
+          _nextPeriod =
+              DateTime.tryParse(
+            prediction["next_period"]
+                .toString(),
           );
         }
-
-        // Insight text
-        _insightText =
-            prediction["insight_text"]?.toString() ?? "";
       }
 
       _isLoading = false;
     });
 
-    // Make sure localized/default insight is loaded if backend
-    // didn't provide one.
-    if (_insightText.isEmpty) {
-      await _reloadInsights();
-    }
   } catch (e, stackTrace) {
     debugPrint("HOME ERROR: $e");
     debugPrint("$stackTrace");
@@ -626,224 +675,77 @@ Widget _buildHeader(BuildContext context) {
 
 // ---------- Tracking Card ----------
 
-
 Widget _buildTrackingCard(BuildContext context) {
-
-
-  int cycleDay = 1;
-
-
-
-  if(_lastPeriodDate != null){
-
-
-    cycleDay =
-        (DateTime.now()
-                    .difference(
-                      _lastPeriodDate!,
-                    )
-                    .inDays %
-                _cycleLength) +
-            1;
-
-
-
-    if(cycleDay <= 0){
-
-      cycleDay += _cycleLength;
-
-    }
-
-  }
-
-
-
   return Padding(
-
-    padding:
-        const EdgeInsets.symmetric(
-          horizontal:20,
-        ),
-
-
-
+    padding: const EdgeInsets.symmetric(
+      horizontal: 20,
+    ),
     child: ClipRRect(
-
-      borderRadius:
-          BorderRadius.circular(28),
-
-
-
+      borderRadius: BorderRadius.circular(28),
       child: Container(
-
-        height:300,
-
-
-
-        decoration:
-            const BoxDecoration(
-
-          gradient:
-              LinearGradient(
-
-            begin:
-                Alignment.topCenter,
-
-
-            end:
-                Alignment.bottomCenter,
-
-
-            colors:[
-
+        height: 300,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
               AppColors.teal,
-
               AppColors.primaryDark,
-
             ],
-
           ),
-
         ),
-
-
-
-
         child: Stack(
-
-          children:[
-
-
-
+          children: [
             Center(
-
-              child:Opacity(
-
-                opacity:.50,
-
-
-                child:Image.asset(
-
+              child: Opacity(
+                opacity: .50,
+                child: Image.asset(
                   "assets/images/flower.png",
-
-                  width:280,
-
-                  fit:BoxFit.contain,
-
+                  width: 280,
+                  fit: BoxFit.contain,
                 ),
-
               ),
-
             ),
-
-
-
-
 
             Padding(
-
-              padding:
-                  const EdgeInsets.all(26),
-
-
-
-              child:Column(
-
+              padding: const EdgeInsets.all(26),
+              child: Column(
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
-
-
-
-                children:[
-
-
-
+                children: [
                   Text(
-
                     AppLocalizations.of(context)
-                        .day(cycleDay),
-
-
-                    style:
-                        const TextStyle(
-
-                      color:
-                          Colors.white,
-
-                      fontSize:18,
-
+                        .day(_currentCycleDay),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
                     ),
-
                   ),
 
-
-
-
-
                   const Spacer(),
-
-
-
-
 
                   Center(
-
-                    child:Text(
-
+                    child: Text(
                       _currentPhase(context),
-
-
-                      textAlign:
-                          TextAlign.center,
-
-
-                      style:
-                          const TextStyle(
-
-                        color:
-                            Colors.white,
-
-                        fontSize:46,
-
-                        fontWeight:
-                            FontWeight.w300,
-
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 46,
+                        fontWeight: FontWeight.w300,
                       ),
-
                     ),
-
                   ),
 
-
-
-
                   const Spacer(),
-
-
                 ],
-
               ),
-
             ),
-
           ],
-
         ),
-
       ),
-
     ),
-
   );
-
 }
-
-
-
-
-
-
-
 // ---------- Quick Actions ----------
 
 
