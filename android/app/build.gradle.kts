@@ -3,19 +3,9 @@ import java.util.Properties
 
 fun autoVersionCode(): Int {
     return try {
-        val repoRoot = rootDir.parentFile.absolutePath
-        val process = ProcessBuilder("git", "-C", repoRoot, "rev-list", "--count", "HEAD")
-            .redirectErrorStream(true)
-            .start()
-
-        val output = process.inputStream.bufferedReader().readText().trim()
-        val exitCode = process.waitFor()
-
-        if (exitCode == 0 && output.isNotEmpty()) {
-            output.toInt()
-        } else {
-            1
-        }
+        // Use a simple timestamp-based version code for debug builds
+        val versionCode = (System.currentTimeMillis() / 1000).toInt() % 1000000
+        if (versionCode > 0) versionCode else 1
     } catch (_: Exception) {
         1
     }

@@ -388,11 +388,22 @@ Future<List<dynamic>> generateInsights({
 
 /// Initiate a premium subscription
 /// POST /subscriptions/initiate_subscription
-Future<Map<String, dynamic>> initiateSubscription() async {
+Future<Map<String, dynamic>> initiateSubscription({
+  required String userId,
+  required String email,
+  String planType = "premium",
+}) async {
   try {
     final response = await http.post(
-      Uri.parse("$baseUrl/subscriptions/initiate_subscription"),
+      Uri.parse(
+        "$baseUrl/subscriptions/initiate_subscription",
+      ),
       headers: await getHeaders(includeAuth: true),
+      body: jsonEncode({
+        "user_id": userId,
+        "email": email,
+        "plan_type": planType,
+      }),
     );
 
     debugPrint(
@@ -403,8 +414,10 @@ Future<Map<String, dynamic>> initiateSubscription() async {
       "INITIATE SUBSCRIPTION RESPONSE: ${response.body}",
     );
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      return jsonDecode(response.body)
+          as Map<String, dynamic>;
     }
 
     throw Exception(
@@ -412,22 +425,27 @@ Future<Map<String, dynamic>> initiateSubscription() async {
       "${response.statusCode} ${response.body}",
     );
   } catch (e) {
-    debugPrint("INITIATE SUBSCRIPTION ERROR: $e");
+    debugPrint(
+      "INITIATE SUBSCRIPTION ERROR: $e",
+    );
     rethrow;
   }
 }
-
-/// Verify a premium subscription
-/// POST /subscriptions/verify_subscription
 Future<Map<String, dynamic>> verifySubscription({
   required String reference,
+  required String userId,
+  required String email,
 }) async {
   try {
     final response = await http.post(
-      Uri.parse("$baseUrl/subscriptions/verify_subscription"),
+      Uri.parse(
+        "$baseUrl/subscriptions/verify_subscription",
+      ),
       headers: await getHeaders(includeAuth: true),
       body: jsonEncode({
         "reference": reference,
+        "user_id": userId,
+        "email": email,
       }),
     );
 
@@ -441,7 +459,8 @@ Future<Map<String, dynamic>> verifySubscription({
 
     if (response.statusCode >= 200 &&
         response.statusCode < 300) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonDecode(response.body)
+          as Map<String, dynamic>;
     }
 
     throw Exception(
@@ -496,7 +515,7 @@ Future<Map<String, dynamic>> getTodayInsight({
 }) async {
   try {
     final uri = Uri.parse(
-      "$baseUrl/today",
+      "$baseUrl/cycle/today",
     ).replace(
       queryParameters: lang != null
           ? {"lang": lang}

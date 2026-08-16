@@ -20,6 +20,8 @@ class SubscriptionPaymentScreen extends StatefulWidget {
 
 class _SubscriptionPaymentScreenState
     extends State<SubscriptionPaymentScreen> {
+  final ApiService _apiService = ApiService();
+
   late final WebViewController _controller;
 
   bool _isVerifying = false;
@@ -36,11 +38,11 @@ class _SubscriptionPaymentScreenState
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (progress) {
-            if (mounted) {
-              setState(() {
-                _progress = progress;
-              });
-            }
+            if (!mounted) return;
+
+            setState(() {
+              _progress = progress;
+            });
           },
 
           onPageStarted: (url) {
@@ -87,8 +89,10 @@ class _SubscriptionPaymentScreenState
       "CHECKING SUBSCRIPTION URL: $url",
     );
 
-    // This is the callback URL configured
-    // in your FastAPI backend.
+    /*
+     * This must match the callback URL configured
+     * in your FastAPI/Paystack subscription flow.
+     */
     if (url.startsWith(
       'myfertipal://payment/success',
     )) {
@@ -114,8 +118,38 @@ class _SubscriptionPaymentScreenState
         "REFERENCE: ${widget.reference}",
       );
 
-      final result =
-          await ApiService().verifySubscription(
+      // Get current user
+      final user = await _apiService.getUser();
+
+      // Get current profile
+      final profile = await _apiService.getProfile();
+
+      final userId = profile['user_id']?.toString();
+      final email = user['email']?.toString();
+
+      if (userId == null || userId.isEmpty) {
+        throw Exception(
+          "User ID is missing.",
+        );
+      }
+
+      if (email == null || email.isEmpty) {
+        throw Exception(
+          "User email is missing.",
+        );
+      }
+
+      debugPrint(
+        "VERIFY USER ID: $userId",
+      );
+
+      debugPrint(
+        "VERIFY EMAIL: $email",
+      );
+
+      final result = await _apiService.verifySubscription(
+        userId: userId,
+        email: email,
         reference: widget.reference,
       );
 
@@ -125,9 +159,19 @@ class _SubscriptionPaymentScreenState
 
       if (!mounted) return;
 
-      final status = result['status']?.toString();
+      final status =
+          result['status']?.toString().toLowerCase();
+
       final planType =
           result['plan_type']?.toString().toLowerCase();
+
+      debugPrint(
+        "VERIFICATION STATUS: $status",
+      );
+
+      debugPrint(
+        "VERIFICATION PLAN TYPE: $planType",
+      );
 
       if (status == 'success' &&
           planType == 'premium') {
@@ -158,10 +202,11 @@ class _SubscriptionPaymentScreenState
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'We could not verify your payment. Please try again.',
+            'We could not verify your payment: $e',
           ),
+          duration: const Duration(seconds: 4),
         ),
       );
     }
