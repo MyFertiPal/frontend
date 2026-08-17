@@ -593,51 +593,99 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
 
+    debugPrint(
+      "PAYMENT AUTHORIZATION URL: ${widget.authorizationUrl}",
+    );
+
     _controller = WebViewController()
       ..setJavaScriptMode(
         JavaScriptMode.unrestricted,
       )
-      ..setNavigationDelegate(NavigationDelegate(
-        onNavigationRequest: (NavigationRequest request) {
-          final url = request.url;
+      ..setBackgroundColor(
+        Colors.white,
+      )
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
+            final url = request.url;
 
-          debugPrint("PAYMENT NAVIGATION URL: $url");
+            debugPrint(
+              "PAYMENT NAVIGATION URL: $url",
+            );
 
-          if (url.startsWith(
-            "https://teamnexuss.netlify.app/booking/payment-callback",
-          ) ||
-              url.startsWith(
-                "myfertipal://payment/success",
-              )) {
-            debugPrint("PAYMENT CALLBACK DETECTED");
+            // --------------------------------------------
+            // PAYMENT SUCCESS CALLBACK
+            // --------------------------------------------
 
-            Navigator.pop(context, true);
+            if (url.startsWith(
+                  "https://teamnexuss.netlify.app/booking/payment-callback",
+                ) ||
+                url.startsWith(
+                  "myfertipal://payment/success",
+                )) {
+              debugPrint(
+                "PAYMENT CALLBACK DETECTED",
+              );
 
-            return NavigationDecision.prevent;
-          }
+              if (mounted) {
+                Navigator.pop(
+                  context,
+                  true,
+                );
+              }
 
-          return NavigationDecision.navigate;
-        },
-        onPageStarted: (_) {
-          if (mounted) {
-            setState(() {
-              _pageLoading = true;
-            });
-          }
-        },
-        onPageFinished: (_) {
-          if (mounted) {
-            setState(() {
-              _pageLoading = false;
-            });
-          }
-        },
-        onWebResourceError: (error) {
-          debugPrint(
-            "Payment WebView error: ${error.description}",
-          );
-        },
-      ));
+              return NavigationDecision.prevent;
+            }
+
+            return NavigationDecision.navigate;
+          },
+
+          onPageStarted: (String url) {
+            debugPrint(
+              "PAYMENT PAGE STARTED: $url",
+            );
+
+            if (mounted) {
+              setState(() {
+                _pageLoading = true;
+              });
+            }
+          },
+
+          onPageFinished: (String url) {
+            debugPrint(
+              "PAYMENT PAGE FINISHED: $url",
+            );
+
+            if (mounted) {
+              setState(() {
+                _pageLoading = false;
+              });
+            }
+          },
+
+          onWebResourceError: (WebResourceError error) {
+            debugPrint(
+              "PAYMENT WEBVIEW ERROR:"
+              "\ncode: ${error.errorCode}"
+              "\ndescription: ${error.description}"
+              "\ntype: ${error.errorType}"
+              "\nurl: ${error.url}",
+            );
+
+            if (mounted) {
+              setState(() {
+                _pageLoading = false;
+              });
+            }
+          },
+        ),
+      )
+
+      // THIS WAS MISSING
+      ..loadRequest(
+        Uri.parse(widget.authorizationUrl),
+      );
   }
 
   @override
@@ -650,17 +698,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
         backgroundColor: AppColors.teal,
         foregroundColor: Colors.white,
       ),
+
       body: Stack(
         children: [
           WebViewWidget(
             controller: _controller,
           ),
+
           if (_pageLoading)
-            const LinearProgressIndicator(
-              minHeight: 3,
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LinearProgressIndicator(
+                minHeight: 3,
+              ),
             ),
         ],
       ),
+
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -676,7 +732,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   fontSize: 13,
                 ),
               ),
+
               const SizedBox(height: 10),
+
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -691,9 +749,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     backgroundColor: AppColors.teal,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        16,
-                      ),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: const Text(
@@ -705,7 +761,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 8),
+
               SizedBox(
                 width: double.infinity,
                 height: 48,
