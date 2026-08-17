@@ -1691,99 +1691,38 @@ Widget _buildBookSpecialistSection(BuildContext context) {
 
 
 
-                    SizedBox(
-
-                      height:48,
-
-
-
-                      child:
-                          ElevatedButton(
-
-
-
-                        style:
-                            ElevatedButton.styleFrom(
-
-                          backgroundColor:
-                              AppColors.pinkAccent,
-
-
-                          foregroundColor:
-                              AppColors.cardBackground,
-
-
-                          elevation:0,
-
-
-
-                          shape:
-                              RoundedRectangleBorder(
-
-                            borderRadius:
-                                BorderRadius.circular(14),
-
-                          ),
-
-
-
-                        ),
-
-
-
-
-
-                        onPressed:(){
-
-
-
-                          Navigator.push(
-
-                            context,
-
-
-                            MaterialPageRoute(
-
-                              builder:(_)=>
-
-                                  const SpecialistSearchScreen(),
-
-
-                            ),
-
-                          );
-
-
-                        },
-
-
-
-
-
-                        child:
-                            Text(
-
-                          AppLocalizations.of(context)
-                              .bookConsultation,
-
-
-                          style:
-                              const TextStyle(
-
-                            fontWeight:
-                                FontWeight.w700,
-
-
-                            fontSize:14,
-
-                          ),
-
-                        ),
-
-
-                      ),
-
-                    ),
+                 SizedBox(
+  width: double.infinity,
+  height: 48,
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColors.pinkAccent,
+      foregroundColor: AppColors.cardBackground,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+    ),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const SpecialistSearchScreen(),
+        ),
+      );
+    },
+    child: Text(
+      AppLocalizations.of(context).bookConsultation,
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      softWrap: true,
+      style: const TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 14,
+      ),
+    ),
+  ),
+),
 
 
 
