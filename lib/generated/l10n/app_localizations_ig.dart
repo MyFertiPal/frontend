@@ -828,4 +828,13 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get loggedSymptoms => 'Mgbaàmà e dekọrọ';
+
+  @override
+  String get menstrual => 'Menstrual';
+
+  @override
+  String get follicular => 'Follicular';
+
+  @override
+  String get luteal => 'Luteal';
 }

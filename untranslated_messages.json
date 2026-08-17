@@ -1,1 +1,25 @@
-{}
+{
+  "ha": [
+    "menstrual",
+    "follicular",
+    "luteal"
+  ],
+
+  "ig": [
+    "menstrual",
+    "follicular",
+    "luteal"
+  ],
+
+  "pcm": [
+    "menstrual",
+    "follicular",
+    "luteal"
+  ],
+
+  "yo": [
+    "menstrual",
+    "follicular",
+    "luteal"
+  ]
+}

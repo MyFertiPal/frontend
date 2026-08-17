@@ -369,6 +369,11 @@
   "predicted": "Predicted",
   "today": "Today",
   "noSymptomsLogged": "No symptoms logged yet",
-  "loggedSymptoms": "Logged Symptoms"
+  "loggedSymptoms": "Logged Symptoms",
+
+  "menstrual": "Menstrual",
+  "follicular": "Follicular",
+  "ovulation": "Ovulation",
+  "luteal": "Luteal"
 
 }

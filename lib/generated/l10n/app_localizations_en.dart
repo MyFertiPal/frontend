@@ -826,4 +826,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loggedSymptoms => 'Logged Symptoms';
+
+  @override
+  String get menstrual => 'Menstrual';
+
+  @override
+  String get follicular => 'Follicular';
+
+  @override
+  String get luteal => 'Luteal';
 }

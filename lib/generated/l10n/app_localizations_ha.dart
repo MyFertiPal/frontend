@@ -839,4 +839,13 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get loggedSymptoms => 'Alamomin da aka rubuta';
+
+  @override
+  String get menstrual => 'Menstrual';
+
+  @override
+  String get follicular => 'Follicular';
+
+  @override
+  String get luteal => 'Luteal';
 }

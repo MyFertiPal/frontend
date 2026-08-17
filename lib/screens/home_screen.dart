@@ -6,6 +6,7 @@ import '../generated/l10n/app_localizations.dart';
 import '../services/audio_service.dart';
 import '../theme/app_colors.dart';
 import '../services/api_service.dart';
+import '../services/period_service.dart';
 import '../services/analytics_service.dart';
 
 import '../screens/specialists/specialist_search_screen.dart';
@@ -24,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 
 class _HomeScreenState extends State<HomeScreen> {
+final LocalPeriodService _periodService = LocalPeriodService();
 
   final ApiService _apiService = ApiService();
 
@@ -53,8 +55,115 @@ bool _isLoadingProfileImage = true;
 
   bool _isLoading = true;
 
+Future<void> _calculateCurrentCycleDay() async {
+  try {
+    final periodLogs = await _periodService.getPeriodLogs();
 
+    debugPrint("HOME PERIOD LOGS: $periodLogs");
 
+    DateTime? latestPeriodStart;
+
+    // Find the most recent logged period day.
+    for (final date in periodLogs) {
+      final normalized = DateTime(
+        date.year,
+        date.month,
+        date.day,
+      );
+
+      if (latestPeriodStart == null ||
+          normalized.isAfter(latestPeriodStart!)) {
+        latestPeriodStart = normalized;
+      }
+    }
+
+    // If there are no local logs, fall back to profile date.
+    latestPeriodStart ??= _lastPeriodDate;
+
+    if (latestPeriodStart == null) {
+      debugPrint("HOME: No period date available.");
+
+      if (mounted) {
+        setState(() {
+          _currentCycleDay = 1;
+        });
+      }
+
+      return;
+    }
+
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+
+    final startDate = DateTime(
+      latestPeriodStart.year,
+      latestPeriodStart.month,
+      latestPeriodStart.day,
+    );
+
+    final difference = today.difference(startDate).inDays;
+
+    if (difference < 0) {
+      if (mounted) {
+        setState(() {
+          _currentCycleDay = 1;
+        });
+      }
+
+      return;
+    }
+
+    // Day 1 = first logged period day.
+    final cycleDay = (difference % _cycleLength) + 1;
+
+    debugPrint(
+      "HOME CYCLE CALCULATION: "
+      "periodStart=$startDate, "
+      "today=$today, "
+      "difference=$difference, "
+      "cycleLength=$_cycleLength, "
+      "cycleDay=$cycleDay",
+    );
+
+    if (mounted) {
+      setState(() {
+        _currentCycleDay = cycleDay;
+      });
+    }
+  } catch (e) {
+    debugPrint(
+      "HOME CYCLE CALCULATION ERROR: $e",
+    );
+
+    // Fallback to profile's last period date.
+    if (_lastPeriodDate != null) {
+      final today = DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+      );
+
+      final startDate = DateTime(
+        _lastPeriodDate!.year,
+        _lastPeriodDate!.month,
+        _lastPeriodDate!.day,
+      );
+
+      final difference = today.difference(startDate).inDays;
+
+      if (mounted) {
+        setState(() {
+          _currentCycleDay = difference >= 0
+              ? (difference % _cycleLength) + 1
+              : 1;
+        });
+      }
+    }
+  }
+}
   @override
   void initState() {
     super.initState();
@@ -378,41 +487,8 @@ Future<void> _loadHomeData() async {
 // 5. LOAD TODAY'S INSIGHT
 // --------------------------------------------------
 
-try {
-  final language =
-      Localizations.localeOf(context).languageCode;
 
-  final todayInsight =
-      await _apiService.getTodayInsight(
-    lang: language,
-  );
 
-  debugPrint(
-    "HOME TODAY INSIGHT: $todayInsight",
-  );
-
-  if (mounted) {
-    setState(() {
-      _currentCycleDay =
-          int.tryParse(
-                todayInsight["current_cycle_day"]
-                        ?.toString() ??
-                    "",
-              ) ??
-              _currentCycleDay;
-
-      // Support the actual backend field
-      _insightText =
-          todayInsight["insight_text"]?.toString().trim() ??
-          todayInsight["daily_insight"]?.toString().trim() ??
-          "";
-    });
-  }
-} catch (e) {
-  debugPrint(
-    "HOME TODAY INSIGHT ERROR: $e",
-  );
-}
 
     // --------------------------------------------------
     // 6. FINISHED LOADING
@@ -435,77 +511,41 @@ try {
   }
 }
   String _currentPhase(BuildContext context) {
+  final l10n = AppLocalizations.of(context);
 
-    final today = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-    );
+  final day = _currentCycleDay;
 
-
-
-    bool sameDay(DateTime? date){
-
-      if(date == null) return false;
-
-
-      return date.year == today.year &&
-          date.month == today.month &&
-          date.day == today.day;
-
-    }
-
-
-
-    if(
-      _fertileStart != null &&
-      _fertileEnd != null &&
-      !today.isBefore(_fertileStart!) &&
-      !today.isAfter(_fertileEnd!)
-    ){
-
-      return AppLocalizations.of(context)
-          .fertileWindow;
-
-    }
-
-
-
-
-    if(sameDay(_ovulationDate)){
-
-      return AppLocalizations.of(context)
-          .ovulation;
-
-    }
-
-
-
-
-
-    if(
-      _nextPeriod != null &&
-      !today.isBefore(_nextPeriod!) &&
-      today.isBefore(
-        _nextPeriod!
-            .add(
-              Duration(days: _periodLength),
-            ),
-      )
-    ){
-
-      return AppLocalizations.of(context)
-          .period;
-
-    }
-
-
-
-    return AppLocalizations.of(context)
-        .cycle;
-
+  // --------------------------------------------------
+  // MENSTRUAL PHASE
+  // --------------------------------------------------
+  if (day <= _periodLength) {
+    return l10n.menstrual;
   }
 
+  // --------------------------------------------------
+  // OVULATION
+  //
+  // Ovulation is approximately 14 days before
+  // the next period.
+  // --------------------------------------------------
+  final ovulationDay = _cycleLength - 14;
+
+  if (day == ovulationDay) {
+    return l10n.ovulation;
+  }
+
+  // --------------------------------------------------
+  // FOLLICULAR PHASE
+  // --------------------------------------------------
+  if (day < ovulationDay) {
+    return l10n.follicular;
+  }
+
+  // --------------------------------------------------
+  // LUTEAL PHASE
+  // --------------------------------------------------
+  return l10n.luteal;
+}
 
 
 

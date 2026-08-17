@@ -829,4 +829,13 @@ class AppLocalizationsPcm extends AppLocalizations {
 
   @override
   String get loggedSymptoms => 'Symptoms wey you don log';
+
+  @override
+  String get menstrual => 'Menstrual';
+
+  @override
+  String get follicular => 'Follicular';
+
+  @override
+  String get luteal => 'Luteal';
 }

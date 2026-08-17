@@ -1663,6 +1663,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logged Symptoms'**
   String get loggedSymptoms;
+
+  /// No description provided for @menstrual.
+  ///
+  /// In en, this message translates to:
+  /// **'Menstrual'**
+  String get menstrual;
+
+  /// No description provided for @follicular.
+  ///
+  /// In en, this message translates to:
+  /// **'Follicular'**
+  String get follicular;
+
+  /// No description provided for @luteal.
+  ///
+  /// In en, this message translates to:
+  /// **'Luteal'**
+  String get luteal;
 }
 
 class _AppLocalizationsDelegate
