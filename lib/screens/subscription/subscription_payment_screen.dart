@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../../services/api_service.dart';
-
 class SubscriptionPaymentScreen extends StatefulWidget {
   final String paymentUrl;
   final String reference;
@@ -20,16 +18,21 @@ class SubscriptionPaymentScreen extends StatefulWidget {
 
 class _SubscriptionPaymentScreenState
     extends State<SubscriptionPaymentScreen> {
-  final ApiService _apiService = ApiService();
-
   late final WebViewController _controller;
 
-  bool _isVerifying = false;
-  int _progress = 0;
+  bool _pageLoading = true;
 
   @override
   void initState() {
     super.initState();
+
+    debugPrint(
+      "SUBSCRIPTION PAYMENT URL: ${widget.paymentUrl}",
+    );
+
+    debugPrint(
+      "SUBSCRIPTION REFERENCE: ${widget.reference}",
+    );
 
     _controller = WebViewController()
       ..setJavaScriptMode(
@@ -37,38 +40,59 @@ class _SubscriptionPaymentScreenState
       )
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (progress) {
-            if (!mounted) return;
+          onNavigationRequest: (NavigationRequest request) {
+            final url = request.url;
 
-            setState(() {
-              _progress = progress;
-            });
+            debugPrint(
+              "SUBSCRIPTION PAYMENT NAVIGATION URL: $url",
+            );
+
+            // --------------------------------------------------
+            // PAYMENT CALLBACK
+            // --------------------------------------------------
+
+            if (url.startsWith(
+                  "https://teamnexuss.netlify.app/booking/payment-callback",
+                ) ||
+                url.startsWith(
+                  "myfertipal://payment/success",
+                )) {
+              debugPrint(
+                "SUBSCRIPTION PAYMENT CALLBACK DETECTED",
+              );
+
+              if (mounted) {
+                Navigator.of(context).pop(true);
+              }
+
+              return NavigationDecision.prevent;
+            }
+
+            return NavigationDecision.navigate;
           },
 
           onPageStarted: (url) {
             debugPrint(
-              "SUBSCRIPTION WEBVIEW STARTED: $url",
+              "SUBSCRIPTION PAGE STARTED: $url",
             );
 
-            _checkPaymentUrl(url);
+            if (mounted) {
+              setState(() {
+                _pageLoading = true;
+              });
+            }
           },
 
           onPageFinished: (url) {
             debugPrint(
-              "SUBSCRIPTION WEBVIEW FINISHED: $url",
+              "SUBSCRIPTION PAGE FINISHED: $url",
             );
 
-            _checkPaymentUrl(url);
-          },
-
-          onNavigationRequest: (request) {
-            debugPrint(
-              "SUBSCRIPTION NAVIGATION: ${request.url}",
-            );
-
-            _checkPaymentUrl(request.url);
-
-            return NavigationDecision.navigate;
+            if (mounted) {
+              setState(() {
+                _pageLoading = false;
+              });
+            }
           },
 
           onWebResourceError: (error) {
@@ -84,178 +108,84 @@ class _SubscriptionPaymentScreenState
       );
   }
 
-  void _checkPaymentUrl(String url) {
-    debugPrint(
-      "CHECKING SUBSCRIPTION URL: $url",
-    );
-
-    /*
-     * This must match the callback URL configured
-     * in your FastAPI/Paystack subscription flow.
-     */
-    if (url.startsWith(
-      'myfertipal://payment/success',
-    )) {
-      _verifySubscription();
-    }
-  }
-
-  Future<void> _verifySubscription() async {
-    if (_isVerifying) return;
-
-    if (!mounted) return;
-
-    setState(() {
-      _isVerifying = true;
-    });
-
-    try {
-      debugPrint(
-        "VERIFYING SUBSCRIPTION...",
-      );
-
-      debugPrint(
-        "REFERENCE: ${widget.reference}",
-      );
-
-      // Get current user
-      final user = await _apiService.getUser();
-
-      // Get current profile
-      final profile = await _apiService.getProfile();
-
-      final userId = profile['user_id']?.toString();
-      final email = user['email']?.toString();
-
-      if (userId == null || userId.isEmpty) {
-        throw Exception(
-          "User ID is missing.",
-        );
-      }
-
-      if (email == null || email.isEmpty) {
-        throw Exception(
-          "User email is missing.",
-        );
-      }
-
-      debugPrint(
-        "VERIFY USER ID: $userId",
-      );
-
-      debugPrint(
-        "VERIFY EMAIL: $email",
-      );
-
-      final result = await _apiService.verifySubscription(
-        userId: userId,
-        email: email,
-        reference: widget.reference,
-      );
-
-      debugPrint(
-        "SUBSCRIPTION VERIFICATION RESULT: $result",
-      );
-
-      if (!mounted) return;
-
-      final status =
-          result['status']?.toString().toLowerCase();
-
-      final planType =
-          result['plan_type']?.toString().toLowerCase();
-
-      debugPrint(
-        "VERIFICATION STATUS: $status",
-      );
-
-      debugPrint(
-        "VERIFICATION PLAN TYPE: $planType",
-      );
-
-      if (status == 'success' &&
-          planType == 'premium') {
-        Navigator.of(context).pop(true);
-        return;
-      }
-
-      setState(() {
-        _isVerifying = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Subscription could not be verified.',
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint(
-        "VERIFY SUBSCRIPTION ERROR: $e",
-      );
-
-      if (!mounted) return;
-
-      setState(() {
-        _isVerifying = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'We could not verify your payment: $e',
-          ),
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Premium Payment',
+          "Premium Payment",
         ),
       ),
+
       body: Stack(
         children: [
           WebViewWidget(
             controller: _controller,
           ),
 
-          if (_progress < 100)
-            LinearProgressIndicator(
-              value: _progress / 100,
+          if (_pageLoading)
+            const LinearProgressIndicator(
+              minHeight: 3,
             ),
+        ],
+      ),
 
-          if (_isVerifying)
-            Container(
-              color: Colors.black.withOpacity(0.45),
-              child: const Center(
-                child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 18),
-                        Text(
-                          'Verifying your payment...',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "After completing your payment, "
+                "tap the button below to continue.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 13,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    debugPrint(
+                      "USER CONFIRMED SUBSCRIPTION PAYMENT",
+                    );
+
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text(
+                    "I've Completed Payment",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-            ),
-        ],
+
+              const SizedBox(height: 8),
+
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text(
+                    "Cancel",
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
