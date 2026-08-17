@@ -146,10 +146,20 @@ bool _isLoadingProfileImage = true;
               ) ??
               _currentCycleDay;
 
-      _insightText =
-          todayInsight["daily_insight"]
-                  ?.toString() ??
-              "";
+      final insight =
+    todayInsight["insight_text"]?.toString().trim();
+
+setState(() {
+  _currentCycleDay =
+      int.tryParse(
+            todayInsight["current_cycle_day"]?.toString() ?? "",
+          ) ??
+          _currentCycleDay;
+
+  if (insight != null && insight.isNotEmpty) {
+    _insightText = insight;
+  }
+});
     });
   } catch (e) {
     debugPrint(
@@ -311,89 +321,98 @@ Future<void> _loadHomeData() async {
       );
 
       if (mounted && predictions.isNotEmpty) {
-        final prediction = predictions.first;
+  final prediction = predictions.first;
 
-        setState(() {
-          if (prediction["fertile_period_start"] != null) {
-            _fertileStart = DateTime.tryParse(
-              prediction["fertile_period_start"].toString(),
-            );
-          }
+  debugPrint(
+    "HOME SELECTED PREDICTION: $prediction",
+  );
 
-          if (prediction["fertile_period_end"] != null) {
-            _fertileEnd = DateTime.tryParse(
-              prediction["fertile_period_end"].toString(),
-            );
-          }
+  setState(() {
+    // -----------------------------
+    // Fertility dates
+    // -----------------------------
 
-          if (prediction["ovulation_day"] != null) {
-            _ovulationDate = DateTime.tryParse(
-              prediction["ovulation_day"].toString(),
-            );
-          }
+    if (prediction["fertile_period_start"] != null) {
+      _fertileStart = DateTime.tryParse(
+        prediction["fertile_period_start"].toString(),
+      );
+    }
 
-          if (prediction["next_period"] != null) {
-            _nextPeriod = DateTime.tryParse(
-              prediction["next_period"].toString(),
-            );
-          }
-        });
-      }
+    if (prediction["fertile_period_end"] != null) {
+      _fertileEnd = DateTime.tryParse(
+        prediction["fertile_period_end"].toString(),
+      );
+    }
+
+    if (prediction["ovulation_day"] != null) {
+      _ovulationDate = DateTime.tryParse(
+        prediction["ovulation_day"].toString(),
+      );
+    }
+
+    if (prediction["next_period"] != null) {
+      _nextPeriod = DateTime.tryParse(
+        prediction["next_period"].toString(),
+      );
+    }
+
+    // -----------------------------
+    // Insight
+    // -----------------------------
+
+    final insight =
+        prediction["insight_text"]?.toString().trim();
+
+    if (insight != null && insight.isNotEmpty) {
+      _insightText = insight;
+    }
+  });
+}
     } catch (e) {
       debugPrint(
         "HOME FERTILITY PREDICTIONS ERROR: $e",
       );
     }
 
-    // --------------------------------------------------
-    // 5. LOAD TODAY'S INSIGHT
-    // --------------------------------------------------
+ // --------------------------------------------------
+// 5. LOAD TODAY'S INSIGHT
+// --------------------------------------------------
 
-    try {
-      final language =
-          Localizations.localeOf(context).languageCode;
+try {
+  final language =
+      Localizations.localeOf(context).languageCode;
 
-      final todayInsight =
-          await _apiService.getTodayInsight(
-        lang: language,
-      );
+  final todayInsight =
+      await _apiService.getTodayInsight(
+    lang: language,
+  );
 
-      debugPrint(
-        "HOME TODAY INSIGHT: $todayInsight",
-      );
+  debugPrint(
+    "HOME TODAY INSIGHT: $todayInsight",
+  );
 
-      if (mounted) {
-        setState(() {
-          _currentCycleDay =
-              int.tryParse(
-                    todayInsight["current_cycle_day"]
-                            ?.toString() ??
-                        "",
-                  ) ??
-                  _currentCycleDay;
+  if (mounted) {
+    setState(() {
+      _currentCycleDay =
+          int.tryParse(
+                todayInsight["current_cycle_day"]
+                        ?.toString() ??
+                    "",
+              ) ??
+              _currentCycleDay;
 
-          _insightText =
-              todayInsight["daily_insight"]
-                      ?.toString() ??
-                  "";
-        });
-      }
-    } catch (e) {
-      debugPrint(
-        "HOME TODAY INSIGHT ERROR: $e",
-      );
-
-      // IMPORTANT:
-      // A missing active cycle should NOT prevent
-      // the rest of HomeScreen from loading.
-
-      if (mounted) {
-        setState(() {
-          _currentCycleDay = 1;
-          _insightText = "";
-        });
-      }
-    }
+      // Support the actual backend field
+      _insightText =
+          todayInsight["insight_text"]?.toString().trim() ??
+          todayInsight["daily_insight"]?.toString().trim() ??
+          "";
+    });
+  }
+} catch (e) {
+  debugPrint(
+    "HOME TODAY INSIGHT ERROR: $e",
+  );
+}
 
     // --------------------------------------------------
     // 6. FINISHED LOADING
