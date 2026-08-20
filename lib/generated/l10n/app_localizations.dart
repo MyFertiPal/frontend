@@ -1681,6 +1681,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Luteal'**
   String get luteal;
+
+  /// No description provided for @signInWithApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In With Apple'**
+  String get signInWithApple;
 }
 
 class _AppLocalizationsDelegate

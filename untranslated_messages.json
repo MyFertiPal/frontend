@@ -2,24 +2,28 @@
   "ha": [
     "menstrual",
     "follicular",
-    "luteal"
+    "luteal",
+    "signInWithApple"
   ],
 
   "ig": [
     "menstrual",
     "follicular",
-    "luteal"
+    "luteal",
+    "signInWithApple"
   ],
 
   "pcm": [
     "menstrual",
     "follicular",
-    "luteal"
+    "luteal",
+    "signInWithApple"
   ],
 
   "yo": [
     "menstrual",
     "follicular",
-    "luteal"
+    "luteal",
+    "signInWithApple"
   ]
 }

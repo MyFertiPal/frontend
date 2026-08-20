@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'profile_setup_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
@@ -30,7 +31,86 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _showPassword = false;
   bool _showConfirmPassword = false;
   bool _isLoading = false;
-               
+               Future<void> _signInWithApple() async {
+  try {
+    setState(() => _isLoading = true);
+
+    debugPrint('APPLE STEP 1 - Starting Apple Sign In');
+
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    debugPrint('APPLE STEP 2 - Credential received');
+
+    final identityToken = credential.identityToken;
+
+    if (identityToken == null || identityToken.isEmpty) {
+      throw Exception('Apple did not return an identity token');
+    }
+
+    debugPrint('APPLE STEP 3 - Identity token received');
+
+    final firstName = credential.givenName ?? '';
+    final lastName = credential.familyName ?? '';
+
+    final authService = context.read<AuthService>();
+
+    await authService.appleLogin(
+      identityToken: identityToken,
+      firstName: firstName,
+      lastName: lastName,
+    );
+
+    debugPrint('APPLE STEP 4 - Backend login successful');
+
+    final apiService = ApiService();
+
+    final profileJson = await apiService.getProfile();
+
+    final isProfileComplete =
+        profileJson.containsKey('age') ||
+        profileJson.containsKey('cycle_length') ||
+        profileJson.containsKey('period_length') ||
+        profileJson.containsKey('audio_preference');
+
+    if (!mounted) return;
+
+    if (isProfileComplete) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/home',
+        (route) => false,
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const ProfileSetupScreen(),
+          settings: const RouteSettings(
+            name: '/profile-setup',
+          ),
+        ),
+      );
+    }
+  } catch (e) {
+    debugPrint('Apple Sign-In Error: $e');
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Apple Sign-In failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+}
 Future<void> _signInWithGoogle() async {
   try {
     setState(() => _isLoading = true);
@@ -388,19 +468,53 @@ Future<void> _signInWithGoogle() async {
                   const SizedBox(height: 16),
 
                   // Social Sign-in Circles
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: _isLoading ? null : _signInWithGoogle,
-                        child: GestureDetector(
-                          onTap: _isLoading ? null : _signInWithGoogle,
-                          child: _buildSocialCircle('G'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  ),
+                // Google
+SizedBox(
+  width: 360,
+  height: 50,
+  child: OutlinedButton(
+    onPressed: _isLoading ? null : _signInWithGoogle,
+    style: OutlinedButton.styleFrom(
+      side: BorderSide(color: Colors.grey.shade400),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'G',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          AppLocalizations.of(context).signInWithGoogle,
+          style: const TextStyle(
+            fontSize: 14,
+            fontFamily: 'Poppins',
+          ),
+        ),
+      ],
+    ),
+  ),
+),
+
+const SizedBox(height: 12),
+
+// Apple official button
+SizedBox(
+  width: 360,
+  height: 50,
+  child: SignInWithAppleButton(
+    onPressed: _isLoading ? null : _signInWithApple,
+    style: SignInWithAppleButtonStyle.black,
+    borderRadius: BorderRadius.circular(5),
+  ),
+),
                   const SizedBox(height: 30),
                   //Have an account? Login
                   Row(

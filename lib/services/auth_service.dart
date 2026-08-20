@@ -192,6 +192,86 @@ Future<void> googleLogin(String idToken) async {
     rethrow;
   }
 }
+Future<void> appleLogin({
+  required String identityToken,
+  required String firstName,
+  required String lastName,
+}) async {
+  try {
+    print('APPLE AUTH STEP 1');
+
+    final apiService = ApiService();
+
+    final response = await apiService.appleLogin(
+      identityToken: identityToken,
+      firstName: firstName,
+      lastName: lastName,
+    );
+
+    print('APPLE AUTH STEP 2');
+    print('Response: $response');
+
+    if (response.containsKey('access_token')) {
+      print('APPLE AUTH STEP 3 - Access token found');
+
+      await apiService.saveToken(
+        response['access_token'],
+      );
+
+      final userJson =
+          await apiService.getUser();
+
+      print('APPLE AUTH STEP 4');
+      print(userJson);
+
+      final user = User.fromJson(userJson);
+
+      _currentUser = user;
+
+      await _saveUserToPrefs(user);
+
+      _authStateController.add(_currentUser);
+      notifyListeners();
+
+      await AnalyticsService.logLogin(
+        method: 'apple',
+      );
+
+      await AnalyticsService.setUserId(
+        _currentUser?.id ?? '',
+      );
+
+      final displayName =
+          _currentUser?.firstName ??
+          _currentUser?.username ??
+          'Welcome back';
+
+      final notificationService =
+          LocalNotificationService();
+
+      await notificationService.showNotification(
+        id: 1001,
+        title: 'Welcome Back! 👋',
+        body:
+            'Hello $displayName, we\'re happy to see you again!',
+        payload: 'welcome_notification',
+      );
+
+      print('APPLE AUTH STEP 5 - Complete');
+    } else {
+      print(
+        'APPLE AUTH STEP 3 FAILED - No access_token',
+      );
+
+      throw Exception(
+        'Apple login failed: no access token returned',
+      );
+    }
+  } catch (e) {
+    print('APPLE LOGIN ERROR: $e');
+    rethrow;
+  }
+}
   @override
   Future<User?> signUpWithEmail({
     required String email,

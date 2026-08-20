@@ -57,31 +57,8 @@ bool _isLoadingProfileImage = true;
 
 Future<void> _calculateCurrentCycleDay() async {
   try {
-    final periodLogs = await _periodService.getPeriodLogs();
-
-    debugPrint("HOME PERIOD LOGS: $periodLogs");
-
-    DateTime? latestPeriodStart;
-
-    // Find the most recent logged period day.
-    for (final date in periodLogs) {
-      final normalized = DateTime(
-        date.year,
-        date.month,
-        date.day,
-      );
-
-      if (latestPeriodStart == null ||
-          normalized.isAfter(latestPeriodStart!)) {
-        latestPeriodStart = normalized;
-      }
-    }
-
-    // If there are no local logs, fall back to profile date.
-    latestPeriodStart ??= _lastPeriodDate;
-
-    if (latestPeriodStart == null) {
-      debugPrint("HOME: No period date available.");
+    if (_lastPeriodDate == null) {
+      debugPrint("HOME: No last period date available.");
 
       if (mounted) {
         setState(() {
@@ -99,9 +76,9 @@ Future<void> _calculateCurrentCycleDay() async {
     );
 
     final startDate = DateTime(
-      latestPeriodStart.year,
-      latestPeriodStart.month,
-      latestPeriodStart.day,
+      _lastPeriodDate!.year,
+      _lastPeriodDate!.month,
+      _lastPeriodDate!.day,
     );
 
     final difference = today.difference(startDate).inDays;
@@ -116,12 +93,11 @@ Future<void> _calculateCurrentCycleDay() async {
       return;
     }
 
-    // Day 1 = first logged period day.
     final cycleDay = (difference % _cycleLength) + 1;
 
     debugPrint(
       "HOME CYCLE CALCULATION: "
-      "periodStart=$startDate, "
+      "lastPeriodDate=$startDate, "
       "today=$today, "
       "difference=$difference, "
       "cycleLength=$_cycleLength, "
@@ -134,34 +110,7 @@ Future<void> _calculateCurrentCycleDay() async {
       });
     }
   } catch (e) {
-    debugPrint(
-      "HOME CYCLE CALCULATION ERROR: $e",
-    );
-
-    // Fallback to profile's last period date.
-    if (_lastPeriodDate != null) {
-      final today = DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      );
-
-      final startDate = DateTime(
-        _lastPeriodDate!.year,
-        _lastPeriodDate!.month,
-        _lastPeriodDate!.day,
-      );
-
-      final difference = today.difference(startDate).inDays;
-
-      if (mounted) {
-        setState(() {
-          _currentCycleDay = difference >= 0
-              ? (difference % _cycleLength) + 1
-              : 1;
-        });
-      }
-    }
+    debugPrint("HOME CYCLE CALCULATION ERROR: $e");
   }
 }
   @override
@@ -234,7 +183,7 @@ Future<void> _calculateCurrentCycleDay() async {
   }
 
 
- Future<void> _reloadInsights() async {
+Future<void> _reloadInsights() async {
   try {
     final language =
         Localizations.localeOf(context).languageCode;
@@ -246,37 +195,27 @@ Future<void> _calculateCurrentCycleDay() async {
 
     if (!mounted) return;
 
+    final backendCycleDay = int.tryParse(
+      todayInsight["current_cycle_day"]?.toString() ?? "",
+    );
+
+    final insight =
+        todayInsight["insight_text"]?.toString().trim();
+
     setState(() {
-      _currentCycleDay =
-          int.tryParse(
-                todayInsight["current_cycle_day"]
-                        ?.toString() ??
-                    "",
-              ) ??
-              _currentCycleDay;
+      if (backendCycleDay != null) {
+        _currentCycleDay = backendCycleDay;
+      }
 
-      final insight =
-    todayInsight["insight_text"]?.toString().trim();
-
-setState(() {
-  _currentCycleDay =
-      int.tryParse(
-            todayInsight["current_cycle_day"]?.toString() ?? "",
-          ) ??
-          _currentCycleDay;
-
-  if (insight != null && insight.isNotEmpty) {
-    _insightText = insight;
-  }
-});
+      if (insight != null && insight.isNotEmpty) {
+        _insightText = insight;
+      }
     });
+
   } catch (e) {
     debugPrint(
       "TODAY INSIGHT RELOAD ERROR: $e",
     );
-
-    // Don't clear existing data if the backend
-    // temporarily has no active cycle.
   }
 }
 
@@ -351,7 +290,9 @@ Future<void> _loadHomeData() async {
             );
           }
         });
+        
       }
+      await _calculateCurrentCycleDay();
 
       // --------------------------------------------------
       // 3. LOAD PROFILE PICTURE

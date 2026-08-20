@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../providers/language_provider.dart';
 import '../../services/auth_service.dart';
@@ -121,6 +122,127 @@ class _LoginScreenState extends State<LoginScreen> {
           content: Text(
             'Google Sign-In failed: $e',
           ),
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+}
+Future<void> _signInWithApple() async {
+  try {
+    setState(() {
+      _isLoading = true;
+    });
+
+    debugPrint('APPLE STEP 1 - Starting Sign in with Apple');
+
+    final credential =
+        await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    debugPrint(
+      'APPLE STEP 2 - Credential received',
+    );
+
+    debugPrint(
+      'Apple identity token exists: '
+      '${credential.identityToken != null}',
+    );
+
+    debugPrint(
+      'Apple first name: ${credential.givenName}',
+    );
+
+    debugPrint(
+      'Apple last name: ${credential.familyName}',
+    );
+
+    if (credential.identityToken == null) {
+      throw Exception(
+        'Apple did not return an identity token',
+      );
+    }
+
+    final authService =
+        Provider.of<AuthService>(
+      context,
+      listen: false,
+    );
+
+    await authService.appleLogin(
+      identityToken: credential.identityToken!,
+      firstName:
+          credential.givenName?.trim() ?? '',
+      lastName:
+          credential.familyName?.trim() ?? '',
+    );
+
+    debugPrint(
+      'APPLE STEP 3 - Backend login successful',
+    );
+
+    final apiService = ApiService();
+
+    final profileJson =
+        await apiService.getProfile();
+
+    debugPrint(
+      'APPLE STEP 4 - Profile: $profileJson',
+    );
+
+    final isProfileComplete =
+        profileJson.containsKey('age') ||
+        profileJson.containsKey('cycle_length') ||
+        profileJson.containsKey('period_length') ||
+        profileJson.containsKey('audio_preference');
+
+    debugPrint(
+      'APPLE STEP 5 - Profile complete: '
+      '$isProfileComplete',
+    );
+
+    if (!mounted) return;
+
+    if (isProfileComplete) {
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(
+        '/home',
+        (route) => false,
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) =>
+              const ProfileSetupScreen(),
+          settings: const RouteSettings(
+            name: '/profile-setup',
+          ),
+        ),
+      );
+    }
+  } catch (e) {
+    debugPrint(
+      'APPLE SIGN-IN ERROR: $e',
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Apple Sign-In failed: $e',
+          ),
+          backgroundColor: Colors.red,
+          duration:
+              const Duration(seconds: 4),
         ),
       );
     }
@@ -369,6 +491,24 @@ Future<void> _loadSavedEmail() async {
 
                 
                   const SizedBox(height: 30),
+                  SizedBox(
+  width: 360,
+  height: 50,
+  child: SignInWithAppleButton(
+    onPressed:
+        _isLoading ? null : _signInWithApple,
+
+    style:
+        SignInWithAppleButtonStyle.black,
+
+    borderRadius:
+        BorderRadius.circular(5),
+
+    text: AppLocalizations.of(context)
+        .signInWithApple,
+  ),
+),
+                  const SizedBox(height: 30)
                 ],
               ),
             ),

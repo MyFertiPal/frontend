@@ -431,6 +431,41 @@ Future<Map<String, dynamic>> initiateSubscription({
     rethrow;
   }
 }
+Future<Map<String, dynamic>> appleLogin({
+  required String identityToken,
+  required String firstName,
+  required String lastName,
+}) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/auth/apple/mobile'),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'identity_token': identityToken,
+      'first_name': firstName,
+      'last_name': lastName,
+    }),
+  );
+
+  debugPrint(
+    'APPLE API STATUS: ${response.statusCode}',
+  );
+
+  debugPrint(
+    'APPLE API RESPONSE: ${response.body}',
+  );
+
+  if (response.statusCode < 200 ||
+      response.statusCode >= 300) {
+    throw Exception(
+      'Apple login failed: ${response.body}',
+    );
+  }
+
+  return jsonDecode(response.body)
+      as Map<String, dynamic>;
+}
 Future<Map<String, dynamic>> verifySubscription({
   required String reference,
   required String userId,

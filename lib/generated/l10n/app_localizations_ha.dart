@@ -848,4 +848,7 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get luteal => 'Luteal';
+
+  @override
+  String get signInWithApple => 'Sign In With Apple';
 }

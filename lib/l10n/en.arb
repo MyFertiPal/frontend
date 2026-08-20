@@ -374,6 +374,7 @@
   "menstrual": "Menstrual",
   "follicular": "Follicular",
   "ovulation": "Ovulation",
-  "luteal": "Luteal"
+  "luteal": "Luteal",
+  "signInWithApple": "Sign In With Apple" 
 
 }
