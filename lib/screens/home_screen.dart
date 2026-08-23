@@ -1573,54 +1573,30 @@ Widget _buildBookSpecialistSection(BuildContext context) {
 
 
 
-          child:Row(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Below this width, a fixed 145px image next to
+              // flex:6 text leaves too little room for the text
+              // column in some languages/screen sizes — stack
+              // vertically instead so the button and heading
+              // always have full width to work with.
+              final isNarrow = constraints.maxWidth < 340;
 
-            children:[
+              final textColumn = Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
 
-
-
-              Expanded(
-
-                flex:6,
-
-
-                child:Column(
-
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-
-
-
-                  children:[
-
-
-
-                    const SizedBox(height:8),
-
-
-
-
-                    Text(
-
-                      AppLocalizations.of(context)
-                          .expertGuidance,
-
-
-                      style:
-                          const TextStyle(
-
-                        color:
-                            AppColors.textPrimary,
-
-
-                        fontSize:15,
-
-
-                        height:1.4,
-
-                      ),
-
+                  Text(
+                    AppLocalizations.of(context)
+                        .expertGuidance,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 15,
+                      height: 1.4,
                     ),
+                  ),
 
 
 
@@ -1632,34 +1608,56 @@ Widget _buildBookSpecialistSection(BuildContext context) {
 
 
 
-                 SizedBox(
-  width: double.infinity,
-  height: 48,
-  child: ElevatedButton(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.pinkAccent,
-      foregroundColor: AppColors.cardBackground,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
-    ),
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const SpecialistSearchScreen(),
+                 // NOTE: previously this was a SizedBox with a hard
+                 // `height: 48`. When the localized label wrapped to
+                 // a second line (long translations, or a narrow
+                 // screen squeezing this Expanded(flex: 6) column),
+                 // the text needed more vertical space than 48px
+                 // could give it — so the second line (sometimes the
+                 // whole label) was silently clipped/invisible.
+                 //
+                 // Fix: give the button a MINIMUM height instead of a
+                 // fixed one, so it grows to fit 2 lines when needed,
+                 // and wrap the text in a FittedBox as a last-resort
+                 // safety net so even an unusually long translation
+                 // shrinks to fit rather than ever getting clipped.
+                 ConstrainedBox(
+  constraints: const BoxConstraints(minHeight: 48),
+  child: SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.pinkAccent,
+        foregroundColor: AppColors.cardBackground,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
         ),
-      );
-    },
-    child: Text(
-      AppLocalizations.of(context).bookConsultation,
-      textAlign: TextAlign.center,
-      maxLines: 2,
-      softWrap: true,
-      style: const TextStyle(
-        fontWeight: FontWeight.w700,
-        fontSize: 14,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const SpecialistSearchScreen(),
+          ),
+        );
+      },
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          AppLocalizations.of(context).bookConsultation,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          softWrap: true,
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
+        ),
       ),
     ),
   ),
@@ -1667,54 +1665,43 @@ Widget _buildBookSpecialistSection(BuildContext context) {
 
 
 
-                  ],
+                ],
+              );
 
-                ),
-
-              ),
-
-
-
-
-
-              const SizedBox(width:16),
-
-
-
-
-
-              ClipRRect(
-
-                borderRadius:
-                    BorderRadius.circular(18),
-
-
-
-                child:
-                    Image.asset(
-
+              final image = ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Image.asset(
                   "assets/images/doctor_placeholder.png",
-
-
-                  width:145,
-
-
-                  height:170,
-
-
-                  fit:
-                      BoxFit.cover,
-
+                  width: isNarrow ? double.infinity : 145,
+                  height: isNarrow ? 160 : 170,
+                  fit: BoxFit.cover,
                 ),
+              );
 
-              ),
+              if (isNarrow) {
+                return Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    image,
+                    const SizedBox(height: 16),
+                    textColumn,
+                  ],
+                );
+              }
 
-
-
-            ],
-
+              return Row(
+                children: [
+                  Expanded(
+                    flex: 6,
+                    child: textColumn,
+                  ),
+                  const SizedBox(width: 16),
+                  image,
+                ],
+              );
+            },
           ),
-
         ),
 
       ],
