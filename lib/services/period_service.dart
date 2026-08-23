@@ -13,66 +13,216 @@ class LocalPeriodService {
 
   String _dateKey(DateTime date) {
     final d = _normalize(date);
+
     final month = d.month.toString().padLeft(2, '0');
     final day = d.day.toString().padLeft(2, '0');
+
     return '${d.year}-$month-$day';
   }
+
+  DateTime? _parseStoredDate(String value) {
+    final parsed = DateTime.tryParse(value);
+
+    if (parsed == null) {
+      return null;
+    }
+
+    return _normalize(parsed);
+  }
+
+  /// ============================================================
+  /// GET ALL PERIOD DAYS
+  /// ============================================================
 
   Future<List<DateTime>> getPeriodLogs() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final stored = prefs.getStringList(_key) ?? [];
+    final stored =
+        prefs.getStringList(_key) ?? const [];
 
-    final dates = <DateTime>[];
+    final dates = <DateTime>{};
 
     for (final value in stored) {
-      final parsed = DateTime.tryParse(value);
+      final parsed = _parseStoredDate(value);
 
       if (parsed != null) {
-        dates.add(_normalize(parsed));
+        dates.add(parsed);
       }
     }
 
-    dates.sort((a, b) => a.compareTo(b));
+    final result = dates.toList();
 
-    return dates;
+    result.sort();
+
+    return result;
   }
 
-  Future<void> savePeriod(DateTime date) async {
-    final prefs = await SharedPreferences.getInstance();
+  /// ============================================================
+  /// GET PERIOD DAYS AS A SET
+  /// ============================================================
 
-    final existing = prefs.getStringList(_key) ?? [];
+  Future<Set<DateTime>> getPeriodDaySet() async {
+    final logs = await getPeriodLogs();
+
+    return logs.toSet();
+  }
+
+  /// ============================================================
+  /// SAVE ONE PERIOD DAY
+  /// ============================================================
+
+  Future<bool> savePeriod(DateTime date) async {
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    final existing =
+        prefs.getStringList(_key) ?? [];
 
     final key = _dateKey(date);
 
-    if (!existing.contains(key)) {
-      existing.add(key);
+    if (existing.contains(key)) {
+      return false;
+    }
+
+    existing.add(key);
+
+    existing.sort();
+
+    final saved =
+        await prefs.setStringList(
+      _key,
+      existing,
+    );
+
+    return saved;
+  }
+
+  /// ============================================================
+  /// SAVE MULTIPLE PERIOD DAYS
+  /// ============================================================
+
+  Future<bool> savePeriods(
+    Iterable<DateTime> dates,
+  ) async {
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    final existing =
+        prefs.getStringList(_key) ?? [];
+
+    final keys =
+        <String>{...existing};
+
+    for (final date in dates) {
+      keys.add(_dateKey(date));
+    }
+
+    final sorted =
+        keys.toList()..sort();
+
+    return prefs.setStringList(
+      _key,
+      sorted,
+    );
+  }
+
+  /// ============================================================
+  /// DELETE ONE PERIOD DAY
+  /// ============================================================
+
+  Future<bool> deletePeriod(
+    DateTime date,
+  ) async {
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    final existing =
+        prefs.getStringList(_key) ?? [];
+
+    final key = _dateKey(date);
+
+    final removed =
+        existing.remove(key);
+
+    if (!removed) {
+      return false;
     }
 
     await prefs.setStringList(
       _key,
       existing,
     );
+
+    return true;
   }
 
-  Future<void> deletePeriod(DateTime date) async {
-    final prefs = await SharedPreferences.getInstance();
+  /// ============================================================
+  /// DELETE MULTIPLE PERIOD DAYS
+  /// ============================================================
 
-    final existing = prefs.getStringList(_key) ?? [];
+  Future<bool> deletePeriods(
+    Iterable<DateTime> dates,
+  ) async {
+    final prefs =
+        await SharedPreferences.getInstance();
 
-    final key = _dateKey(date);
+    final existing =
+        prefs.getStringList(_key) ?? [];
 
-    existing.remove(key);
+    final keysToDelete =
+        dates.map(_dateKey).toSet();
+
+    final originalLength =
+        existing.length;
+
+    existing.removeWhere(
+      keysToDelete.contains,
+    );
+
+    if (existing.length ==
+        originalLength) {
+      return false;
+    }
 
     await prefs.setStringList(
       _key,
       existing,
     );
+
+    return true;
   }
 
-  Future<void> clearAllPeriods() async {
-    final prefs = await SharedPreferences.getInstance();
+  /// ============================================================
+  /// REPLACE ALL PERIOD DATA
+  ///
+  /// Useful when editing a period episode.
+  /// ============================================================
 
-    await prefs.remove(_key);
+  Future<bool> replacePeriods(
+    Iterable<DateTime> dates,
+  ) async {
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    final keys =
+        dates.map(_dateKey).toSet().toList();
+
+    keys.sort();
+
+    return prefs.setStringList(
+      _key,
+      keys,
+    );
+  }
+
+  /// ============================================================
+  /// CLEAR ALL LOCAL PERIODS
+  /// ============================================================
+
+  Future<bool> clearAllPeriods() async {
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    return prefs.remove(_key);
   }
 }

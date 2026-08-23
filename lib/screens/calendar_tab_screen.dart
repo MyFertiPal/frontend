@@ -43,7 +43,7 @@ class _TrackingColors {
 }
 
 /// ============================================================
-/// SUMMARY STAT
+/// SUMMARY
 /// ============================================================
 
 class SummaryStat {
@@ -57,12 +57,11 @@ class SummaryStat {
 }
 
 /// ============================================================
-/// CALENDAR SCREEN
+/// CALENDAR
 /// ============================================================
 
 class CalendarTabScreen extends StatefulWidget {
   final DateTime today;
-
   final Map<DateTime, DayType>? dayMarkers;
 
   CalendarTabScreen({
@@ -76,11 +75,8 @@ class CalendarTabScreen extends StatefulWidget {
       CalendarTabScreenState();
 }
 
-/// ============================================================
-/// CALENDAR STATE
-/// ============================================================
-
-class CalendarTabScreenState extends State<CalendarTabScreen> {
+class CalendarTabScreenState extends State<CalendarTabScreen>
+    with WidgetsBindingObserver {
   final LocalPeriodService _periodService =
       LocalPeriodService();
 
@@ -89,36 +85,28 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   List<dynamic> _loggedSymptoms = [];
 
   DateTime? _selectedDate;
-
   DateTime? _lastPeriod;
-
   DateTime? _activePeriodStart;
 
   bool _isLoading = false;
+  bool _hasCalendarError = false;
 
   int _cycleLength = 0;
-
   int _periodLength = 0;
 
   String? _nextPeriod;
-
   String? _ovulationDay;
-
   String? _fertileStart;
-
   String? _fertileEnd;
 
   late DateTime _visibleMonth;
 
   Map<DateTime, DayType> _backendMarkers = {};
-
   Set<DateTime> _localPeriodDays = {};
-
   Map<DateTime, DayType> _dayMarkers = {};
 
-  /// ==========================================================
-  /// LOCALIZATION
-  /// ==========================================================
+  int _calendarRequestId = 0;
+  int _symptomsRequestId = 0;
 
   AppLocalizations get _l10n =>
       AppLocalizations.of(context);
@@ -135,10 +123,7 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
     );
   }
 
-  bool _sameDate(
-    DateTime? a,
-    DateTime? b,
-  ) {
+  bool _sameDate(DateTime? a, DateTime? b) {
     if (a == null || b == null) {
       return false;
     }
@@ -148,22 +133,18 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
         a.day == b.day;
   }
 
-  int _daysBetween(
-    DateTime from,
-    DateTime to,
-  ) {
-    final a = _normalize(from);
-    final b = _normalize(to);
-
-    return b.difference(a).inDays;
+  int _daysBetween(DateTime from, DateTime to) {
+    return _normalize(to)
+        .difference(_normalize(from))
+        .inDays;
   }
 
   String _formatDateForApi(DateTime date) {
-    final normalized = _normalize(date);
+    final d = _normalize(date);
 
-    return '${normalized.year.toString().padLeft(4, '0')}-'
-        '${normalized.month.toString().padLeft(2, '0')}-'
-        '${normalized.day.toString().padLeft(2, '0')}';
+    return '${d.year.toString().padLeft(4, '0')}-'
+        '${d.month.toString().padLeft(2, '0')}-'
+        '${d.day.toString().padLeft(2, '0')}';
   }
 
   DateTime? _parseDate(dynamic value) {
@@ -178,9 +159,7 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
     }
 
     try {
-      return _normalize(
-        DateTime.parse(text),
-      );
+      return _normalize(DateTime.parse(text));
     } catch (_) {
       return null;
     }
@@ -202,13 +181,9 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
       return null;
     }
 
-    final result = value.toString().trim();
+    final valueString = value.toString().trim();
 
-    if (result.isEmpty) {
-      return null;
-    }
-
-    return result;
+    return valueString.isEmpty ? null : valueString;
   }
 
   int _daysInMonth(DateTime month) {
@@ -220,7 +195,7 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 
   /// ==========================================================
-  /// LOCALIZED MONTH NAMES
+  /// LOCALIZED MONTHS
   /// ==========================================================
 
   List<String> get _monthNames => [
@@ -248,15 +223,14 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
         _l10n.sunday,
       ];
 
-  List<String> get _shortWeekdayNames => [
-        _l10n.monday.substring(0, 1),
-        _l10n.tuesday.substring(0, 1),
-        _l10n.wednesday.substring(0, 1),
-        _l10n.thursday.substring(0, 1),
-        _l10n.friday.substring(0, 1),
-        _l10n.saturday.substring(0, 1),
-        _l10n.sunday.substring(0, 1),
-      ];
+  List<String> get _shortWeekdayNames {
+    return _fullWeekdayNames.map((day) {
+      final trimmed = day.trim();
+      return trimmed.isEmpty
+          ? ''
+          : trimmed.characters.first.toUpperCase();
+    }).toList();
+  }
 
   /// ==========================================================
   /// SUMMARY
@@ -296,12 +270,8 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
       return '--';
     }
 
-    return '${_shortMonth(start.month)} ${start.day} – '
-        '${_shortMonth(end.month)} ${end.day}';
-  }
-
-  String _shortMonth(int month) {
-    return _monthNames[month - 1];
+    return '${_monthNames[start.month - 1]} ${start.day} – '
+        '${_monthNames[end.month - 1]} ${end.day}';
   }
 
   /// ==========================================================
@@ -312,63 +282,101 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addObserver(this);
+
     AnalyticsService.logScreenView(
       screenName: 'CalendarTabScreen',
     );
 
     AnalyticsService.logCalendarViewed();
 
+    final today = _normalize(DateTime.now());
+
     _visibleMonth = DateTime(
-      widget.today.year,
-      widget.today.month,
+      today.year,
+      today.month,
       1,
     );
 
-    unawaited(
-      _refreshCalendar(),
-    );
+    unawaited(_refreshCalendar());
+  }
+
+  @override
+  void didChangeAppLifecycleState(
+    AppLifecycleState state,
+  ) {
+    if (state == AppLifecycleState.resumed &&
+        mounted) {
+      unawaited(_refreshCalendar(force: true));
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   /// ==========================================================
-  /// PUBLIC REFRESH
+  /// REFRESH
   /// ==========================================================
 
   Future<void> refresh() async {
-    await _refreshCalendar();
+    await _refreshCalendar(force: true);
   }
 
-  Future<void> _refreshCalendar() async {
-    if (_isLoading) {
+  Future<void> _refreshCalendar({
+    bool force = false,
+  }) async {
+    if (_isLoading && !force) {
       return;
     }
 
-    _isLoading = true;
+    final requestId = ++_calendarRequestId;
+
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _hasCalendarError = false;
+      });
+    }
 
     try {
-      await _loadCycle();
+      await _loadCycle(requestId);
 
-      if (mounted) {
-        await _loadSymptomsForVisibleMonth();
+      if (!mounted ||
+          requestId != _calendarRequestId) {
+        return;
       }
+
+      await _loadSymptomsForVisibleMonth();
     } catch (e) {
-      debugPrint(
-        'Calendar refresh error: $e',
-      );
+      debugPrint('Calendar refresh error: $e');
+
+      if (mounted &&
+          requestId == _calendarRequestId) {
+        setState(() {
+          _hasCalendarError = true;
+        });
+      }
     } finally {
-      _isLoading = false;
+      if (mounted &&
+          requestId == _calendarRequestId) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   /// ==========================================================
-  /// LOAD PROFILE + INSIGHTS
+  /// LOAD CYCLE
   /// ==========================================================
 
-  Future<void> _loadCycle() async {
+  Future<void> _loadCycle(int requestId) async {
     Map<String, dynamic>? profile;
-
     List<dynamic> insights = [];
 
-    // Clear previous predictions.
     _nextPeriod = null;
     _ovulationDay = null;
     _fertileStart = null;
@@ -376,23 +384,14 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
 
     try {
       profile = await _api.getProfile();
-
-      debugPrint(
-        'CALENDAR PROFILE: $profile',
-      );
     } catch (e) {
-      debugPrint(
-        'Calendar getProfile error: $e',
-      );
+      debugPrint('getProfile error: $e');
     }
 
-    if (!mounted) {
+    if (!mounted ||
+        requestId != _calendarRequestId) {
       return;
     }
-
-    /// ----------------------------------------------------------
-    /// PROFILE = SOURCE OF TRUTH
-    /// ----------------------------------------------------------
 
     if (profile != null) {
       _cycleLength =
@@ -402,81 +401,75 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
           _toInt(profile['period_length']);
 
       _lastPeriod =
-          _parseDate(
-        profile['last_period_date'],
-      );
-
-      debugPrint(
-        'CURRENT LAST PERIOD: $_lastPeriod',
-      );
-
-      debugPrint(
-        'CURRENT CYCLE LENGTH: $_cycleLength',
-      );
-
-      debugPrint(
-        'CURRENT PERIOD LENGTH: $_periodLength',
-      );
+          _parseDate(profile['last_period_date']);
     }
-
-    /// ----------------------------------------------------------
-    /// LOAD INSIGHTS
-    /// ----------------------------------------------------------
 
     try {
-      insights =
-          await _api.getInsights();
-
-      debugPrint(
-        'CALENDAR INSIGHTS: $insights',
-      );
+      insights = await _api.getInsights();
     } catch (e) {
-      debugPrint(
-        'Calendar getInsights error: $e',
+      debugPrint('getInsights error: $e');
+    }
+
+    if (!mounted ||
+        requestId != _calendarRequestId) {
+      return;
+    }
+
+    final currentInsight =
+        _findCurrentCycleInsight(insights);
+
+    if (currentInsight != null) {
+      _nextPeriod = _stringValue(
+        currentInsight['next_period_date'] ??
+            currentInsight['next_period'],
+      );
+
+      _ovulationDay = _stringValue(
+        currentInsight['ovulation_day'],
+      );
+
+      _fertileStart = _stringValue(
+        currentInsight['fertile_period_start'],
+      );
+
+      _fertileEnd = _stringValue(
+        currentInsight['fertile_period_end'],
       );
     }
 
-    /// ----------------------------------------------------------
-    /// FIND INSIGHT FOR CURRENT CYCLE
-    /// ----------------------------------------------------------
+    _ensurePredictionFallback();
 
-    Map<String, dynamic>? currentInsight;
+    if (_fertileStart != null &&
+        _fertileEnd != null) {
+      AnalyticsService.logFertileWindowViewed();
+    }
 
+    await _loadLocalPeriods();
+
+    if (!mounted ||
+        requestId != _calendarRequestId) {
+      return;
+    }
+
+    _buildBackendMarkers();
+    _rebuildMergedMarkers();
+
+    setState(() {});
+  }
+
+  /// ==========================================================
+  /// FIND CURRENT INSIGHT
+  /// ==========================================================
+
+  Map<String, dynamic>? _findCurrentCycleInsight(
+    List<dynamic> insights,
+  ) {
     final currentLastPeriod =
         _lastPeriod == null
             ? null
-            : _formatDateForApi(
-                _lastPeriod!,
-              );
+            : _formatDateForApi(_lastPeriod!);
 
-    for (final item in insights) {
-      if (item is! Map) {
-        continue;
-      }
-
-      final insight =
-          Map<String, dynamic>.from(item);
-
-      final insightLastPeriod =
-          _stringValue(
-        insight['last_period_date'] ??
-            insight['period_start_date'] ??
-            insight['cycle_start_date'],
-      );
-
-      if (currentLastPeriod != null &&
-          insightLastPeriod ==
-              currentLastPeriod) {
-        currentInsight = insight;
-        break;
-      }
-    }
-
-    /// ----------------------------------------------------------
-    /// ONLY FALL BACK TO AN UNDATED INSIGHT
-    /// ----------------------------------------------------------
-
-    if (currentInsight == null) {
+    if (currentLastPeriod != null) {
       for (final item in insights) {
         if (item is! Map) {
           continue;
@@ -485,94 +478,58 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
         final insight =
             Map<String, dynamic>.from(item);
 
-        final hasCycleDate =
-            insight.containsKey(
-                  'last_period_date',
-                ) ||
-                insight.containsKey(
-                  'period_start_date',
-                ) ||
-                insight.containsKey(
-                  'cycle_start_date',
-                );
+        final start =
+            _extractInsightStartDate(insight);
 
-        if (!hasCycleDate) {
-          currentInsight = insight;
-          break;
+        if (start == currentLastPeriod) {
+          return insight;
         }
       }
     }
 
-    if (currentInsight != null) {
-      debugPrint(
-        'CURRENT CYCLE INSIGHT: '
-        '$currentInsight',
-      );
+    // Only use an undated insight if the backend
+    // did not associate it with another cycle.
+    for (final item in insights) {
+      if (item is! Map) {
+        continue;
+      }
 
-      _nextPeriod =
-          _stringValue(
-        currentInsight[
-              'next_period_date'] ??
-            currentInsight[
-              'next_period'],
-      );
+      final insight =
+          Map<String, dynamic>.from(item);
 
-      _ovulationDay =
-          _stringValue(
-        currentInsight[
-          'ovulation_day'],
-      );
+      final hasCycleDate =
+          insight.containsKey('last_period_date') ||
+              insight.containsKey('period_start_date') ||
+              insight.containsKey('cycle_start_date');
 
-      _fertileStart =
-          _stringValue(
-        currentInsight[
-          'fertile_period_start'],
-      );
-
-      _fertileEnd =
-          _stringValue(
-        currentInsight[
-          'fertile_period_end'],
-      );
+      if (!hasCycleDate) {
+        return insight;
+      }
     }
 
-    /// ----------------------------------------------------------
-    /// VALIDATE PREDICTIONS
-    /// ----------------------------------------------------------
-
-    _validateAndRepairPredictions();
-
-    if (_fertileStart != null &&
-        _fertileEnd != null) {
-      AnalyticsService
-          .logFertileWindowViewed();
-    }
-
-    /// ----------------------------------------------------------
-    /// LOCAL PERIODS
-    /// ----------------------------------------------------------
-
-    await _loadLocalPeriods();
-
-    /// ----------------------------------------------------------
-    /// MARKERS
-    /// ----------------------------------------------------------
-
-    _buildBackendMarkers();
-
-    _rebuildMergedMarkers();
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {});
+    return null;
   }
-    /// ==========================================================
-  /// VALIDATE / REPAIR PREDICTIONS
+
+  String? _extractInsightStartDate(
+    Map<String, dynamic> insight,
+  ) {
+    final raw =
+        insight['last_period_date'] ??
+            insight['period_start_date'] ??
+            insight['cycle_start_date'];
+
+    final parsed = _parseDate(raw);
+
+    return parsed == null
+        ? null
+        : _formatDateForApi(parsed);
+  }
+
+  /// ==========================================================
+  /// PREDICTION FALLBACK
   /// ==========================================================
 
-  void _validateAndRepairPredictions() {
+  void _ensurePredictionFallback() {
     if (_lastPeriod == null ||
         _cycleLength <= 0) {
       return;
@@ -580,143 +537,85 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
 
     final lastPeriod = _lastPeriod!;
 
-    /// ----------------------------------------------------------
-    /// NEXT PERIOD
-    ///
-    /// Cycle length means:
-    ///
-    /// last period start + cycle length
-    /// ----------------------------------------------------------
-
-    final expectedNextPeriod =
+    final expectedNext =
         _normalize(
       lastPeriod.add(
-        Duration(
-          days: _cycleLength,
-        ),
+        Duration(days: _cycleLength),
       ),
     );
 
-    final backendNextPeriod =
-        _parseDate(
-      _nextPeriod,
-    );
+    final backendNext =
+        _parseDate(_nextPeriod);
 
-    if (backendNextPeriod == null ||
-        backendNextPeriod.isBefore(
-          lastPeriod,
-        )) {
+    if (backendNext == null ||
+        backendNext.isBefore(lastPeriod)) {
       _nextPeriod =
-          _formatDateForApi(
-        expectedNextPeriod,
-      );
+          _formatDateForApi(expectedNext);
     }
 
-    /// ----------------------------------------------------------
-    /// OVULATION
-    ///
-    /// Approximation:
-    /// next period - 14 days
-    /// ----------------------------------------------------------
-
-    final expectedOvulation =
-        _normalize(
-      expectedNextPeriod.subtract(
-        const Duration(
-          days: 14,
-        ),
-      ),
-    );
+    final next =
+        _parseDate(_nextPeriod) ??
+            expectedNext;
 
     final backendOvulation =
-        _parseDate(
-      _ovulationDay,
-    );
+        _parseDate(_ovulationDay);
 
     if (backendOvulation == null ||
-        backendOvulation.isBefore(
-          lastPeriod,
-        ) ||
-        backendOvulation.isAfter(
-          expectedNextPeriod,
-        )) {
-      _ovulationDay =
-          _formatDateForApi(
-        expectedOvulation,
+        backendOvulation.isBefore(lastPeriod) ||
+        backendOvulation.isAfter(next)) {
+      final fallback =
+          _normalize(
+        next.subtract(
+          const Duration(days: 14),
+        ),
       );
+
+      _ovulationDay =
+          _formatDateForApi(fallback);
     }
 
-    /// ----------------------------------------------------------
-    /// FERTILE WINDOW
-    ///
-    /// 5 days before ovulation
-    /// through 1 day after ovulation.
-    /// ----------------------------------------------------------
-
-    final expectedFertileStart =
-        _normalize(
-      expectedOvulation.subtract(
-        const Duration(
-          days: 5,
-        ),
-      ),
-    );
-
-    final expectedFertileEnd =
-        _normalize(
-      expectedOvulation.add(
-        const Duration(
-          days: 1,
-        ),
-      ),
-    );
-
-    final backendFertileStart =
-        _parseDate(
-      _fertileStart,
-    );
-
-    final backendFertileEnd =
-        _parseDate(
-      _fertileEnd,
-    );
-
-    final fertileIsInvalid =
-        backendFertileStart == null ||
-            backendFertileEnd == null ||
-            backendFertileStart
-                .isBefore(lastPeriod) ||
-            backendFertileEnd
-                .isBefore(
-              backendFertileStart,
-            ) ||
-            backendFertileEnd
-                .isAfter(
-              expectedNextPeriod,
+    final ovulation =
+        _parseDate(_ovulationDay) ??
+            _normalize(
+              next.subtract(
+                const Duration(days: 14),
+              ),
             );
 
-    if (fertileIsInvalid) {
-      _fertileStart =
-          _formatDateForApi(
-        expectedFertileStart,
+    final fertileStart =
+        _parseDate(_fertileStart);
+
+    final fertileEnd =
+        _parseDate(_fertileEnd);
+
+    final validFertile =
+        fertileStart != null &&
+            fertileEnd != null &&
+            !fertileEnd.isBefore(fertileStart) &&
+            !fertileStart.isBefore(lastPeriod) &&
+            !fertileEnd.isAfter(next);
+
+    if (!validFertile) {
+      _fertileStart = _formatDateForApi(
+        _normalize(
+          ovulation.subtract(
+            const Duration(days: 5),
+          ),
+        ),
       );
 
-      _fertileEnd =
-          _formatDateForApi(
-        expectedFertileEnd,
+      _fertileEnd = _formatDateForApi(
+        _normalize(
+          ovulation.add(
+            const Duration(days: 1),
+          ),
+        ),
       );
     }
-
-    debugPrint(
-      'VALIDATED PREDICTIONS: '
-      'next=$_nextPeriod, '
-      'ovulation=$_ovulationDay, '
-      'fertile=$_fertileStart → $_fertileEnd',
-    );
   }
 
   /// ==========================================================
-  /// LOCAL PERIODS
+  /// LOCAL PERIOD DATA
   /// ==========================================================
 
   Future<void> _loadLocalPeriods() async {
@@ -724,169 +623,116 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
       final logs =
           await _periodService.getPeriodLogs();
 
-      _localPeriodDays = logs
-          .map(_normalize)
-          .toSet();
+      _localPeriodDays =
+          logs.map(_normalize).toSet();
 
-      if (_localPeriodDays.isEmpty) {
-        _activePeriodStart = null;
-        return;
-      }
-
-      final sorted =
-          _localPeriodDays.toList()
-            ..sort();
-
-      /// Find the latest continuous period block.
-      DateTime start =
-          sorted.last;
-
-      while (_localPeriodDays.contains(
-        start.subtract(
-          const Duration(
-            days: 1,
-          ),
-        ),
-      )) {
-        start = start.subtract(
-          const Duration(
-            days: 1,
-          ),
-        );
-      }
-
-      _activePeriodStart = start;
-
-      debugPrint(
-        'ACTIVE PERIOD START: '
-        '$_activePeriodStart',
+      _activePeriodStart =
+          _findLatestPeriodStart(
+        _localPeriodDays,
       );
     } catch (e) {
       debugPrint(
         'Local period load error: $e',
       );
+
+      _localPeriodDays = {};
+      _activePeriodStart = null;
     }
   }
 
+  DateTime? _findLatestPeriodStart(
+    Set<DateTime> dates,
+  ) {
+    if (dates.isEmpty) {
+      return null;
+    }
+
+    final sorted = dates.toList()..sort();
+
+    DateTime start = sorted.last;
+
+    while (dates.contains(
+      start.subtract(
+        const Duration(days: 1),
+      ),
+    )) {
+      start = start.subtract(
+        const Duration(days: 1),
+      );
+    }
+
+    return start;
+  }
+
   /// ==========================================================
-  /// BACKEND MARKERS
+  /// MARKERS
   /// ==========================================================
 
   void _buildBackendMarkers() {
-    final markers =
-        <DateTime, DayType>{};
+    final markers = <DateTime, DayType>{};
 
-    /// ----------------------------------------------------------
-    /// CURRENT PERIOD
-    /// ----------------------------------------------------------
-
+    // Actual current period.
     if (_lastPeriod != null &&
         _periodLength > 0) {
-      for (
-        int i = 0;
-        i < _periodLength;
-        i++
-      ) {
-        final date =
-            _normalize(
+      for (var i = 0; i < _periodLength; i++) {
+        final date = _normalize(
           _lastPeriod!.add(
-            Duration(
-              days: i,
-            ),
+            Duration(days: i),
           ),
         );
 
-        markers[date] =
-            DayType.period;
+        markers[date] = DayType.period;
       }
     }
 
-    /// ----------------------------------------------------------
-    /// FERTILE WINDOW
-    /// ----------------------------------------------------------
-
+    // Fertile window.
     final fertileStart =
-        _parseDate(
-      _fertileStart,
-    );
+        _parseDate(_fertileStart);
 
     final fertileEnd =
-        _parseDate(
-      _fertileEnd,
-    );
+        _parseDate(_fertileEnd);
 
     if (fertileStart != null &&
         fertileEnd != null &&
-        !fertileEnd.isBefore(
-          fertileStart,
-        )) {
-      var current =
-          fertileStart;
+        !fertileEnd.isBefore(fertileStart)) {
+      var date = fertileStart;
 
-      while (!current.isAfter(
-        fertileEnd,
-      )) {
-        if (markers[current] == null) {
-          markers[current] =
-              DayType.fertile;
+      while (!date.isAfter(fertileEnd)) {
+        if (!markers.containsKey(date)) {
+          markers[date] = DayType.fertile;
         }
 
-        current = current.add(
-          const Duration(
-            days: 1,
-          ),
+        date = date.add(
+          const Duration(days: 1),
         );
       }
     }
 
-    /// ----------------------------------------------------------
-    /// OVULATION
-    /// ----------------------------------------------------------
-
+    // Ovulation.
     final ovulation =
-        _parseDate(
-      _ovulationDay,
-    );
+        _parseDate(_ovulationDay);
 
-    if (ovulation != null) {
-      if (markers[ovulation] !=
-          DayType.period) {
-        markers[ovulation] =
-            DayType.ovulation;
-      }
+    if (ovulation != null &&
+        markers[ovulation] != DayType.period) {
+      markers[ovulation] =
+          DayType.ovulation;
     }
 
-    /// ----------------------------------------------------------
-    /// NEXT PREDICTED PERIOD
-    /// ----------------------------------------------------------
-
+    // Predicted next period.
     final nextPeriod =
-        _parseDate(
-      _nextPeriod,
-    );
+        _parseDate(_nextPeriod);
 
     if (nextPeriod != null &&
         _periodLength > 0) {
-      for (
-        int i = 0;
-        i < _periodLength;
-        i++
-      ) {
-        final date =
-            _normalize(
+      for (var i = 0; i < _periodLength; i++) {
+        final date = _normalize(
           nextPeriod.add(
-            Duration(
-              days: i,
-            ),
+            Duration(days: i),
           ),
         );
 
-        /// Never overwrite an actual/current period.
-        if (markers[date] == null ||
-            markers[date] ==
-                DayType.fertile ||
-            markers[date] ==
-                DayType.ovulation) {
+        // Never overwrite actual/fertility/ovulation data.
+        if (!markers.containsKey(date)) {
           markers[date] =
               DayType.predicted;
         }
@@ -896,18 +742,14 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
     _backendMarkers = markers;
   }
 
-  /// ==========================================================
-  /// MERGE BACKEND + LOCALLY LOGGED PERIODS
-  /// ==========================================================
-
   void _rebuildMergedMarkers() {
     final merged =
         Map<DateTime, DayType>.from(
       _backendMarkers,
     );
 
-    for (final date
-        in _localPeriodDays) {
+    // User-entered periods always override predictions.
+    for (final date in _localPeriodDays) {
       merged[_normalize(date)] =
           DayType.period;
     }
@@ -916,15 +758,119 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 
   /// ==========================================================
-  /// OPEN ADD PERIOD
+  /// SYMPTOMS
+  /// ==========================================================
+
+  Future<void>
+      _loadSymptomsForVisibleMonth() async {
+    final requestId = ++_symptomsRequestId;
+
+    final month = DateTime(
+      _visibleMonth.year,
+      _visibleMonth.month,
+      1,
+    );
+
+    final end = DateTime(
+      month.year,
+      month.month,
+      _daysInMonth(month),
+    );
+
+    try {
+      final symptoms =
+          await _api.getSymptoms(
+        startDate: month,
+        endDate: end,
+      );
+
+      if (!mounted ||
+          requestId != _symptomsRequestId) {
+        return;
+      }
+
+      setState(() {
+        _loggedSymptoms =
+            symptoms;
+      });
+    } catch (e) {
+      debugPrint(
+        'getSymptoms error: $e',
+      );
+
+      if (!mounted ||
+          requestId != _symptomsRequestId) {
+        return;
+      }
+
+      setState(() {
+        _loggedSymptoms = [];
+      });
+    }
+  }
+
+  /// ==========================================================
+  /// NAVIGATION
+  /// ==========================================================
+
+  void _goToPreviousMonth() {
+    ++_symptomsRequestId;
+
+    setState(() {
+      _visibleMonth = DateTime(
+        _visibleMonth.year,
+        _visibleMonth.month - 1,
+        1,
+      );
+    });
+
+    unawaited(
+      _loadSymptomsForVisibleMonth(),
+    );
+  }
+
+  void _goToNextMonth() {
+    ++_symptomsRequestId;
+
+    setState(() {
+      _visibleMonth = DateTime(
+        _visibleMonth.year,
+        _visibleMonth.month + 1,
+        1,
+      );
+    });
+
+    unawaited(
+      _loadSymptomsForVisibleMonth(),
+    );
+  }
+
+  void _goToToday() {
+    final today =
+        _normalize(DateTime.now());
+
+    setState(() {
+      _visibleMonth = DateTime(
+        today.year,
+        today.month,
+        1,
+      );
+    });
+
+    unawaited(
+      _loadSymptomsForVisibleMonth(),
+    );
+  }
+
+  /// ==========================================================
+  /// ADD PERIOD
   /// ==========================================================
 
   Future<void> _openAddPeriod() async {
     final result =
         await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) =>
-            AddPeriodScreen(
+        builder: (_) => AddPeriodScreen(
           initialPeriodDays:
               Set<DateTime>.from(
             _localPeriodDays,
@@ -939,151 +885,37 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
       ),
     );
 
-    if (result != true ||
-        !mounted) {
-      return;
+    if (result == true && mounted) {
+      await _refreshCalendar(force: true);
     }
-
-    await _refreshCalendar();
   }
-
-  /// ==========================================================
-  /// PREVIOUS MONTH
-  /// ==========================================================
-
-  void _goToPreviousMonth() {
-    setState(() {
-      _visibleMonth =
-          DateTime(
-        _visibleMonth.year,
-        _visibleMonth.month - 1,
-        1,
-      );
-    });
-
-    unawaited(
-      _loadSymptomsForVisibleMonth(),
-    );
-  }
-
-  /// ==========================================================
-  /// NEXT MONTH
-  /// ==========================================================
-
-  void _goToNextMonth() {
-    setState(() {
-      _visibleMonth =
-          DateTime(
-        _visibleMonth.year,
-        _visibleMonth.month + 1,
-        1,
-      );
-    });
-
-    unawaited(
-      _loadSymptomsForVisibleMonth(),
-    );
-  }
-
-  /// ==========================================================
-  /// SYMPTOMS
-  /// ==========================================================
-
-  Future<void>
-      _loadSymptomsForVisibleMonth() async {
-    final start =
-        DateTime(
-      _visibleMonth.year,
-      _visibleMonth.month,
-      1,
-    );
-
-    final end =
-        DateTime(
-      _visibleMonth.year,
-      _visibleMonth.month,
-      _daysInMonth(
-        _visibleMonth,
-      ),
-    );
-
-    List<dynamic> symptoms = [];
-
-    try {
-      symptoms =
-          await _api.getSymptoms(
-        startDate: start,
-        endDate: end,
-      );
-    } catch (e) {
-      debugPrint(
-        'getSymptoms error: $e',
-      );
-    }
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _loggedSymptoms =
-          symptoms;
-    });
-  }
-
-  /// ==========================================================
+    /// ==========================================================
   /// BUILD
   /// ==========================================================
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Container(
-      color:
-          _TrackingColors.bg,
+      color: _TrackingColors.bg,
       child: SafeArea(
         child: RefreshIndicator(
-          onRefresh:
-              _refreshCalendar,
-          child:
-              SingleChildScrollView(
+          onRefresh: () =>
+              _refreshCalendar(force: true),
+          child: SingleChildScrollView(
             physics:
                 const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment
-                      .stretch,
+                  CrossAxisAlignment.stretch,
               children: [
                 _buildHero(),
-
-                Padding(
-                  padding:
-                      const EdgeInsets
-                          .symmetric(
-                    horizontal: 16,
-                  ),
-                  child:
-                      _buildCalendarCard(),
-                ),
-
+                _buildCalendarSection(),
                 _buildLegend(),
-
-                const SizedBox(
-                  height: 8,
-                ),
-
+                const SizedBox(height: 8),
                 _buildSummaryRow(),
-
-                const SizedBox(
-                  height: 24,
-                ),
-
+                const SizedBox(height: 24),
                 _buildLoggedSymptoms(),
-
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -1098,119 +930,81 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
 
   Widget _buildHero() {
     final today =
-        _normalize(
-      widget.today,
-    );
+        _normalize(DateTime.now());
 
     final todayLabel =
         '${_fullWeekday(today.weekday)}, '
         '${_monthNames[today.month - 1]} '
         '${today.day}';
 
-    final days =
-        List.generate(
+    final days = List.generate(
       5,
       (index) => today.add(
-        Duration(
-          days: index - 2,
-        ),
+        Duration(days: index - 2),
       ),
     );
 
     return Padding(
-      padding:
-          const EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.fromLTRB(
         16,
         20,
         16,
         16,
       ),
       child: Container(
-        padding:
-            const EdgeInsets.fromLTRB(
+        padding: const EdgeInsets.fromLTRB(
           22,
           22,
           22,
           26,
         ),
-        decoration:
-            BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius:
-              BorderRadius.circular(
-            28,
-          ),
+              BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black
-                  .withOpacity(.05),
+              color:
+                  Colors.black.withOpacity(.05),
               blurRadius: 18,
-              offset:
-                  const Offset(0, 6),
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment:
-              CrossAxisAlignment
-                  .start,
+              CrossAxisAlignment.start,
           children: [
             Text(
               _l10n.today,
-              style:
-                  const TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
-                color:
-                    Color(0xFF0B5D4D),
-                fontWeight:
-                    FontWeight.w500,
+                color: Color(0xFF0B5D4D),
+                fontWeight: FontWeight.w500,
               ),
             ),
-
-            const SizedBox(
-              height: 4,
-            ),
-
+            const SizedBox(height: 4),
             Text(
               todayLabel,
-              style:
-                  const TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
-                fontWeight:
-                    FontWeight.w800,
-                color:
-                    Color(0xFF0B5D4D),
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0B5D4D),
               ),
             ),
-
-            const SizedBox(
-              height: 24,
-            ),
-
+            const SizedBox(height: 24),
             Row(
               mainAxisAlignment:
-                  MainAxisAlignment
-                      .spaceBetween,
-              children:
-                  days.map(
-                (date) {
-                  final isToday =
-                      _sameDate(
-                    date,
-                    today,
-                  );
-
-                  return _WeekDateItem(
-                    weekday:
-                        _shortWeekday(
-                      date.weekday,
-                    ),
-                    day: date.day,
-                    isToday:
-                        isToday,
-                  );
-                },
-              ).toList(),
+                  MainAxisAlignment.spaceBetween,
+              children: days.map((date) {
+                return _WeekDateItem(
+                  weekday:
+                      _shortWeekday(date.weekday),
+                  day: date.day,
+                  isToday:
+                      _sameDate(date, today),
+                );
+              }).toList(),
             ),
           ],
         ),
@@ -1218,43 +1012,32 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
     );
   }
 
-  String _fullWeekday(
-    int weekday,
-  ) {
-    return _fullWeekdayNames[
-        weekday - 1];
+  String _fullWeekday(int weekday) {
+    return _fullWeekdayNames[weekday - 1];
   }
 
-  String _shortWeekday(
-    int weekday,
-  ) {
-    return _shortWeekdayNames[
-        weekday - 1];
+  String _shortWeekday(int weekday) {
+    return _shortWeekdayNames[weekday - 1];
   }
 
   /// ==========================================================
-  /// MAIN CALENDAR
+  /// CALENDAR SECTION
   /// ==========================================================
+
+  Widget _buildCalendarSection() {
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: _buildCalendarCard(),
+    );
+  }
 
   Widget _buildCalendarCard() {
     final daysInMonth =
-        _daysInMonth(
-      _visibleMonth,
-    );
+        _daysInMonth(_visibleMonth);
 
-    /// IMPORTANT:
-    ///
-    /// Our headers are:
-    /// Monday Tuesday Wednesday Thursday Friday Saturday Sunday
-    ///
-    /// Therefore:
-    ///
-    /// Monday = 0
-    /// Tuesday = 1
-    /// ...
-    /// Sunday = 6
-    ///
-    /// This fixes the August alignment issue.
     final firstWeekdayOffset =
         _visibleMonth.weekday - 1;
 
@@ -1264,7 +1047,7 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
         null,
       ),
       for (
-        int day = 1;
+        var day = 1;
         day <= daysInMonth;
         day++
       )
@@ -1272,82 +1055,77 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
     ];
 
     return Container(
-      decoration:
-          BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius:
-            BorderRadius.circular(
-          24,
-        ),
+            BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black
-                .withOpacity(.05),
+            color:
+                Colors.black.withOpacity(.05),
             blurRadius: 12,
-            offset:
-                const Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding:
-          const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment
-                    .spaceBetween,
             children: [
               IconButton(
+                tooltip: 'Previous month',
                 onPressed:
                     _goToPreviousMonth,
-                icon:
-                    const Icon(
+                icon: const Icon(
                   Icons.chevron_left,
                 ),
                 color:
-                    _TrackingColors
-                        .textMuted,
+                    _TrackingColors.textMuted,
               ),
-
-              Text(
-                '${_monthNames[_visibleMonth.month - 1]} '
-                '${_visibleMonth.year}',
-                style:
-                    const TextStyle(
-                  fontSize: 16,
-                  fontWeight:
-                      FontWeight.w600,
+              Expanded(
+                child: Center(
+                  child: Text(
+                    '${_monthNames[_visibleMonth.month - 1]} '
+                    '${_visibleMonth.year}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight:
+                          FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-
               IconButton(
+                tooltip: 'Next month',
                 onPressed:
                     _goToNextMonth,
-                icon:
-                    const Icon(
+                icon: const Icon(
                   Icons.chevron_right,
                 ),
                 color:
-                    _TrackingColors
-                        .textMuted,
+                    _TrackingColors.textMuted,
               ),
             ],
           ),
 
-          const SizedBox(
-            height: 8,
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _goToToday,
+              child: Text(_l10n.today),
+            ),
           ),
 
-          /// WEEKDAY HEADERS
+          const SizedBox(height: 4),
+
           GridView.count(
             crossAxisCount: 7,
             shrinkWrap: true,
             physics:
                 const NeverScrollableScrollPhysics(),
             children:
-                _shortWeekdayNames
-                    .map(
+                _shortWeekdayNames.map(
               (weekday) {
                 return Center(
                   child: Text(
@@ -1367,17 +1145,13 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
             ).toList(),
           ),
 
-          const SizedBox(
-            height: 4,
-          ),
+          const SizedBox(height: 4),
 
-          /// DATES
           GridView.builder(
             shrinkWrap: true,
             physics:
                 const NeverScrollableScrollPhysics(),
-            itemCount:
-                cells.length,
+            itemCount: cells.length,
             gridDelegate:
                 const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
@@ -1385,103 +1159,102 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
             ),
             itemBuilder:
                 (context, index) {
-              final day =
-                  cells[index];
+              final day = cells[index];
 
               if (day == null) {
-                return const SizedBox
-                    .shrink();
+                return const SizedBox.shrink();
               }
 
-              final date =
-                  DateTime(
+              final date = DateTime(
                 _visibleMonth.year,
                 _visibleMonth.month,
                 day,
               );
 
               final normalized =
-                  _normalize(
-                date,
-              );
+                  _normalize(date);
 
-              final type =
-                  _dayMarkers[
-                    normalized
-                  ];
-
-              /// IMPORTANT:
-              ///
-              /// There is NO GestureDetector.
-              ///
-              /// Main calendar is display-only.
               return _CalendarDayCell(
                 day: day,
-                type: type,
+                type:
+                    _dayMarkers[normalized],
+                isToday:
+                    _sameDate(
+                  normalized,
+                  DateTime.now(),
+                ),
                 isSelected:
                     _sameDate(
                   _selectedDate,
-                  date,
+                  normalized,
                 ),
               );
             },
           ),
 
-          const SizedBox(
-            height: 16,
-          ),
+          const SizedBox(height: 16),
 
-          /// ADD PERIOD
           SizedBox(
-            width:
-                double.infinity,
-            child:
-                ElevatedButton.icon(
-              onPressed:
-                  _openAddPeriod,
-              icon:
-                  const Icon(
-                Icons.add,
-              ),
-              label:
-                  const Text(
-                'Add period',
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _isLoading
+                  ? null
+                  : _openAddPeriod,
+              icon: const Icon(Icons.add),
+              label: const Text(
+                'Add / edit period',
               ),
               style:
                   ElevatedButton.styleFrom(
                 backgroundColor:
-                    _TrackingColors
-                        .tealDark,
+                    _TrackingColors.tealDark,
                 foregroundColor:
                     Colors.white,
                 padding:
-                    const EdgeInsets
-                        .symmetric(
+                    const EdgeInsets.symmetric(
                   vertical: 14,
                 ),
                 shape:
                     RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius
-                          .circular(
-                    14,
-                  ),
+                      BorderRadius.circular(14),
                 ),
               ),
             ),
           ),
+
+          if (_isLoading) ...[
+            const SizedBox(height: 12),
+            const LinearProgressIndicator(
+              minHeight: 2,
+            ),
+          ],
+
+          if (_hasCalendarError) ...[
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: () =>
+                  _refreshCalendar(force: true),
+              icon: const Icon(
+                Icons.refresh,
+              ),
+              label: const Text(
+                'Unable to refresh cycle data. Try again.',
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
-    /// ==========================================================
+
+  /// ==========================================================
   /// LEGEND
   /// ==========================================================
 
   Widget _buildLegend() {
     return Padding(
-      padding:
-          const EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.fromLTRB(
         20,
         12,
         20,
@@ -1516,70 +1289,52 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
     String label,
   ) {
     return Row(
-      mainAxisSize:
-          MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 12,
           height: 12,
-          decoration:
-              BoxDecoration(
+          decoration: BoxDecoration(
             color: color,
-            shape:
-                BoxShape.circle,
+            shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(
-          width: 6,
-        ),
+        const SizedBox(width: 6),
         Text(
           label,
-          style:
-              const TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color:
-                _TrackingColors
-                    .textMuted,
+                _TrackingColors.textMuted,
           ),
         ),
       ],
     );
   }
 
-  Widget _legendOutlineItem(
-    String label,
-  ) {
+  Widget _legendOutlineItem(String label) {
     return Row(
-      mainAxisSize:
-          MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           width: 12,
           height: 12,
-          decoration:
-              BoxDecoration(
-            shape:
-                BoxShape.circle,
-            border:
-                Border.all(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
               color:
-                  _TrackingColors
-                      .predictedBorder,
+                  _TrackingColors.predictedBorder,
               width: 2,
             ),
           ),
         ),
-        const SizedBox(
-          width: 6,
-        ),
+        const SizedBox(width: 6),
         Text(
           label,
-          style:
-              const TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color:
-                _TrackingColors
-                    .textMuted,
+                _TrackingColors.textMuted,
           ),
         ),
       ],
@@ -1593,24 +1348,16 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   Widget _buildSummaryRow() {
     return SizedBox(
       height: 96,
-      child:
-          ListView.separated(
-        scrollDirection:
-            Axis.horizontal,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
         padding:
-            const EdgeInsets
-                .symmetric(
+            const EdgeInsets.symmetric(
           horizontal: 20,
         ),
-        itemCount:
-            summaryStats.length,
-        separatorBuilder:
-            (_, __) =>
-                const SizedBox(
-          width: 12,
-        ),
-        itemBuilder:
-            (context, index) {
+        itemCount: summaryStats.length,
+        separatorBuilder: (_, __) =>
+            const SizedBox(width: 12),
+        itemBuilder: (context, index) {
           final stat =
               summaryStats[index];
 
@@ -1624,70 +1371,96 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 
   /// ==========================================================
-  /// LOGGED SYMPTOMS
+  /// SYMPTOMS
   /// ==========================================================
 
   Widget _buildLoggedSymptoms() {
     return Padding(
       padding:
-          const EdgeInsets
-              .symmetric(
+          const EdgeInsets.symmetric(
         horizontal: 20,
       ),
       child: Column(
         crossAxisAlignment:
-            CrossAxisAlignment
-                .start,
+            CrossAxisAlignment.start,
         children: [
           Text(
             _l10n.loggedSymptoms,
-            style:
-                const TextStyle(
+            style: const TextStyle(
               fontSize: 22,
-              fontWeight:
-                  FontWeight.bold,
+              fontWeight: FontWeight.bold,
             ),
           ),
 
-          const SizedBox(
-            height: 16,
-          ),
+          const SizedBox(height: 16),
 
-          if (_loggedSymptoms
-              .isEmpty)
+          if (_loggedSymptoms.isEmpty)
             Center(
-              child: Text(
-                _l10n
-                    .noSymptomsLogged,
+              child: Padding(
+                padding:
+                    const EdgeInsets.all(16),
+                child: Text(
+                  _l10n.noSymptomsLogged,
+                  style: const TextStyle(
+                    color:
+                        _TrackingColors.textMuted,
+                  ),
+                ),
               ),
             ),
 
           ..._loggedSymptoms.map(
             (item) {
+              if (item is! Map) {
+                return const SizedBox.shrink();
+              }
+
               final symptoms =
                   item['symptoms'];
 
-              return Card(
-                child:
-                    ListTile(
-                  title:
-                      Text(
-                    symptoms
-                            is List
-                        ? symptoms
-                            .join(
-                            ', ',
+              final symptomText =
+                  symptoms is List
+                      ? symptoms
+                          .where(
+                            (e) =>
+                                e != null &&
+                                e.toString()
+                                    .trim()
+                                    .isNotEmpty,
                           )
-                        : symptoms
-                            .toString(),
+                          .join(', ')
+                      : (symptoms
+                                  ?.toString()
+                                  .trim() ??
+                              '');
+
+              if (symptomText.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              final createdAt =
+                  item['created_at']
+                          ?.toString()
+                          .trim() ??
+                      '';
+
+              return Card(
+                margin:
+                    const EdgeInsets.only(
+                  bottom: 8,
+                ),
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.favorite_outline,
+                    color:
+                        _TrackingColors.tealDark,
                   ),
+                  title:
+                      Text(symptomText),
                   subtitle:
-                      Text(
-                    item[
-                              'created_at']
-                            ?.toString() ??
-                        '',
-                  ),
+                      createdAt.isEmpty
+                          ? null
+                          : Text(createdAt),
                 ),
               );
             },
@@ -1698,25 +1471,11 @@ class CalendarTabScreenState extends State<CalendarTabScreen> {
   }
 }
 
-/// ============================================================================
-/// GRID DELEGATE
-/// ============================================================================
-
-class SliceGridDelegate
-    extends SliverGridDelegateWithFixedCrossAxisCount {
-  const SliceGridDelegate({
-    required super.crossAxisCount,
-  }) : super(
-          childAspectRatio: 1,
-        );
-}
-
-/// ============================================================================
+/// ============================================================
 /// WEEK DATE ITEM
-/// ============================================================================
+/// ============================================================
 
-class _WeekDateItem
-    extends StatelessWidget {
+class _WeekDateItem extends StatelessWidget {
   final String weekday;
   final int day;
   final bool isToday;
@@ -1728,49 +1487,43 @@ class _WeekDateItem
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     if (isToday) {
-      return Container(
-        width: 64,
-        height: 64,
-        decoration:
-            const BoxDecoration(
-          color:
-              Color(0xFF18B7B3),
-          shape:
-              BoxShape.circle,
-        ),
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment
-                  .center,
-          children: [
-            Text(
-              weekday,
-              style:
-                  const TextStyle(
-                color:
-                    Colors.white70,
-                fontSize: 13,
+      return Semantics(
+        label: 'Today, $weekday $day',
+        child: Container(
+          width: 64,
+          height: 64,
+          decoration:
+              const BoxDecoration(
+            color: Color(0xFF18B7B3),
+            shape: BoxShape.circle,
+          ),
+          child: Column(
+            mainAxisAlignment:
+                MainAxisAlignment.center,
+            children: [
+              Text(
+                weekday,
+                style:
+                    const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 2,
-            ),
-            Text(
-              '$day',
-              style:
-                  const TextStyle(
-                color:
-                    Colors.white,
-                fontSize: 22,
-                fontWeight:
-                    FontWeight.bold,
+              const SizedBox(height: 2),
+              Text(
+                '$day',
+                style:
+                    const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight:
+                      FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -1787,18 +1540,14 @@ class _WeekDateItem
               fontSize: 14,
             ),
           ),
-          const SizedBox(
-            height: 6,
-          ),
+          const SizedBox(height: 6),
           Text(
             '$day',
             style:
                 const TextStyle(
-              color:
-                  Color(0xFF0B5D4D),
+              color: Color(0xFF0B5D4D),
               fontSize: 26,
-              fontWeight:
-                  FontWeight.w600,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -1807,115 +1556,100 @@ class _WeekDateItem
   }
 }
 
-/// ============================================================================
+/// ============================================================
 /// CALENDAR DAY CELL
-/// ============================================================================
+/// ============================================================
 
-class _CalendarDayCell
-    extends StatelessWidget {
+class _CalendarDayCell extends StatelessWidget {
   final int day;
-
   final DayType? type;
-
+  final bool isToday;
   final bool isSelected;
 
   const _CalendarDayCell({
     required this.day,
     required this.type,
+    required this.isToday,
     this.isSelected = false,
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     Color? backgroundColor;
-
-    Color textColor =
-        Colors.black87;
+    Color textColor = Colors.black87;
 
     Border? border;
 
-    FontWeight fontWeight =
-        FontWeight.normal;
-
-    if (type ==
-        DayType.period) {
+    if (type == DayType.period) {
       backgroundColor =
           _TrackingColors.period;
-
-      textColor =
-          Colors.white;
-
-      fontWeight =
-          FontWeight.w600;
-    } else if (type ==
-        DayType.ovulation) {
+      textColor = Colors.white;
+    } else if (type == DayType.ovulation) {
       backgroundColor =
-          _TrackingColors
-              .tealDark;
-
-      textColor =
-          Colors.white;
-
-      fontWeight =
-          FontWeight.w600;
-    } else if (type ==
-        DayType.fertile) {
+          _TrackingColors.tealDark;
+      textColor = Colors.white;
+    } else if (type == DayType.fertile) {
       backgroundColor =
           _TrackingColors.fertile;
-
       textColor =
-          _TrackingColors
-              .fertileText;
-    } else if (type ==
-        DayType.predicted) {
+          _TrackingColors.fertileText;
+    } else if (type == DayType.predicted) {
       border = Border.all(
         color:
-            _TrackingColors
-                .predictedBorder,
+            _TrackingColors.predictedBorder,
         width: 2,
       );
-
       textColor =
           _TrackingColors.period;
     }
 
-    if (isSelected &&
-        type !=
-            DayType.period) {
+    if (isToday &&
+        type != DayType.period &&
+        type != DayType.ovulation) {
       border = Border.all(
-        color:
-            _TrackingColors
-                .tealDark,
+        color: _TrackingColors.teal,
         width: 2,
       );
     }
 
-    return Center(
-      child: Container(
-        width: 34,
-        height: 34,
-        alignment:
-            Alignment.center,
-        decoration:
-            BoxDecoration(
-          color:
-              backgroundColor,
-          shape:
-              BoxShape.circle,
-          border:
-              border,
-        ),
-        child: Text(
-          '$day',
-          style:
-              TextStyle(
-            fontSize: 13,
-            color:
-                textColor,
-            fontWeight:
-                fontWeight,
+    if (isSelected) {
+      border = Border.all(
+        color: _TrackingColors.tealDark,
+        width: 2.5,
+      );
+    }
+
+    return Semantics(
+      label: type == DayType.period
+          ? '$day, period'
+          : type == DayType.ovulation
+              ? '$day, estimated ovulation'
+              : type == DayType.fertile
+                  ? '$day, estimated fertile window'
+                  : type == DayType.predicted
+                      ? '$day, predicted period'
+                      : '$day',
+      child: Center(
+        child: Container(
+          width: 36,
+          height: 36,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
+            border: border,
+          ),
+          child: Text(
+            '$day',
+            style: TextStyle(
+              fontSize: 13,
+              color: textColor,
+              fontWeight:
+                  type == DayType.period ||
+                          type == DayType.ovulation
+                      ? FontWeight.w600
+                      : FontWeight.normal,
+            ),
           ),
         ),
       ),
@@ -1923,14 +1657,12 @@ class _CalendarDayCell
   }
 }
 
-/// ============================================================================
+/// ============================================================
 /// SUMMARY CARD
-/// ============================================================================
+/// ============================================================
 
-class _SummaryCard
-    extends StatelessWidget {
+class _SummaryCard extends StatelessWidget {
   final String value;
-
   final String label;
 
   const _SummaryCard({
@@ -1939,59 +1671,43 @@ class _SummaryCard
   });
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Container(
       width: 148,
       padding:
-          const EdgeInsets
-              .symmetric(
+          const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 14,
       ),
-      decoration:
-          BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius:
-            BorderRadius.circular(
-          18,
-        ),
-        border:
-            Border.all(
+            BorderRadius.circular(18),
+        border: Border.all(
           color:
-              _TrackingColors
-                  .cardBorder,
+              _TrackingColors.cardBorder,
         ),
       ),
       child: Column(
         crossAxisAlignment:
-            CrossAxisAlignment
-                .start,
+            CrossAxisAlignment.start,
         mainAxisAlignment:
-            MainAxisAlignment
-                .center,
+            MainAxisAlignment.center,
         children: [
           Text(
             value,
-            style:
-                const TextStyle(
+            style: const TextStyle(
               fontSize: 17,
-              fontWeight:
-                  FontWeight.w600,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(
-            height: 4,
-          ),
+          const SizedBox(height: 4),
           Text(
             label,
-            style:
-                const TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               color:
-                  _TrackingColors
-                      .textMuted,
+                  _TrackingColors.textMuted,
             ),
           ),
         ],
@@ -1999,25 +1715,14 @@ class _SummaryCard
     );
   }
 }
+/// ============================================================
+/// ADD / EDIT PERIOD SCREEN
+/// ============================================================
 
-/// ============================================================================
-/// ADD PERIOD SCREEN
-///
-/// This is intentionally in the same file for now so you can copy/paste
-/// everything without creating another file.
-///
-/// The months swipe VERTICALLY.
-/// ============================================================================
-
-class AddPeriodScreen
-    extends StatefulWidget {
-  final Set<DateTime>
-      initialPeriodDays;
-
+class AddPeriodScreen extends StatefulWidget {
+  final Set<DateTime> initialPeriodDays;
   final int periodLength;
-
   final DateTime initialMonth;
-
   final int cycleLength;
 
   const AddPeriodScreen({
@@ -2035,30 +1740,28 @@ class AddPeriodScreen
 
 class _AddPeriodScreenState
     extends State<AddPeriodScreen> {
-  final LocalPeriodService
-      _periodService =
+  final LocalPeriodService _periodService =
       LocalPeriodService();
 
-  final ApiService _api =
-      ApiService();
+  final ApiService _api = ApiService();
 
-  late Set<DateTime>
-      _selectedDays;
+  late Set<DateTime> _selectedDays;
+  late Set<DateTime> _originalDays;
 
-  late Set<DateTime>
-      _originalDays;
-
-  late PageController
-      _pageController;
-
-  late DateTime
-      _initialMonth;
+  late PageController _pageController;
+  late DateTime _initialMonth;
 
   bool _saving = false;
 
-  /// Number of months available before/after
-  /// the initial month.
   static const int _monthRange = 60;
+
+  DateTime _normalize(DateTime date) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+  }
 
   @override
   void initState() {
@@ -2074,8 +1777,7 @@ class _AddPeriodScreenState
       _selectedDays,
     );
 
-    _initialMonth =
-        DateTime(
+    _initialMonth = DateTime(
       widget.initialMonth.year,
       widget.initialMonth.month,
       1,
@@ -2088,41 +1790,10 @@ class _AddPeriodScreenState
   }
 
   /// ==========================================================
-  /// DATE HELPERS
+  /// MONTH
   /// ==========================================================
 
-  static DateTime _normalize(
-    DateTime date,
-  ) {
-    return DateTime(
-      date.year,
-      date.month,
-      date.day,
-    );
-  }
-
-  bool _sameDate(
-    DateTime a,
-    DateTime b,
-  ) {
-    return a.year == b.year &&
-        a.month == b.month &&
-        a.day == b.day;
-  }
-
-  int _daysInMonth(
-    DateTime month,
-  ) {
-    return DateTime(
-      month.year,
-      month.month + 1,
-      0,
-    ).day;
-  }
-
-  DateTime _monthForPage(
-    int page,
-  ) {
+  DateTime _monthForPage(int page) {
     return DateTime(
       _initialMonth.year,
       _initialMonth.month +
@@ -2131,30 +1802,144 @@ class _AddPeriodScreenState
     );
   }
 
+  int _daysInMonth(DateTime month) {
+    return DateTime(
+      month.year,
+      month.month + 1,
+      0,
+    ).day;
+  }
+
   /// ==========================================================
-  /// TOGGLE DAY
+  /// SELECTED PERIOD EPISODES
   /// ==========================================================
 
-  void _toggleDate(
-    DateTime date,
+  List<Set<DateTime>> _findEpisodes(
+    Set<DateTime> dates,
   ) {
+    if (dates.isEmpty) {
+      return [];
+    }
+
+    final sorted = dates.toList()..sort();
+
+    final episodes = <Set<DateTime>>[];
+    var current = <DateTime>{sorted.first};
+
+    for (var i = 1; i < sorted.length; i++) {
+      final previous = sorted[i - 1];
+      final currentDate = sorted[i];
+
+      final gap =
+          currentDate
+              .difference(previous)
+              .inDays;
+
+      if (gap == 1) {
+        current.add(currentDate);
+      } else {
+        episodes.add(current);
+        current = <DateTime>{currentDate};
+      }
+    }
+
+    episodes.add(current);
+
+    return episodes;
+  }
+
+  /// ==========================================================
+  /// CURRENT EDITABLE EPISODE
+  /// ==========================================================
+
+  Set<DateTime> _currentEpisode() {
+    final episodes =
+        _findEpisodes(_originalDays);
+
+    if (episodes.isEmpty) {
+      return {};
+    }
+
+    episodes.sort((a, b) {
+      final aLast = a.toList()..sort();
+      final bLast = b.toList()..sort();
+
+      return aLast.last.compareTo(
+        bLast.last,
+      );
+    });
+
+    return Set<DateTime>.from(
+      episodes.last,
+    );
+  }
+
+  /// ==========================================================
+  /// TOGGLE
+  /// ==========================================================
+
+  void _toggleDate(DateTime date) {
+    if (_saving) {
+      return;
+    }
+
     final normalized =
         _normalize(date);
 
     setState(() {
-      if (_selectedDays
-          .contains(normalized)) {
-        _selectedDays
-            .remove(normalized);
-      } else {
-        _selectedDays
-            .add(normalized);
+      if (_selectedDays.contains(normalized)) {
+        _selectedDays.remove(normalized);
+        return;
       }
+
+      /// If there is no period yet, the first selected
+      /// date becomes the anchor.
+      if (_selectedDays.isEmpty) {
+        _selectedDays.add(normalized);
+        return;
+      }
+
+      /// Keep the selected period continuous.
+      final sorted =
+          _selectedDays.toList()..sort();
+
+      final first = sorted.first;
+      final last = sorted.last;
+
+      final before =
+          normalized.difference(first).inDays;
+
+      final after =
+          normalized.difference(last).inDays;
+
+      if (before == -1 ||
+          after == 1) {
+        _selectedDays.add(normalized);
+        return;
+      }
+
+      /// Allow tapping inside the current range.
+      if (!normalized.isBefore(first) &&
+          !normalized.isAfter(last)) {
+        _selectedDays.add(normalized);
+        return;
+      }
+
+      /// Don't silently create a disconnected period.
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Period days should be consecutive. '
+            'Add days next to the selected period.',
+          ),
+        ),
+      );
     });
   }
 
   /// ==========================================================
-  /// SAVE PERIOD
+  /// SAVE
   /// ==========================================================
 
   Future<void> _savePeriod() async {
@@ -2162,7 +1947,46 @@ class _AddPeriodScreenState
       return;
     }
 
-    if (_selectedDays.isEmpty) {
+    final selected =
+        Set<DateTime>.from(_selectedDays);
+
+    final original =
+        Set<DateTime>.from(_originalDays);
+
+    /// Allow deletion only when editing an existing
+    /// period episode.
+    final editingExisting =
+        original.isNotEmpty;
+
+    if (selected.isEmpty &&
+        !editingExisting) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Please select at least one period day.',
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    /// Don't allow accidental multiple episodes
+    /// to be created from this screen.
+    final episodes =
+        _findEpisodes(selected);
+
+    if (episodes.length > 1) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Please select consecutive period days.',
+          ),
+        ),
+      );
+
       return;
     }
 
@@ -2171,174 +1995,111 @@ class _AddPeriodScreenState
     });
 
     try {
-      /// --------------------------------------------------------
-      /// DAYS ADDED
-      /// --------------------------------------------------------
+      final added =
+          selected.difference(original);
 
-      final addedDays =
-          _selectedDays
-              .difference(
-        _originalDays,
-      );
+      final removed =
+          original.difference(selected);
 
       /// --------------------------------------------------------
-      /// DAYS REMOVED
+      /// SAVE LOCAL DATA
       /// --------------------------------------------------------
 
-      final removedDays =
-          _originalDays
-              .difference(
-        _selectedDays,
-      );
+      if (added.isNotEmpty) {
+        await _periodService.savePeriods(
+          added,
+        );
+      }
 
-      /// --------------------------------------------------------
-      /// SAVE NEW DAYS
-      /// --------------------------------------------------------
-
-      for (final date
-          in addedDays) {
-        await _periodService
-            .savePeriod(
-          date,
+      if (removed.isNotEmpty) {
+        await _periodService.deletePeriods(
+          removed,
         );
       }
 
       /// --------------------------------------------------------
-      /// DELETE REMOVED DAYS
+      /// DETERMINE PERIOD START
       /// --------------------------------------------------------
 
-      for (final date
-          in removedDays) {
-        await _periodService
-            .deletePeriod(
-          date,
-        );
+      DateTime? periodStart;
+
+      if (selected.isNotEmpty) {
+        final sorted =
+            selected.toList()..sort();
+
+        periodStart = sorted.first;
       }
 
       /// --------------------------------------------------------
-      /// FIND THE LATEST PERIOD BLOCK
+      /// DETERMINE WHETHER THE PERIOD START CHANGED
       /// --------------------------------------------------------
 
-      final sorted =
-          _selectedDays.toList()
-            ..sort();
+      DateTime? originalStart;
 
-      DateTime latestStart =
-          sorted.last;
+      if (original.isNotEmpty) {
+        final sorted =
+            original.toList()..sort();
 
-      while (_selectedDays
-          .contains(
-        latestStart.subtract(
-          const Duration(
-            days: 1,
-          ),
-        ),
-      )) {
-        latestStart =
-            latestStart.subtract(
-          const Duration(
-            days: 1,
-          ),
-        );
+        originalStart = sorted.first;
       }
 
-      debugPrint(
-        'ADD PERIOD: '
-        'LATEST PERIOD START = '
-        '$latestStart',
-      );
+      final cycleChanged =
+          periodStart != null &&
+          !_sameDate(
+            periodStart,
+            originalStart,
+          );
 
       /// --------------------------------------------------------
-      /// DETERMINE WHETHER THIS IS A NEW CYCLE
+      /// GENERATE INSIGHTS ONLY WHEN NECESSARY
       /// --------------------------------------------------------
-      ///
-      /// If a newly added period is separated from the
-      /// previous period by more than one day, it is treated
-      /// as a new period start.
-      ///
-      bool isNewCycle = false;
 
-      if (addedDays.isNotEmpty) {
-        final previousSorted =
-            _originalDays.toList()
-              ..sort();
-
-        if (previousSorted.isEmpty) {
-          isNewCycle = true;
-        } else {
-          final previousLatest =
-              previousSorted.last;
-
-          for (final added
-              in addedDays) {
-            final gap =
-                added
-                    .difference(
-                      previousLatest,
-                    )
-                    .inDays;
-
-            if (gap > 1) {
-              isNewCycle = true;
-              break;
-            }
-          }
+      if (cycleChanged &&
+          widget.cycleLength > 0 &&
+          widget.periodLength > 0) {
+        try {
+          await _api.generateInsights(
+            cycleLength:
+                widget.cycleLength,
+            lastPeriodDate:
+                _formatDateForApi(
+              periodStart!,
+            ),
+            periodLength:
+                widget.periodLength,
+            symptoms: const ['none'],
+          );
+        } catch (e) {
+          /// Period saving already succeeded.
+          ///
+          /// Prediction generation failure must not
+          /// cause the user's period entry to be lost.
+          debugPrint(
+            'Prediction generation failed: $e',
+          );
         }
       }
 
-      /// --------------------------------------------------------
-      /// GENERATE NEW PREDICTIONS
-      /// --------------------------------------------------------
-
-      if (isNewCycle) {
-        debugPrint(
-          'ADD PERIOD: '
-          'NEW CYCLE DETECTED',
-        );
-
-        final result =
-            await _api.generateInsights(
-          cycleLength:
-              widget.cycleLength,
-          lastPeriodDate:
-              _formatDateForApi(
-            latestStart,
-          ),
-          periodLength:
-              widget.periodLength,
-          symptoms: const [
-            'none',
-          ],
-        );
-
-        debugPrint(
-          'ADD PERIOD: '
-          'GENERATE INSIGHTS RESULT '
-          '$result',
-        );
-      }
-
       if (!mounted) {
         return;
       }
 
-      Navigator.of(context)
-          .pop(true);
+      Navigator.of(context).pop(true);
     } catch (e) {
       debugPrint(
-        'ADD PERIOD SAVE ERROR: $e',
+        'Save period error: $e',
       );
 
       if (!mounted) {
         return;
       }
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        SnackBar(
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
+        const SnackBar(
           content: Text(
-            'Unable to save period: $e',
+            'We could not save your period. '
+            'Please try again.',
           ),
         ),
       );
@@ -2351,15 +2112,25 @@ class _AddPeriodScreenState
     }
   }
 
-  String _formatDateForApi(
-    DateTime date,
+  bool _sameDate(
+    DateTime? a,
+    DateTime? b,
   ) {
-    final normalized =
-        _normalize(date);
+    if (a == null || b == null) {
+      return false;
+    }
 
-    return '${normalized.year.toString().padLeft(4, '0')}-'
-        '${normalized.month.toString().padLeft(2, '0')}-'
-        '${normalized.day.toString().padLeft(2, '0')}';
+    return a.year == b.year &&
+        a.month == b.month &&
+        a.day == b.day;
+  }
+
+  String _formatDateForApi(DateTime date) {
+    final d = _normalize(date);
+
+    return '${d.year.toString().padLeft(4, '0')}-'
+        '${d.month.toString().padLeft(2, '0')}-'
+        '${d.day.toString().padLeft(2, '0')}';
   }
 
   /// ==========================================================
@@ -2367,47 +2138,43 @@ class _AddPeriodScreenState
   /// ==========================================================
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
           _TrackingColors.bg,
-
       appBar: AppBar(
-        title:
-            const Text(
-          'Add period',
+        title: const Text(
+          'Add / edit period',
         ),
-        backgroundColor:
-            Colors.white,
+        backgroundColor: Colors.white,
         foregroundColor:
-            _TrackingColors
-                .tealDark,
+            _TrackingColors.tealDark,
         elevation: 0,
       ),
-
       body: Column(
         children: [
-          const Padding(
+          Padding(
             padding:
-                EdgeInsets.fromLTRB(
+                const EdgeInsets.fromLTRB(
               20,
               16,
               20,
-              10,
+              8,
             ),
             child: Align(
               alignment:
                   Alignment.centerLeft,
               child: Text(
-                'Select the days of your period',
-                style: TextStyle(
+                _selectedDays.isEmpty
+                    ? 'Select the first day of your period'
+                    : 'Select the consecutive days of your period',
+                style:
+                    const TextStyle(
                   fontSize: 16,
                   fontWeight:
                       FontWeight.w600,
                   color:
-                      Color(0xFF0B4A40),
+                      _TrackingColors.tealDark,
                 ),
               ),
             ),
@@ -2422,43 +2189,30 @@ class _AddPeriodScreenState
               alignment:
                   Alignment.centerLeft,
               child: Text(
-                'Swipe up or down to move between months. Tap a date to add or remove it.',
-                style: TextStyle(
+                'Swipe vertically between months. Tap a date to add or remove it.',
+                style:
+                    TextStyle(
                   fontSize: 13,
-                  color:
-                      Colors.grey,
+                  color: Colors.grey,
                 ),
               ),
             ),
           ),
 
-          const SizedBox(
-            height: 12,
-          ),
+          const SizedBox(height: 12),
 
           Expanded(
-            child:
-                PageView.builder(
+            child: PageView.builder(
               controller:
                   _pageController,
               scrollDirection:
                   Axis.vertical,
               itemCount:
-                  (_monthRange * 2) +
-                      1,
+                  (_monthRange * 2) + 1,
               itemBuilder:
-                  (
-                context,
-                page,
-              ) {
-                final month =
-                    _monthForPage(
-                  page,
-                );
-
-                return
-                    _buildMonth(
-                  month,
+                  (context, page) {
+                return _buildMonth(
+                  _monthForPage(page),
                 );
               },
             ),
@@ -2474,13 +2228,10 @@ class _AddPeriodScreenState
   /// MONTH
   /// ==========================================================
 
-  Widget _buildMonth(
-    DateTime month,
-  ) {
+  Widget _buildMonth(DateTime month) {
     final days =
         _daysInMonth(month);
 
-    /// Monday-first calendar.
     final offset =
         month.weekday - 1;
 
@@ -2490,7 +2241,7 @@ class _AddPeriodScreenState
         null,
       ),
       for (
-        int day = 1;
+        var day = 1;
         day <= days;
         day++
       )
@@ -2511,15 +2262,11 @@ class _AddPeriodScreenState
         shape:
             RoundedRectangleBorder(
           borderRadius:
-              BorderRadius.circular(
-            24,
-          ),
+              BorderRadius.circular(24),
         ),
         child: Padding(
           padding:
-              const EdgeInsets.all(
-            16,
-          ),
+              const EdgeInsets.all(16),
           child: Column(
             children: [
               Text(
@@ -2531,46 +2278,26 @@ class _AddPeriodScreenState
                   fontWeight:
                       FontWeight.bold,
                   color:
-                      Color(0xFF0B4A40),
+                      _TrackingColors.tealDark,
                 ),
               ),
 
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
 
-              /// WEEKDAYS
               Row(
                 children: const [
-                  _AddPeriodWeekday(
-                    'M',
-                  ),
-                  _AddPeriodWeekday(
-                    'T',
-                  ),
-                  _AddPeriodWeekday(
-                    'W',
-                  ),
-                  _AddPeriodWeekday(
-                    'T',
-                  ),
-                  _AddPeriodWeekday(
-                    'F',
-                  ),
-                  _AddPeriodWeekday(
-                    'S',
-                  ),
-                  _AddPeriodWeekday(
-                    'S',
-                  ),
+                  _AddPeriodWeekday('M'),
+                  _AddPeriodWeekday('T'),
+                  _AddPeriodWeekday('W'),
+                  _AddPeriodWeekday('T'),
+                  _AddPeriodWeekday('F'),
+                  _AddPeriodWeekday('S'),
+                  _AddPeriodWeekday('S'),
                 ],
               ),
 
-              const SizedBox(
-                height: 8,
-              ),
+              const SizedBox(height: 8),
 
-              /// DATES
               Expanded(
                 child:
                     GridView.builder(
@@ -2580,21 +2307,15 @@ class _AddPeriodScreenState
                       cells.length,
                   gridDelegate:
                       const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount:
-                        7,
-                    childAspectRatio:
-                        1,
+                    crossAxisCount: 7,
+                    childAspectRatio: 1,
                   ),
                   itemBuilder:
-                      (
-                    context,
-                    index,
-                  ) {
+                      (context, index) {
                     final day =
                         cells[index];
 
-                    if (day ==
-                        null) {
+                    if (day == null) {
                       return const SizedBox();
                     }
 
@@ -2607,67 +2328,75 @@ class _AddPeriodScreenState
 
                     final selected =
                         _selectedDays
-                            .contains(
-                      date,
-                    );
+                            .contains(date);
 
-                    return GestureDetector(
-                      behavior:
-                          HitTestBehavior
-                              .opaque,
-                      onTap: () =>
-                          _toggleDate(
-                        date,
-                      ),
+                    return Semantics(
+                      button: true,
+                      label: selected
+                          ? '$day, selected period day'
+                          : '$day, period day',
                       child:
-                          Center(
+                          GestureDetector(
+                        behavior:
+                            HitTestBehavior
+                                .opaque,
+                        onTap: _saving
+                            ? null
+                            : () =>
+                                _toggleDate(
+                                  date,
+                                ),
                         child:
-                            AnimatedContainer(
-                          duration:
-                              const Duration(
-                            milliseconds:
-                                150,
-                          ),
-                          width: 40,
-                          height: 40,
-                          alignment:
-                              Alignment
-                                  .center,
-                          decoration:
-                              BoxDecoration(
-                            color: selected
-                                ? _TrackingColors
-                                    .period
-                                : Colors
-                                    .transparent,
-                            shape:
-                                BoxShape
-                                    .circle,
-                            border:
-                                selected
-                                    ? null
-                                    : Border.all(
-                                        color: Colors
-                                            .transparent,
-                                      ),
-                          ),
+                            Center(
                           child:
-                              Text(
-                            '$day',
-                            style:
-                                TextStyle(
+                              AnimatedContainer(
+                            duration:
+                                const Duration(
+                              milliseconds:
+                                  150,
+                            ),
+                            width: 42,
+                            height: 42,
+                            alignment:
+                                Alignment
+                                    .center,
+                            decoration:
+                                BoxDecoration(
                               color: selected
-                                  ? Colors
-                                      .white
+                                  ? _TrackingColors
+                                      .period
                                   : Colors
-                                      .black87,
-                              fontWeight: selected
-                                  ? FontWeight
-                                      .w600
-                                  : FontWeight
-                                      .normal,
-                              fontSize:
-                                  14,
+                                      .transparent,
+                              shape:
+                                  BoxShape
+                                      .circle,
+                              border:
+                                  selected
+                                      ? null
+                                      : Border.all(
+                                          color: Colors
+                                              .transparent,
+                                        ),
+                            ),
+                            child:
+                                Text(
+                              '$day',
+                              style:
+                                  TextStyle(
+                                color: selected
+                                    ? Colors
+                                        .white
+                                    : Colors
+                                        .black87,
+                                fontWeight:
+                                    selected
+                                        ? FontWeight
+                                            .w600
+                                        : FontWeight
+                                            .normal,
+                                fontSize:
+                                    14,
+                              ),
                             ),
                           ),
                         ),
@@ -2683,34 +2412,34 @@ class _AddPeriodScreenState
     );
   }
 
-  String _monthName(
-    int month,
-  ) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+ String _monthName(int month) {
+  final months = [
+    AppLocalizations.of(context).jan,
+    AppLocalizations.of(context).feb,
+    AppLocalizations.of(context).mar,
+    AppLocalizations.of(context).apr,
+    AppLocalizations.of(context).may,
+    AppLocalizations.of(context).jun,
+    AppLocalizations.of(context).jul,
+    AppLocalizations.of(context).aug,
+    AppLocalizations.of(context).sep,
+    AppLocalizations.of(context).oct,
+    AppLocalizations.of(context).nov,
+    AppLocalizations.of(context).dec,
+  ];
 
-    return months[month - 1];
-  }
-
+  return months[month - 1];
+}
   /// ==========================================================
-  /// BOTTOM SAVE BAR
+  /// SAVE BAR
   /// ==========================================================
 
   Widget _buildBottomBar() {
-    final selectedCount =
+    final count =
         _selectedDays.length;
+
+    final editingExisting =
+        _originalDays.isNotEmpty;
 
     return SafeArea(
       child: Container(
@@ -2733,37 +2462,33 @@ class _AddPeriodScreenState
               alignment:
                   Alignment.centerLeft,
               child: Text(
-                selectedCount == 0
-                    ? 'No period days selected'
-                    : '$selectedCount period '
-                      '${selectedCount == 1 ? 'day' : 'days'} selected',
+                count == 0
+                    ? editingExisting
+                        ? 'All period days will be removed'
+                        : 'No period days selected'
+                    : '$count period '
+                      '${count == 1 ? 'day' : 'days'} selected',
                 style:
                     const TextStyle(
                   fontSize: 13,
-                  color:
-                      Colors.grey,
+                  color: Colors.grey,
                 ),
               ),
             ),
 
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
 
             SizedBox(
-              width:
-                  double.infinity,
-              child:
-                  ElevatedButton(
+              width: double.infinity,
+              child: ElevatedButton(
                 onPressed:
-                    _selectedDays
-                                .isEmpty ||
-                            _saving
+                    _saving ||
+                            (count == 0 &&
+                                !editingExisting)
                         ? null
                         : _savePeriod,
                 style:
-                    ElevatedButton
-                        .styleFrom(
+                    ElevatedButton.styleFrom(
                   backgroundColor:
                       _TrackingColors
                           .tealDark,
@@ -2777,8 +2502,7 @@ class _AddPeriodScreenState
                   shape:
                       RoundedRectangleBorder(
                     borderRadius:
-                        BorderRadius
-                            .circular(
+                        BorderRadius.circular(
                       14,
                     ),
                   ),
@@ -2789,19 +2513,20 @@ class _AddPeriodScreenState
                         height: 20,
                         child:
                             CircularProgressIndicator(
-                          strokeWidth:
-                              2,
+                          strokeWidth: 2,
                           color:
                               Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Save period',
+                    : Text(
+                        count == 0 &&
+                                editingExisting
+                            ? 'Remove period'
+                            : 'Save period',
                         style:
-                            TextStyle(
+                            const TextStyle(
                           fontWeight:
-                              FontWeight
-                                  .w600,
+                              FontWeight.w600,
                         ),
                       ),
               ),
@@ -2814,29 +2539,23 @@ class _AddPeriodScreenState
 
   @override
   void dispose() {
-    _pageController
-        .dispose();
-
+    _pageController.dispose();
     super.dispose();
   }
 }
 
-/// ============================================================================
-/// ADD PERIOD WEEKDAY
-/// ============================================================================
+/// ============================================================
+/// WEEKDAY
+/// ============================================================
 
 class _AddPeriodWeekday
     extends StatelessWidget {
   final String label;
 
-  const _AddPeriodWeekday(
-    this.label,
-  );
+  const _AddPeriodWeekday(this.label);
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Expanded(
       child: Center(
         child: Text(

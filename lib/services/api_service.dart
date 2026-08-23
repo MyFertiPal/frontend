@@ -430,7 +430,37 @@ Future<Map<String, dynamic>> initiateSubscription({
     );
     rethrow;
   }
+}Future<Map<String, dynamic>> verifyAppleSubscription(
+  String transactionId,
+) async {
+  debugPrint(
+    'VERIFYING APPLE SUBSCRIPTION',
+  );
+
+  debugPrint(
+    'APPLE TRANSACTION ID: $transactionId',
+  );
+
+  final response = await post(
+    '/subscriptions/apple/verify',
+    {
+      'transaction_id': transactionId,
+    },
+  );
+
+  debugPrint(
+    'APPLE VERIFICATION RESPONSE: $response',
+  );
+
+  if (response == null) {
+    throw Exception(
+      'Apple verification returned no response.',
+    );
+  }
+
+  return Map<String, dynamic>.from(response);
 }
+
 Future<Map<String, dynamic>> appleLogin({
   required String identityToken,
   required String firstName,
