@@ -2363,94 +2363,76 @@ class _AddPeriodScreenState
   /// TOGGLE DATE
   /// ==========================================================
 
-  void _toggleDate(
-    DateTime date,
-  ) {
-    if (_saving) {
+  void _toggleDate(DateTime date) {
+  if (_saving) {
+    return;
+  }
+
+  final normalized = _normalize(date);
+
+  setState(() {
+    // ----------------------------------------------------------
+    // REMOVE A CURRENTLY SELECTED DAY
+    // ----------------------------------------------------------
+    if (_selectedDays.contains(normalized)) {
+      _selectedDays.remove(normalized);
       return;
     }
 
-    final normalized =
-        _normalize(date);
+    // ----------------------------------------------------------
+    // NO DAYS SELECTED
+    //
+    // User can start a new period ANYWHERE in the calendar.
+    // This is the important fix.
+    // ----------------------------------------------------------
+    if (_selectedDays.isEmpty) {
+      _selectedDays.add(normalized);
+      return;
+    }
 
-    setState(() {
-      /// Remove an already selected day.
-      if (_selectedDays
-          .contains(normalized)) {
-        _selectedDays
-            .remove(normalized);
+    // ----------------------------------------------------------
+    // ADDING DAYS TO THE CURRENT PERIOD
+    //
+    // Once the first day has been selected, additional days
+    // must remain consecutive.
+    // ----------------------------------------------------------
 
-        return;
-      }
+    final sorted = _selectedDays.toList()..sort();
 
-      /// First selected day.
-      if (_selectedDays.isEmpty) {
-        _selectedDays
-            .add(normalized);
+    final first = sorted.first;
+    final last = sorted.last;
 
-        return;
-      }
+    final daysBefore =
+        first.difference(normalized).inDays;
 
-      final sorted =
-          _selectedDays.toList()
-            ..sort();
+    final daysAfter =
+        normalized.difference(last).inDays;
 
-      final first =
-          sorted.first;
+    // Add the day immediately BEFORE the current period.
+    if (daysBefore == 1) {
+      _selectedDays.add(normalized);
+      return;
+    }
 
-      final last =
-          sorted.last;
+    // Add the day immediately AFTER the current period.
+    if (daysAfter == 1) {
+      _selectedDays.add(normalized);
+      return;
+    }
 
-      final before =
-          normalized
-              .difference(first)
-              .inDays;
-
-      final after =
-          normalized
-              .difference(last)
-              .inDays;
-
-      /// Add immediately before.
-      if (before == -1) {
-        _selectedDays
-            .add(normalized);
-
-        return;
-      }
-
-      /// Add immediately after.
-      if (after == 1) {
-        _selectedDays
-            .add(normalized);
-
-        return;
-      }
-
-      /// Allow a date already inside the range.
-      if (!normalized
-              .isBefore(first) &&
-          !normalized
-              .isAfter(last)) {
-        _selectedDays
-            .add(normalized);
-
-        return;
-      }
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Period days should be consecutive. '
-            'Add days next to the selected period.',
-          ),
+    // ----------------------------------------------------------
+    // DON'T ALLOW A GAP INSIDE THE SAME PERIOD
+    // ----------------------------------------------------------
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Period days should be consecutive. '
+          'Select a day next to your current period.',
         ),
-      );
-    });
-  }
-
+      ),
+    );
+  });
+}
   /// ==========================================================
   /// SAVE
   /// ==========================================================
