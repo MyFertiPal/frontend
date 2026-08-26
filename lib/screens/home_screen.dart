@@ -763,10 +763,10 @@ Widget _buildHeader(BuildContext context) {
 // ---------- Tracking Card ----------
 
 Widget _buildTrackingCard(BuildContext context) {
+  final phase = _currentPhase(context);
+
   return Padding(
-    padding: const EdgeInsets.symmetric(
-      horizontal: 20,
-    ),
+    padding: const EdgeInsets.symmetric(horizontal: 20),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(28),
       child: Container(
@@ -783,6 +783,7 @@ Widget _buildTrackingCard(BuildContext context) {
         ),
         child: Stack(
           children: [
+            // Background flower
             Center(
               child: Opacity(
                 opacity: .50,
@@ -797,28 +798,40 @@ Widget _buildTrackingCard(BuildContext context) {
             Padding(
               padding: const EdgeInsets.all(26),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Cycle day
                   Text(
                     AppLocalizations.of(context)
                         .day(_currentCycleDay),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
 
                   const Spacer(),
 
+                  // Current phase
                   Center(
-                    child: Text(
-                      _currentPhase(context),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 46,
-                        fontWeight: FontWeight.w300,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 280,
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          phase,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 42,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
                       ),
                     ),
                   ),

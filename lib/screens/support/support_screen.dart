@@ -261,6 +261,19 @@ linkText: AppLocalizations.of(context).joinCommunity,
   linkColor: AppColors.textPrimary,
   onTap: _openWhatsAppCommunity,
 ),
+const SizedBox(height: 12),
+
+_ConnectCard(
+  emoji: '▶️',
+  iconBg: const Color(0xFFFFE0E0),
+  title: 'Fertitalks',
+  subtitle: 'Fertitalks by MyFertiPal , Africa\'s foremost fertility app. ',
+  linkText: 'Visit our YouTube channel',
+  linkColor: const Color(0xFFFF0000),
+  onTap: _openYouTube,
+),
+
+const SizedBox(height: 12),
         const SizedBox(height: 12),
         _ConnectCard(
           emoji: '💜',
@@ -313,7 +326,18 @@ Future<void> _openWhatsAppCommunity() async {
     );
   }
 }
+Future<void> _openYouTube() async {
+  final uri = Uri.parse(
+    "https://youtube.com/@myfertipal?si=sS867O-cjtqweGA0",
+  );
 
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+  }
+}
 class _ConnectCard extends StatelessWidget {
   final String emoji;
   final Color iconBg;
