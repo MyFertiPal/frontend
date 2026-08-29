@@ -913,33 +913,29 @@ Future<void> _loadMembershipPlan() async {
   try {
     final planResponse = await _apiService.getSubscriptionPlan();
 
-    debugPrint("SUBSCRIPTION PLAN RESPONSE: $planResponse");
-
-    // Backend returns either:
-    // { "plan": "free" }
-    // or
-    // { "plan": "premium" }
-
-    final plan = planResponse["plan"]
-            ?.toString()
-            .trim()
-            .toLowerCase() ??
-        "free";
+    debugPrint("========================================");
+    debugPrint("SUBSCRIPTION PLAN RAW RESPONSE:");
+    debugPrint(planResponse.toString());
+    debugPrint("SUBSCRIPTION PLAN RESPONSE TYPE:");
+    debugPrint(planResponse.runtimeType.toString());
+    debugPrint("========================================");
 
     if (!mounted) return;
 
     setState(() {
-      _membershipPlan = plan;
       _isPlanLoading = false;
     });
-  } catch (e) {
-    debugPrint("Membership plan loading error: $e");
+  } catch (e, stackTrace) {
+    debugPrint("========================================");
+    debugPrint("SUBSCRIPTION PLAN REQUEST ERROR:");
+    debugPrint(e.toString());
+    debugPrint("STACK TRACE:");
+    debugPrint(stackTrace.toString());
+    debugPrint("========================================");
 
     if (!mounted) return;
 
     setState(() {
-      // Safely fall back to free
-      _membershipPlan = "free";
       _isPlanLoading = false;
     });
   }

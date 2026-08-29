@@ -393,13 +393,13 @@ Future<Map<String, dynamic>> getSubscriptionPlan() async {
       headers: await getHeaders(includeAuth: true),
     );
 
-    debugPrint(
-      'GET SUBSCRIPTION PLAN STATUS: ${response.statusCode}',
-    );
-
-    debugPrint(
-      'GET SUBSCRIPTION PLAN RESPONSE: ${response.body}',
-    );
+    debugPrint('========================================');
+    debugPrint('SUBSCRIPTION PLAN ENDPOINT');
+    debugPrint('STATUS CODE: ${response.statusCode}');
+    debugPrint('RAW RESPONSE BODY:');
+    debugPrint(response.body);
+    debugPrint('CONTENT TYPE: ${response.headers['content-type']}');
+    debugPrint('========================================');
 
     if (response.statusCode >= 200 &&
         response.statusCode < 300) {
@@ -419,9 +419,7 @@ Future<Map<String, dynamic>> getSubscriptionPlan() async {
       message: _extractErrorMessage(response),
     );
   } catch (e) {
-    debugPrint(
-      'GET SUBSCRIPTION PLAN ERROR: $e',
-    );
+    debugPrint('GET SUBSCRIPTION PLAN ERROR: $e');
     rethrow;
   }
 }
