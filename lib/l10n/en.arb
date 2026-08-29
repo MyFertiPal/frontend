@@ -375,6 +375,31 @@
   "follicular": "Follicular",
   "ovulation": "Ovulation",
   "luteal": "Luteal",
-  "signInWithApple": "Sign In With Apple" 
+  "signInWithApple": "Sign In With Apple" ,
+
+   "upgradeMembership": "Upgrade Membership",
+  "upgradeMembershipDescription": "Unlock premium features and get more from MyFertiPal",
+  "upgradeNow": "Upgrade Now",
+
+  "premiumSubscription": "Premium Subscription",
+  "premiumPayment": "Premium Payment",
+  "unableToLoadPayment": "Unable to load payment.",
+  "choosePremiumPlan": "Choose your Premium plan",
+  "subscriptionBilledAppStore": "Your subscription will be billed through the App Store.",
+  "tryAgain": "Try Again",
+  "restorePurchases": "Restore Purchases",
+  "cancel": "Cancel",
+  "afterCompletingPayment": "After completing your payment, tap the button below to continue.",
+  "completedPayment": "I've Completed Payment",
+  "appleSubscriptionsUnavailable": "Apple subscriptions are currently unavailable.",
+  "noAppleProducts": "No Apple subscription products were found.",
+  "unableToStartAppleSubscription": "Unable to start Apple subscription.",
+  "applePaymentNotVerified": "Apple payment could not be verified.",
+  "verifyAppleSubscriptionError": "We couldn't verify your Apple subscription. Please try again.",
+  "unableToRestoreSubscription": "Unable to restore your subscription.",
+
+  "fertitalks": "Fertitalks",
+  "fertitalksSubtitle": "Fertitalks by MyFertiPal, Africa's foremost fertility app.",
+  "visitYoutubeChannel": "Visit our YouTube channel"
 
 }

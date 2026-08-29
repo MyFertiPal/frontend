@@ -325,5 +325,31 @@
   "predicted": "Predicted",
   "today": "Today",
   "noSymptomsLogged": "You never log any symptom yet",
-  "loggedSymptoms": "Symptoms wey you don log"
+  "loggedSymptoms": "Symptoms wey you don log",
+
+  "upgradeMembership": "Upgrade Membership",
+"upgradeMembershipDescription": "Unlock premium features and enjoy more things for MyFertiPal",
+"upgradeNow": "Upgrade Now",
+
+ "premiumSubscription": "Premium Subscription",
+  "premiumPayment": "Premium Payment",
+  "choosePremiumPlan": "Choose your Premium plan",
+  "subscriptionAppStoreBilling": "Dem go bill your subscription through App Store.",
+  "tryAgain": "Try Again",
+  "unableToStartAppleSubscription": "We no fit start Apple subscription.",
+  "applePaymentCouldNotBeVerified": "We no fit verify your Apple payment.",
+  "unableToRestoreSubscription": "We no fit restore your subscription.",
+  "unableToLoadPayment": "We no fit load payment.",
+  "androidPaymentContinueMessage": "After you finish your payment, tap the button below to continue.",
+  "completedPayment": "I Don Complete Payment",
+  "cancel": "Cancel",
+  "restorePurchases": "Restore Purchases",
+  "appleSubscriptionsUnavailable": "Apple subscriptions no dey available now.",
+  "noAppleProductsFound": "We no find any Apple subscription products.",
+  "applePaymentVerificationError": "We no fit verify your Apple subscription. Abeg try again.",
+
+
+  "fertitalks": "Fertitalks",
+  "fertitalksSubtitle": "Fertitalks by MyFertiPal, Africa's leading fertility app.",
+  "visitYoutubeChannel": "Visit our YouTube channel"
 }

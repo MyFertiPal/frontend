@@ -341,6 +341,31 @@
   "predicted": "Hasashe",
   "today": "Yau",
   "noSymptomsLogged": "Ba a rubuta wata alama ba tukuna",
-  "loggedSymptoms": "Alamomin da aka rubuta"
+  "loggedSymptoms": "Alamomin da aka rubuta",
+
+  "upgradeMembership": "Haɓaka Memba",
+"upgradeMembershipDescription": "Buɗe fasalulluka na musamman kuma ka sami ƙarin amfani daga MyFertiPal",
+"upgradeNow": "Haɓaka Yanzu",
+ "premiumSubscription": "Biyan Kuɗin Premium",
+  "premiumPayment": "Biyan Kuɗin Premium",
+  "choosePremiumPlan": "Zaɓi tsarin Premium ɗinka",
+  "subscriptionAppStoreBilling": "Za a karɓi kuɗin rajistar ka ta App Store.",
+  "tryAgain": "Sake Gwada",
+  "unableToStartAppleSubscription": "Ba mu iya fara rajistar Apple ba.",
+  "applePaymentCouldNotBeVerified": "Ba a iya tabbatar da biyan kuɗin Apple ɗinka ba.",
+  "unableToRestoreSubscription": "Ba mu iya dawo da rajistar ka ba.",
+  "unableToLoadPayment": "Ba a iya ɗora shafin biyan kuɗi ba.",
+  "androidPaymentContinueMessage": "Bayan ka kammala biyan kuɗinka, danna maɓallin da ke ƙasa don ci gaba.",
+  "completedPayment": "Na Kammala Biyan Kuɗi",
+  "cancel": "Soke",
+  "restorePurchases": "Dawo da Sayayya",
+  "appleSubscriptionsUnavailable": "Rajistar Apple ba ta samuwa a yanzu.",
+  "noAppleProductsFound": "Ba a sami samfuran rajistar Apple ba.",
+  "applePaymentVerificationError": "Ba mu iya tabbatar da rajistar Apple ɗinka ba. Da fatan za a sake gwadawa.",
+
+   "fertitalks": "Fertitalks",
+  "fertitalksSubtitle": "Fertitalks daga MyFertiPal, manhajar haihuwa ta farko a Afirka.",
+  "visitYoutubeChannel": "Ziyarci tashar YouTube ɗinmu"
+
 
 }

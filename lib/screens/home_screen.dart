@@ -406,16 +406,7 @@ Future<void> _loadHomeData() async {
       );
     }
 
-    // -----------------------------
-    // Insight
-    // -----------------------------
-
-    final insight =
-        prediction["insight_text"]?.toString().trim();
-
-    if (insight != null && insight.isNotEmpty) {
-      _insightText = insight;
-    }
+   
   });
 }
     } catch (e) {
@@ -427,7 +418,13 @@ Future<void> _loadHomeData() async {
  // --------------------------------------------------
 // 5. LOAD TODAY'S INSIGHT
 // --------------------------------------------------
-
+try {
+  await _reloadInsights();
+} catch (e) {
+  debugPrint(
+    "HOME TODAY INSIGHT ERROR: $e",
+  );
+}
 
 
 

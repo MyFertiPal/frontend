@@ -3,27 +3,47 @@
     "menstrual",
     "follicular",
     "luteal",
-    "signInWithApple"
+    "signInWithApple",
+    "subscriptionBilledAppStore",
+    "afterCompletingPayment",
+    "noAppleProducts",
+    "applePaymentNotVerified",
+    "verifyAppleSubscriptionError"
   ],
 
   "ig": [
     "menstrual",
     "follicular",
     "luteal",
-    "signInWithApple"
+    "signInWithApple",
+    "subscriptionBilledAppStore",
+    "afterCompletingPayment",
+    "noAppleProducts",
+    "applePaymentNotVerified",
+    "verifyAppleSubscriptionError"
   ],
 
   "pcm": [
     "menstrual",
     "follicular",
     "luteal",
-    "signInWithApple"
+    "signInWithApple",
+    "subscriptionBilledAppStore",
+    "afterCompletingPayment",
+    "noAppleProducts",
+    "applePaymentNotVerified",
+    "verifyAppleSubscriptionError"
   ],
 
   "yo": [
     "menstrual",
     "follicular",
     "luteal",
-    "signInWithApple"
+    "signInWithApple",
+    "subscriptionBilledAppStore",
+    "afterCompletingPayment",
+    "noAppleProducts",
+    "applePaymentNotVerified",
+    "verifyAppleSubscriptionError"
   ]
 }

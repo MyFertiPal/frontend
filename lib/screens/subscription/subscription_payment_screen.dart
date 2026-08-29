@@ -6,9 +6,9 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../../services/apple_subscription_service.dart';
 import '../../services/api_service.dart';
+import '../../generated/l10n/app_localizations.dart';
 
 class SubscriptionPaymentScreen extends StatefulWidget {
-  // Android payment information
   final String? paymentUrl;
   final String? reference;
 
@@ -25,17 +25,8 @@ class SubscriptionPaymentScreen extends StatefulWidget {
 
 class _SubscriptionPaymentScreenState
     extends State<SubscriptionPaymentScreen> {
-  // ============================================================
-  // ANDROID
-  // ============================================================
-
   WebViewController? _controller;
-
   bool _pageLoading = true;
-
-  // ============================================================
-  // IOS
-  // ============================================================
 
   final AppleSubscriptionService _appleService =
       AppleSubscriptionService();
@@ -47,9 +38,8 @@ class _SubscriptionPaymentScreenState
 
   String? _appleError;
 
-  // ============================================================
-  // INIT
-  // ============================================================
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -68,13 +58,11 @@ class _SubscriptionPaymentScreenState
 
   void _initializeAndroidPayment() {
     debugPrint(
-      "ANDROID SUBSCRIPTION PAYMENT URL: "
-      "${widget.paymentUrl}",
+      "ANDROID SUBSCRIPTION PAYMENT URL: ${widget.paymentUrl}",
     );
 
     debugPrint(
-      "ANDROID SUBSCRIPTION REFERENCE: "
-      "${widget.reference}",
+      "ANDROID SUBSCRIPTION REFERENCE: ${widget.reference}",
     );
 
     if (widget.paymentUrl == null ||
@@ -82,7 +70,6 @@ class _SubscriptionPaymentScreenState
       debugPrint(
         "ANDROID PAYMENT ERROR: paymentUrl is missing",
       );
-
       return;
     }
 
@@ -92,17 +79,14 @@ class _SubscriptionPaymentScreenState
       )
       ..setNavigationDelegate(
         NavigationDelegate(
-          onNavigationRequest:
-              (NavigationRequest request) {
+          onNavigationRequest: (
+            NavigationRequest request,
+          ) {
             final url = request.url;
 
             debugPrint(
               "ANDROID PAYMENT NAVIGATION URL: $url",
             );
-
-            // --------------------------------------------------
-            // PAYMENT CALLBACK
-            // --------------------------------------------------
 
             if (url.startsWith(
                   "https://teamnexuss.netlify.app/"
@@ -124,7 +108,6 @@ class _SubscriptionPaymentScreenState
 
             return NavigationDecision.navigate;
           },
-
           onPageStarted: (url) {
             debugPrint(
               "ANDROID PAYMENT PAGE STARTED: $url",
@@ -136,7 +119,6 @@ class _SubscriptionPaymentScreenState
               });
             }
           },
-
           onPageFinished: (url) {
             debugPrint(
               "ANDROID PAYMENT PAGE FINISHED: $url",
@@ -148,7 +130,6 @@ class _SubscriptionPaymentScreenState
               });
             }
           },
-
           onWebResourceError: (error) {
             debugPrint(
               "ANDROID PAYMENT WEBVIEW ERROR: "
@@ -167,7 +148,7 @@ class _SubscriptionPaymentScreenState
   }
 
   // ============================================================
-  // IOS APPLE PAYMENT
+  // IOS PAYMENT
   // ============================================================
 
   Future<void> _initializeApplePayment() async {
@@ -184,7 +165,7 @@ class _SubscriptionPaymentScreenState
     _appleService.onPurchaseCancelled =
         _handleApplePurchaseCancelled;
 
-    final bool available =
+    final available =
         await _appleService.initialize();
 
     if (!available) {
@@ -196,7 +177,7 @@ class _SubscriptionPaymentScreenState
         setState(() {
           _appleLoading = false;
           _appleError =
-              "Apple subscriptions are currently unavailable.";
+              _l10n.appleSubscriptionsUnavailable;
         });
       }
 
@@ -213,14 +194,14 @@ class _SubscriptionPaymentScreenState
 
         if (products.isEmpty) {
           _appleError =
-              "No Apple subscription products were found.";
+              _l10n.noAppleProducts;
         }
       });
     }
   }
 
   // ============================================================
-  // START APPLE PURCHASE
+  // PURCHASE
   // ============================================================
 
   Future<void> _purchaseAppleSubscription(
@@ -231,8 +212,7 @@ class _SubscriptionPaymentScreenState
     }
 
     debugPrint(
-      "APPLE SUBSCRIPTION SELECTED: "
-      "${product.id}",
+      "APPLE SUBSCRIPTION SELECTED: ${product.id}",
     );
 
     if (mounted) {
@@ -255,31 +235,23 @@ class _SubscriptionPaymentScreenState
         setState(() {
           _applePurchasing = false;
           _appleError =
-              "Unable to start Apple subscription.";
+              _l10n.unableToStartAppleSubscription;
         });
       }
     }
   }
 
   // ============================================================
-  // APPLE PURCHASE SUCCESS
+  // PURCHASE SUCCESS
   // ============================================================
 
   Future<void> _handleApplePurchaseSuccess(
     String transactionId,
     String productId,
   ) async {
-    debugPrint(
-      "APPLE PURCHASE SUCCESS",
-    );
-
-    debugPrint(
-      "APPLE TRANSACTION ID: $transactionId",
-    );
-
-    debugPrint(
-      "APPLE PRODUCT ID: $productId",
-    );
+    debugPrint("APPLE PURCHASE SUCCESS");
+    debugPrint("APPLE TRANSACTION ID: $transactionId");
+    debugPrint("APPLE PRODUCT ID: $productId");
 
     if (mounted) {
       setState(() {
@@ -288,29 +260,10 @@ class _SubscriptionPaymentScreenState
       });
     }
 
-    // ----------------------------------------------------------
-    // SEND TRANSACTION TO BACKEND
-    // ----------------------------------------------------------
-
     try {
       debugPrint(
         "VERIFYING APPLE TRANSACTION WITH BACKEND...",
       );
-
-      /*
-       * IMPORTANT:
-       *
-       * Replace this endpoint with the EXACT route from
-       * your Swagger/OpenAPI documentation.
-       *
-       * Example:
-       *
-       * /subscriptions/verify-apple
-       *
-       * or:
-       *
-       * /subscription/verify-apple
-       */
 
       final response = await ApiService().post(
         '/subscriptions/verify-apple',
@@ -322,10 +275,6 @@ class _SubscriptionPaymentScreenState
       debugPrint(
         "APPLE VERIFICATION RESPONSE: $response",
       );
-
-      // --------------------------------------------------------
-      // CHECK BACKEND RESPONSE
-      // --------------------------------------------------------
 
       if (response != null &&
           response['success'] == true) {
@@ -354,19 +303,9 @@ class _SubscriptionPaymentScreenState
           _applePurchasing = false;
         });
 
-        // ------------------------------------------------------
-        // CLOSE PAYMENT SCREEN
-        // true = payment successful
-        // ------------------------------------------------------
-
         Navigator.of(context).pop(true);
-
         return;
       }
-
-      // --------------------------------------------------------
-      // BACKEND REJECTED TRANSACTION
-      // --------------------------------------------------------
 
       debugPrint(
         "APPLE TRANSACTION VERIFICATION FAILED",
@@ -376,7 +315,7 @@ class _SubscriptionPaymentScreenState
         setState(() {
           _applePurchasing = false;
           _appleError =
-              "Apple payment could not be verified.";
+              _l10n.applePaymentNotVerified;
         });
       }
     } catch (e) {
@@ -388,15 +327,14 @@ class _SubscriptionPaymentScreenState
         setState(() {
           _applePurchasing = false;
           _appleError =
-              "We couldn't verify your Apple subscription. "
-              "Please try again.";
+              _l10n.verifyAppleSubscriptionError;
         });
       }
     }
   }
 
   // ============================================================
-  // APPLE PURCHASE ERROR
+  // PURCHASE ERROR
   // ============================================================
 
   void _handleApplePurchaseError(
@@ -416,10 +354,6 @@ class _SubscriptionPaymentScreenState
     });
   }
 
-  // ============================================================
-  // APPLE PURCHASE CANCELLED
-  // ============================================================
-
   void _handleApplePurchaseCancelled() {
     debugPrint(
       "APPLE PURCHASE CANCELLED BY USER",
@@ -435,7 +369,7 @@ class _SubscriptionPaymentScreenState
   }
 
   // ============================================================
-  // RESTORE APPLE PURCHASES
+  // RESTORE
   // ============================================================
 
   Future<void> _restoreApplePurchases() async {
@@ -456,16 +390,6 @@ class _SubscriptionPaymentScreenState
 
     try {
       await _appleService.restorePurchases();
-
-      /*
-       * Restored transactions will come through the same
-       * purchase stream and eventually reach:
-       *
-       * _handleApplePurchaseSuccess()
-       *
-       * where the transaction is sent to your backend.
-       */
-
     } catch (e) {
       debugPrint(
         "APPLE RESTORE ERROR: $e",
@@ -475,7 +399,7 @@ class _SubscriptionPaymentScreenState
         setState(() {
           _applePurchasing = false;
           _appleError =
-              "Unable to restore your subscription.";
+              _l10n.unableToRestoreSubscription;
         });
       }
     }
@@ -505,20 +429,17 @@ class _SubscriptionPaymentScreenState
                 Icons.error_outline,
                 size: 50,
               ),
-
               const SizedBox(height: 16),
-
               Text(
                 _appleError!,
                 textAlign: TextAlign.center,
               ),
-
               const SizedBox(height: 20),
-
               ElevatedButton(
-                onPressed: _initializeApplePayment,
-                child: const Text(
-                  "Try Again",
+                onPressed:
+                    _initializeApplePayment,
+                child: Text(
+                  _l10n.tryAgain,
                 ),
               ),
             ],
@@ -536,10 +457,10 @@ class _SubscriptionPaymentScreenState
           children: [
             const SizedBox(height: 20),
 
-            const Text(
-              "Choose your Premium plan",
+            Text(
+              _l10n.choosePremiumPlan,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -547,11 +468,10 @@ class _SubscriptionPaymentScreenState
 
             const SizedBox(height: 10),
 
-            const Text(
-              "Your subscription will be billed "
-              "through the App Store.",
+            Text(
+              _l10n.subscriptionBilledAppStore,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black54,
               ),
             ),
@@ -561,13 +481,16 @@ class _SubscriptionPaymentScreenState
             if (_appleError != null)
               Container(
                 margin:
-                    const EdgeInsets.only(bottom: 16),
+                    const EdgeInsets.only(
+                  bottom: 16,
+                ),
                 padding:
                     const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(10),
-                  color: Colors.red.withOpacity(0.08),
+                  color:
+                      Colors.red.withOpacity(0.08),
                 ),
                 child: Text(
                   _appleError!,
@@ -579,16 +502,19 @@ class _SubscriptionPaymentScreenState
               (product) {
                 return Padding(
                   padding:
-                      const EdgeInsets.only(bottom: 14),
+                      const EdgeInsets.only(
+                    bottom: 14,
+                  ),
                   child: SizedBox(
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: _applePurchasing
-                          ? null
-                          : () =>
-                              _purchaseAppleSubscription(
-                                product,
-                              ),
+                      onPressed:
+                          _applePurchasing
+                              ? null
+                              : () =>
+                                  _purchaseAppleSubscription(
+                                    product,
+                                  ),
                       child: _applePurchasing
                           ? const SizedBox(
                               width: 22,
@@ -620,8 +546,8 @@ class _SubscriptionPaymentScreenState
               onPressed: _applePurchasing
                   ? null
                   : _restoreApplePurchases,
-              child: const Text(
-                "Restore Purchases",
+              child: Text(
+                _l10n.restorePurchases,
               ),
             ),
 
@@ -634,8 +560,8 @@ class _SubscriptionPaymentScreenState
                       Navigator.of(context)
                           .pop(false);
                     },
-              child: const Text(
-                "Cancel",
+              child: Text(
+                _l10n.cancel,
               ),
             ),
           ],
@@ -650,9 +576,9 @@ class _SubscriptionPaymentScreenState
 
   Widget _buildAndroidPayment() {
     if (_controller == null) {
-      return const Center(
+      return Center(
         child: Text(
-          "Unable to load payment.",
+          _l10n.unableToLoadPayment,
         ),
       );
     }
@@ -662,7 +588,6 @@ class _SubscriptionPaymentScreenState
         WebViewWidget(
           controller: _controller!,
         ),
-
         if (_pageLoading)
           const LinearProgressIndicator(
             minHeight: 3,
@@ -681,18 +606,14 @@ class _SubscriptionPaymentScreenState
       appBar: AppBar(
         title: Text(
           Platform.isIOS
-              ? "Premium Subscription"
-              : "Premium Payment",
+              ? _l10n.premiumSubscription
+              : _l10n.premiumPayment,
         ),
       ),
 
       body: Platform.isIOS
           ? _buildApplePayment()
           : _buildAndroidPayment(),
-
-      // --------------------------------------------------------
-      // ANDROID BOTTOM BAR ONLY
-      // --------------------------------------------------------
 
       bottomNavigationBar: Platform.isIOS
           ? null
@@ -704,12 +625,11 @@ class _SubscriptionPaymentScreenState
                   mainAxisSize:
                       MainAxisSize.min,
                   children: [
-                    const Text(
-                      "After completing your payment, "
-                      "tap the button below to continue.",
+                    Text(
+                      _l10n.afterCompletingPayment,
                       textAlign:
                           TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black54,
                         fontSize: 13,
                       ),
@@ -730,9 +650,10 @@ class _SubscriptionPaymentScreenState
                           Navigator.of(context)
                               .pop(true);
                         },
-                        child: const Text(
-                          "I've Completed Payment",
-                          style: TextStyle(
+                        child: Text(
+                          _l10n.completedPayment,
+                          style:
+                              const TextStyle(
                             fontSize: 16,
                             fontWeight:
                                 FontWeight.bold,
@@ -751,8 +672,9 @@ class _SubscriptionPaymentScreenState
                           Navigator.of(context)
                               .pop(false);
                         },
-                        child:
-                            const Text("Cancel"),
+                        child: Text(
+                          _l10n.cancel,
+                        ),
                       ),
                     ),
                   ],
@@ -762,14 +684,9 @@ class _SubscriptionPaymentScreenState
     );
   }
 
-  // ============================================================
-  // DISPOSE
-  // ============================================================
-
   @override
   void dispose() {
     _appleService.dispose();
-
     super.dispose();
   }
 }

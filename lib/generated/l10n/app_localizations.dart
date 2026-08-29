@@ -1687,6 +1687,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign In With Apple'**
   String get signInWithApple;
+
+  /// No description provided for @upgradeMembership.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Membership'**
+  String get upgradeMembership;
+
+  /// No description provided for @upgradeMembershipDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock premium features and get more from MyFertiPal'**
+  String get upgradeMembershipDescription;
+
+  /// No description provided for @upgradeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Now'**
+  String get upgradeNow;
+
+  /// No description provided for @premiumSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Subscription'**
+  String get premiumSubscription;
+
+  /// No description provided for @premiumPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Payment'**
+  String get premiumPayment;
+
+  /// No description provided for @unableToLoadPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load payment.'**
+  String get unableToLoadPayment;
+
+  /// No description provided for @choosePremiumPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your Premium plan'**
+  String get choosePremiumPlan;
+
+  /// No description provided for @subscriptionBilledAppStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription will be billed through the App Store.'**
+  String get subscriptionBilledAppStore;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
+
+  /// No description provided for @restorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Purchases'**
+  String get restorePurchases;
+
+  /// No description provided for @afterCompletingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'After completing your payment, tap the button below to continue.'**
+  String get afterCompletingPayment;
+
+  /// No description provided for @completedPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve Completed Payment'**
+  String get completedPayment;
+
+  /// No description provided for @appleSubscriptionsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple subscriptions are currently unavailable.'**
+  String get appleSubscriptionsUnavailable;
+
+  /// No description provided for @noAppleProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'No Apple subscription products were found.'**
+  String get noAppleProducts;
+
+  /// No description provided for @unableToStartAppleSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to start Apple subscription.'**
+  String get unableToStartAppleSubscription;
+
+  /// No description provided for @applePaymentNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple payment could not be verified.'**
+  String get applePaymentNotVerified;
+
+  /// No description provided for @verifyAppleSubscriptionError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t verify your Apple subscription. Please try again.'**
+  String get verifyAppleSubscriptionError;
+
+  /// No description provided for @unableToRestoreSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to restore your subscription.'**
+  String get unableToRestoreSubscription;
+
+  /// No description provided for @fertitalks.
+  ///
+  /// In en, this message translates to:
+  /// **'Fertitalks'**
+  String get fertitalks;
+
+  /// No description provided for @fertitalksSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fertitalks by MyFertiPal, Africa\'s foremost fertility app.'**
+  String get fertitalksSubtitle;
+
+  /// No description provided for @visitYoutubeChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit our YouTube channel'**
+  String get visitYoutubeChannel;
 }
 
 class _AppLocalizationsDelegate

@@ -851,4 +851,74 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get signInWithApple => 'Sign In With Apple';
+
+  @override
+  String get upgradeMembership => 'Haɓaka Memba';
+
+  @override
+  String get upgradeMembershipDescription =>
+      'Buɗe fasalulluka na musamman kuma ka sami ƙarin amfani daga MyFertiPal';
+
+  @override
+  String get upgradeNow => 'Haɓaka Yanzu';
+
+  @override
+  String get premiumSubscription => 'Biyan Kuɗin Premium';
+
+  @override
+  String get premiumPayment => 'Biyan Kuɗin Premium';
+
+  @override
+  String get unableToLoadPayment => 'Ba a iya ɗora shafin biyan kuɗi ba.';
+
+  @override
+  String get choosePremiumPlan => 'Zaɓi tsarin Premium ɗinka';
+
+  @override
+  String get subscriptionBilledAppStore =>
+      'Your subscription will be billed through the App Store.';
+
+  @override
+  String get tryAgain => 'Sake Gwada';
+
+  @override
+  String get restorePurchases => 'Dawo da Sayayya';
+
+  @override
+  String get afterCompletingPayment =>
+      'After completing your payment, tap the button below to continue.';
+
+  @override
+  String get completedPayment => 'Na Kammala Biyan Kuɗi';
+
+  @override
+  String get appleSubscriptionsUnavailable =>
+      'Rajistar Apple ba ta samuwa a yanzu.';
+
+  @override
+  String get noAppleProducts => 'No Apple subscription products were found.';
+
+  @override
+  String get unableToStartAppleSubscription =>
+      'Ba mu iya fara rajistar Apple ba.';
+
+  @override
+  String get applePaymentNotVerified => 'Apple payment could not be verified.';
+
+  @override
+  String get verifyAppleSubscriptionError =>
+      'We couldn\'t verify your Apple subscription. Please try again.';
+
+  @override
+  String get unableToRestoreSubscription => 'Ba mu iya dawo da rajistar ka ba.';
+
+  @override
+  String get fertitalks => 'Fertitalks';
+
+  @override
+  String get fertitalksSubtitle =>
+      'Fertitalks daga MyFertiPal, manhajar haihuwa ta farko a Afirka.';
+
+  @override
+  String get visitYoutubeChannel => 'Ziyarci tashar YouTube ɗinmu';
 }

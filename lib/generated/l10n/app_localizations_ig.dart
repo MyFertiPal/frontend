@@ -840,4 +840,75 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get signInWithApple => 'Sign In With Apple';
+
+  @override
+  String get upgradeMembership => 'Kwalite Ọbụbụ Ndị Otu';
+
+  @override
+  String get upgradeMembershipDescription =>
+      'Mepee atụmatụ pụrụ iche ma nweta ihe ndị ọzọ na MyFertiPal';
+
+  @override
+  String get upgradeNow => 'Kwalite Ugbu a';
+
+  @override
+  String get premiumSubscription => 'Ndebanye aha Premium';
+
+  @override
+  String get premiumPayment => 'Ịkwụ Ụgwọ Premium';
+
+  @override
+  String get unableToLoadPayment => 'Enweghị ike ibunye peeji ịkwụ ụgwọ.';
+
+  @override
+  String get choosePremiumPlan => 'Họrọ atụmatụ Premium gị';
+
+  @override
+  String get subscriptionBilledAppStore =>
+      'Your subscription will be billed through the App Store.';
+
+  @override
+  String get tryAgain => 'Gbalịa ọzọ';
+
+  @override
+  String get restorePurchases => 'Weghachite Ịzụrụ Azụ';
+
+  @override
+  String get afterCompletingPayment =>
+      'After completing your payment, tap the button below to continue.';
+
+  @override
+  String get completedPayment => 'Emechala m Ịkwụ Ụgwọ';
+
+  @override
+  String get appleSubscriptionsUnavailable =>
+      'Ndebanye aha Apple adịghị ugbu a.';
+
+  @override
+  String get noAppleProducts => 'No Apple subscription products were found.';
+
+  @override
+  String get unableToStartAppleSubscription =>
+      'Anyị enweghị ike ịmalite ndebanye aha Apple.';
+
+  @override
+  String get applePaymentNotVerified => 'Apple payment could not be verified.';
+
+  @override
+  String get verifyAppleSubscriptionError =>
+      'We couldn\'t verify your Apple subscription. Please try again.';
+
+  @override
+  String get unableToRestoreSubscription =>
+      'Anyị enweghị ike iweghachi ndebanye aha gị.';
+
+  @override
+  String get fertitalks => 'Fertitalks';
+
+  @override
+  String get fertitalksSubtitle =>
+      'Fertitalks nke MyFertiPal, ngwa ọmụmụ ụmụ nke kacha ewu ewu n\'Africa.';
+
+  @override
+  String get visitYoutubeChannel => 'Gaa na ọwa YouTube anyị';
 }

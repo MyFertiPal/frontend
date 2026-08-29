@@ -263,12 +263,14 @@ linkText: AppLocalizations.of(context).joinCommunity,
 ),
 const SizedBox(height: 12),
 
+
+
 _ConnectCard(
   emoji: '▶️',
   iconBg: const Color(0xFFFFE0E0),
-  title: 'Fertitalks',
-  subtitle: 'Fertitalks by MyFertiPal , Africa\'s foremost fertility app. ',
-  linkText: 'Visit our YouTube channel',
+  title: AppLocalizations.of(context).fertitalks,
+  subtitle: AppLocalizations.of(context).fertitalksSubtitle,
+  linkText: AppLocalizations.of(context).visitYoutubeChannel,
   linkColor: const Color(0xFFFF0000),
   onTap: _openYouTube,
 ),

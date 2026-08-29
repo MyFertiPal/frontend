@@ -330,5 +330,31 @@
   "predicted": "Àsọtẹ́lẹ̀",
   "today": "Òní",
   "noSymptomsLogged": "Kò sí àmì àìsàn tí a ti gbasilẹ",
-  "loggedSymptoms": "Àwọn àmì tí a gbasilẹ"
+  "loggedSymptoms": "Àwọn àmì tí a gbasilẹ",
+
+  "upgradeMembership": "Ṣe Ìgbésókè Ẹgbẹ́",
+"upgradeMembershipDescription": "Ṣí àwọn ànfàní pàtàkì sílẹ̀ kí o sì gba púpọ̀ síi láti MyFertiPal",
+"upgradeNow": "Ṣe Ìgbésókè Bayi",
+
+  "premiumSubscription": "Alabapin Ere",
+  "premiumPayment": "Isanwo Ere",
+  "choosePremiumPlan": "Yan eto Ere rẹ",
+  "subscriptionAppStoreBilling": "A o gba owo ṣiṣe alabapin rẹ nipasẹ App Store.",
+  "tryAgain": "Gbiyanju lẹẹkansi",
+  "unableToStartAppleSubscription": "A ko le bẹrẹ ṣiṣe alabapin Apple.",
+  "applePaymentCouldNotBeVerified": "A ko le jẹrisi isanwo Apple rẹ.",
+  "unableToRestoreSubscription": "A ko le mu ṣiṣe alabapin rẹ pada.",
+  "unableToLoadPayment": "A ko le gbe isanwo silẹ.",
+  "androidPaymentContinueMessage": "Lẹhin ti o ba ti pari isanwo rẹ, tẹ bọtini ti o wa ni isalẹ lati tẹsiwaju.",
+  "completedPayment": "Mo ti Pari Isanwo",
+  "cancel": "Fagilee",
+  "restorePurchases": "Mu Awọn Isanwo Pada",
+  "appleSubscriptionsUnavailable": "Awọn ṣiṣe alabapin Apple ko si lọwọlọwọ.",
+  "noAppleProductsFound": "A ko ri awọn ọja ṣiṣe alabapin Apple.",
+  "applePaymentVerificationError": "A ko le jẹrisi ṣiṣe alabapin Apple rẹ. Jọwọ gbiyanju lẹẹkansi.",
+
+
+  "fertitalks": "Fertitalks",
+  "fertitalksSubtitle": "Fertitalks nipasẹ MyFertiPal, ohun elo irọyin olori ni Afirika.",
+  "visitYoutubeChannel": "Ṣabẹwo si ikanni YouTube wa"
 }

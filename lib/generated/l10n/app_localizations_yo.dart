@@ -840,4 +840,74 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get signInWithApple => 'Sign In With Apple';
+
+  @override
+  String get upgradeMembership => 'Ṣe Ìgbésókè Ẹgbẹ́';
+
+  @override
+  String get upgradeMembershipDescription =>
+      'Ṣí àwọn ànfàní pàtàkì sílẹ̀ kí o sì gba púpọ̀ síi láti MyFertiPal';
+
+  @override
+  String get upgradeNow => 'Ṣe Ìgbésókè Bayi';
+
+  @override
+  String get premiumSubscription => 'Alabapin Ere';
+
+  @override
+  String get premiumPayment => 'Isanwo Ere';
+
+  @override
+  String get unableToLoadPayment => 'A ko le gbe isanwo silẹ.';
+
+  @override
+  String get choosePremiumPlan => 'Yan eto Ere rẹ';
+
+  @override
+  String get subscriptionBilledAppStore =>
+      'Your subscription will be billed through the App Store.';
+
+  @override
+  String get tryAgain => 'Gbiyanju lẹẹkansi';
+
+  @override
+  String get restorePurchases => 'Mu Awọn Isanwo Pada';
+
+  @override
+  String get afterCompletingPayment =>
+      'After completing your payment, tap the button below to continue.';
+
+  @override
+  String get completedPayment => 'Mo ti Pari Isanwo';
+
+  @override
+  String get appleSubscriptionsUnavailable =>
+      'Awọn ṣiṣe alabapin Apple ko si lọwọlọwọ.';
+
+  @override
+  String get noAppleProducts => 'No Apple subscription products were found.';
+
+  @override
+  String get unableToStartAppleSubscription =>
+      'A ko le bẹrẹ ṣiṣe alabapin Apple.';
+
+  @override
+  String get applePaymentNotVerified => 'Apple payment could not be verified.';
+
+  @override
+  String get verifyAppleSubscriptionError =>
+      'We couldn\'t verify your Apple subscription. Please try again.';
+
+  @override
+  String get unableToRestoreSubscription => 'A ko le mu ṣiṣe alabapin rẹ pada.';
+
+  @override
+  String get fertitalks => 'Fertitalks';
+
+  @override
+  String get fertitalksSubtitle =>
+      'Fertitalks nipasẹ MyFertiPal, ohun elo irọyin olori ni Afirika.';
+
+  @override
+  String get visitYoutubeChannel => 'Ṣabẹwo si ikanni YouTube wa';
 }

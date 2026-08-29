@@ -841,4 +841,75 @@ class AppLocalizationsPcm extends AppLocalizations {
 
   @override
   String get signInWithApple => 'Sign In With Apple';
+
+  @override
+  String get upgradeMembership => 'Upgrade Membership';
+
+  @override
+  String get upgradeMembershipDescription =>
+      'Unlock premium features and enjoy more things for MyFertiPal';
+
+  @override
+  String get upgradeNow => 'Upgrade Now';
+
+  @override
+  String get premiumSubscription => 'Premium Subscription';
+
+  @override
+  String get premiumPayment => 'Premium Payment';
+
+  @override
+  String get unableToLoadPayment => 'We no fit load payment.';
+
+  @override
+  String get choosePremiumPlan => 'Choose your Premium plan';
+
+  @override
+  String get subscriptionBilledAppStore =>
+      'Your subscription will be billed through the App Store.';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get restorePurchases => 'Restore Purchases';
+
+  @override
+  String get afterCompletingPayment =>
+      'After completing your payment, tap the button below to continue.';
+
+  @override
+  String get completedPayment => 'I Don Complete Payment';
+
+  @override
+  String get appleSubscriptionsUnavailable =>
+      'Apple subscriptions no dey available now.';
+
+  @override
+  String get noAppleProducts => 'No Apple subscription products were found.';
+
+  @override
+  String get unableToStartAppleSubscription =>
+      'We no fit start Apple subscription.';
+
+  @override
+  String get applePaymentNotVerified => 'Apple payment could not be verified.';
+
+  @override
+  String get verifyAppleSubscriptionError =>
+      'We couldn\'t verify your Apple subscription. Please try again.';
+
+  @override
+  String get unableToRestoreSubscription =>
+      'We no fit restore your subscription.';
+
+  @override
+  String get fertitalks => 'Fertitalks';
+
+  @override
+  String get fertitalksSubtitle =>
+      'Fertitalks by MyFertiPal, Africa\'s leading fertility app.';
+
+  @override
+  String get visitYoutubeChannel => 'Visit our YouTube channel';
 }

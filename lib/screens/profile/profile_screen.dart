@@ -582,6 +582,8 @@ Navigator.push(
 
 }
 Widget _buildUpgradeMembershipCard() {
+  final l10n = AppLocalizations.of(context);
+
   return Padding(
     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
     child: InkWell(
@@ -641,9 +643,9 @@ Widget _buildUpgradeMembershipCard() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Upgrade Membership",
-                    style: TextStyle(
+                  Text(
+                    l10n.upgradeMembership,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -653,7 +655,7 @@ Widget _buildUpgradeMembershipCard() {
                   const SizedBox(height: 4),
 
                   Text(
-                    "Unlock more features and get more from MyFertiPal.",
+                    l10n.upgradeMembershipDescription,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.78),
                       fontSize: 12,

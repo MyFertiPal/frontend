@@ -314,6 +314,31 @@
   "predicted": "Amụma",
   "today": "Taa",
   "noSymptomsLogged": "Ọ dịghị mgbaàmà e dekọrọ ugbu a",
-  "loggedSymptoms": "Mgbaàmà e dekọrọ"
+  "loggedSymptoms": "Mgbaàmà e dekọrọ",
+
+  "upgradeMembership": "Kwalite Ọbụbụ Ndị Otu",
+"upgradeMembershipDescription": "Mepee atụmatụ pụrụ iche ma nweta ihe ndị ọzọ na MyFertiPal",
+"upgradeNow": "Kwalite Ugbu a",
+
+"premiumSubscription": "Ndebanye aha Premium",
+  "premiumPayment": "Ịkwụ Ụgwọ Premium",
+  "choosePremiumPlan": "Họrọ atụmatụ Premium gị",
+  "subscriptionAppStoreBilling": "A ga-akwụ ụgwọ ndebanye aha gị site na App Store.",
+  "tryAgain": "Gbalịa ọzọ",
+  "unableToStartAppleSubscription": "Anyị enweghị ike ịmalite ndebanye aha Apple.",
+  "applePaymentCouldNotBeVerified": "Enweghị ike ịchọpụta nkwụ ụgwọ Apple gị.",
+  "unableToRestoreSubscription": "Anyị enweghị ike iweghachi ndebanye aha gị.",
+  "unableToLoadPayment": "Enweghị ike ibunye peeji ịkwụ ụgwọ.",
+  "androidPaymentContinueMessage": "Mgbe ị mechara ịkwụ ụgwọ gị, pịa bọtịnụ dị n'okpuru ka ị gaa n'ihu.",
+  "completedPayment": "Emechala m Ịkwụ Ụgwọ",
+  "cancel": "Kagbuo",
+  "restorePurchases": "Weghachite Ịzụrụ Azụ",
+  "appleSubscriptionsUnavailable": "Ndebanye aha Apple adịghị ugbu a.",
+  "noAppleProductsFound": "Achọtaghị ngwaahịa ndebanye aha Apple.",
+  "applePaymentVerificationError": "Anyị enweghị ike ịchọpụta ndebanye aha Apple gị. Biko nwaa ọzọ.",
+
+    "fertitalks": "Fertitalks",
+  "fertitalksSubtitle": "Fertitalks nke MyFertiPal, ngwa ọmụmụ ụmụ nke kacha ewu ewu n'Africa.",
+  "visitYoutubeChannel": "Gaa na ọwa YouTube anyị"
 
 }
