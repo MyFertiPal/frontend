@@ -365,7 +365,23 @@
 
    "fertitalks": "Fertitalks",
   "fertitalksSubtitle": "Fertitalks daga MyFertiPal, manhajar haihuwa ta farko a Afirka.",
-  "visitYoutubeChannel": "Ziyarci tashar YouTube ɗinmu"
+  "visitYoutubeChannel": "Ziyarci tashar YouTube ɗinmu",
+
+   "membership": "Memba",
+  "upgradeExperience": "Inganta ƙwarewarku",
+  "premiumDescription": "Samun ƙarin amfani daga MyFertiPal tare da membobin Premium.",
+  "premium": "Premium",
+  "premiumMembership": "Membobin Premium",
+  "premiumAccess": "Samun damar membobin Premium",
+  "enhancedExperience": "Ingantacciyar ƙwarewar MyFertiPal",
+  "upgradeNow": "Haɓaka Yanzu",
+  "securePaymentCancelAnytime": "Biyan kuɗi mai tsaro • Kuna iya soke shi kowane lokaci",
+  "subscriptionUserIdNotFound": "Ba a sami ID ɗin mai amfani ba.",
+  "subscriptionEmailNotFound": "Ba a sami imel ɗin mai amfani ba.",
+  "paymentUrlNotReturned": "Uwar garke ba ta dawo da URL na biyan kuɗi ba.",
+  "subscriptionReferenceNotReturned": "Uwar garke ba ta dawo da lambar rajistar biyan kuɗi ba.",
+  "subscriptionActive": "Barka da zuwa Premium! An kunna membobin ku yanzu.",
+  "subscriptionStartError": "Ba mu iya fara membobin ku ba. Da fatan za a sake gwadawa."
 
 
 }

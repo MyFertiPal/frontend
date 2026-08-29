@@ -356,5 +356,21 @@
 
   "fertitalks": "Fertitalks",
   "fertitalksSubtitle": "Fertitalks nipasẹ MyFertiPal, ohun elo irọyin olori ni Afirika.",
-  "visitYoutubeChannel": "Ṣabẹwo si ikanni YouTube wa"
+  "visitYoutubeChannel": "Ṣabẹwo si ikanni YouTube wa",
+
+  "membership": "Ọmọ ẹgbẹ",
+  "upgradeExperience": "Mu iriri rẹ dara si",
+  "premiumDescription": "Gba diẹ sii lati MyFertiPal pẹlu ẹgbẹ Premium.",
+  "premium": "Premium",
+  "premiumMembership": "Ẹgbẹ Premium",
+  "premiumAccess": "Wiwọle si ẹgbẹ Premium",
+  "enhancedExperience": "Iriri MyFertiPal ti o dara si",
+  "upgradeNow": "Ṣe igbesoke bayi",
+  "securePaymentCancelAnytime": "Isanwo to ni aabo • Fagilee nigbakugba",
+  "subscriptionUserIdNotFound": "A ko ri ID olumulo.",
+  "subscriptionEmailNotFound": "A ko ri imeeli olumulo.",
+  "paymentUrlNotReturned": "Olupin ko da URL isanwo pada.",
+  "subscriptionReferenceNotReturned": "Olupin ko da itọkasi ṣiṣe alabapin pada.",
+  "subscriptionActive": "Kaabo si Premium! Ṣiṣe alabapin rẹ ti ṣiṣẹ bayi.",
+  "subscriptionStartError": "A ko le bẹrẹ ṣiṣe alabapin rẹ. Jọwọ tun gbiyanju."
 }

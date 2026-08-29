@@ -1813,6 +1813,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Visit our YouTube channel'**
   String get visitYoutubeChannel;
+
+  /// No description provided for @membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership'**
+  String get membership;
+
+  /// No description provided for @upgradeExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade your experience'**
+  String get upgradeExperience;
+
+  /// No description provided for @premiumDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get more from MyFertiPal with Premium membership.'**
+  String get premiumDescription;
+
+  /// No description provided for @premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get premium;
+
+  /// No description provided for @premiumMembership.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium membership'**
+  String get premiumMembership;
+
+  /// No description provided for @premiumAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium membership access'**
+  String get premiumAccess;
+
+  /// No description provided for @enhancedExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Enhanced MyFertiPal experience'**
+  String get enhancedExperience;
+
+  /// No description provided for @securePaymentCancelAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure payment • Cancel anytime'**
+  String get securePaymentCancelAnytime;
+
+  /// No description provided for @subscriptionUserIdNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User ID not found.'**
+  String get subscriptionUserIdNotFound;
+
+  /// No description provided for @subscriptionEmailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User email not found.'**
+  String get subscriptionEmailNotFound;
+
+  /// No description provided for @paymentUrlNotReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment URL was not returned by the server.'**
+  String get paymentUrlNotReturned;
+
+  /// No description provided for @subscriptionReferenceNotReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription reference was not returned by the server.'**
+  String get subscriptionReferenceNotReturned;
+
+  /// No description provided for @subscriptionActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Premium! Your subscription is now active.'**
+  String get subscriptionActive;
+
+  /// No description provided for @subscriptionStartError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to start your subscription. Please try again.'**
+  String get subscriptionStartError;
 }
 
 class _AppLocalizationsDelegate

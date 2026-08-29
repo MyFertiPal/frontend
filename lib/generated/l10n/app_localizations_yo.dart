@@ -849,7 +849,7 @@ class AppLocalizationsYo extends AppLocalizations {
       'Ṣí àwọn ànfàní pàtàkì sílẹ̀ kí o sì gba púpọ̀ síi láti MyFertiPal';
 
   @override
-  String get upgradeNow => 'Ṣe Ìgbésókè Bayi';
+  String get upgradeNow => 'Ṣe igbesoke bayi';
 
   @override
   String get premiumSubscription => 'Alabapin Ere';
@@ -910,4 +910,51 @@ class AppLocalizationsYo extends AppLocalizations {
 
   @override
   String get visitYoutubeChannel => 'Ṣabẹwo si ikanni YouTube wa';
+
+  @override
+  String get membership => 'Ọmọ ẹgbẹ';
+
+  @override
+  String get upgradeExperience => 'Mu iriri rẹ dara si';
+
+  @override
+  String get premiumDescription =>
+      'Gba diẹ sii lati MyFertiPal pẹlu ẹgbẹ Premium.';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get premiumMembership => 'Ẹgbẹ Premium';
+
+  @override
+  String get premiumAccess => 'Wiwọle si ẹgbẹ Premium';
+
+  @override
+  String get enhancedExperience => 'Iriri MyFertiPal ti o dara si';
+
+  @override
+  String get securePaymentCancelAnytime =>
+      'Isanwo to ni aabo • Fagilee nigbakugba';
+
+  @override
+  String get subscriptionUserIdNotFound => 'A ko ri ID olumulo.';
+
+  @override
+  String get subscriptionEmailNotFound => 'A ko ri imeeli olumulo.';
+
+  @override
+  String get paymentUrlNotReturned => 'Olupin ko da URL isanwo pada.';
+
+  @override
+  String get subscriptionReferenceNotReturned =>
+      'Olupin ko da itọkasi ṣiṣe alabapin pada.';
+
+  @override
+  String get subscriptionActive =>
+      'Kaabo si Premium! Ṣiṣe alabapin rẹ ti ṣiṣẹ bayi.';
+
+  @override
+  String get subscriptionStartError =>
+      'A ko le bẹrẹ ṣiṣe alabapin rẹ. Jọwọ tun gbiyanju.';
 }

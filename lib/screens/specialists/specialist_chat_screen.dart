@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../payment/payment_screen.dart';
+import "../../screens/subscription/subscription_payment_screen.dart";
+
 
 class SpecialistChatScreen extends StatelessWidget {
   const SpecialistChatScreen({super.key});
@@ -159,7 +160,7 @@ class SpecialistChatScreen extends StatelessWidget {
                         Navigator.of(context).pop();
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const PaymentScreen(),
+                            builder: (_) => const SubscriptionPaymentScreen(),
                           ),
                         );
                       },

@@ -909,4 +909,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get visitYoutubeChannel => 'Visit our YouTube channel';
+
+  @override
+  String get membership => 'Membership';
+
+  @override
+  String get upgradeExperience => 'Upgrade your experience';
+
+  @override
+  String get premiumDescription =>
+      'Get more from MyFertiPal with Premium membership.';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get premiumMembership => 'Premium membership';
+
+  @override
+  String get premiumAccess => 'Premium membership access';
+
+  @override
+  String get enhancedExperience => 'Enhanced MyFertiPal experience';
+
+  @override
+  String get securePaymentCancelAnytime => 'Secure payment • Cancel anytime';
+
+  @override
+  String get subscriptionUserIdNotFound => 'User ID not found.';
+
+  @override
+  String get subscriptionEmailNotFound => 'User email not found.';
+
+  @override
+  String get paymentUrlNotReturned =>
+      'Payment URL was not returned by the server.';
+
+  @override
+  String get subscriptionReferenceNotReturned =>
+      'Subscription reference was not returned by the server.';
+
+  @override
+  String get subscriptionActive =>
+      'Welcome to Premium! Your subscription is now active.';
+
+  @override
+  String get subscriptionStartError =>
+      'Unable to start your subscription. Please try again.';
 }

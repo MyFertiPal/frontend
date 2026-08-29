@@ -3,7 +3,6 @@ import '../../theme/app_colors.dart';
 import 'specialist_profile_screen.dart';
 import '../../services/api_service.dart';
 import '../../services/analytics_service.dart';
-import '../payment/payment_screen.dart';
 import '../../generated/l10n/app_localizations.dart';
 
 class SpecialistSearchScreen extends StatefulWidget {

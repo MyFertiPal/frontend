@@ -921,4 +921,52 @@ class AppLocalizationsHa extends AppLocalizations {
 
   @override
   String get visitYoutubeChannel => 'Ziyarci tashar YouTube ɗinmu';
+
+  @override
+  String get membership => 'Memba';
+
+  @override
+  String get upgradeExperience => 'Inganta ƙwarewarku';
+
+  @override
+  String get premiumDescription =>
+      'Samun ƙarin amfani daga MyFertiPal tare da membobin Premium.';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get premiumMembership => 'Membobin Premium';
+
+  @override
+  String get premiumAccess => 'Samun damar membobin Premium';
+
+  @override
+  String get enhancedExperience => 'Ingantacciyar ƙwarewar MyFertiPal';
+
+  @override
+  String get securePaymentCancelAnytime =>
+      'Biyan kuɗi mai tsaro • Kuna iya soke shi kowane lokaci';
+
+  @override
+  String get subscriptionUserIdNotFound => 'Ba a sami ID ɗin mai amfani ba.';
+
+  @override
+  String get subscriptionEmailNotFound => 'Ba a sami imel ɗin mai amfani ba.';
+
+  @override
+  String get paymentUrlNotReturned =>
+      'Uwar garke ba ta dawo da URL na biyan kuɗi ba.';
+
+  @override
+  String get subscriptionReferenceNotReturned =>
+      'Uwar garke ba ta dawo da lambar rajistar biyan kuɗi ba.';
+
+  @override
+  String get subscriptionActive =>
+      'Barka da zuwa Premium! An kunna membobin ku yanzu.';
+
+  @override
+  String get subscriptionStartError =>
+      'Ba mu iya fara membobin ku ba. Da fatan za a sake gwadawa.';
 }

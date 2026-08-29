@@ -400,6 +400,22 @@
 
   "fertitalks": "Fertitalks",
   "fertitalksSubtitle": "Fertitalks by MyFertiPal, Africa's foremost fertility app.",
-  "visitYoutubeChannel": "Visit our YouTube channel"
+  "visitYoutubeChannel": "Visit our YouTube channel",
+
+    "membership": "Membership",
+  "upgradeExperience": "Upgrade your experience",
+  "premiumDescription": "Get more from MyFertiPal with Premium membership.",
+  "premium": "Premium",
+  "premiumMembership": "Premium membership",
+  "premiumAccess": "Premium membership access",
+  "enhancedExperience": "Enhanced MyFertiPal experience",
+  "upgradeNow": "Upgrade Now",
+  "securePaymentCancelAnytime": "Secure payment • Cancel anytime",
+  "subscriptionUserIdNotFound": "User ID not found.",
+  "subscriptionEmailNotFound": "User email not found.",
+  "paymentUrlNotReturned": "Payment URL was not returned by the server.",
+  "subscriptionReferenceNotReturned": "Subscription reference was not returned by the server.",
+  "subscriptionActive": "Welcome to Premium! Your subscription is now active.",
+  "subscriptionStartError": "Unable to start your subscription. Please try again."
 
 }

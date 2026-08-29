@@ -338,30 +338,37 @@ class CalendarTabScreenState extends State<CalendarTabScreen>
     }
 
     final insight = _findCurrentCycleInsight(
-      insights,
-    );
+  insights,
+);
 
-    if (insight != null) {
-      _nextPeriod = _stringValue(
-        insight['next_period_date'],
-      );
+if (insight != null) {
+  _nextPeriod = _stringValue(
+    insight['next_period_date'],
+  );
 
-      _nextPeriod ??= _stringValue(
-        insight['next_period'],
-      );
+  _nextPeriod ??= _stringValue(
+    insight['next_period'],
+  );
 
-      _ovulationDay = _stringValue(
-        insight['ovulation_day'],
-      );
+  _ovulationDay = _stringValue(
+    insight['ovulation_day'],
+  );
 
-      _fertileStart = _stringValue(
-        insight['fertile_period_start'],
-      );
+  _fertileStart = _stringValue(
+    insight['fertile_period_start'],
+  );
 
-      _fertileEnd = _stringValue(
-        insight['fertile_period_end'],
-      );
-    }
+  _fertileEnd = _stringValue(
+    insight['fertile_period_end'],
+  );
+
+  debugPrint(
+    'Calendar insight applied: '
+    'next=$_nextPeriod, '
+    'ovulation=$_ovulationDay, '
+    'fertile=$_fertileStart → $_fertileEnd',
+  );
+}
 
     await _loadLocalPeriods();
 
@@ -390,14 +397,14 @@ class CalendarTabScreenState extends State<CalendarTabScreen>
     setState(() {});
   }
 
-  Map<String, dynamic>? _findCurrentCycleInsight(
-    List<dynamic> insights,
-  ) {
-    if (_lastPeriod == null) return null;
+ Map<String, dynamic>? _findCurrentCycleInsight(
+  List<dynamic> insights,
+) {
+  if (insights.isEmpty) return null;
 
-    final current = _formatDateForApi(
-      _lastPeriod!,
-    );
+  // Prefer an insight matching the current last period.
+  if (_lastPeriod != null) {
+    final current = _formatDateForApi(_lastPeriod!);
 
     for (final item in insights) {
       if (item is! Map) continue;
@@ -410,13 +417,93 @@ class CalendarTabScreenState extends State<CalendarTabScreen>
 
       final start = _parseDate(raw);
 
-      if (start != null && _formatDateForApi(start) == current) {
+      if (start != null &&
+          _formatDateForApi(start) == current) {
         return insight;
       }
     }
-
-    return null;
   }
+
+  // Backend insight may not return its cycle start.
+  // Use the latest/first available insight instead.
+  final first = insights.first;
+
+  if (first is Map) {
+    return Map<String, dynamic>.from(first);
+  }
+
+  return null;
+}
+
+void _calculateSafePredictions() {
+  if (_lastPeriod == null || _cycleLength <= 0) {
+    _predictedPeriodStarts = [];
+    return;
+  }
+
+  final lastPeriod = _normalize(_lastPeriod!);
+  final today = _normalize(DateTime.now());
+
+  final end = DateTime(
+    today.year + 1,
+    today.month,
+    today.day,
+  );
+
+  final predictions = <DateTime>[];
+
+  var next = lastPeriod.add(
+    Duration(days: _cycleLength),
+  );
+
+  while (!next.isAfter(end)) {
+    predictions.add(_normalize(next));
+
+    next = next.add(
+      Duration(days: _cycleLength),
+    );
+  }
+
+  _predictedPeriodStarts = predictions;
+
+  // Only calculate missing insight values.
+  final upcoming = predictions.firstWhere(
+    (date) => !date.isBefore(today),
+    orElse: () => predictions.isNotEmpty
+        ? predictions.last
+        : lastPeriod.add(
+            Duration(days: _cycleLength),
+          ),
+  );
+
+  _nextPeriod ??= _formatDateForApi(upcoming);
+
+  if (_ovulationDay == null) {
+    final ovulation = upcoming.subtract(
+      const Duration(days: 14),
+    );
+
+    _ovulationDay = _formatDateForApi(ovulation);
+  }
+
+  if (_fertileStart == null || _fertileEnd == null) {
+    final ovulation = _parseDate(_ovulationDay);
+
+    if (ovulation != null) {
+      _fertileStart ??= _formatDateForApi(
+        ovulation.subtract(
+          const Duration(days: 5),
+        ),
+      );
+
+      _fertileEnd ??= _formatDateForApi(
+        ovulation.add(
+          const Duration(days: 1),
+        ),
+      );
+    }
+  }
+}
 
   Future<void> _loadLocalPeriods() async {
     try {
@@ -457,66 +544,7 @@ class CalendarTabScreenState extends State<CalendarTabScreen>
     return start;
   }
 
-  void _calculateSafePredictions() {
-    if (_lastPeriod == null || _cycleLength <= 0) {
-      _predictedPeriodStarts = [];
-      return;
-    }
-
-    final lastPeriod = _normalize(_lastPeriod!);
-    final today = _normalize(DateTime.now());
-
-    final end = DateTime(
-      today.year + 1,
-      today.month,
-      today.day,
-    );
-
-    final predictions = <DateTime>[];
-
-    var next = lastPeriod.add(
-      Duration(days: _cycleLength),
-    );
-
-    while (!next.isAfter(end)) {
-      predictions.add(_normalize(next));
-
-      next = next.add(
-        Duration(days: _cycleLength),
-      );
-    }
-
-    _predictedPeriodStarts = predictions;
-
-    final upcoming = predictions.firstWhere(
-      (date) => !date.isBefore(today),
-      orElse: () => predictions.isNotEmpty
-          ? predictions.last
-          : lastPeriod.add(
-              Duration(days: _cycleLength),
-            ),
-    );
-
-    _nextPeriod = _formatDateForApi(upcoming);
-
-    final ovulation = upcoming.subtract(
-      const Duration(days: 14),
-    );
-
-    _ovulationDay = _formatDateForApi(ovulation);
-
-    _fertileStart = _formatDateForApi(
-      ovulation.subtract(
-        const Duration(days: 5),
-      ),
-    );
-
-    _fertileEnd = _formatDateForApi(
-      ovulation.add(
-        const Duration(days: 1),
-      ),
-    );
-  }
+  
 
   void _buildBackendMarkers() {
     final markers = <DateTime, DayType>{};

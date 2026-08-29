@@ -912,4 +912,51 @@ class AppLocalizationsPcm extends AppLocalizations {
 
   @override
   String get visitYoutubeChannel => 'Visit our YouTube channel';
+
+  @override
+  String get membership => 'Membership';
+
+  @override
+  String get upgradeExperience => 'Make your experience better';
+
+  @override
+  String get premiumDescription =>
+      'Enjoy more from MyFertiPal with Premium membership.';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get premiumMembership => 'Premium membership';
+
+  @override
+  String get premiumAccess => 'Access to Premium membership';
+
+  @override
+  String get enhancedExperience => 'Better MyFertiPal experience';
+
+  @override
+  String get securePaymentCancelAnytime =>
+      'Secure payment • You fit cancel anytime';
+
+  @override
+  String get subscriptionUserIdNotFound => 'We no find user ID.';
+
+  @override
+  String get subscriptionEmailNotFound => 'We no find user email.';
+
+  @override
+  String get paymentUrlNotReturned => 'Server no return payment URL.';
+
+  @override
+  String get subscriptionReferenceNotReturned =>
+      'Server no return subscription reference.';
+
+  @override
+  String get subscriptionActive =>
+      'Welcome to Premium! Your subscription don dey active now.';
+
+  @override
+  String get subscriptionStartError =>
+      'We no fit start your subscription. Abeg try again.';
 }

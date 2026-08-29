@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../services/analytics_service.dart';
 import '../../services/api_service.dart';
+import '../../generated/l10n/app_localizations.dart';
 import 'subscription_payment_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -23,6 +24,9 @@ class _SubscriptionScreenState
   static const Color textDark = Color(0xFF163B30);
 
   bool _isLoading = false;
+
+  AppLocalizations get _l10n =>
+      AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -47,10 +51,7 @@ class _SubscriptionScreenState
         "STARTING PREMIUM SUBSCRIPTION...",
       );
 
-      // Get current user
       final user = await _apiService.getUser();
-
-      // Get current profile
       final profile = await _apiService.getProfile();
 
       final userId = profile["user_id"]?.toString();
@@ -66,17 +67,16 @@ class _SubscriptionScreenState
 
       if (userId == null || userId.isEmpty) {
         throw Exception(
-          "User ID not found.",
+          _l10n.subscriptionUserIdNotFound,
         );
       }
 
       if (email == null || email.isEmpty) {
         throw Exception(
-          "User email not found.",
+          _l10n.subscriptionEmailNotFound,
         );
       }
 
-      // Initiate subscription
       final response =
           await _apiService.initiateSubscription(
         userId: userId,
@@ -96,14 +96,14 @@ class _SubscriptionScreenState
       if (paymentUrl == null ||
           paymentUrl.isEmpty) {
         throw Exception(
-          'Payment URL was not returned by the server.',
+          _l10n.paymentUrlNotReturned,
         );
       }
 
       if (reference == null ||
           reference.isEmpty) {
         throw Exception(
-          'Subscription reference was not returned by the server.',
+          _l10n.subscriptionReferenceNotReturned,
         );
       }
 
@@ -121,7 +121,6 @@ class _SubscriptionScreenState
         _isLoading = false;
       });
 
-      // Open payment screen
       final paymentCompleted =
           await Navigator.of(context).push<bool>(
         MaterialPageRoute(
@@ -141,11 +140,11 @@ class _SubscriptionScreenState
 
       if (paymentCompleted == true) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Welcome to Premium! Your subscription is now active.',
+              _l10n.subscriptionActive,
             ),
-            duration: Duration(seconds: 4),
+            duration: const Duration(seconds: 4),
           ),
         );
       }
@@ -161,11 +160,11 @@ class _SubscriptionScreenState
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Unable to start your subscription. Please try again.',
+            _l10n.subscriptionStartError,
           ),
-          duration: Duration(seconds: 4),
+          duration: const Duration(seconds: 4),
         ),
       );
     }
@@ -188,9 +187,9 @@ class _SubscriptionScreenState
             size: 20,
           ),
         ),
-        title: const Text(
-          "Membership",
-          style: TextStyle(
+        title: Text(
+          _l10n.membership,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -209,9 +208,9 @@ class _SubscriptionScreenState
             crossAxisAlignment:
                 CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Upgrade your experience",
-                style: TextStyle(
+              Text(
+                _l10n.upgradeExperience,
+                style: const TextStyle(
                   color: textDark,
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
@@ -220,9 +219,9 @@ class _SubscriptionScreenState
 
               const SizedBox(height: 8),
 
-              const Text(
-                "Get more from MyFertiPal with Premium membership.",
-                style: TextStyle(
+              Text(
+                _l10n.premiumDescription,
+                style: const TextStyle(
                   color: Color(0xFF737873),
                   fontSize: 14,
                   height: 1.5,
@@ -280,9 +279,9 @@ class _SubscriptionScreenState
 
                         const SizedBox(width: 12),
 
-                        const Text(
-                          "Premium",
-                          style: TextStyle(
+                        Text(
+                          _l10n.premium,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 21,
                             fontWeight:
@@ -307,7 +306,7 @@ class _SubscriptionScreenState
                     const SizedBox(height: 4),
 
                     Text(
-                      "Premium membership",
+                      _l10n.premiumMembership,
                       style: TextStyle(
                         color: Colors.white
                             .withOpacity(0.75),
@@ -325,20 +324,20 @@ class _SubscriptionScreenState
 
                     const SizedBox(height: 20),
 
-                    const _PremiumFeature(
+                    _PremiumFeature(
                       icon:
                           Icons.check_circle_outline,
                       text:
-                          "Premium membership access",
+                          _l10n.premiumAccess,
                     ),
 
                     const SizedBox(height: 14),
 
-                    const _PremiumFeature(
+                    _PremiumFeature(
                       icon:
                           Icons.check_circle_outline,
                       text:
-                          "Enhanced MyFertiPal experience",
+                          _l10n.enhancedExperience,
                     ),
 
                     const SizedBox(height: 28),
@@ -373,9 +372,9 @@ class _SubscriptionScreenState
                                   strokeWidth: 2.5,
                                 ),
                               )
-                            : const Text(
-                                "Upgrade Now",
-                                style: TextStyle(
+                            : Text(
+                                _l10n.upgradeNow,
+                                style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight:
                                       FontWeight.w800,
@@ -391,7 +390,8 @@ class _SubscriptionScreenState
 
               Center(
                 child: Text(
-                  "Secure payment • Cancel anytime",
+                  _l10n.securePaymentCancelAnytime,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 12,
@@ -420,14 +420,12 @@ class _PremiumFeature
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: const Color(0xFFE9B44C),
+        const Icon(
+          Icons.check_circle_outline,
+          color: Color(0xFFE9B44C),
           size: 20,
         ),
-
         const SizedBox(width: 10),
-
         Expanded(
           child: Text(
             text,

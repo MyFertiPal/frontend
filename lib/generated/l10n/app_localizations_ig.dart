@@ -849,7 +849,7 @@ class AppLocalizationsIg extends AppLocalizations {
       'Mepee atụmatụ pụrụ iche ma nweta ihe ndị ọzọ na MyFertiPal';
 
   @override
-  String get upgradeNow => 'Kwalite Ugbu a';
+  String get upgradeNow => 'Kwalite ugbu a';
 
   @override
   String get premiumSubscription => 'Ndebanye aha Premium';
@@ -911,4 +911,51 @@ class AppLocalizationsIg extends AppLocalizations {
 
   @override
   String get visitYoutubeChannel => 'Gaa na ọwa YouTube anyị';
+
+  @override
+  String get membership => 'Ọbụbụ otu';
+
+  @override
+  String get upgradeExperience => 'Mee ka ahụmịhe gị ka mma';
+
+  @override
+  String get premiumDescription =>
+      'Nweta ọtụtụ ihe na MyFertiPal site na otu Premium.';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get premiumMembership => 'Otu Premium';
+
+  @override
+  String get premiumAccess => 'Nnweta otu Premium';
+
+  @override
+  String get enhancedExperience => 'Ahụmịhe MyFertiPal ka mma';
+
+  @override
+  String get securePaymentCancelAnytime =>
+      'Ịkwụ ụgwọ echekwara • Kagbuo mgbe ọ bụla';
+
+  @override
+  String get subscriptionUserIdNotFound => 'Ahụghị ID onye ọrụ.';
+
+  @override
+  String get subscriptionEmailNotFound => 'Ahụghị email onye ọrụ.';
+
+  @override
+  String get paymentUrlNotReturned => 'Sava ahụ alọtaghị URL ịkwụ ụgwọ.';
+
+  @override
+  String get subscriptionReferenceNotReturned =>
+      'Sava ahụ alọtaghị ntụaka ndenye aha.';
+
+  @override
+  String get subscriptionActive =>
+      'Nnọọ na Premium! Ndenye aha gị arụ ọrụ ugbu a.';
+
+  @override
+  String get subscriptionStartError =>
+      'Anyị enweghị ike ịmalite ndenye aha gị. Biko nwaa ọzọ.';
 }

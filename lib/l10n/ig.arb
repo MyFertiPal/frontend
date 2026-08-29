@@ -339,6 +339,22 @@
 
     "fertitalks": "Fertitalks",
   "fertitalksSubtitle": "Fertitalks nke MyFertiPal, ngwa ọmụmụ ụmụ nke kacha ewu ewu n'Africa.",
-  "visitYoutubeChannel": "Gaa na ọwa YouTube anyị"
+  "visitYoutubeChannel": "Gaa na ọwa YouTube anyị",
+
+    "membership": "Ọbụbụ otu",
+  "upgradeExperience": "Mee ka ahụmịhe gị ka mma",
+  "premiumDescription": "Nweta ọtụtụ ihe na MyFertiPal site na otu Premium.",
+  "premium": "Premium",
+  "premiumMembership": "Otu Premium",
+  "premiumAccess": "Nnweta otu Premium",
+  "enhancedExperience": "Ahụmịhe MyFertiPal ka mma",
+  "upgradeNow": "Kwalite ugbu a",
+  "securePaymentCancelAnytime": "Ịkwụ ụgwọ echekwara • Kagbuo mgbe ọ bụla",
+  "subscriptionUserIdNotFound": "Ahụghị ID onye ọrụ.",
+  "subscriptionEmailNotFound": "Ahụghị email onye ọrụ.",
+  "paymentUrlNotReturned": "Sava ahụ alọtaghị URL ịkwụ ụgwọ.",
+  "subscriptionReferenceNotReturned": "Sava ahụ alọtaghị ntụaka ndenye aha.",
+  "subscriptionActive": "Nnọọ na Premium! Ndenye aha gị arụ ọrụ ugbu a.",
+  "subscriptionStartError": "Anyị enweghị ike ịmalite ndenye aha gị. Biko nwaa ọzọ."
 
 }
