@@ -385,7 +385,46 @@ Future<List<dynamic>> generateInsights({
 // ===============================
 // SUBSCRIPTION
 // ===============================
+/// GET /subscriptions/plan
+Future<Map<String, dynamic>> getSubscriptionPlan() async {
+  try {
+    final response = await http.get(
+      Uri.parse('$baseUrl/subscriptions/plan'),
+      headers: await getHeaders(includeAuth: true),
+    );
 
+    debugPrint(
+      'GET SUBSCRIPTION PLAN STATUS: ${response.statusCode}',
+    );
+
+    debugPrint(
+      'GET SUBSCRIPTION PLAN RESPONSE: ${response.body}',
+    );
+
+    if (response.statusCode >= 200 &&
+        response.statusCode < 300) {
+      final data = jsonDecode(response.body);
+
+      if (data is Map<String, dynamic>) {
+        return data;
+      }
+
+      throw Exception(
+        'Invalid subscription plan response format',
+      );
+    }
+
+    throw ApiException(
+      statusCode: response.statusCode,
+      message: _extractErrorMessage(response),
+    );
+  } catch (e) {
+    debugPrint(
+      'GET SUBSCRIPTION PLAN ERROR: $e',
+    );
+    rethrow;
+  }
+}
 /// Initiate a premium subscription
 /// POST /subscriptions/initiate_subscription
 Future<Map<String, dynamic>> initiateSubscription({

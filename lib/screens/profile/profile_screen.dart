@@ -152,7 +152,8 @@ String _name = "";
 String _avatarUrl = "";
 String _selectedLanguage = "English";
 
-late bool _isPremium;
+String _membershipPlan = "free";
+bool _isPlanLoading = true;
 bool _notificationsEnabled = true;
 bool _isProfileImageLoading = true;
 
@@ -272,9 +273,8 @@ void initState() {
 
   AnalyticsService.logScreenView(screenName: 'ProfileScreen');
 
-  _isPremium = widget.isPremiumMember;
-
   _loadProfile();
+  _loadMembershipPlan();
 
 }
 
@@ -864,38 +864,86 @@ Text(
   ),
 ),
           
-          if (_isPremium) ...[
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: _ProfileColors.premiumBg,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.workspace_premium, size: 16, color: _ProfileColors.gold),
-                  const SizedBox(width: 6),
-                  Text(
-                    AppLocalizations.of(context).basicMember,
-                    style: TextStyle(
-                      color: _ProfileColors.gold,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+         if (!_isPlanLoading) ...[
+  const SizedBox(height: 10),
+  Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: 14,
+      vertical: 6,
+    ),
+    decoration: BoxDecoration(
+      color: _ProfileColors.premiumBg,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          _membershipPlan == "premium"
+              ? Icons.workspace_premium
+              : Icons.person_outline,
+          size: 16,
+          color: _ProfileColors.gold,
+        ),
+
+        const SizedBox(width: 6),
+
+        Text(
+          _membershipPlan == "premium"
+              ? "Premium Member"
+              : "Free Member",
+          style: const TextStyle(
+            color: _ProfileColors.gold,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  ),
+],
+             
         ],
       ),
     );
   }
 
   // ---- Stats row --------------------------------------------------------------
+Future<void> _loadMembershipPlan() async {
+  try {
+    final planResponse = await _apiService.getSubscriptionPlan();
 
+    debugPrint("SUBSCRIPTION PLAN RESPONSE: $planResponse");
+
+    // Backend returns either:
+    // { "plan": "free" }
+    // or
+    // { "plan": "premium" }
+
+    final plan = planResponse["plan"]
+            ?.toString()
+            .trim()
+            .toLowerCase() ??
+        "free";
+
+    if (!mounted) return;
+
+    setState(() {
+      _membershipPlan = plan;
+      _isPlanLoading = false;
+    });
+  } catch (e) {
+    debugPrint("Membership plan loading error: $e");
+
+    if (!mounted) return;
+
+    setState(() {
+      // Safely fall back to free
+      _membershipPlan = "free";
+      _isPlanLoading = false;
+    });
+  }
+}
  Widget _buildStatsRow() {
   final stats =
       widget.stats ?? _localizedStats(context);
