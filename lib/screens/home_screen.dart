@@ -193,24 +193,53 @@ Future<void> _reloadInsights() async {
       lang: language,
     );
 
+    debugPrint(
+      "TODAY INSIGHT STATUS: 200",
+    );
+
+    debugPrint(
+      "TODAY INSIGHT RESPONSE: $todayInsight",
+    );
+
     if (!mounted) return;
 
+    // ---------------------------------------------
+    // Get current cycle day from backend
+    // ---------------------------------------------
     final backendCycleDay = int.tryParse(
       todayInsight["current_cycle_day"]?.toString() ?? "",
     );
 
-    final insight =
-        todayInsight["insight_text"]?.toString().trim();
+    // ---------------------------------------------
+    // Get daily insight object
+    // ---------------------------------------------
+    final dailyInsight =
+        todayInsight["daily_insight"];
 
+    String? insightMessage;
+
+    if (dailyInsight is Map<String, dynamic>) {
+      insightMessage =
+          dailyInsight["message"]?.toString().trim();
+    }
+
+    // ---------------------------------------------
+    // Update UI
+    // ---------------------------------------------
     setState(() {
       if (backendCycleDay != null) {
         _currentCycleDay = backendCycleDay;
       }
 
-      if (insight != null && insight.isNotEmpty) {
-        _insightText = insight;
+      if (insightMessage != null &&
+          insightMessage.isNotEmpty) {
+        _insightText = insightMessage;
       }
     });
+
+    debugPrint(
+      "HOME TODAY INSIGHT MESSAGE: $_insightText",
+    );
 
   } catch (e) {
     debugPrint(
@@ -218,9 +247,6 @@ Future<void> _reloadInsights() async {
     );
   }
 }
-
-
-
 Future<void> _loadHomeData() async {
   try {
     // --------------------------------------------------
