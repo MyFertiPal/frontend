@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
-import '../../services/analytics_service.dart';
+// TEMPORARILY DISABLED FOR WEB UI TESTING
+// import '../../services/analytics_service.dart';
+
 import '../../services/api_service.dart';
 import '../../generated/l10n/app_localizations.dart';
 import 'subscription_payment_screen.dart';
@@ -72,24 +74,29 @@ class _SubscriptionScreenState
   void initState() {
     super.initState();
 
-    AnalyticsService.logScreenView(
-      screenName: 'SubscriptionScreen',
-    );
-
-    // Listen for Apple purchase updates.
+    // -------------------------------------------------------------------------
+    // ANALYTICS TEMPORARILY DISABLED FOR WEB TESTING
+    // -------------------------------------------------------------------------
     //
-    // This is important because restorePurchases()
-    // does not directly return the restored purchase.
-    // Apple sends the restored purchase through this stream.
-    _purchaseSubscription =
-        InAppPurchase.instance.purchaseStream.listen(
-      _handlePurchaseUpdates,
-      onError: (error) {
-        debugPrint(
-          'PURCHASE STREAM ERROR: $error',
-        );
-      },
-    );
+    // AnalyticsService.logScreenView(
+    //   screenName: 'SubscriptionScreen',
+    // );
+
+    // -------------------------------------------------------------------------
+    // APPLE PURCHASE STREAM TEMPORARILY DISABLED FOR WEB UI TESTING
+    // -------------------------------------------------------------------------
+    //
+    // Apple purchase/restore should be tested on iOS.
+    //
+    // _purchaseSubscription =
+    //     InAppPurchase.instance.purchaseStream.listen(
+    //   _handlePurchaseUpdates,
+    //   onError: (error) {
+    //     debugPrint(
+    //       'PURCHASE STREAM ERROR: $error',
+    //     );
+    //   },
+    // );
   }
 
   @override
@@ -113,9 +120,9 @@ class _SubscriptionScreenState
         'transactionId=${purchase.purchaseID}',
       );
 
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
       // PENDING
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
 
       if (purchase.status == PurchaseStatus.pending) {
         debugPrint(
@@ -125,9 +132,9 @@ class _SubscriptionScreenState
         continue;
       }
 
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
       // ERROR
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
 
       if (purchase.status == PurchaseStatus.error) {
         debugPrint(
@@ -148,13 +155,12 @@ class _SubscriptionScreenState
         continue;
       }
 
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
       // PURCHASED OR RESTORED
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
 
       if (purchase.status == PurchaseStatus.purchased ||
           purchase.status == PurchaseStatus.restored) {
-        // Make sure this is our Premium subscription.
         if (purchase.productID !=
             applePremiumProductId) {
           debugPrint(
@@ -168,9 +174,9 @@ class _SubscriptionScreenState
         await _verifyApplePurchase(purchase);
       }
 
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
       // COMPLETE PURCHASE
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
 
       if (purchase.pendingCompletePurchase) {
         debugPrint(
@@ -229,10 +235,6 @@ class _SubscriptionScreenState
         'APPLE PURCHASE STATUS: ${purchase.status}',
       );
 
-      // ---------------------------------------------------------
-      // SEND TRANSACTION TO BACKEND
-      // ---------------------------------------------------------
-
       final result =
           await _apiService.verifyAppleSubscription(
         transactionId,
@@ -242,10 +244,6 @@ class _SubscriptionScreenState
         'APPLE SUBSCRIPTION VERIFICATION RESULT: '
         '$result',
       );
-
-      // ---------------------------------------------------------
-      // READ BACKEND RESPONSE
-      // ---------------------------------------------------------
 
       final planType =
           result['plan_type']?.toString();
@@ -268,14 +266,13 @@ class _SubscriptionScreenState
         'APPLE EXPIRATION DATE: $expirationDate',
       );
 
-      // The transaction was successfully verified.
       _restoreFoundPurchase = true;
 
       if (!mounted) return;
 
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
       // RESTORED
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
 
       if (purchase.status ==
           PurchaseStatus.restored) {
@@ -289,9 +286,9 @@ class _SubscriptionScreenState
         );
       }
 
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
       // NEW PURCHASE
-      // ---------------------------------------------------------
+      // -----------------------------------------------------------------------
 
       else if (purchase.status ==
           PurchaseStatus.purchased) {
@@ -333,11 +330,15 @@ class _SubscriptionScreenState
       _isLoading = true;
     });
 
-    AnalyticsService.logPayClicked('premium');
+    // -------------------------------------------------------------------------
+    // ANALYTICS TEMPORARILY DISABLED FOR WEB TESTING
+    // -------------------------------------------------------------------------
+    //
+    // AnalyticsService.logPayClicked('premium');
 
     try {
       debugPrint(
-        "STARTING PREMIUM SUBSCRIPTION...",
+        'STARTING PREMIUM SUBSCRIPTION...',
       );
 
       final user =
@@ -347,17 +348,17 @@ class _SubscriptionScreenState
           await _apiService.getProfile();
 
       final userId =
-          profile["user_id"]?.toString();
+          profile['user_id']?.toString();
 
       final email =
-          user["email"]?.toString();
+          user['email']?.toString();
 
       debugPrint(
-        "SUBSCRIPTION USER ID: $userId",
+        'SUBSCRIPTION USER ID: $userId',
       );
 
       debugPrint(
-        "SUBSCRIPTION EMAIL: $email",
+        'SUBSCRIPTION EMAIL: $email',
       );
 
       if (userId == null || userId.isEmpty) {
@@ -379,7 +380,7 @@ class _SubscriptionScreenState
       );
 
       debugPrint(
-        "INITIATE SUBSCRIPTION RESULT: $response",
+        'INITIATE SUBSCRIPTION RESULT: $response',
       );
 
       final paymentUrl =
@@ -403,11 +404,11 @@ class _SubscriptionScreenState
       }
 
       debugPrint(
-        "PAYMENT URL: $paymentUrl",
+        'PAYMENT URL: $paymentUrl',
       );
 
       debugPrint(
-        "PAYMENT REFERENCE: $reference",
+        'PAYMENT REFERENCE: $reference',
       );
 
       if (!mounted) return;
@@ -430,7 +431,7 @@ class _SubscriptionScreenState
       if (!mounted) return;
 
       debugPrint(
-        "PAYMENT SCREEN RESULT: $paymentCompleted",
+        'PAYMENT SCREEN RESULT: $paymentCompleted',
       );
 
       if (paymentCompleted == true) {
@@ -446,7 +447,7 @@ class _SubscriptionScreenState
       }
     } catch (e) {
       debugPrint(
-        "START SUBSCRIPTION ERROR: $e",
+        'START SUBSCRIPTION ERROR: $e',
       );
 
       if (!mounted) return;
@@ -489,6 +490,12 @@ class _SubscriptionScreenState
   // ---------------------------------------------------------------------------
   // RESTORE APPLE PURCHASES
   // ---------------------------------------------------------------------------
+  //
+  // TEMPORARY WEB UI VERSION
+  //
+  // Real Apple restore logic will be enabled again
+  // when testing on iOS.
+  // ---------------------------------------------------------------------------
 
   Future<void> _restorePurchases() async {
     if (_isRestoring) return;
@@ -499,49 +506,12 @@ class _SubscriptionScreenState
     });
 
     try {
-      final available =
-          await InAppPurchase.instance.isAvailable();
-
-      if (!available) {
-        throw Exception(
-          'In-app purchases are currently unavailable.',
-        );
-      }
-
       debugPrint(
-        "RESTORING APPLE PURCHASES...",
+        'RESTORE PURCHASES PRESSED - WEB UI TEST MODE',
       );
 
-      // Apple will send restored transactions
-      // through purchaseStream.
-      await InAppPurchase.instance
-          .restorePurchases();
-
-      debugPrint(
-        "APPLE RESTORE REQUEST COMPLETED",
-      );
-
-      // Give the purchase stream time to deliver
-      // the restored transaction.
       await Future.delayed(
-        const Duration(seconds: 2),
-      );
-
-      if (!mounted) return;
-
-      if (!_restoreFoundPurchase) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'No previous Premium purchase was found.',
-            ),
-            duration: Duration(seconds: 4),
-          ),
-        );
-      }
-    } catch (e) {
-      debugPrint(
-        "RESTORE PURCHASE ERROR: $e",
+        const Duration(milliseconds: 500),
       );
 
       if (!mounted) return;
@@ -549,10 +519,14 @@ class _SubscriptionScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Unable to restore purchases. Please try again.',
+            'Restore Purchases will be available on iOS.',
           ),
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 3),
         ),
+      );
+    } catch (e) {
+      debugPrint(
+        'RESTORE UI ERROR: $e',
       );
     } finally {
       if (mounted) {
